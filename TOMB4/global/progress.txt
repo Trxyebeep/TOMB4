@@ -1,0 +1,1859 @@
+TOMB4 progress.
+
+empty space for functions not decompiled yet.
++ for functions decompiled and injected.
+x for functions decompiled but not injected, for one reason or another.
+
+// ======================================
+// GAME
+// ======================================
+
+		game/ahmet.cpp
+
+0x00401000		InitialiseAhmet
+0x00401080		AhmetControl
+0x00401730		ExplodeAhmet
+0x004017E0		ScalesControl
+0x00401990		ReTriggerAhmet
+0x00401AC0		ScalesCollision
+
+
+		game/baboon.cpp
+
+0x00401DB0		InitialiseBaboon
+0x00401E50		BaboonControl
+0x004027E0		FindCrowbarSwitch
+0x00402850		ReTriggerBaboon
+0x00402970		ExplodeBaboon
+
+
+		game/bat.cpp
+
+0x00402A10		InitialiseBat
+0x00402A70		BatControl
+
+
+		game/bike.cpp
+
+0x00464610	+	InitialiseBike
+0x00464680		BikeCollision
+0x00464850	+	TriggerBikeBeam
+0x004648F0	+	GetOnBike
+0x00464A30	+	DrawBikeBeam
+0x00464C20	+	DrawBikeExtras
+0x00464C70		BikeControl
+0x00465220	+	TriggerExhaustSmoke
+0x004653D0	+	BikeExplode
+0x004654A0	+	BikeCheckGetOff
+0x00465660	+	TestHeight
+0x00465770	+	DoDynamics
+0x004657E0		BikeDynamics
+0x00465F80		BikeCollideStaticObjects
+0x00466290		BikeBaddieCollision
+0x004664B0	+	AnimateBike
+0x004668E0	+	CanGetOff
+0x00466AB0		UserControl
+0x00466E90	+	BikeStart
+
+
+		game/box.cpp
+
+0x0043FB30		InitialiseCreature
+0x0043FB70		CreatureActive
+0x0043FBE0		CreatureAIInfo
+0x0043FF70		UpdateLOT
+0x0043FFF0		SearchLOT
+0x004401F0		TargetBox
+0x00440290		EscapeBox
+0x00440340		ValidBox
+0x004403E0		GetCreatureMood
+0x00440620		CreatureMood
+0x00440940		StalkBox
+0x00440A40		CalculateTarget
+0x00440E90		CreatureCreature
+0x00440FD0		BadFloor
+0x00441080	+	CreatureDie
+0x00441230		CreatureAnimation
+0x00441C60		CreatureTurn
+0x00441EE0		CreatureTilt
+0x00441F20		CreatureJoint
+0x00441F80		CreatureFloat
+0x00442080		CreatureUnderwater
+0x00442110		CreatureEffect
+0x00442170		CreatureEffectT
+0x004421D0		CreatureVault
+0x00442380		CreatureKill
+0x00442550		AlertAllGuards
+0x004425D0		AlertNearbyGuards
+0x00442670		AIGuard
+0x00442720		GetAITarget
+0x00442A60		FindAITargetObject
+0x00442C40		SameZone
+0x00442D30		CreatureYRot
+0x00442D70		MoveCreature3DPos
+
+
+		game/camera.cpp
+
+0x00442E70	+	InitialiseCamera
+0x00442F40		MoveCamera
+0x004435E0		ChaseCamera
+0x00443A50		CombatCamera
+0x00443ED0		LookCamera
+0x004447F0		FixedCamera
+0x00444890		CalculateCamera
+0x00444E00		CameraCollisionBounds
+0x004451C0		mgLOS
+0x00445310		BinocularCamera
+0x00445890		LaraTorch
+
+
+		game/clockworkbeetle.cpp
+
+0x004458F0		TriggerClockworkBeetle
+0x00445AD0		ControlClockworkBeetle
+
+
+		game/collide.cpp
+
+0x00446170		GetCollisionInfo
+0x00446CF0		FindGridShift
+0x00446D20		CollideStaticObjects
+0x00446F70	+	ShiftItem
+0x00446FB0		UpdateLaraRoom
+0x00447010		GetTiltType
+0x004471B0		LaraBaddieCollision
+0x00447470		CreatureCollision
+0x004475F0		ObjectCollision
+0x00447660		ObjectCollisionNoBigPush
+0x004476D0		TrapCollision
+0x00447750		ItemPushLara
+0x00447B00		TestBoundsCollide
+0x00447BE0		TestBoundsCollideStatic
+0x00447CE0		ItemPushLaraStatic
+0x00447F30		TestLaraPosition
+0x00448070		AlignLaraPosition
+0x00448140		Move3DPosTo3DPos
+0x004483E0		MoveLaraPosition
+0x004485A0		GenericSphereBoxCollision
+0x00448840		GenericDeadlyBoundingBoxCollision
+0x004489A0		TestBoundsCollide2
+0x00448A80		StargateCollision
+0x00448CC0		CogCollision
+0x00448DA0	+	GetCollidedObjects
+
+
+		game/control.cpp
+
+0x004492D0		KillMoveItems
+0x00449330		KillMoveEffects
+0x00449390		UpdateSky
+0x00449410	+	ControlPhase
+0x00449B90		AnimateItem
+0x00449FC0		GetChange
+0x0044A060		TranslateItem
+0x0044A0D0		AlterFloorHeight
+0x0044A1A0		GetFloor
+0x0044A390		GetWaterHeight
+0x0044A530		GetHeight
+0x0044AA20		RefreshCamera
+0x0044AB50		TestTriggers
+0x0044B620		TriggerActive
+0x0044B690		GetCeiling
+0x0044BB20		GetDoor
+0x0044BBE0		LOS
+0x0044BC80		xLOS
+0x0044BFD0		zLOS
+0x0044C320		ClipTarget
+0x0044C570		FlipMap
+0x0044C670		RemoveRoomFlipItems
+0x0044C6F0		AddRoomFlipItems
+0x0044C770		TriggerCDTrack
+0x0044C790		TriggerNormalCDTrack
+0x0044C820		CheckNoColFloorTriangle
+0x0044C8D0		CheckNoColCeilingTriangle
+0x0044C9C0		IsRoomOutside
+0x0044CBE0		ObjectOnLOS2
+0x0044CDF0		DoRayBox
+0x0044D530		RayBoxIntersect
+0x0044D820		FireCrossBowFromLaserSight
+0x0044D890		GetTargetOnLOS
+0x0044DE50		ExplodeItemNode
+
+		game/croc.cpp
+
+0x00402D90		InitialiseCroc
+0x00402E30		CrocControl
+0x004035D0		GetFreeLocust
+0x00403640		TriggerLocust
+0x004037B0		InitialiseLocustEmitter
+0x00403810		ControlLocustEmitter
+0x00403870		UpdateLocusts
+0x00403C10		DrawLocusts
+0x00403C90		TriggerCrocgodMissile
+0x00403D30		TriggerCrocgodMissileFlame
+0x00403ED0		InitialiseCrocgod
+0x00403F30		CrocgodControl
+
+
+		game/deathsld.cpp
+
+0x00404380		InitialiseDeathSlide
+0x004044B0		ControlDeathSlide
+0x004043D0		DeathSlideCollision
+
+
+		game/debris.cpp
+
+0x00433020		GetFreeDebris
+0x004330A0		TriggerDebris
+0x004332C0		UpdateDebris
+0x00433410		ShatterObject
+
+
+		game/delstuff.cpp
+
+0x0041D010		CalcLaraMatrices
+0x0041D140	+	DrawLara
+0x0041D9A0	+	GetLaraJointPos
+0x0041DAF0		Rich_CalcLaraMatrices_Normal
+0x0041E630		Rich_CalcLaraMatrices_Interpolated
+0x0041F260	+	SetLaraUnderwaterNodes
+
+
+		game/deltapak.cpp
+
+0x0046A6D0	+	handle_cutseq_triggering
+0x0046ABE0	+	do_new_cutscene_camera
+0x0046AD70	+	InitPackNodes
+0x0046AE80	+	DecodeAnim
+0x0046AFA0	+	DecodeTrack
+0x0046B0D0	+	GetTrackWord
+0x0046B140	+	frigup_lara
+0x0046B220	+	updateAnimFrame
+0x0046B290	+	cutseq_malloc
+0x0046B2A0	+	finish_cutseq
+0x0046B2B0	+	DrawCutSeqActors
+0x0046B4C0	+	CalcActorLighting
+0x0046B560	+	GetJointAbsPositionCutSeq
+0x0046B600	+	CalculateObjectLightingLaraCutSeq
+0x0046B6D0	+	third_cutseq_control
+0x0046B6F0	+	fourth_cutseq_init
+0x0046B710	+	fourth_cutseq_control
+0x0046B7E0	+	fourth_cutseq_end
+0x0046B800	+	fifth_cutseq_control
+0x0046B820	+	fifth_cutseq_end
+0x0046B840	+	sixth_cutseq_init
+0x0046B850	+	sixth_cutseq_control
+0x0046B880	+	sixth_cutseq_end
+0x0046B8A0	+	seventh_cutseq_init
+0x0046B8C0	+	seventh_control
+0x0046B8F0	+	eighth_control
+0x0046B920	+	ninth_cutseq_init
+0x0046B980	+	ninth_control
+0x0046BA40	+	tenth_cutseq_init
+0x0046BA90	+	tenth_cutseq_control
+0x0046BC00	+	tenth_cutseq_end
+0x0046BC30	+	eleventh_cutseq_init
+0x0046BCE0	+	eleventh_cutseq_control
+0x0046BED0	+	twelth_cutseq_init
+0x0046BEE0	+	twelth_cutseq_end
+0x0046BEF0	+	thirteen_end
+0x0046BF10	+	fourteen_end
+0x0046BF40	+	fourteen_control
+0x0046BF70	+	fifteen_init
+0x0046C020	+	fifteen_control
+0x0046C190	+	fifteen_end
+0x0046C1A0	+	sixteen_init
+0x0046C250	+	sixteen_control
+0x0046C3C0	+	sixteen_end
+0x0046C410	+	seventeen_control
+0x0046C440	+	seventeen_end
+0x0046C470	+	eighteen_init
+0x0046C480	+	eighteen_control
+0x0046C4B0	+	eighteen_end
+0x0046C4E0	+	nineteen_init
+0x0046C500	+	nineteen_control
+0x0046C530	+	nineteen_end
+0x0046C560	+	twenty_control
+0x0046C590	+	twenty_end
+0x0046C5C0	+	twentyone_init
+0x0046C5E0	+	twentyone_end
+0x0046C610	+	twentythree_init
+0x0046C630	+	twentythree_control
+0x0046C700	+	twentythree_end
+0x0046C730	+	twentyfour_init
+0x0046C760	+	twentyfour_control
+0x0046C7C0	+	twentyfour_end
+0x0046C7E0	+	twentyfive_control
+0x0046C820	+	twentyfive_end
+0x0046C880	+	twentyfive_init
+0x0046C8D0	+	twentysix_control
+0x0046C900	+	twentyseven_init
+0x0046C930	+	twentyseven_control
+0x0046C950	+	twentyseven_end
+0x0046C9A0	+	twentytwo_init
+0x0046C9B0	+	twentytwo_end
+0x0046C9F0		do_spade_meshswap
+0x0046CA50		do_key_meshswap
+0x0046CA80		cutseq_shoot_pistols
+0x0046CAB0		trigger_weapon_dynamics
+0x0046CB40		deal_with_pistols
+0x0046CC40		cutseq_kill_item
+0x0046CCB0		cutseq_restore_item
+0x0046CD20		Load_and_Init_Cutseq
+0x0046CE30		init_cutseq_actors
+0x0046D030		init_voncroy_meshbits
+0x0046D040		DelsHandyTeleportLara
+0x0046D160		nail_intelligent_object
+0x0046D1F0		handle_lara_chatting
+0x0046D270		handle_actor_chatting
+0x0046D350		trigger_item_in_room
+0x0046D3D0		untrigger_item_in_room
+0x0046D450		find_a_fucking_item
+0x0046D480		special2_end
+0x0046D4B0		special2_init
+0x0046D4D0		special3_end
+0x0046D510		special3_control
+0x0046D560		special1_init
+0x0046D5E0		special1_end
+
+
+		game/demigod.cpp
+
+0x00404770		TriggerDemigodMissile
+0x00404840		TriggerDemigodMissileFlame
+0x00404A00		TriggerHammerSmoke
+0x00404BD0		DoDemigodEffects
+0x00404E00		InitialiseDemigod
+0x00404EA0		DemigodControl
+
+
+		game/dog.cpp
+
+0x00405820		InitialiseDog
+0x004058B0		DogControl
+
+
+		game/door.cpp
+
+0x0044DF60		ShutThatDoor
+0x0044DFC0		OpenThatDoor
+0x0044E010		DoorControl
+0x0044E1C0		DoorCollision
+0x0044E420		PushPullKickDoorControl
+0x0044E480		PushPullKickDoorCollision
+0x0044E660		DoubleDoorCollision
+0x0044E7C0		UnderwaterDoorCollision
+0x0044E930		SequenceDoorControl
+
+
+		game/draw.cpp
+
+0x0044EBA0		DrawPhaseGame
+0x0044EC10		DrawRooms
+0x0044F2D0		S_InsertRoom
+0x0044F330		PrintObjects
+0x0044F5D0		GetRoomBounds
+0x0044F790		SetRoomBounds
+0x0044FB10		DrawEffect
+0x0044FC00		calc_animating_item_clip_window
+0x0044FF60		DrawAnimatingItem
+0x00450520	+	InitInterpolate
+0x00450560	+	phd_PopMatrix_I
+0x00450590	+	phd_PushMatrix_I
+0x004505C0	+	phd_RotY_I
+0x004505F0	+	phd_RotX_I
+0x00450620	+	phd_RotZ_I
+0x00450650	+	phd_TranslateRel_I
+0x00450690	+	phd_TranslateRel_ID
+0x004506E0	+	phd_RotYXZ_I
+0x00450720	+	gar_RotYXZsuperpack_I
+0x00450760	+	gar_RotYXZsuperpack
+0x00450810	+	phd_PutPolygons_I
+0x00450840	+	InterpolateMatrix
+0x00450AB0	+	InterpolateArmMatrix
+0x00450BB0		CalculateObjectLighting
+0x00450CB0		CalculateObjectLightingLara
+0x00450DC0		GetFrames
+0x00450E60		GetBoundsAccurate
+0x00450EE0		GetBestFrame
+0x00450F10		mRotBoundingBoxNoPersp
+0x00451180		UpdateSkyLightning
+0x00451240		RenderIt
+
+
+		game/effect2.cpp
+
+0x00433C70		DetatchSpark
+0x00433D30		GetFreeSpark
+0x00433E10		UpdateSparks
+0x00434440		TriggerRicochetSpark
+0x00434770		TriggerFlareSparks
+0x004349F0		TriggerExplosionSparks
+0x00434DC0		TriggerExplosionSmokeEnd
+0x00434FA0		TriggerExplosionSmoke
+0x00435130		TriggerFireFlame
+0x00435570		TriggerSuperJetFlame
+0x004357C0		TriggerRocketSmoke
+0x00435920		SetupSplash
+0x004359E0		UpdateSplashes
+0x00435B70		SetupRipple
+0x00435BF0		TriggerUnderwaterBlood
+0x00435C60		TriggerWaterfallMist
+0x00435E30		TriggerDartSmoke
+0x00436040		KillAllCurrentItems
+0x00436050		KillEverything
+0x00436060		TriggerExplosionBubble
+0x004361A0		TriggerDynamic
+0x00436250		TriggerDynamic_MIRROR
+0x00436320		ClearDynamics
+0x00436340		ControlSmokeEmitter
+0x00436900		ControlColouredLights
+0x004369B0		ControlEnemyMissle
+
+
+		game/effects.cpp
+
+0x00437050		ItemNearLara
+0x004370E0		SoundEffects
+0x00437140		Richochet
+0x00437180		DoBloodSplat
+0x004371F0		DoLotsOfBlood
+0x004372A0		Splash
+0x00437390		WadeSplash
+0x00437530		WaterFall
+0x00437650		finish_level_effect
+0x00437660		turn180_effect
+0x00437680		floor_shake_effect
+0x00437720		SoundFlipEffect
+0x00437740		RubbleFX
+0x004377B0		PoseidonSFX
+0x004377D0		ActivateCamera
+0x004377E0		ActivateKey
+0x004377F0		SwapCrowbar
+0x00437820		ExplosionFX
+0x00437850		LaraLocation
+0x00437880		LaraLocationPad
+0x004378A0		GhostTrap
+0x00437930		KillActiveBaddies
+0x004379E0		lara_hands_free
+0x004379F0		draw_right_gun
+0x00437A40		draw_left_gun
+0x00437A90		shoot_right_gun
+0x00437AA0		shoot_left_gun
+0x00437AB0		SetFog
+0x00437B60		swap_meshes_with_meshswap1
+0x00437BC0		swap_meshes_with_meshswap2
+0x00437C20		swap_meshes_with_meshswap3
+0x00437CB0		invisibility_on
+0x00437CC0		invisibility_off
+0x00437CE0		reset_hair
+0x00437CF0		ClearScarabsPatch
+0x00437D00		MeshSwapToPour
+0x00437D30		MeshSwapFromPour
+
+
+		game/elements.cpp
+
+0x00454B60		ElementPuzzleCollision
+0x00454EF0		InitialiseElementPuzzle
+0x00454F50		ControlElementPuzzle
+
+
+		game/flmtorch.cpp
+
+0x0041F390		TriggerTorchFlame
+0x0041F510		FireCollision
+0x0041F7C0		DoFlameTorch
+0x0041FAF0		GetFlameTorch
+0x0041FB80		FlameTorchControl
+
+
+		game/footprnt.cpp
+
+0x00437D50	+	AddFootPrint
+
+
+		game/gameflow.cpp
+
+0x00451510		LoadGameflow
+0x00451770	+	DoGameflow
+0x00451E30		DoTitle
+0x00452710		DoLevel
+0x00452B80		DoCredits
+
+
+		game/guide.cpp
+
+0x00405F20		InitialiseGuide
+0x00405FA0		GuideControl
+
+
+		game/hair.cpp
+
+0x0041FDD0	+	InitialiseHair
+0x0041FE50	+	HairControl
+0x00420870	+	GetCorrectStashPoints
+0x00420920	+	DrawHair
+
+
+		game/hammerhead.cpp
+
+0x00407000		InitialiseHammerhead
+0x00407060		HammerheadControl
+
+
+		game/harpy.cpp
+
+0x00407290		TriggerHarpyMissileFlame
+0x004073F0		DoHarpyEffects
+0x00407700		TriggerHarpyMissile
+0x004077B0		TriggerHarpySparks
+0x004078A0		TriggerHarpyFlame
+0x00407A30		InitialiseHarpy
+0x00407A90		HarpyControl
+
+
+		game/health.cpp
+
+0x00452C70		FlashIt
+0x00452CA0		DrawGameInfo
+0x00452DE0		DrawHealthBar
+0x00452EA0		DrawAirBar
+0x00452F40		InitialisePickUpDisplay
+0x00452F80		DrawPickups
+
+
+		game/horse.cpp
+
+0x00408080		InitialiseHorseman
+0x004080E0		HorsemanControl
+0x00408E00		TriggerHorsemanRicochets
+0x00409010		InitialiseHorse
+
+
+		game/init.cpp
+
+0x00453070		InitialiseTrapDoor
+0x004530A0		InitialiseFallingBlock2
+0x004530D0		InitialiseFlameEmitter
+0x00453170		InitialiseFlameEmitter2
+0x00453230		InitialiseFlameEmitter3
+0x004532A0		InitialiseJobySpike
+0x00453340		InitialiseTwoBlockPlatform
+0x00453370		InitialiseSlicerDicer
+0x00453400		InitialiseScaledSpike
+0x004534E0		InitialiseRaisingBlock
+0x004535C0		InitialiseBurningFloor
+0x004535F0		InitialiseSethBlade
+0x00453650		InitialiseObelisk
+0x00453710		InitialiseMineHelicopter
+0x00453740		InitialiseSmashObject
+0x004537D0	+	InitialiseMapper
+0x00453800	+	InitialiseLightningConductor
+0x00453870		InitialiseStatuePlinth
+0x004538A0		InitialiseEffects
+0x00453980		InitialiseSmokeEmitter
+0x00453A30		InitialiseDoor
+0x00453E40		InitialisePulley
+0x00453E90		InitialisePickUp
+0x00453F30		init_all_ropes
+0x00453F60		CreateRope
+0x00454070		InitialiseRope
+
+
+		game/items.cpp
+
+0x00454140		InitialiseItemArray
+0x004541B0		KillItem
+0x00454360		CreateItem
+0x004543B0		InitialiseItem
+0x004545F0		RemoveActiveItem
+0x004546A0		RemoveDrawnItem
+0x00454740		AddActiveItem
+0x004547B0		ItemNewRoom
+0x004548B0		InitialiseFXArray
+0x00454900		CreateEffect
+0x00454970		KillEffect
+0x00454A90		EffectNewRoom
+
+
+		game/jean.cpp
+
+0x00409060		InitialiseJeanYves
+0x004090B0		JeanYvesControl
+
+
+		game/jeep.cpp
+
+0x00466F40		InitialiseJeep
+0x00466FA0		JeepCollision
+0x004671B0		GetOnJeep
+0x00467330		DrawJeepExtras
+0x00467380		JeepControl
+0x00467920		TriggerExhaustSmoke
+0x00467AC0		JeepExplode
+0x00467B90		JeepCheckGetOut
+0x00467C60		DoDynamics
+0x00467CF0		JeepDynamics
+0x004684D0		JeepCollideStaticObjects
+0x004687E0		JeepBaddieCollision
+0x00468AE0		GetCollisionAnim
+0x00468B80		DoShift
+0x00468E00		AnimateJeep
+0x00469770		CanGetOff
+0x00469870		UserControl
+0x00469B90		InitialiseEnemyJeep
+0x00469C20		EnemyJeepControl
+0x0046A4D0		JeepFireGrenade
+0x0046A620		JeepStart
+
+
+		game/lara.cpp
+
+0x00420A80	+	LaraCeilingFront
+0x00420B10	+	LaraAboveWater
+0x00420D50	+	lara_as_duckl
+0x00420D80	+	lara_as_duckr
+0x00420DB0	+	lara_col_ducklr
+0x00420EA0	+	TestLaraSlide
+0x00420FE0	+	LaraFallen
+0x00421040	+	lara_as_duck
+0x004210F0	+	lara_col_duck
+0x00421210	+	lara_as_all4s
+0x00421280	+	lara_col_all4s
+0x00421620	+	LaraFloorFront
+0x004216A0	+	lara_as_crawl
+0x00421770	+	lara_col_crawl
+0x00421880	+	LaraDeflectEdgeDuck
+0x00421900	+	lara_as_all4turnl
+0x00421960	+	lara_col_all4turnlr
+0x004219B0	+	lara_as_all4turnr
+0x00421A10	+	lara_as_crawlb
+0x00421AD0	+	lara_col_crawlb
+0x00421BF0	+	lara_col_crawl2hang
+0x00421DE0		LaraTestEdgeCatch
+0x00421E90		LaraTestHangOnClimbWall
+0x00421FF0		TestHangSwingIn
+0x004220B0	+	lara_as_dash
+0x00422200	+	lara_col_dash
+0x00422350	+	GetLaraCollisionInfo
+0x00422390	+	LaraHitCeiling
+0x00422400		LaraDeflectEdge
+0x00422480		TestLaraVault
+0x00422810		LaraTestClimbStance
+0x004228D0		TestWall
+0x004229D0		LaraCollideStop
+0x00422A90	+	lara_as_dashdive
+0x00422AC0	+	lara_col_dashdive
+0x00422BE0	+	LaraLandedBad
+0x00422C50		LaraDeflectEdgeJump
+0x00422DE0	+	lara_as_hang2
+0x00422E50	+	MonkeySwingFall
+0x00422EB0	+	lara_col_hang2
+0x004230E0		LaraHangTest
+0x004235B0		SnapLaraToEdgeOfBlock
+0x00423660	+	MonkeySwingSnap
+0x004236B0		TestMonkeyLeft
+0x00423780		GetDirOctant
+0x004237B0		TestMonkeyRight
+0x00423880	+	lara_as_monkeyswing
+0x00423930	+	lara_col_monkeyswing
+0x00423A60	+	lara_as_monkeyl
+0x00423AC0	+	lara_col_monkeyl
+0x00423B30	+	lara_as_monkeyr
+0x00423B90	+	lara_col_monkeyr
+0x00423C00	+	lara_as_hangturnl
+0x00423C40	+	lara_col_hangturnlr
+0x00423CE0	+	lara_as_hangturnr
+0x00423D20	+	lara_as_monkey180
+0x00423D40	+	lara_col_monkey180
+0x00423D60	+	lara_col_polestat
+0x00423EE0	+	lara_as_poleleft
+0x00423F20	+	lara_as_poleright
+0x00423F60	+	lara_col_poleup
+0x00423FF0	+	lara_col_poledown
+0x00424150		ApplyVelocityToRope
+0x004241A0	+	lara_as_rope
+0x004241D0		FallFromRope
+0x00424270	+	lara_col_rope
+0x00424320		UpdateRopeSwing
+0x00424620	+	lara_as_ropel
+0x00424650	+	lara_as_roper
+0x00424680	+	lara_col_ropefwd
+0x00424820		JumpOffRope
+0x004248E0	+	lara_as_climbrope
+0x00424950	+	lara_as_climbroped
+0x00424A60	+	lara_as_stop
+0x00424E90		UseInventoryItems
+0x00425070	+	lara_col_stop
+0x00425110	+	lara_as_upjump
+0x00425130	+	lara_col_upjump
+0x00425480	+	lara_as_forwardjump
+0x00425550	+	lara_col_forwardjump
+0x00425630	+	lara_as_reach
+0x00425650	+	lara_col_reach
+0x004259C0		LaraSlideEdgeJump
+0x00425AC0	+	lara_as_walk
+0x00425B60	+	lara_as_run
+0x00425D10	+	lara_as_fastback
+0x00425D70	+	lara_as_turn_r
+0x00425E20	+	lara_as_turn_l
+0x00425EC0	+	lara_as_death
+0x00425F10	+	lara_as_fastfall
+0x00425F50	+	lara_as_hang
+0x00425FA0	+	lara_col_hang
+0x00426230		LaraHangRightCornerTest
+0x00426600		IsValidHangPos
+0x004266E0		LaraHangLeftCornerTest
+0x00426AB0	+	CanLaraHangSideways
+0x00426B50	+	lara_as_hangleft
+0x00426B90	+	lara_col_hangleft
+0x00426BD0	+	lara_as_hangright
+0x00426C10	+	lara_col_hangright
+0x00426C50	+	SetCornerAnim
+0x00426D70	+	lara_as_extcornerl
+0x00426DC0	+	lara_as_extcornerr
+0x00426E10	+	lara_as_intcornerl
+0x00426E60	+	lara_as_intcornerr
+0x00426EB0	+	lara_as_splat
+0x00426EC0	+	lara_as_compress
+0x00426FD0	+	lara_as_back
+0x00427060	+	lara_as_null
+0x00427070	+	lara_as_fastturn
+0x004270C0	+	lara_as_stepright
+0x00427150	+	lara_as_stepleft
+0x004271E0	+	lara_as_slide
+0x00427210	+	lara_as_backjump
+0x00427260	+	lara_as_rightjump
+0x004272A0	+	lara_as_leftjump
+0x004272E0	+	lara_as_fallback
+0x00427310	+	lara_as_slideback
+0x00427330	+	lara_as_pushblock
+0x00427370	+	lara_as_pullblock
+0x004273B0	+	lara_as_ppready
+0x004273E0	+	lara_as_pickup
+0x00427420	+	lara_as_pickupflare
+0x00427480	+	lara_as_switchon
+0x004274C0	+	lara_as_usekey
+0x00427500	+	lara_as_usepuzzle
+0x00427580	+	lara_as_special
+0x004275A0	+	lara_as_swandive
+0x004275E0	+	lara_as_fastdive
+0x00427640	+	lara_as_waterout
+0x00427660	+	lara_as_wade
+0x00427730	+	lara_as_deathslide
+0x004277D0	+	lara_as_controlled
+0x004278B0	+	lara_as_controlledl
+0x004278D0	+	lara_col_turnswitch
+0x00427940	+	lara_as_pulley
+0x00427A40	+	lara_col_walk
+0x00427C30	+	lara_col_run
+0x00427DE0	+	lara_col_pose
+0x00427E00	+	lara_col_fastback
+0x00427EF0	+	lara_col_turn_r
+0x00427FB0	+	lara_col_turn_l
+0x00427FD0	+	lara_col_death
+0x00428040	+	lara_col_fastfall
+0x004280F0	+	lara_col_splat
+0x00428160	+	lara_col_compress
+0x00428210	+	lara_col_back
+0x00428350	+	lara_col_stepright
+0x00428430	+	lara_col_stepleft
+0x00428450	+	lara_col_slide
+0x00428470		lara_slide_slope
+0x00428580	+	lara_col_backjump
+0x004285B0	+	lara_col_rightjump
+0x004285E0	+	lara_col_leftjump
+0x00428610	+	lara_col_fallback
+0x004286A0	+	lara_col_slideback
+0x004286D0	+	lara_col_roll
+0x00428770	+	lara_col_roll2
+0x00428850	+	lara_col_swandive
+0x004288D0	+	lara_col_fastdive
+0x00428960	+	lara_col_wade
+0x00428AD0	+	lara_default_col
+0x00428B20	+	lara_col_jumper
+0x00428BA0		ResetLook
+0x00428C40		LookUpDown
+0x00428D40		LookLeftRight
+
+
+		game/lara1gun.cpp
+
+0x00428E40		draw_shotgun_meshes
+0x00428E70		undraw_shotgun_meshes
+0x00428EA0		ready_shotgun
+0x00428F10		RifleHandler
+0x00429260		FireShotgun
+0x00429480		FireGrenade
+0x00429710		ControlGrenade
+0x0042A270		FireCrossbow
+0x0042A490		CrossbowHitSwitchType78
+0x0042A850		ControlCrossbow
+0x0042AE50		draw_shotgun
+0x0042AFE0		undraw_shotgun
+0x0042B100		AnimateShotgun
+0x0042B430		TriggerUnderwaterExplosion
+0x0042B600	+	DoGrenadeDamageOnBaddie
+
+
+		game/lara2gun.cpp
+
+0x0042B720		draw_pistols
+0x0042B7C0		set_arm_info
+0x0042B840		undraw_pistols
+0x0042BAB0		ready_pistols
+0x0042BB20		draw_pistol_meshes
+0x0042BB70	+	undraw_pistol_mesh_left
+0x0042BBB0	+	undraw_pistol_mesh_right
+0x0042BBF0		PistolHandler
+0x0042BE40		AnimatePistols
+
+
+		game/laraclmb.cpp
+
+0x0042C3C0		LaraTestClimbPos
+0x0042C470		LaraTestClimb
+0x0042C6C0	+	lara_as_climbstnc
+0x0042C770	+	lara_col_climbstnc
+0x0042C980		LaraCheckForLetGo
+0x0042CA60		LaraTestClimbUpPos
+0x0042CC80	+	lara_as_climbleft
+0x0042CCC0	+	lara_col_climbleft
+0x0042CD20		LaraDoClimbLeftRight
+0x0042CEE0		LaraClimbLeftCornerTest
+0x0042D160		LaraClimbRightCornerTest
+0x0042D3D0	+	lara_as_climbright
+0x0042D410	+	lara_col_climbright
+0x0042D470	+	lara_as_climbing
+0x0042D490	+	lara_col_climbing
+0x0042D5E0	+	lara_as_climbdown
+0x0042D600	+	lara_col_climbdown
+0x0042D7A0	+	lara_as_climbend
+0x0042D7D0		GetClimbTrigger
+
+
+		game/laradouble.cpp
+
+0x00405EA0		InitialiseLaraDouble
+0x00405EB0		LaraDoubleControl
+
+
+		game/larafire.cpp
+
+0x0042D840		LaraGun
+0x0042DDC0		CheckForHoldingState
+0x0042DDF0		InitialiseNewWeapon
+0x0042DF30		LaraTargetInfo
+0x0042E0D0		LaraGetNewTarget
+0x0042E4A0		find_target_point
+0x0042E560		AimWeapon
+0x0042E630		FireWeapon
+0x0042E920		HitTarget
+0x0042EA70		WeaponObject
+0x0042EAC0		WeaponObjectMesh
+0x0042EB30		DoProperDetection
+0x0042F480		get_current_ammo_pointer
+
+
+		game/laraflar.cpp
+
+0x0042F510		DoFlareLight
+0x0042F6F0		DoFlareInHand
+0x0042F7B0	+	DrawFlareInAir
+0x0042F880		CreateFlare
+0x0042FB00		set_flare_arm
+0x0042FB50		draw_flare
+0x0042FC60		undraw_flare
+0x0042FF10		draw_flare_meshes
+0x0042FF30		undraw_flare_meshes
+0x0042FF50		ready_flare
+0x0042FF90		FlareControl
+
+
+		game/laramisc.cpp
+
+0x00430140		LaraInitialiseMeshes
+0x004301F0	+	LaraCheatGetStuff
+0x00430250		LaraControl
+0x004309B0	+	LaraCheat
+0x00430A50	+	LaraCheatyBits
+0x00430B60		AnimateLara
+0x00430EB0		InitialiseLaraLoad
+0x00430EE0		InitialiseLaraAnims
+
+
+		game/laraskin.cpp
+
+0x00430F70		CreateSkinningData
+0x00431760		PushXYZ
+0x00431790		PopXYZ
+0x004317A0		OptomiseSkinningData
+
+
+		game/larasurf.cpp
+
+0x00431AA0		LaraSurface
+0x00431C10	+	lara_as_surfswim
+0x00431C80	+	lara_as_surfback
+0x00431CE0	+	lara_as_surfleft
+0x00431D40	+	lara_as_surfright
+0x00431DA0	+	lara_as_surftread
+0x00431E60	+	lara_col_surfswim
+0x00431E90		LaraTestWaterClimbOut
+0x004320B0		LaraSurfaceCollision
+0x004321B0		LaraTestWaterStepOut
+0x004322B0	+	lara_col_surfback
+0x004322E0	+	lara_col_surfleft
+0x00432310	+	lara_col_surfright
+0x00432340	+	lara_col_surftread
+
+
+		game/laraswim.cpp
+
+0x004323A0	+	LaraUnderWater
+0x00432620	+	lara_as_swim
+0x00432690		SwimTurn
+0x00432720	+	lara_as_glide
+0x004327A0	+	lara_as_tread
+0x00432830	+	lara_as_dive
+0x00432850	+	lara_as_uwdeath
+0x004328B0	+	lara_as_waterroll
+0x004328C0	+	lara_col_swim
+0x004328E0		LaraSwimCollision
+0x00432A30		LaraTestWaterDepth
+0x00432B10	+	lara_col_glide
+0x00432B30	+	lara_col_tread
+0x00432B50	+	lara_col_dive
+0x00432B70	+	lara_col_uwdeath
+0x00432BD0	+	lara_col_waterroll
+0x00432BF0		GetWaterDepth
+0x00432DA0		LaraWaterCurrent
+
+
+		game/lot.cpp
+
+0x00455200		InitialiseLOTarray
+0x00455270		DisableBaddieAI
+0x004552B0		EnableBaddieAI
+0x00455470		InitialiseSlot
+0x004556A0		CreateZone
+0x004557B0		ClearLOT
+
+
+		game/mirror.cpp
+
+0x00455800		Draw_Mirror_Lara
+
+
+		game/missle.cpp
+
+0x00409180		ExplodeFX
+0x00409200		ControlBodyPart
+
+
+		game/moveblok.cpp
+
+0x00409460		InitialiseMovingBlock
+0x004094A0		ClearMovableBlockSplitters
+0x004096D0		MovableBlock
+0x00409B80		TestBlockPush
+0x00409D20		TestBlockPull
+0x0040A040		MovableBlockCollision
+0x0040A3C0		InitialisePlanetEffect
+0x0040A4C0		ControlPlanetEffect
+0x0040A7F0		DrawPlanetEffect
+
+
+		game/mummy.cpp
+
+0x0040A930		InitialiseMummy
+0x0040A9D0		MummyControl
+
+
+		game/newinv.cpp
+
+0x0043B710	+	LoadGame
+0x0043B730	+	SaveGame
+0x0043B760	+	S_CallInventory2
+0x0043B9B0	+	init_new_inventry
+0x0043BC30	+	do_debounced_joystick_poo
+0x0043BD80	+	DrawThreeDeeObject2D
+0x0043BF10	+	DrawInventoryItemMe
+0x0043C400	+	go_and_load_game
+0x0043C410	+	go_and_save_game
+0x0043C420	+	construct_combine_object_list
+0x0043C5A0	+	insert_object_into_list_v2
+0x0043C610	+	construct_object_list
+0x0043CA90	+	insert_object_into_list
+0x0043CAE0	+	draw_current_object_list
+0x0043D450	+	handle_object_changeover
+0x0043D470	+	handle_inventry_menu
+0x0043DE30	+	fade_ammo_selector
+0x0043DED0	+	draw_ammo_selector
+0x0043E140	+	spinback
+0x0043E1B0	+	update_laras_weapons_status
+0x0043E250	+	is_item_currently_combinable
+0x0043E2F0	+	have_i_got_item
+0x0043E320	+	do_these_objects_combine
+0x0043E360	+	combine_these_two_objects
+0x0043E3D0	+	seperate_object
+0x0043E420	+	combine_revolver_lasersight
+0x0043E480	+	combine_crossbow_lasersight
+0x0043E4E0	+	combine_PuzzleItem1
+0x0043E500	+	combine_PuzzleItem2
+0x0043E520	+	combine_PuzzleItem3
+0x0043E540	+	combine_PuzzleItem4
+0x0043E560	+	combine_PuzzleItem5
+0x0043E580	+	combine_PuzzleItem6
+0x0043E5A0	+	combine_PuzzleItem7
+0x0043E5C0	+	combine_PuzzleItem8
+0x0043E5E0	+	combine_KeyItem1
+0x0043E600	+	combine_KeyItem2
+0x0043E620	+	combine_KeyItem3
+0x0043E640	+	combine_KeyItem4
+0x0043E660	+	combine_KeyItem5
+0x0043E680	+	combine_KeyItem6
+0x0043E6A0	+	combine_KeyItem7
+0x0043E6C0	+	combine_KeyItem8
+0x0043E6E0	+	combine_PickupItem1
+0x0043E700	+	combine_PickupItem2
+0x0043E720	+	combine_PickupItem3
+0x0043E740	+	combine_PickupItem4
+0x0043E760	+	combine_ClockWorkBeetle
+0x0043E770	+	do_special_waterskin_combine_bullshit
+0x0043E830	+	setup_objectlist_startposition
+0x0043E860	+	setup_objectlist_startposition2
+0x0043E8A0	+	use_current_item
+0x0043EB80	+	DEL_picked_up_object
+0x0043EF60	+	have_i_got_object
+0x0043F050	+	remove_inventory_item
+0x0043F150	+	convert_obj_to_invobj
+0x0043F180	+	draw_compass
+0x0043F1E0	+	do_examine_mode
+0x0043F4C0	+	dels_give_lara_items_cheat
+
+
+		game/objects.cpp
+
+0x00455AE0		EarthQuake
+0x00455CF0		SmashObject
+0x00455DF0		SmashObjectControl
+0x00455EA0		BridgeFlatFloor
+0x00455ED0		BridgeFlatCeiling
+0x00455EF0		GetOffset
+0x00455F30		BridgeTilt1Floor
+0x00455F80		BridgeTilt1Ceiling
+0x00455FC0		BridgeTilt2Floor
+0x00456010		BridgeTilt2Ceiling
+0x00456050		ControlAnimatingSlots
+0x00456120		PoleCollision
+0x00456360		ControlTriggerTriggerer
+0x00456420		AnimateWaterfalls
+0x004564E0		ControlWaterfall
+0x00456580	+	ControlMapper
+0x00456780		TriggerRopeFlame
+0x00456910		BurningRopeCollision
+0x00456AC0		ControlBurningRope
+0x00456CD0	+	ControlLightningConductor
+0x004570F0		StatuePlinthCollision
+
+		game/objlight.cpp
+
+0x004572D0		ControlPulseLight
+0x00457440		ControlElectricalLight
+0x00457560		ControlBlinker
+
+
+		game/people.cpp
+
+0x0040AEB0		TargetVisible
+0x0040AF80		Targetable
+0x0040B050		GunShot
+0x0040B060		GunHit
+0x0040B120		GunMiss
+0x0040B1D0		ShotLara
+
+
+		game/pickup.cpp
+
+0x00457610		AnimatingPickUp
+0x00457650		RegeneratePickups
+0x00457720		PickUpCollision
+0x00457F30		FindPlinth
+0x00458090		KeyHoleCollision
+0x00458260		PuzzleDoneCollision
+0x004582A0		PuzzleHoleCollision
+0x00458690		PuzzleDone
+0x00458710		KeyTrigger
+0x00458780		PickupTrigger
+0x004587E0		SarcophagusCollision
+
+
+		game/raghead.cpp
+
+0x0040B3C0		InitialiseRaghead
+0x0040B600		RagheadControl
+
+
+		game/rope.cpp
+
+0x00458A00		vMul
+0x00458A40		mDotProduct
+0x00458A70		mCrossProduct
+0x00458AD0		phd_GetMatrixAngles
+0x00458B90		AlignLaraToRope
+0x00459060		GetRopePos
+0x00459100		RopeCollision
+0x004592E0		RopeNodeCollision
+0x004593B0		RopeControl
+0x00459410		DrawRopeList
+0x00459450		Normalise
+0x00459510		ModelRigid
+0x00459640		ModelRigidRope
+0x00459740		SetPendulumPoint
+0x004597D0		SetPendulumVelocity
+0x00459890		CalculateRope
+0x00459F90		ProjectRopePoints
+
+
+		game/sas.cpp
+
+0x0040D040		InitialiseSas
+0x0040D0A0		SasControl
+0x0040DA00		InitialiseInjuredSas
+0x0040DA70		InjuredSasControl
+0x0040DAF0		SasFireGrenade
+0x0040DCD0		DragSASCollision
+
+
+		game/savegame.cpp
+
+
+0x0045A0E0		CheckSumValid
+0x0045A100		sgInitialiseHub
+0x0045A1B0		SaveLaraData
+0x0045A2E0		sgSaveGame
+0x0045A340		CreateCheckSum
+0x0045A370		OpenSaveGame
+0x0045A470		SaveHubData
+0x0045A4B0		SaveLevelData
+0x0045B000		WriteSG
+0x0045B040		sgRestoreGame
+0x0045B080		RestoreLaraData
+0x0045B230		RestoreLevelData
+0x0045BD80		ReadSG
+0x0045BDC0		sgSaveLevel
+0x0045BDF0		sgRestoreLevel
+
+
+		game/scarab.cpp
+
+0x0040DE90		InitialiseScarab
+0x0040DEF0		ScarabControl
+0x0040E250		GetFreeScarab
+0x0040E2A0		ClearScarabs
+0x0040E2D0		TriggerScarab
+0x0040E3C0		UpdateScarabs
+0x0040E630		DrawScarabs
+0x0040E6B0		InitialiseScarabGenerator
+
+
+		game/scorpion.cpp
+
+0x0040E780		InitialiseScorpion
+0x0040E800		ScorpionControl
+0x0040EFD0		InitialiseSmlscorp
+0x0040F030		SmlscorpControl
+
+
+		game/senet.cpp
+
+0x0040F320		CheckSenetWinner
+0x0040F3B0		InitialiseSenet
+0x0040F480		SenetControl
+0x0040F4D0		MakeMove
+0x0040F600		InitialiseGameStix
+0x0040F630		GameStixControl
+0x0040FBD0		ShockwaveExplosion
+0x0040FC60		ThrowSticks
+0x0040FCF0		ControlGodHead
+0x0040FDD0		DrawGodHead
+0x0040FF40		GameStixCollision
+
+
+		game/sentrygun.cpp
+
+0x0043F5C0		TriggerAutogunFlamethrower
+0x0043F7A0		InitialiseAutogun
+0x0043F7E0		AutogunControl
+
+
+		game/seth.cpp
+
+0x00410070		TriggerSethMissile
+0x00410130		TriggerSethSparks
+0x00410220		TriggerSethFlame
+0x004103B0		TriggerSethMissileFlame
+0x00410530		DoSethEffects
+0x00410C30		InitialiseSeth
+0x00410C90		SethControl
+
+
+		game/setup.cpp
+
+0x0045BFB0		InitialiseLara
+0x0045C0D0		InitialiseObjects
+0x0045C1E0		BaddyObjects
+0x0045DC10		TrapObjects
+0x0045E1F0		ObjectObjects
+0x0045EB40		GetCarriedItems
+0x0045EC50		GetAIPickups
+0x0045ED30		BuildOutsideTable
+0x0045F050		InitialiseGameFlags
+0x0045F0A0		SetupGame
+0x0045F110		InitTarget
+0x0045F1A0		ClearFootPrints
+0x0045F1C0		reset_cutseq_vars
+
+
+		game/skeleton.cpp
+
+0x004115E0		TriggerRiseEffect
+0x004117E0		InitialiseSkeleton
+0x004118D0		SkeletonControl
+
+
+		game/sound.cpp
+
+0x0045F1F0		SoundEffect
+0x0045F7F0		GetPanVolume
+0x0045FA10		StopSoundEffect
+0x0045FA70		SOUND_Stop
+0x0045FAA0		SOUND_Init
+0x0045FAD0		SayNo
+
+
+		game/sphere.cpp
+
+0x0045FB10		TestCollision
+0x0045FC90		GetSpheres
+0x0045FF80		GetJointAbsPosition
+0x00460270		InitInterpolate2
+
+
+		game/sphinx.cpp
+
+0x00412A60		InitialiseSphinx
+0x00412AC0		SphinxControl
+
+
+		game/spotcam.cpp
+
+0x004602B0		InitSpotCamSequences
+0x00460320		Spline
+0x00460420		InitialiseSpotCam
+0x00460B50		SetSplineData
+0x00460C70		CalculateSpotCams
+
+
+		game/switch.cpp
+
+0x00461BD0		GetSwitchTrigger
+0x00461CA0		TestTriggersAtXYZ
+0x00461CF0		SwitchControl
+0x00461D60		SwitchCollision
+0x00461FF0		SwitchCollision2
+0x00462100		UnderwaterSwitchCollision
+0x004622C0		PulleyCollision
+0x004624C0		TurnSwitchControl
+0x00462720		TurnSwitchCollision
+0x00462AE0		RailSwitchCollision
+0x00462CB0		JumpSwitchCollision
+0x00462DB0		CrowbarSwitchCollision
+0x00463080		FullBlockSwitchControl
+0x00463180		FullBlockSwitchCollision
+0x004632F0		CogSwitchControl
+0x00463400		CogSwitchCollision
+
+
+		game/templar.cpp
+
+0x00413020		InitialiseTemplar
+0x00413090		TemplarControl
+
+
+		game/text.cpp
+
+0x00463650		InitFont
+0x00463930		UpdatePulseColour
+0x004639E0		GetStringLength
+0x00463B50		PrintString
+0x00463DE0		DrawChar
+
+
+		game/tomb4fx.cpp
+
+0x00437E60		GetFreeFireSpark
+0x00437EF0		keep_those_fires_burning
+0x00437F20		UpdateFireSparks
+0x004382C0		TriggerGlobalFireFlame
+0x00438420		TriggerGlobalStaticFlame
+0x004384F0		ClearFires
+0x00438510		AddFire
+0x00438560		S_DrawFires
+0x00438690		GetFreeSmokeSpark
+0x00438700		UpdateSmokeSparks
+0x00438940		TriggerGunSmoke
+0x00438BA0		TriggerShatterSmoke
+0x00438D20		GetFreeBlood
+0x00438D90		UpdateBlood
+0x00438F00		TriggerBlood
+0x00439060		GetFreeGunshell
+0x004390F0		TriggerGunShell
+0x00439340		UpdateGunShells
+0x004395B0		DrawGunshells
+0x00439660		TriggerSmallSplash
+0x00439780		GetFreeBubble
+0x004397F0		CreateBubble
+0x004398B0		LaraBubbles
+0x00439970		UpdateBubbles
+0x00439AE0		TriggerGunflash
+0x00439B80		SetGunFlash
+0x00439C00		DrawGunflashes
+0x00439D40		SetFadeClip
+0x00439D60		UpdateFadeClip
+0x00439DB0		SetScreenFadeOut
+0x00439E00		SetScreenFadeIn
+0x00439E40		Fade
+0x00439F10		GetFreeDrip
+0x00439F80		UpdateDrips
+0x0043A080		TriggerLaraDrips
+0x0043A1B0		S_DrawSparks
+0x0043A690	+	ExplodingDeath2
+0x0043AA70		GetFreeShockwave
+0x0043AA90		TriggerShockwave
+0x0043AB00		TriggerShockwaveHitEffect
+0x0043AD10		UpdateShockwaves
+0x0043AE50	+	TriggerLightning
+0x0043AF80		UpdateLightning
+0x0043AFD0		LSpline
+0x0043B0D0		CalcLightningSpline
+0x0043B330		TriggerLightningGlow
+0x0043B420		TriggerFlashSmoke
+0x0043B5F0		DrawLensFlares
+0x0043B630		DrawWeaponMissile
+
+
+		game/train.cpp
+
+0x00464030	+	DrawTrainFloor
+0x004640A0	+	DrawTrainObjects
+0x004644B0		InitialiseTrainJeep
+0x00464520		TrainJeepControl
+
+
+		game/traps.cpp
+
+0x004135A0		CloseTrapDoor
+0x004136C0		TrapDoorControl
+0x00413750		OpenTrapDoor
+0x00413840		FloorTrapDoorCollision
+0x004139F0		CeilingTrapDoorCollision
+0x00413B80		FallingBlockCollision
+0x00413C20		FallingBlock
+0x00413CA0		FallingBlockFloor
+0x00413CF0		FallingBlockCeiling
+0x00413D30		ControlFallingBlock2
+0x00413DC0		ControlSmashableBikeWall
+0x00413E80		FallingCeiling
+0x00413F90		DartEmitterControl
+0x00414150		DartsControl
+0x004142F0		FlameEmitterControl
+0x00414670		FlameEmitter2Control
+0x004148B0		FlameEmitter3Control
+0x00414D80		FlameControl
+0x00414EE0		LaraBurn
+0x00414F30		LavaBurn
+0x00414FA0		ControlRollingBall
+0x00415680		RollingBallCollision
+0x00415750		ControlJobySpike
+0x004158E0		DrawScaledSpike
+0x00415AD0		TwoBlockPlatformFloor
+0x00415B20		TwoBlockPlatformCeiling
+0x00415B60		OnTwoBlockPlatform
+0x00415C30		ControlTwoBlockPlatform
+0x00415DB0		ControlSlicerDicer
+0x00415EC0		TestBoundsCollideTeethSpikes
+0x00415FD0		ControlScaledSpike
+0x00416390		ControlRaisingBlock
+0x00416550		ControlBurningFloor
+0x004168D0		ControlChain
+0x00416950		ControlPlough
+0x004169A0		ControlStargate
+0x00416A00		ControlHammer
+0x00416D70		ControlSpikeball
+0x00416E40		Control4xFloorRoofBlade
+0x00416F00		ControlBirdBlade
+0x00416F90		ControlCatwalkBlade
+0x00417020		ControlMovingBlade
+0x00417080		ControlPlinthBlade
+0x00417100		ControlSethBlade
+0x00417200		ControlLRSquishyBlock
+0x00417310		ControlFallingSquishyBlock
+0x004173A0		FallingSquishyBlockCollision
+0x004174A0		ControlObelisk
+0x00417BB0		MineCollision
+0x00417DB0		ControlMineHelicopter
+0x00417FC0		ControlSprinkler
+
+
+		game/troops.cpp
+
+0x004183B0		InitialiseTroop
+0x00418430		TroopControl
+
+
+		game/voncroy.cpp
+
+0x00418D00		SetCutSceneCamera
+0x00418F10		EndCutSceneCamera
+0x00418FA0		GetAIEnemy
+0x00419070		DoVonCroyCutscene
+0x00419560		InitialiseVoncroy
+0x004195E0		VoncroyControl
+0x0041AF00		VoncroyRaceControl
+
+
+		game/wildboar.cpp
+
+0x0041BF00		InitialiseWildboar
+0x0041BF60		WildboarControl
+
+
+		game/wraith.cpp
+
+0x0041C2E0		InitialiseWraith
+0x0041C360		TriggerWraithFlame
+0x0041C4C0		TriggerWraithEffect
+0x0041C6E0		WraithControl
+
+// ======================================
+// SPECIFIC
+// ======================================
+
+		specific/3dmath.cpp
+
+0x0048F9D0		AlterFOV
+0x0048FA90		SetupZRange
+0x0048FB60		ScaleCurrentMatrix
+0x0048FC10		InitWindow
+0x0048FD40	+	mGetAngle
+0x0048FDC0		phd_GenerateW2V
+0x00490110		phd_LookAt
+0x00490210		phd_atan
+0x00490280		phd_sqrt
+0x004902B0	+	phd_PushMatrix
+0x00490310	+	phd_PushUnitMatrix
+0x00490350	+	phd_TranslateRel
+0x00490400	+	phd_RotX
+0x004904B0	+	phd_RotY
+0x00490560	+	phd_RotZ
+0x00490610	+	phd_RotYXZpack
+0x00490820	+	phd_RotYXZ
+0x00490A10	+	phd_TranslateAbs
+0x00490A90	+	phd_GetVectorAngles
+
+
+		specific/audio.cpp
+
+0x0046D610		S_CDPlay
+0x0046D6B0		S_CDStop
+0x0046D790		S_StartSyncedAudio
+0x0046D7B0		ACMSetVolume
+0x0046D800		ACMEnumCallBack
+0x0046D890		ACMSetupNotifications
+0x0046D9C0		ACMInit
+0x0046DD00		ACMClose
+0x0046DE50		OpenStreamFile
+0x0046DF50		FillADPCMBuffer
+0x0046E0F0		GetADPCMData
+0x0046E180		ACMEmulateCDPlay
+0x0046E340		ACMHandleNotifications
+
+
+		specific/clipping.cpp
+
+0x0046E4D0		ZClipper
+0x0046E8D0		XYUVGClipper
+0x0046FDE0		visible_zclip
+
+
+		specific/cmdline.cpp
+
+0x0046FE40		CLSetup
+0x0046FE80		DXSetupDialog
+0x0046FED0		InitDSDevice
+0x0046FFA0		InitTFormats
+0x004701C0		InitResolution
+0x004705F0		InitD3DDevice
+0x004706B0		InitDDDevice
+0x004707A0		MapASCIIToANSI
+0x00470830		DXSetupDlgProc
+
+
+		specific/d3dmatrix.cpp
+
+0x00490B30		SetD3DViewMatrix
+0x00490C30		SetD3DMatrix
+0x00490CF0		S_InitD3DMatrix
+0x00490D50		D3DNormalise
+0x00490DD0		D3DIdentityMatrix
+0x00490E10		D3DTransform
+
+
+		specific/drawroom.cpp
+
+0x00471040		ProcessMeshData
+0x00471420	+	ProcessRoomData
+0x00471E00	+	ProjectVerts
+0x00471F40	+	ProjectWaterVerts
+0x00472190	+	ProjectShoreVerts
+0x00472400		PrelightVertsMMX
+0x004724C0		PrelightVertsNonMMX
+0x00472650		InsertRoom
+0x004728B0		InitBuckets
+0x004728D0		FindBucket
+0x004729E0		DrawBucket
+0x00472C10		DrawBuckets
+0x00472EE0		CalcTriFaceNormal
+0x00472F50		CreateVertexNormals
+
+
+		specific/dxshell.cpp
+
+0x00490FF0		DXGetErrorString
+0x00491C30		DXAttempt
+0x00491C60		DXGetInfo
+0x00491CC0		DXEnumDirectSound
+0x00491D60		DXFreeInfo
+0x00491E50		AddStruct
+0x00491EA0		DXDDCreate
+0x00491F60		DXD3DCreate
+0x00491FC0		DXEnumDirectDraw
+0x00492240		DXBitMask2ShiftCnt
+0x00492280		DXEnumDisplayModes
+0x004923A0		BPPToDDBD
+0x00492430		DXEnumDirect3D
+0x00492920		DXEnumTextureFormats
+0x00492AD0		DXEnumZBufferFormats
+0x00492B40		DXCreateSurface
+0x00492B90		DXSetVideoMode
+0x00492BE0		DXSetCooperativeLevel
+0x004930D0		DXCreateD3DDevice
+0x00493130		DXCreate
+0x004939E0		DXChangeVideoMode
+0x00493A50		DXToggleFullScreen
+0x00493C00		DXClose
+0x00493E70		DXCreateViewport
+0x00493F60		DXShowFrame
+0x00494030		DXMove
+0x00494080		DXSaveScreen
+0x00494270		DXInitKeyboard
+0x004944D0		DXCloseInput
+
+
+		specific/dxsound.cpp
+
+0x004732E0		DXChangeOutputFormat
+0x00473390		DSChangeVolume
+0x004733B0		DSAdjustPitch
+0x00473400		DSAdjustPan
+0x00473460		DXSetOutputFormat
+0x00473500		DXDSCreate
+0x00473570		InitSampleDecompress
+0x00473690		FreeSampleDecompress
+0x00473710		DXCreateSampleADPCM
+0x004738B0		DXStopSample
+0x00473900		DSIsChannelPlaying
+0x00473950		DSGetFreeChannel
+0x00473970		DXStartSample
+0x00473A50		CalcVolume
+0x00473AB0		S_SoundStopAllSamples
+0x00473AD0		S_SoundStopSample
+0x00473AE0		S_SoundPlaySample
+0x00473B10		S_SoundPlaySampleLooped
+0x00473B40		DXFreeSounds
+0x00473B90		S_SoundSampleIsPlaying
+0x00473BB0		S_SoundSetPanAndVolume
+0x00473BF0		S_SoundSetPitch
+
+
+		specific/file.cpp
+
+0x00473C10		FindCDDrive	
+0x00473CE0		FileOpen
+0x00473D80		FileClose
+0x00473DA0		FileSize
+0x00473DD0		LoadFile
+0x00473E80		Decompress
+0x00473F20		LoadTextures
+0x004749C0		LoadRooms
+0x00474E10		LoadObjects
+0x004752A0		AdjustUV
+0x00475730		LoadSprites
+0x00475970		LoadCameras
+0x00475A30		LoadSoundEffects
+0x00475AC0		LoadBoxes
+0x00475C70		LoadAnimatedTextures
+0x00475CE0		LoadTextureInfos
+0x00475EE0		LoadItems
+0x004761E0		LoadCinematic
+0x004761F0		LoadAIInfo
+0x00476260		LoadSamples
+0x00476410		S_GetUVRotateTextures
+0x00476470		LoadLevel
+0x00476790		FreeLevel
+0x004768C0		S_LoadLevelFile
+
+
+		specific/function_stubs.cpp
+
+0x00490E80		other_log
+0x00490EC0		S_ExitSystem
+0x00490EE0		GetRandomControl
+0x00490F00		GetRandomDraw
+0x00490F20		SeedRandomControl
+0x00490F30		SeedRandomDraw
+0x00490F40		init_game_malloc
+0x00490F80		game_malloc
+
+
+		specific/function_table.cpp
+
+0x00476990		_NVisible
+0x004769D0		_Visible
+0x00476A10		SetCullCW
+0x00476A20		SetCullCCW
+0x00476A30		InitialiseFunctionTable
+0x00476AC0		HWBeginScene
+0x00476B10		HWEndScene
+0x00476B30		HWInitialise
+0x00476E80		SetFogColor
+
+
+		specific/gamemain.cpp
+
+0x00476EC0		GameMain
+0x00476FA0		GameInitialise
+0x004770C0		GameClose
+0x00477180		init_water_table
+0x004773F0		GetRandom
+0x00477430		S_SaveGame
+0x00477600		S_LoadGame
+
+
+		specific/input.cpp
+
+0x004776C0		Key
+0x004777E0		ReadJoystick
+0x004778B0		S_UpdateInput
+
+
+		specific/lighting.cpp
+
+0x00478010	+	MallocD3DLights
+0x00478070	+	CreateD3DLights
+0x004782D0	+	FreeD3DLights
+0x00478440	+	ApplyMatrix
+0x004784B0	+	ApplyTransposeMatrix
+0x00478520	+	S_CalculateStaticMeshLight
+0x00478570	+	CalcAmbientLight
+0x004786A0	+	FadeLightList
+0x00478750	x	CreateLightList
+0x00478B50	+	SetupLight
+0x00478E80	+	InitObjectLighting
+0x00479080	+	ClearObjectLighting
+0x004790F0	+	InitDynamicLighting
+0x004793B0	+	InitItemDynamicLighting
+0x00479760	+	ClearDynamicLighting
+
+
+		specific/LoadSave.cpp
+
+0x004797C0		MemBltSurf
+0x00479BE0		RGBM_Mono
+0x00479C10		ConvertSurfaceToTextures
+0x00479F20		CreateMonoScreen
+0x00479F40		FreeMonoScreen
+0x0047A220		S_DrawTile
+0x0047A500		S_DisplayMonoScreen
+0x0047A6F0		GetSaveLoadFiles
+0x0047A880		DoLoadSave
+0x0047AB80		DoSlider
+0x0047B130		CheckKeyConflicts
+0x0047B170	+	DoOptions
+0x0047C6B0		DoStatScreen
+0x0047CA20		S_DisplayPauseMenu
+0x0047CC60		S_PauseMenu
+0x0047CD20		S_LoadSave
+0x0047CE10	+	DoBar
+0x0047D3E0	+	S_DrawDashBar
+0x0047D420	+	S_DrawAirBar
+0x0047D460	+	S_DrawHealthBar
+0x0047D4B0	+	S_InitLoadBar
+0x0047D4D0	+	S_LoadBar
+
+
+		specific/output.cpp
+
+0x0047D5B0		S_InitialisePolyList
+0x0047D6B0		StashSkinVertices
+0x0047D760		SkinVerticesToScratch
+0x0047D810		CalcVertsColorSplitMMX
+0x0047D900	+	PrelightVerts
+0x0047DA60	+	phd_PutPolygons
+0x0047E8B0		phd_PutPolygonsPickup
+0x0047F620		phd_PutPolygonSkyMesh
+0x0047F950		_InsertRoom
+0x0047F970		S_DrawPickup
+0x0047FA10		S_OutputPolyList
+0x0047FCA0		S_DumpScreen
+0x0047FCF0		S_GetObjectBounds
+0x00480070		S_AnimateTextures
+0x00480220	+	ProjectTrainVerts
+0x00480310	+	phd_PutPolygons_train
+0x00480570		RenderLoadPic
+0x00480700		DDCopyBitmap
+0x00480850		LoadBitmap
+0x004808E0		do_boot_screen
+
+
+		specific/polyinsert.cpp
+
+0x00480A50		DrawSortList
+0x004812D0		HWR_DrawSortList
+0x00481760		DoSort
+0x00481810		SortPolyList
+0x00481860		InitialiseSortList
+0x004818A0		ClearFXFogBulbs
+0x004818C0		ControlFXBulb
+0x004819B0		CreateFXBulbs
+0x004819F0		TriggerFXFogBulb
+0x00481AD0		IsVolumetric
+0x00481AE0		mD3DTransform
+0x00481B50		CreateFogPos
+0x00481D20		DistCompare
+0x00481DF0		InitialiseFogBulbs
+0x00481E60		OmniEffect
+0x004820C0		OmniFog
+0x00482390		AddQuadClippedZBuffer
+0x00482910		AddTriClippedZBuffer
+0x00482E40		AddClippedPoly
+0x00482F90		SubdivideEdge
+0x004831C0		SubdivideTri
+0x00483520		SubdivideQuad
+0x00483A40		AddTriSubdivide
+0x00483B50		AddQuadSubdivide
+0x00483C80		AddTriClippedSorted
+0x004842A0		AddQuadClippedSorted
+0x00484850		AddLineClippedSorted
+0x00484920		CalcColorSplitMMX
+0x004849A0		AddPrelitMMX
+0x00484A20		CalcColorSplit
+
+
+		specific/registry.cpp
+
+0x00484B00		REG_OpenKey
+0x00484B30		REG_CloseKey
+0x00484B40		REG_WriteLong
+0x00484B60		REG_WriteBool
+0x00484B90		REG_ReadLong
+0x00484BF0		REG_ReadBool
+0x00484C70		OpenRegistry
+0x00484CC0		CloseRegistry
+0x00484CD0		LoadSettings
+0x00485190		SaveSetup
+0x004853F0		SaveSettings
+
+
+		specific/specificfx.cpp
+
+0x00485600		setXY4
+0x004857E0		setXY3
+0x00485950		setXYZ4
+0x00485D90		setXYZ3
+0x004860D0		DrawBubbles
+0x00486430		S_DrawSplashes
+0x00486DD0		S_DrawFireSparks
+0x00487260		S_DrawSmokeSparks
+0x004876C0	+	S_PrintShadow
+0x00487B60		InitTarget_2
+0x00487C30		InitBinoculars
+0x00487D00		DrawBinoculars
+0x00488140		S_DrawDrawSparks
+0x00488690		ClipLine
+0x00488950		DrawFlatSky
+0x00489360		ClipCheckPoint
+0x00489480		OutputSky
+0x00489540		DrawRope
+0x00489950		DrawLaserSightSprite
+0x00489B90		DrawDebris
+0x0048A0C0		DrawBlood
+0x0048A430		DrawDrips
+0x0048A840		DoUwEffect
+0x0048AD60		DrawWraithTrail
+0x0048B130		ShowTitle
+0x0048B480		DrawTrainFloorStrip
+0x0048B990	+	DrawTrainStrips
+0x0048BAB0		DrawSprite
+0x0048BC30		SetUpLensFlare
+0x0048C240		SetFade
+0x0048C280		DoScreenFade
+0x0048C400		DrawPsxTile
+0x0048C5F0		DrawFlash
+0x0048C6C0		DrawBikeSpeedo
+0x0048CAA0		DrawShockwaves
+0x0048D160		S_DrawDarts
+0x0048D3D0		Draw2DSprite
+0x0048D580		DrawJeepSpeedo
+0x0048D9B0		DrawLightning
+
+
+		specific/texture.cpp
+
+0x0048E2F0		CreateTexturePage
+0x0048E6E0		FreeTextures
+
+
+		specific/time.cpp
+
+0x0048E800		TIME_Reset
+0x0048E810		TIME_Init
+0x0048E860		Sync
+
+
+		specific/winmain.cpp
+
+0x0048E8D0		ClearSurfaces
+0x0048E9C0		WinMain
+0x0048EE50		CheckMMXTechnology
+0x0048EF20		WinClose
+0x0048EF70		WinProcMsg
+0x0048EFF0		WinProcessCommands
+0x0048F430		WinMainWndProc
+0x0048F6A0		WinRunCheck
+0x0048F700		WinProcessCommandLine
+0x0048F840		WinFrameRate
+0x0048F8C0		WinDisplayString
+0x0048F910		MungeFPCW
+0x0048F960		RestoreFPCW
+
+// ======================================
+// SOFTWARE RENDERER
+// ======================================
+
+//nobody cares
