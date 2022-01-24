@@ -1720,6 +1720,8 @@ void DEL_picked_up_object(short objnum)	//did sexy fall-throughs for ammo
 			lara.keyitemscombo |= 1 << (objnum - KEY_ITEM1_COMBO1);
 		else if (objnum >= PICKUP_ITEM1_COMBO1 && objnum <= PICKUP_ITEM4_COMBO2)
 			lara.pickupitemscombo |= 1 << (objnum - PICKUP_ITEM1_COMBO1);
+		else if (objnum >= KEY_ITEM1 && objnum <= KEY_ITEM12)
+			lara.keyitems |= 1 << (objnum - KEY_ITEM1);
 		else if (objnum >= PICKUP_ITEM1 && objnum <= PICKUP_ITEM4)
 			lara.pickupitems |= 1 << (objnum - PICKUP_ITEM1);
 		else if (objnum >= QUEST_ITEM1 && objnum <= QUEST_ITEM6)
