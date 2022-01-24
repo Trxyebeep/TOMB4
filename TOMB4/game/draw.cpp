@@ -226,6 +226,20 @@ void InterpolateArmMatrix(long* mx)
 	}
 }
 
+void S_InsertRoom(short room_number)
+{
+	ROOM_INFO* r;
+
+	current_room = room_number;
+	r = &room[room_number];
+	phd_TranslateAbs(0, 0, 0);
+	phd_left = r->left;
+	phd_right = r->right;
+	phd_top = r->top;
+	phd_bottom = r->bottom;
+	_InsertRoom(r);
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -242,4 +256,5 @@ void inject_draw(bool replace)
 	INJECT(0x00450810, phd_PutPolygons_I, replace);
 	INJECT(0x00450840, InterpolateMatrix, replace);
 	INJECT(0x00450AB0, InterpolateArmMatrix, replace);
+	INJECT(0x0044F2D0, S_InsertRoom, replace);
 }

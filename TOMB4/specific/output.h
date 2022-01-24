@@ -7,6 +7,7 @@ void phd_PutPolygons(short* objptr, long clip);
 void phd_PutPolygons_train(short* objptr, long x);
 void ProjectTrainVerts(short nVerts, D3DTLVERTEX* v, short* clip, long x);
 void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh);
+void _InsertRoom(ROOM_INFO* r);
 
 #define S_GetObjectBounds	( (long(__cdecl*)(short*)) 0x0047FCF0 )
 #define CalcVertsColorSplitMMX ( (void(__cdecl*)(long, D3DTLVERTEX*)) 0x0047D810 )

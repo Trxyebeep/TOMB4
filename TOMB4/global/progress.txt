@@ -352,7 +352,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x0044EBA0		DrawPhaseGame
 0x0044EC10		DrawRooms
-0x0044F2D0		S_InsertRoom
+0x0044F2D0	+	S_InsertRoom
 0x0044F330		PrintObjects
 0x0044F5D0		GetRoomBounds
 0x0044F790		SetRoomBounds
@@ -1718,7 +1718,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0047DA60	+	phd_PutPolygons
 0x0047E8B0		phd_PutPolygonsPickup
 0x0047F620		phd_PutPolygonSkyMesh
-0x0047F950		_InsertRoom
+0x0047F950	+	_InsertRoom
 0x0047F970		S_DrawPickup
 0x0047FA10		S_OutputPolyList
 0x0047FCA0		S_DumpScreen

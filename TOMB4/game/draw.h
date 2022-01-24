@@ -17,6 +17,7 @@ void gar_RotYXZsuperpack(short** pprot, long skip);
 void phd_PutPolygons_I(short* ptr, long clip);
 void InterpolateMatrix();
 void InterpolateArmMatrix(long* mx);
+void S_InsertRoom(short room_number);
 
 #define GetFrames	( (long(__cdecl*)(ITEM_INFO*, short*[], long*)) 0x00450DC0 )
 #define GetBestFrame	( (short*(__cdecl*)(ITEM_INFO*)) 0x00450EE0 )

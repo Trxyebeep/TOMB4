@@ -398,10 +398,17 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 	}
 }
 
+void _InsertRoom(ROOM_INFO* r)
+{
+	SetD3DViewMatrix();
+	InsertRoom(r);
+}
+
 void inject_output(bool replace)
 {
 	INJECT(0x0047DA60, phd_PutPolygons, replace);
 	INJECT(0x00480310, phd_PutPolygons_train, replace);
 	INJECT(0x00480220, ProjectTrainVerts, replace);
 	INJECT(0x0047D900, PrelightVerts, replace);
+	INJECT(0x0047F950, _InsertRoom, replace);
 }
