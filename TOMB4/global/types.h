@@ -1488,4 +1488,10 @@ struct FOOTPRINT
 	short YRot;
 	short Active;
 };
+
+struct DISPLAYPU
+{
+	short life;
+	short object_number;
+};
 #pragma pack(pop)

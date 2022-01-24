@@ -286,7 +286,10 @@
 #define FXType	VAR_U_(0x007FE7E0, short)
 #define OnObject	VAR_U_(0x007FE200, long)
 #define FootPrintNum	VAR_U_(0x008010C0, long)
-
+#define PickupY	VAR_U_(0x007FD20C, short)
+#define PickupX	VAR_U_(0x007FD20E, short)
+#define PickupVel	VAR_U_(0x007FD210, short)
+#define CurrentPickup	VAR_U_(0x007FD212, short)
 
 
 #define SmashedMeshRoom	ARRAY_(0x007FE360, short, [16])
@@ -339,6 +342,7 @@
 #define CollidedItems	ARRAY_(0x00804F80, ITEM_INFO*, [256])
 #define CollidedStatics	ARRAY_(0x00805380, MESH_INFO*, [128])	//not sure about the size here
 #define RopeList	ARRAY_(0x007FB4C0, ROPE_STRUCT, [5])
+#define pickups	ARRAY_(0x007FD220, DISPLAYPU, [8])
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1

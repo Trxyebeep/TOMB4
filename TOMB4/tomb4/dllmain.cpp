@@ -29,6 +29,7 @@
 #include "../game/footprnt.h"
 #include "../game/larasurf.h"
 #include "../game/laraclmb.h"
+#include "../game/health.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -77,6 +78,7 @@ void inject_all(bool replace)
 	inject_footprint(replace);
 	inject_larasurf(replace);
 	inject_laraclmb(replace);
+	inject_health(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

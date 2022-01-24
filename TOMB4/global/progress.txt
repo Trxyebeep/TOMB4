@@ -517,12 +517,13 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/health.cpp
 
-0x00452C70		FlashIt
-0x00452CA0		DrawGameInfo
-0x00452DE0		DrawHealthBar
-0x00452EA0		DrawAirBar
-0x00452F40		InitialisePickUpDisplay
-0x00452F80		DrawPickups
+0x00452C70	+	FlashIt
+0x00452CA0	+	DrawGameInfo
+0x00452DE0	+	DrawHealthBar
+0x00452EA0	+	DrawAirBar
+0x00452F40	+	InitialisePickUpDisplay
+0x00452F80	+	DrawPickups
+0x00453030	+	AddDisplayPickup
 
 
 		game/horse.cpp
