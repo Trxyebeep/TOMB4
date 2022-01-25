@@ -74,6 +74,13 @@ bool REG_ReadBool(char* SubKeyName, bool& value, bool defaultValue)
 	return 0;
 }
 
+#ifdef GENERAL_FIXES	//I need this one
+bool REG_KeyWasCreated()
+{
+	return dwDisposition == REG_CREATED_NEW_KEY;
+}
+#endif
+
 void inject_registry(bool replace)
 {
 	INJECT(0x00484B00, REG_OpenKey, replace);

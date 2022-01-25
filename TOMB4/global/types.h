@@ -1513,4 +1513,11 @@ struct BITE_INFO
 	long z;
 	long mesh_num;
 };
+
+#ifdef GENERAL_FIXES
+struct tomb4_options	//keep this at the bottom of the file, please
+{
+	ulong dummy;
+};
+#endif
 #pragma pack(pop)

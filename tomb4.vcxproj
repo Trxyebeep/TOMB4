@@ -271,6 +271,7 @@
     <ClInclude Include="TOMB4\specific\winmain.h" />
     <ClInclude Include="TOMB4\tomb4\framework.h" />
     <ClInclude Include="TOMB4\tomb4\pch.h" />
+    <ClInclude Include="TOMB4\tomb4\tomb4.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TOMB4\game\ahmet.cpp" />
@@ -382,6 +383,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TOMB4\tomb4\tomb4.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="TOMB4\global\progress.txt" />
