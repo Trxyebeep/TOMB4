@@ -7,6 +7,9 @@
 #include "lara_states.h"
 #include "control.h"
 #include "delstuff.h"
+#include "../specific/specificfx.h"
+#include "objects.h"
+#include "../specific/function_stubs.h"
 
 void InitInterpolate(long frac, long rate)
 {
@@ -314,6 +317,190 @@ void CalculateObjectLightingLara()
 	}
 }
 
+void DrawAnimatingItem(ITEM_INFO* item)
+{
+	OBJECT_INFO* obj;
+	BITE_INFO* bite;
+	short** meshpp;
+	long* bone;
+	short* frm[2];
+	short* data;
+	short* rot;
+	short* rot2;
+	long frac, rate, clip, bit, rnd;
+
+	frac = GetFrames(item, frm, &rate);
+	obj = &objects[item->object_number];
+	bite = &EnemyBites[obj->bite_offset];
+
+	if (obj->shadow_size)
+		S_PrintShadow(obj->shadow_size, frm[0], item);
+
+	phd_PushMatrix();
+	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+
+	if (obj->object_mip && (obj + 1)->loaded && phd_mxptr[M23] >> 16 > obj->object_mip)
+		obj++;
+
+	if (item->object_number < ENEMY_JEEP || item->object_number > SETHA_MIP)
+		calc_animating_item_clip_window(item, frm[0]);
+	else
+	{
+		phd_left = 0;
+		phd_right = phd_winwidth;
+		phd_top = 0;
+		phd_bottom = phd_winheight;
+	}
+
+	clip = S_GetObjectBounds(frm[0]);
+
+	if (clip)
+	{
+		CalculateObjectLighting(item, frm[0]);
+
+		if (!item->data)
+			data = no_rotation;
+		else
+			data = (short*)item->data;
+
+		bit = 1;
+		meshpp = &meshes[obj->mesh_index];
+		bone = &bones[obj->bone_index];
+
+		if (frac)
+		{
+			InitInterpolate(frac, rate);
+			phd_TranslateRel_ID(frm[0][6], frm[0][7], frm[0][8], frm[1][6], frm[1][7], frm[1][8]);
+			rot = frm[0] + 9;
+			rot2 = frm[1] + 9;
+			gar_RotYXZsuperpack_I(&rot, &rot2, 0);
+
+			if (item->mesh_bits & 1)
+			{
+				if (item->meshswap_meshbits & 1)
+					phd_PutPolygons_I(meshpp[1], clip);
+				else
+					phd_PutPolygons_I(meshpp[0], clip);
+			}
+
+			meshpp += 2;
+
+			for (int i = 0; i < obj->nmeshes - 1; i++, bone += 4, meshpp += 2)
+			{
+				if (bone[0] & 1)
+					phd_PopMatrix_I();
+
+				if (bone[0] & 2)
+					phd_PushMatrix_I();
+
+				phd_TranslateRel_I(bone[1], bone[2], bone[3]);
+				gar_RotYXZsuperpack_I(&rot, &rot2, 0);
+
+				if (bone[0] & 0x1C)
+				{
+					if (bone[0] & 8)
+						phd_RotY_I(*data++);
+
+					if (bone[0] & 4)
+						phd_RotX_I(*data++);
+
+					if (bone[0] & 16)
+						phd_RotZ_I(*data++);
+				}
+
+				bit <<= 1;
+
+				if (bit & item->mesh_bits)
+				{
+					if (bit & item->meshswap_meshbits)
+						phd_PutPolygons_I(meshpp[1], clip);
+					else
+						phd_PutPolygons_I(meshpp[0], clip);
+				}
+
+				if (item->fired_weapon && i == bite->mesh_num - 1)
+				{
+					rnd = GetRandomDraw();
+					phd_PushMatrix_I();
+					phd_TranslateRel_I(bite->x, bite->y, bite->z);
+					phd_RotYXZ_I(0, -0x3FFC, short((rnd << 14) + (rnd >> 2) - 4096));
+					InterpolateMatrix();
+					phd_PutPolygons(meshes[objects[GUN_FLASH].mesh_index], clip);
+					phd_PopMatrix_I();
+					item->fired_weapon--;
+				}
+			}
+		}
+		else
+		{
+			phd_TranslateRel(frm[0][6], frm[0][7], frm[0][8]);
+			rot = frm[0] + 9;
+			gar_RotYXZsuperpack(&rot, 0);
+
+			if (item->mesh_bits & 1)
+			{
+				if (item->meshswap_meshbits & 1)
+					phd_PutPolygons(meshpp[1], clip);
+				else
+					phd_PutPolygons(meshpp[0], clip);
+			}
+
+			meshpp += 2;
+
+			for (int i = 0; i < obj->nmeshes - 1; i++, bone += 4, meshpp += 2)
+			{
+				if (bone[0] & 1)
+					phd_PopMatrix();
+
+				if (bone[0] & 2)
+					phd_PushMatrix();
+
+				phd_TranslateRel(bone[1], bone[2], bone[3]);
+				gar_RotYXZsuperpack(&rot, 0);
+
+				if (bone[0] & 0x1C)
+				{
+					if (bone[0] & 8)
+						phd_RotY(*data++);
+
+					if (bone[0] & 4)
+						phd_RotX(*data++);
+
+					if (bone[0] & 16)
+						phd_RotZ(*data++);
+				}
+
+				bit <<= 1;
+
+				if (bit & item->mesh_bits)
+				{
+					if (bit & item->meshswap_meshbits)
+						phd_PutPolygons(meshpp[1], clip);
+					else
+						phd_PutPolygons(meshpp[0], clip);
+				}
+
+				if (item->fired_weapon && i == bite->mesh_num - 1)
+				{
+					phd_PushMatrix();
+					phd_RotX(-16380);
+					phd_TranslateRel(bite->x, bite->y, bite->z);
+					phd_PutPolygons(meshes[objects[GUN_FLASH].mesh_index], clip);
+					phd_PopMatrix();
+					item->fired_weapon--;
+				}
+			}
+		}
+	}
+
+	phd_left = 0;
+	phd_top = 0;
+	phd_right = phd_winwidth;
+	phd_bottom = phd_winheight;
+	phd_PopMatrix();
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -333,4 +520,5 @@ void inject_draw(bool replace)
 	INJECT(0x0044F2D0, S_InsertRoom, replace);
 	INJECT(0x00450BB0, CalculateObjectLighting, replace);
 	INJECT(0x00450CB0, CalculateObjectLightingLara, replace);
+	INJECT(0x0044FF60, DrawAnimatingItem, replace);
 }

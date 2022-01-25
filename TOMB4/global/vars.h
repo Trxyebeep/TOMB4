@@ -345,6 +345,7 @@
 #define RopeList	ARRAY_(0x007FB4C0, ROPE_STRUCT, [5])
 #define pickups	ARRAY_(0x007FD220, DISPLAYPU, [8])
 #define Gunshells	ARRAY_(0x007FF680, GUNSHELL_STRUCT, [24])
+#define EnemyBites	ARRAY_(0x004AED00, BITE_INFO, [])
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1

@@ -1505,4 +1505,12 @@ struct GUNSHELL_STRUCT
 	short DirXrot;
 	short object_number;
 };
+
+struct BITE_INFO
+{
+	long x;
+	long y;
+	long z;
+	long mesh_num;
+};
 #pragma pack(pop)
