@@ -3,6 +3,13 @@
 #include "delstuff.h"
 #include "control.h"
 #include "sound.h"
+#ifdef FOOTPRINTS
+#include "objects.h"
+#include "../specific/specificfx.h"
+#include "../specific/function_table.h"
+#include "../specific/3dmath.h"
+#include "../tomb4/tomb4.h"
+#endif
 
 static char footsounds[14] =
 {
@@ -42,6 +49,107 @@ void AddFootPrint(ITEM_INFO* item)
 		FootPrintNum = (FootPrintNum + 1) & 0x1F;
 	}
 }
+
+#ifdef FOOTPRINTS
+void S_DrawFootPrints()
+{
+	FLOOR_INFO* floor;
+	FOOTPRINT* print;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[3];
+	PHD_VECTOR pos;
+	TEXTURESTRUCT tex;
+	float u1, v1, u2, v2;
+	long x1, y1, z1, x2, y2, z2, x3, y3, z3, a, height;
+	short room_number;
+
+	for (int i = 0; i < 32; i++)
+	{
+		print = &FootPrint[i];
+
+		if (print->Active)
+		{
+			tomb4.footprints = 1;	//remove me
+
+			if (!tomb4.footprints)
+			{
+				print->Active = 0;
+				continue;
+			}
+
+			print->Active--;
+			a = print->Active >> 2;
+			phd_PushMatrix();
+			phd_TranslateAbs(print->x, print->y - 1, print->z);
+			phd_RotY(print->YRot);
+
+			pos.x = 0;
+			pos.y = 0;
+			pos.z = -64;
+
+			room_number = lara_item->room_number;
+			floor = GetFloor(print->x + pos.x, print->y, print->z + pos.z, &room_number);
+			height = GetHeight(floor, print->x + pos.x, print->y, print->z + pos.z);
+			pos.y = height > print->y ? print->y - height : height - print->y;
+
+			x1 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
+			y1 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
+			z1 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+
+			pos.x = -128;
+			pos.y = 0;
+			pos.z = 64;
+
+			room_number = lara_item->room_number;
+			floor = GetFloor(print->x + pos.x, print->y, print->z + pos.z, &room_number);
+			height = GetHeight(floor, print->x + pos.x, print->y, print->z + pos.z);
+			pos.y = height > print->y ? print->y - height : height - print->y;
+
+			x2 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
+			y2 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
+			z2 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+
+			pos.x = 128;
+			pos.y = 0;
+			pos.z = 64;
+
+			room_number = lara_item->room_number;
+			floor = GetFloor(print->x + pos.x, print->y, print->z + pos.z, &room_number);
+			height = GetHeight(floor, print->x + pos.x, print->y, print->z + pos.z);
+			pos.y = height > print->y ? print->y - height : height - print->y;
+
+			x3 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
+			y3 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
+			z3 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+
+			phd_PopMatrix();
+			setXYZ3(v, x1, y1, z1, x2, y2, z2, x3, y3, z3, clipflags);
+
+			for (int i = 0; i < 3; i++)
+			{
+				v[i].color = RGBA(64, 64, 64, a);
+				v[i].specular = 0xFF000000;
+			}
+
+			sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 10];
+			tex.drawtype = 3;
+			tex.flag = 0;
+			tex.tpage = sprite->tpage;
+			u1 = sprite->x1;
+			u2 = sprite->x2;
+			v1 = sprite->y1;
+			v2 = sprite->y2;
+			tex.u1 = u1;
+			tex.v1 = v1;	//top left
+			tex.u2 = u2;
+			tex.v2 = v1;	//top right
+			tex.u3 = u1;
+			tex.v3 = v2;	//bottom left
+			AddTriSorted(v, 0, 1, 2, &tex, 1);
+		}
+	}
+}
+#endif
 
 void inject_footprint(bool replace)
 {

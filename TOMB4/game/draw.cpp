@@ -18,6 +18,9 @@
 #include "mirror.h"
 #include "scarab.h"
 #include "croc.h"
+#ifdef FOOTPRINTS
+#include "footprnt.h"
+#endif
 
 void InitInterpolate(long frac, long rate)
 {
@@ -724,6 +727,9 @@ void DrawRooms(short CurrentRoom)
 	DrawScarabs();
 	DrawLocusts();
 	DrawLightning();
+#ifdef FOOTPRINTS
+	S_DrawFootPrints();
+#endif
 	lara_item->pos.x_pos = lx;
 	lara_item->pos.y_pos = ly;
 	lara_item->pos.z_pos = lz;

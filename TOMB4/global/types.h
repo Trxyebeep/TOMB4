@@ -1517,7 +1517,7 @@ struct BITE_INFO
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {
-	ulong dummy;
+	bool footprints;
 };
 #endif
 #pragma pack(pop)
