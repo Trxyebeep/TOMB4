@@ -193,6 +193,8 @@
 #define GLOBAL_numcutseq_frames	VAR_U_(0x007F4FD0, long)
 #define LightningCount	VAR_U_(0x007FDF68, short)
 #define dLightningRand	VAR_U_(0x007FE14C, short)
+#define LightningRand	VAR_U_(0x007FDF5C, short)
+#define LightningSFXDelay	VAR_U_(0x004BF624, short)
 #define old_lara_holster	VAR_U_(0x007F4FB0, short)
 #define lara_chat_cnt	VAR_U_(0x004BFC85, char)
 #define actor_chat_cnt	VAR_U_(0x004BFC86, char)
@@ -293,6 +295,19 @@
 #define nRope	VAR_U_(0x004BF6A8, long)
 #define phkResult	VAR_U_(0x00670E3C, HKEY)
 #define dwDisposition	VAR_U_(0x00670E40, DWORD)
+#define outside	VAR_U_(0x007FD300, long)
+#define number_draw_rooms	VAR_U_(0x007FD304, long)
+#define camera_underwater	VAR_U_(0x007FE12C, long)
+#define room_list_start	VAR_U_(0x004BF628, long)
+#define room_list_end	VAR_U_(0x004BF62C, long)
+#define outside_top	VAR_U_(0x007FE150, long)
+#define outside_left	VAR_U_(0x007FE118, long)
+#define outside_right	VAR_U_(0x007FE138, long)
+#define outside_bottom	VAR_U_(0x007FDF58, long)
+#define SkyPos	VAR_U_(0x007FE128, short)
+#define SkyPos2	VAR_U_(0x007FDF5E, short)
+#define LaserSightActive	VAR_U_(0x004BF37E, char)
+
 
 
 #define lpClass	ARRAY_(0x004BFE78, CHAR, [4])
@@ -349,6 +364,8 @@
 #define pickups	ARRAY_(0x007FD220, DISPLAYPU, [8])
 #define Gunshells	ARRAY_(0x007FF680, GUNSHELL_STRUCT, [24])
 #define EnemyBites	ARRAY_(0x004AED00, BITE_INFO, [])
+#define draw_room_list	ARRAY_(0x004BF424, long, [128])
+#define draw_rooms	ARRAY_(0x007FDF80, short, [100])
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1

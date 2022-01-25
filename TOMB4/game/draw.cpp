@@ -10,6 +10,14 @@
 #include "../specific/specificfx.h"
 #include "objects.h"
 #include "../specific/function_stubs.h"
+#include "train.h"
+#include "tomb4fx.h"
+#include "rope.h"
+#include "sound.h"
+#include "../specific/polyinsert.h"
+#include "mirror.h"
+#include "scarab.h"
+#include "croc.h"
 
 void InitInterpolate(long frac, long rate)
 {
@@ -501,6 +509,236 @@ void DrawAnimatingItem(ITEM_INFO* item)
 	phd_PopMatrix();
 }
 
+void DrawRooms(short CurrentRoom)
+{
+	ROOM_INFO* r;
+	long lx, ly, lz;
+	short lr;
+
+	current_room = CurrentRoom;
+	r = &room[CurrentRoom];
+	r->test_left = 0;
+	r->test_top = 0;
+	phd_left = 0;
+	phd_top = 0;
+	phd_right = phd_winxmax;
+	phd_bottom = phd_winymax;
+	r->test_right = (short)phd_winxmax;
+	r->test_bottom = (short)phd_winymax;
+	outside = r->flags & 8;
+	camera_underwater = r->flags & 1;
+	r->bound_active = 2;
+	draw_room_list[0] = CurrentRoom;
+	room_list_start = 0;
+	room_list_end = 1;
+	number_draw_rooms = 0;
+
+	if (outside)
+	{
+		outside_top = 0;
+		outside_left = 0;
+		outside_right = phd_winxmax;
+		outside_bottom = phd_winymax;
+	}
+	else
+	{
+		outside_left = phd_winxmax;
+		outside_top = phd_winymax;
+		outside_bottom = 0;
+		outside_right = 0;
+	}
+
+	GetRoomBounds();
+	InitialiseFogBulbs();
+	CreateFXBulbs();
+
+	if (outside)	//inlined SkyDrawPhase? did it exist?
+	{
+		if (!objects[HORIZON].loaded)
+			outside = -1;
+		else
+		{
+			if (BinocularRange)
+				AlterFOV(14560 - (short)BinocularRange);
+
+			phd_PushMatrix();
+			phd_TranslateAbs(camera.pos.x, camera.pos.y, camera.pos.z);
+
+			if (gfLevelFlags & GF_LIGHTNING)
+			{
+				if (!LightningCount && !LightningRand)
+				{
+					if (!(GetRandomDraw() & 127))
+					{
+						LightningCount = (GetRandomDraw() & 0x1F) + 16;
+						dLightningRand = (GetRandomDraw() & 0xFF) + 256;
+						LightningSFXDelay = (GetRandomDraw() & 3) + 12;
+					}
+				}
+				else
+				{
+					UpdateSkyLightning();
+
+					if (LightningSFXDelay > -1)
+						LightningSFXDelay--;
+
+					if (!LightningSFXDelay)
+						SoundEffect(182, 0, 0);
+				}
+			}
+
+			nPolyType = 6;
+			phd_PushMatrix();
+
+			if (gfLevelFlags & GF_LAYER1)
+			{
+				phd_RotY(32760);
+
+				if (gfLevelFlags & GF_LIGHTNING)
+					DrawFlatSky(RGBA(LightningRGB[0], LightningRGB[1], LightningRGB[2], 44), SkyPos, -1536, 4);
+				else
+					DrawFlatSky(*(ulong*)&gfLayer1Col, SkyPos, -1536, 4);
+			}
+
+			if (gfLevelFlags & GF_LAYER2)
+				DrawFlatSky(0xFF000000 | *(ulong*)&gfLayer2Col, SkyPos2, -1536, 2);
+
+			if (gfLevelFlags & GF_LAYER1 || gfLevelFlags & GF_LAYER2)
+				OutputSky();
+
+			phd_PopMatrix();
+
+			if (gfLevelFlags & GF_HORIZON)
+			{
+				phd_PutPolygonSkyMesh(meshes[objects[HORIZON].mesh_index], -1);
+				OutputSky();
+			}
+
+			phd_PopMatrix();
+
+			if (BinocularRange)
+				AlterFOV(7 * (2080 - (short)BinocularRange));
+		}
+	}
+
+	if (objects[LARA].loaded)
+	{
+		if (!(lara_item->flags & IFL_INVISIBLE))
+		{
+			nPolyType = 4;
+
+			if (lara_item->mesh_bits)
+			{
+				DrawLara(lara_item, 0);
+				phd_PushMatrix();
+
+				if (lara.right_arm.flash_gun)
+				{
+					phd_mxptr[M00] = lara_matrices[132 + M00];
+					phd_mxptr[M01] = lara_matrices[132 + M01];
+					phd_mxptr[M02] = lara_matrices[132 + M02];
+					phd_mxptr[M03] = lara_matrices[132 + M03];
+					phd_mxptr[M10] = lara_matrices[132 + M10];
+					phd_mxptr[M11] = lara_matrices[132 + M11];
+					phd_mxptr[M12] = lara_matrices[132 + M12];
+					phd_mxptr[M13] = lara_matrices[132 + M13];
+					phd_mxptr[M20] = lara_matrices[132 + M20];
+					phd_mxptr[M21] = lara_matrices[132 + M21];
+					phd_mxptr[M22] = lara_matrices[132 + M22];
+					phd_mxptr[M23] = lara_matrices[132 + M23];
+					SetGunFlash(lara.gun_type);
+				}
+
+				if (lara.left_arm.flash_gun)
+				{
+					phd_mxptr[M00] = lara_matrices[168 + M00];
+					phd_mxptr[M01] = lara_matrices[168 + M01];
+					phd_mxptr[M02] = lara_matrices[168 + M02];
+					phd_mxptr[M03] = lara_matrices[168 + M03];
+					phd_mxptr[M10] = lara_matrices[168 + M10];
+					phd_mxptr[M11] = lara_matrices[168 + M11];
+					phd_mxptr[M12] = lara_matrices[168 + M12];
+					phd_mxptr[M13] = lara_matrices[168 + M13];
+					phd_mxptr[M20] = lara_matrices[168 + M20];
+					phd_mxptr[M21] = lara_matrices[168 + M21];
+					phd_mxptr[M22] = lara_matrices[168 + M22];
+					phd_mxptr[M23] = lara_matrices[168 + M23];
+					SetGunFlash(lara.gun_type);
+				}
+
+				phd_PopMatrix();
+				DrawGunflashes();
+			}
+
+			if (gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom)
+				Draw_Mirror_Lara();
+		}
+	}
+
+	InitDynamicLighting();
+	nPolyType = 0;
+
+	for (int i = 0; i < 32; i++)
+	{
+		if (dynamics[i].on)
+		{
+			if (dynamics[i].x < 0)
+				dynamics[i].x = 0;
+
+			if (dynamics[i].z < 0)
+				dynamics[i].z = 0;
+		}
+	}
+
+	for (int i = 0; i < number_draw_rooms; i++)
+		S_InsertRoom(draw_rooms[i]);
+
+	if (gfLevelFlags & GF_TRAIN)
+		DrawTrainFloor();
+
+	DrawGunshells();
+	nPolyType = 3;
+
+	if (GLOBAL_playing_cutseq)
+		DrawCutSeqActors();
+
+	DrawRopeList();
+	S_DrawSparks();
+	lx = lara_item->pos.x_pos;
+	ly = lara_item->pos.y_pos;
+	lz = lara_item->pos.z_pos;
+	lr = lara_item->room_number;
+	lara_item->pos.x_pos = camera.pos.x;
+	lara_item->pos.y_pos = camera.pos.y;
+	lara_item->pos.z_pos = camera.pos.z;
+	lara_item->room_number = camera.pos.room_number;
+	DoUwEffect();
+	S_DrawFires();
+	S_DrawSmokeSparks();
+	S_DrawSplashes();
+	DrawBubbles();
+	DrawDebris();
+	DrawBlood();
+	DrawDrips();
+	DrawShockwaves();
+	DrawScarabs();
+	DrawLocusts();
+	DrawLightning();
+	lara_item->pos.x_pos = lx;
+	lara_item->pos.y_pos = ly;
+	lara_item->pos.z_pos = lz;
+	lara_item->room_number = lr;
+
+	if (gfLevelFlags & GF_LENSFLARE)
+		SetUpLensFlare(gfLensFlare.x, gfLensFlare.y - 4096, gfLensFlare.z, 0);
+
+	if (LaserSightActive)
+		DrawLaserSightSprite();
+
+	for (int i = 0; i < number_draw_rooms; i++)
+		PrintObjects(draw_rooms[i]);
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -521,4 +759,5 @@ void inject_draw(bool replace)
 	INJECT(0x00450BB0, CalculateObjectLighting, replace);
 	INJECT(0x00450CB0, CalculateObjectLightingLara, replace);
 	INJECT(0x0044FF60, DrawAnimatingItem, replace);
+	INJECT(0x0044EC10, DrawRooms, replace);
 }

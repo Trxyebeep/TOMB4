@@ -22,3 +22,6 @@ void DrawGunshells();
 #define	SetFadeClip	( (void(__cdecl*)(short, short)) 0x00439D40 )
 #define	SetScreenFadeOut	( (void(__cdecl*)(long, long)) 0x00439DB0 )
 #define	SetScreenFadeIn	( (void(__cdecl*)(long)) 0x00439E00 )
+#define SetGunFlash	( (void(__cdecl*)(short)) 0x00439B80 )
+#define DrawGunflashes	( (void(__cdecl*)()) 0x00439C00 )
+#define S_DrawFires	( (void(__cdecl*)()) 0x00438560 )

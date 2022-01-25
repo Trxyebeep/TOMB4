@@ -18,3 +18,4 @@ void _InsertRoom(ROOM_INFO* r);
 #define phd_PutPolygonsPickup	( (void(__cdecl*)(short*, float, float, long)) 0x0047E8B0 )
 #define S_InitialisePolyList	( (void(__cdecl*)()) 0x0047D5B0 )
 #define S_OutputPolyList	( (void(__cdecl*)()) 0x0047FA10 )
+#define phd_PutPolygonSkyMesh	( (void(__cdecl*)(short*, long)) 0x0047F620 )
