@@ -10,6 +10,9 @@
 #include "polyinsert.h"
 #include "winmain.h"
 #include "output.h"
+#ifdef GENERAL_FIXES
+#include "../tomb4/tomb4.h"
+#endif
 
 void S_DrawHealthBar(long pos)
 {
@@ -194,6 +197,69 @@ void DoBar(long x, long y, long width, long height, long pos, long clr1, long cl
 
 #pragma warning(push)
 #pragma warning(disable : 4244)
+
+#ifdef GENERAL_FIXES
+static void TroyeMenu(long textY, long& menu, ulong& selection)
+{
+	long num;
+	char buffer[80];
+	bool changed;
+
+	num = 1;
+	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
+	PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 1 ? 1 : 2, "FootPrints", 0);
+
+	if (dbinput & IN_FORWARD)
+	{
+		SoundEffect(111, 0, 2);
+		selection >>= 1;
+	}
+
+	if (dbinput & IN_BACK)
+	{
+		SoundEffect(111, 0, 2);
+		selection <<= 1;
+	}
+
+	if (!selection)
+		selection = 1;
+
+	if (selection > (ulong)(1 << (num - 1)))
+		selection = 1 << (num - 1);
+
+	if (dbinput & IN_DESELECT)
+	{
+		SoundEffect(109, 0, 2);
+		menu = 0;
+		dbinput &= ~IN_DESELECT;
+		selection = 0x20;
+		return;
+	}
+
+	strcpy(buffer, tomb4.footprints ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 2 * font_height, selection & 1 ? 1 : 6, buffer, 0);
+
+	changed = 0;
+
+	switch (selection)
+	{
+	case 1 << 0:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(109, 0, 2);
+			tomb4.footprints = !tomb4.footprints;
+			changed = 1;
+		}
+
+		break;
+	}
+
+	if (changed)
+		save_new_tomb4_settings();
+}
+#endif
+
 void DoOptions()
 {
 	JOYINFOEX joy;
@@ -229,6 +295,14 @@ void DoOptions()
 
 	if (menu)	//controls menu
 	{
+#ifdef GENERAL_FIXES	//excuse me let me just 
+		if (menu == 200)
+		{
+			TroyeMenu(textY, menu, selection);
+			return;
+		}
+#endif
+
 		if (Gameflow->Language == 2)
 			keyboard_buttons = GermanKeyboard;
 		else
@@ -522,7 +596,11 @@ void DoOptions()
 	}
 	else	//'main' menu
 	{
+#ifdef GENERAL_FIXES	//1 more option
+		num = 6;
+#else
 		num = 5;
+#endif
 		textY = 3 * font_height;
 		PrintString(phd_centerx, textY, 6, SCRIPT_TEXT(304), FF_CENTER);
 		PrintString(phd_centerx, textY + font_height + (font_height >> 1), selection & 1 ? 1 : 2, SCRIPT_TEXT(337), FF_CENTER);
@@ -557,6 +635,9 @@ void DoOptions()
 
 		PrintString(phd_centerx + (phd_centerx >> 2), textY + 6 * font_height, selection & 0x10 ? 1 : 6, quality_text, 0);
 
+#ifdef GENERAL_FIXES	//yay!
+		PrintString(phd_centerx, (font_height >> 1) + textY + 7 * font_height, selection & 0x20 ? 1 : 2, "tomb4 options", FF_CENTER);
+#endif
 		if (dbinput & IN_FORWARD)
 		{
 			SoundEffect(111, 0, 2);
@@ -574,6 +655,15 @@ void DoOptions()
 			SoundEffect(109, 0, 2);
 			menu = 1;
 		}
+
+#ifdef GENERAL_FIXES
+		if (dbinput & IN_SELECT && selection & 0x20)
+		{
+			SoundEffect(109, 0, 2);
+			selection = 1;
+			menu = 200;
+		}
+#endif
 
 		if (!selection)
 			selection = 1;

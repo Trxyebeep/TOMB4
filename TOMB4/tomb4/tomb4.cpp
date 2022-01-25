@@ -14,11 +14,14 @@ void init_tomb4_stuff()
 
 	if (first)	//key was created = no settings found, write defaults
 	{
-
+		sprintf(buf, "footprints");
+		tomb4.footprints = 1;							//footprints on
+		REG_WriteBool(buf, tomb4.footprints);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
-
+		sprintf(buf, "footprints");
+		REG_ReadBool(buf, tomb4.footprints, 1);
 	}
 
 	CloseRegistry();
@@ -28,7 +31,10 @@ void save_new_tomb4_settings()
 {
 	char buf[40];
 
-	OpenRegistry("tomb5");
+	OpenRegistry("tomb4");
+
+	sprintf(buf, "footprints");
+	REG_WriteBool(buf, tomb4.footprints);
 
 	CloseRegistry();
 }

@@ -69,8 +69,6 @@ void S_DrawFootPrints()
 
 		if (print->Active)
 		{
-			tomb4.footprints = 1;	//remove me
-
 			if (!tomb4.footprints)
 			{
 				print->Active = 0;
