@@ -1494,4 +1494,15 @@ struct DISPLAYPU
 	short life;
 	short object_number;
 };
+
+struct GUNSHELL_STRUCT
+{
+	PHD_3DPOS pos;
+	short fallspeed;
+	short room_number;
+	short speed;
+	short counter;
+	short DirXrot;
+	short object_number;
+};
 #pragma pack(pop)

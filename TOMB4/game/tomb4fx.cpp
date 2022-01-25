@@ -5,6 +5,7 @@
 #include "../specific/3dmath.h"
 #include "items.h"
 #include "objects.h"
+#include "../specific/output.h"
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments)
 {
@@ -206,8 +207,35 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 	return !item->mesh_bits;
 }
 
+void DrawGunshells()
+{
+	GUNSHELL_STRUCT* p;
+	OBJECT_INFO* obj;
+
+	phd_left = 0;
+	phd_right = phd_winwidth;
+	phd_top = 0;
+	phd_bottom = phd_winheight;
+
+	for (int i = 0; i < 24; i++)
+	{
+		p = &Gunshells[i];
+
+		if (p->counter)
+		{
+			obj = &objects[p->object_number];
+			phd_PushMatrix();
+			phd_TranslateAbs(p->pos.x_pos, p->pos.y_pos, p->pos.z_pos);
+			phd_RotYXZ(p->pos.y_rot, p->pos.x_rot, p->pos.z_rot);
+			phd_PutPolygons(meshes[obj->mesh_index], -1);
+			phd_PopMatrix();
+		}
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
 	INJECT(0x0043A690, ExplodingDeath2, replace);
+	INJECT(0x004395B0, DrawGunshells, replace);
 }
