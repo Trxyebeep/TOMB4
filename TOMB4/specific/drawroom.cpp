@@ -561,9 +561,9 @@ void InsertRoom(ROOM_INFO* r)
 			doublesided = (data[4] >> 15) & 1;
 
 			if (!pTex->drawtype)
-				AddQuadZBuffer(v, data[0], data[1], data[2], data[3], pTex, 0);
+				AddQuadZBuffer(v, data[0], data[1], data[2], data[3], pTex, doublesided);
 			else if (pTex->drawtype <= 2)
-				AddQuadSorted(v, data[0], data[1], data[2], data[3], pTex, 0);
+				AddQuadSorted(v, data[0], data[1], data[2], data[3], pTex, doublesided);
 		}
 
 		numTris = *data++;
