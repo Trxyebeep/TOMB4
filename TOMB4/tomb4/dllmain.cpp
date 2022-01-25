@@ -31,6 +31,7 @@
 #include "../game/laraclmb.h"
 #include "../game/health.h"
 #include "../game/rope.h"
+#include "../specific/registry.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -81,6 +82,7 @@ void inject_all(bool replace)
 	inject_laraclmb(replace);
 	inject_health(replace);
 	inject_rope(replace);
+	inject_registry(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

@@ -291,8 +291,11 @@
 #define PickupVel	VAR_U_(0x007FD210, short)
 #define CurrentPickup	VAR_U_(0x007FD212, short)
 #define nRope	VAR_U_(0x004BF6A8, long)
+#define phkResult	VAR_U_(0x00670E3C, HKEY)
+#define dwDisposition	VAR_U_(0x00670E40, DWORD)
 
 
+#define lpClass	ARRAY_(0x004BFE78, CHAR, [4])
 #define SmashedMeshRoom	ARRAY_(0x007FE360, short, [16])
 #define SmashedMesh	ARRAY_(0x007FE7A0, MESH_INFO*, [16])
 #define keymap	ARRAY_(0x007542EC, char, [256])
