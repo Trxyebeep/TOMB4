@@ -2,6 +2,11 @@
 #include "draw.h"
 #include "../specific/3dmath.h"
 #include "../specific/output.h"
+#include "../specific/lighting.h"
+#include "deltapak.h"
+#include "lara_states.h"
+#include "control.h"
+#include "delstuff.h"
 
 void InitInterpolate(long frac, long rate)
 {
@@ -240,6 +245,75 @@ void S_InsertRoom(short room_number)
 	_InsertRoom(r);
 }
 
+void CalculateObjectLighting(ITEM_INFO* item, short* frame)
+{
+	long x, y, z;
+
+	if (item->shade >= 0)
+		S_CalculateStaticMeshLight(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->shade & 0x7FFF, &room[item->room_number]);
+	else
+	{
+		phd_PushUnitMatrix();
+		phd_mxptr[M03] = 0;
+		phd_mxptr[M13] = 0;
+		phd_mxptr[M23] = 0;
+		phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+		phd_TranslateRel((frame[0] + frame[1]) >> 1, (frame[2] + frame[3]) >> 1, (frame[4] + frame[5]) >> 1);
+		x = item->pos.x_pos + (phd_mxptr[M03] >> 14);
+		y = item->pos.y_pos + (phd_mxptr[M13] >> 14);
+		z = item->pos.z_pos + (phd_mxptr[M23] >> 14);
+		phd_PopMatrix();
+		current_item = item;
+		item->il.item_pos.x = x;
+		item->il.item_pos.y = y;
+		item->il.item_pos.z = z;
+		CalcAmbientLight(item);
+		CreateLightList(item);
+	}
+}
+
+void CalculateObjectLightingLara()
+{
+	PHD_VECTOR pos;
+	short room_no;
+
+	if (GLOBAL_playing_cutseq)
+		CalculateObjectLightingLaraCutSeq();
+	else
+	{
+		pos.x = 0;
+		pos.y = 0;
+		pos.z = 0;
+
+		if (lara_item->anim_number == ANIM_DUCKBREATHE || lara_item->anim_number == ANIM_ALL4S || lara_item->anim_number == ANIM_BREATH)
+		{
+			pos.x = lara_item->pos.x_pos;
+
+			if (lara_item->anim_number == ANIM_BREATH)
+				pos.y = lara_item->pos.y_pos - 512;
+			else
+				pos.y = lara_item->pos.y_pos - 192;
+
+			pos.z = lara_item->pos.z_pos;
+			room_no = lara_item->room_number;
+			GetFloor(pos.x, pos.y, pos.z, &room_no);
+		}
+		else
+		{
+			GetLaraJointPos(&pos, 7);
+			room_no = lara_item->room_number;
+			GetFloor(pos.x, pos.y, pos.z, &room_no);
+		}
+
+		current_item = lara_item;
+		lara_item->il.item_pos.x = pos.x;
+		lara_item->il.item_pos.y = pos.y;
+		lara_item->il.item_pos.z = pos.z;
+		CalcAmbientLight(lara_item);
+		CreateLightList(lara_item);
+	}
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -257,4 +331,6 @@ void inject_draw(bool replace)
 	INJECT(0x00450840, InterpolateMatrix, replace);
 	INJECT(0x00450AB0, InterpolateArmMatrix, replace);
 	INJECT(0x0044F2D0, S_InsertRoom, replace);
+	INJECT(0x00450BB0, CalculateObjectLighting, replace);
+	INJECT(0x00450CB0, CalculateObjectLightingLara, replace);
 }

@@ -18,9 +18,9 @@ void phd_PutPolygons_I(short* ptr, long clip);
 void InterpolateMatrix();
 void InterpolateArmMatrix(long* mx);
 void S_InsertRoom(short room_number);
+void CalculateObjectLighting(ITEM_INFO* item, short* frame);
+void CalculateObjectLightingLara();
 
 #define GetFrames	( (long(__cdecl*)(ITEM_INFO*, short*[], long*)) 0x00450DC0 )
 #define GetBestFrame	( (short*(__cdecl*)(ITEM_INFO*)) 0x00450EE0 )
 #define GetBoundsAccurate	( (short*(__cdecl*)(ITEM_INFO*)) 0x00450E60 )
-#define CalculateObjectLighting	( (void(__cdecl*)(ITEM_INFO*, short*)) 0x00450BB0 )
-#define CalculateObjectLightingLara	( (void(__cdecl*)()) 0x00450CB0 )
