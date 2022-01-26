@@ -315,6 +315,9 @@
 #define f_b	VAR_U_(0x00753C38, float)
 #define f_boo	VAR_U_(0x00753C8C, float)
 #define phd_persp	VAR_U_(0x00753C74, long)
+#define Textures	VAR_U_(0x007538F4, TEXTURE*)
+#define nTextures	VAR_U_(0x007538F0, long)
+#define DrawPrimitiveCnt	VAR_U_(0x00753BD4, long)
 
 
 

@@ -1,6 +1,10 @@
 #pragma once
 #include "../global/vars.h"
 
+void inject_polyinsert(bool replace);
+
+void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, short type);
+
 #define CalcColorSplit	( (void(__cdecl*)(D3DCOLOR, D3DCOLOR*)) 0x00484A20 )
 #define InitialiseSortList	( (void(__cdecl*)()) 0x00481860 )
 #define SortPolyList	( (void(__cdecl*)(long, SORTLIST**)) 0x00481810 )

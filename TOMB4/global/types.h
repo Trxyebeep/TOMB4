@@ -1524,6 +1524,33 @@ struct BITE_INFO
 	long mesh_num;
 };
 
+struct D3DTLBUMPVERTEX
+{
+	D3DVALUE sx;
+	D3DVALUE sy;
+	D3DVALUE sz;
+	D3DVALUE rhw;
+	D3DCOLOR color;
+	D3DCOLOR specular;
+	D3DVALUE tu;
+	D3DVALUE tv;
+	D3DVALUE tx;
+	D3DVALUE ty;
+};
+
+struct TEXTURE
+{
+	IDirect3DTexture2* tex;
+	LPDIRECTDRAWSURFACE4 surface;
+	ulong xoff;
+	ulong yoff;
+	ulong width;
+	ulong height;
+	long tpage;
+	bool bump;
+	long bumptpage;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {
