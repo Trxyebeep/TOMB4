@@ -51,6 +51,16 @@ enum font_flags
 	FF_CENTER = 0x8000
 };
 
+enum room_flags
+{
+	ROOM_UNDERWATER = 0x1,
+	ROOM_OUTSIDE = 0x8,
+	ROOM_DYNAMIC_LIT = 0x10,
+	ROOM_NOT_INSIDE = 0x20,
+	ROOM_INSIDE = 0x40,
+	ROOM_NO_LENSFLARE = 0x80
+};
+
 enum quadrant_names
 {
 	NORTH,

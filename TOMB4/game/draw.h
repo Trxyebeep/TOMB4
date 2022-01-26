@@ -22,6 +22,7 @@ void CalculateObjectLighting(ITEM_INFO* item, short* frame);
 void CalculateObjectLightingLara();
 void DrawAnimatingItem(ITEM_INFO* item);
 void DrawRooms(short CurrentRoom);
+void RenderIt(short CurrentRoom);
 
 #define GetFrames	( (long(__cdecl*)(ITEM_INFO*, short*[], long*)) 0x00450DC0 )
 #define GetBestFrame	( (short*(__cdecl*)(ITEM_INFO*)) 0x00450EE0 )

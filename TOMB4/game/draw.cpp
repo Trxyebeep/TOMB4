@@ -745,6 +745,102 @@ void DrawRooms(short CurrentRoom)
 		PrintObjects(draw_rooms[i]);
 }
 
+void RenderIt(short CurrentRoom)
+{
+	ROOM_INFO* r;
+
+	current_room = CurrentRoom;
+	r = &room[CurrentRoom];
+	r->test_left = 0;
+	r->test_top = 0;
+	phd_left = 0;
+	phd_top = 0;
+	phd_right = phd_winxmax;
+	phd_bottom = phd_winymax;
+	r->test_right = (short)phd_winxmax;
+	r->test_bottom = (short)phd_winymax;
+	outside = r->flags & ROOM_OUTSIDE;
+	camera_underwater = r->flags & ROOM_UNDERWATER;
+	r->bound_active = 2;
+	draw_room_list[0] = CurrentRoom;
+	room_list_start = 0;
+	room_list_end = 1;
+	number_draw_rooms = 0;
+
+	if (outside)
+	{
+		outside_top = 0;
+		outside_left = 0;
+		outside_right = phd_winxmax;
+		outside_bottom = phd_winymax;
+	}
+	else
+	{
+		outside_left = phd_winxmax;
+		outside_top = phd_winymax;
+		outside_bottom = 0;
+		outside_right = 0;
+	}
+
+	GetRoomBounds();
+	InitialiseFogBulbs();
+	CreateFXBulbs();
+
+	if (outside)
+	{
+		if (!objects[HORIZON].loaded)
+			outside = -1;
+		else
+		{
+			if (BinocularRange)
+				AlterFOV(14560 - (short)BinocularRange);
+
+			phd_PushMatrix();
+			phd_TranslateAbs(camera.pos.x, camera.pos.y, camera.pos.z);
+			nPolyType = 6;
+			phd_PushMatrix();
+
+			if (gfLevelFlags & GF_LAYER1)
+			{
+				phd_RotY(32760);
+
+				if (gfLevelFlags & GF_LIGHTNING)
+					DrawFlatSky(RGBA(LightningRGB[0], LightningRGB[1], LightningRGB[2], 44), SkyPos, -1536, 4);
+				else
+					DrawFlatSky(*(ulong*)&gfLayer1Col, SkyPos, -1536, 4);
+			}
+
+			if (gfLevelFlags & GF_LAYER2)
+				DrawFlatSky(0xFF000000 | *(ulong*)&gfLayer2Col, SkyPos2, -1536, 2);
+
+			if (gfLevelFlags & GF_LAYER1 || gfLevelFlags & GF_LAYER2)
+				OutputSky();
+
+			phd_PopMatrix();
+
+			if (gfLevelFlags & GF_HORIZON)
+			{
+				phd_PutPolygonSkyMesh(meshes[objects[HORIZON].mesh_index], -1);
+				OutputSky();
+			}
+
+			phd_PopMatrix();
+		}
+	}
+
+	InitDynamicLighting();
+	nPolyType = 0;
+
+	for (int i = 0; i < number_draw_rooms; i++)
+		S_InsertRoom(draw_rooms[i]);
+
+	if (gfLevelFlags & GF_TRAIN)
+		DrawTrainFloor();
+
+	for (int i = 0; i < number_draw_rooms; i++)
+		PrintObjects(draw_rooms[i]);
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -766,4 +862,5 @@ void inject_draw(bool replace)
 	INJECT(0x00450CB0, CalculateObjectLightingLara, replace);
 	INJECT(0x0044FF60, DrawAnimatingItem, replace);
 	INJECT(0x0044EC10, DrawRooms, replace);
+	INJECT(0x00451240, RenderIt, replace);
 }
