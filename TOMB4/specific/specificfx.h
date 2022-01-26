@@ -24,3 +24,4 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item);
 #define DrawDrips	( (void(__cdecl*)()) 0x0048A430 )
 #define DrawShockwaves	( (void(__cdecl*)()) 0x0048CAA0 )
 #define DrawLightning	( (void(__cdecl*)()) 0x0048D9B0 )
+#define SetFade	( (void(__cdecl*)(long, long)) 0x0048C240 )

@@ -165,7 +165,7 @@
 #define gfLensFlareColour	VAR_U_(0x007FD2B4, CVECTOR)
 #define load_cam	VAR_U_(0x00533AA8, PHD_VECTOR)
 #define load_target	VAR_U_(0x00533AB4, PHD_VECTOR)
-#define load_roomnum	VAR_U_(0x004B27A5, char)
+#define load_roomnum	VAR_U_(0x004B27A5, uchar)
 #define phd_top	VAR_U_(0x00753C30, long)
 #define phd_left	VAR_U_(0x00753C78, long)
 #define phd_bottom	VAR_U_(0x00753C70, long)
@@ -307,6 +307,8 @@
 #define SkyPos	VAR_U_(0x007FE128, short)
 #define SkyPos2	VAR_U_(0x007FDF5E, short)
 #define LaserSightActive	VAR_U_(0x004BF37E, char)
+#define GlobalFogOff	VAR_U_(0x004BF370, long)
+#define DoFade	VAR_U_(0x00672E60, long)
 
 
 
