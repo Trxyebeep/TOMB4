@@ -526,8 +526,8 @@ void DrawRooms(short CurrentRoom)
 	phd_top = 0;
 	phd_right = phd_winxmax;
 	phd_bottom = phd_winymax;
-	r->test_right = (short)phd_winxmax;
-	r->test_bottom = (short)phd_winymax;
+	r->test_right = phd_winxmax;
+	r->test_bottom = phd_winymax;
 	outside = r->flags & 8;
 	camera_underwater = r->flags & 1;
 	r->bound_active = 2;
@@ -757,8 +757,8 @@ void RenderIt(short CurrentRoom)
 	phd_top = 0;
 	phd_right = phd_winxmax;
 	phd_bottom = phd_winymax;
-	r->test_right = (short)phd_winxmax;
-	r->test_bottom = (short)phd_winymax;
+	r->test_right = phd_winxmax;
+	r->test_bottom = phd_winymax;
 	outside = r->flags & ROOM_OUTSIDE;
 	camera_underwater = r->flags & ROOM_UNDERWATER;
 	r->bound_active = 2;

@@ -170,8 +170,10 @@
 #define phd_left	VAR_U_(0x00753C78, long)
 #define phd_bottom	VAR_U_(0x00753C70, long)
 #define phd_right	VAR_U_(0x007540D0, long)
-#define phd_winymax	VAR_U_(0x00753CA8, long)
-#define phd_winxmax	VAR_U_(0x00753C84, long)
+#define phd_winymax	VAR_U_(0x00753CA8, short)
+#define phd_winxmax	VAR_U_(0x00753C84, short)
+#define phd_winymin	VAR_U_(0x00753C54, short)
+#define phd_winxmin	VAR_U_(0x00753C9C, short)
 #define GLaraShadowframe	VAR_U_(0x0080E710, short*)
 #define CamPos	VAR_U_(0x007E71B0, PHD_VECTOR)
 #define in_joints	VAR_U_(0x0080E500, long)
@@ -309,6 +311,10 @@
 #define LaserSightActive	VAR_U_(0x004BF37E, char)
 #define GlobalFogOff	VAR_U_(0x004BF370, long)
 #define DoFade	VAR_U_(0x00672E60, long)
+#define f_a	VAR_U_(0x00753C34, float)
+#define f_b	VAR_U_(0x00753C38, float)
+#define f_boo	VAR_U_(0x00753C8C, float)
+#define phd_persp	VAR_U_(0x00753C74, long)
 
 
 

@@ -5,10 +5,13 @@ void inject_specificfx(bool replace);
 
 void DrawTrainStrips();
 void S_PrintShadow(short size, short* box, ITEM_INFO* item);
+void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr);
+
+#define setXY4	( (void(__cdecl*)(D3DTLVERTEX*, long, long, long, long, long, long, long, long, long, short*)) 0x00485600 )
+#define setXYZ3	( (void(__cdecl*)(D3DTLVERTEX*, long, long, long, long, long, long, long, long, long, short*)) 0x00485D90 )
 
 #define DrawBikeSpeedo	( (void(__cdecl*)(long, long, long, long, long, long, long)) 0x0048C6C0 )
 #define DrawTrainFloorStrip	( (void(__cdecl*)(long, long, TEXTURESTRUCT*, long)) 0x0048B480 )
-#define setXYZ3	( (void(__cdecl*)(D3DTLVERTEX*, long, long, long, long, long, long, long, long, long, short*)) 0x00485D90 )
 #define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )
 #define DrawFlatSky	( (void(__cdecl*)(ulong, long, long, long)) 0x00488950 )
 #define OutputSky	( (void(__cdecl*)()) 0x00489480 )
@@ -25,3 +28,4 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item);
 #define DrawShockwaves	( (void(__cdecl*)()) 0x0048CAA0 )
 #define DrawLightning	( (void(__cdecl*)()) 0x0048D9B0 )
 #define SetFade	( (void(__cdecl*)(long, long)) 0x0048C240 )
+#define ClipLine	( (long(__cdecl*)(long&, long&, long, long&, long&, long, long, long, long, long)) 0x00488690 )

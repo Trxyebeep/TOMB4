@@ -189,8 +189,177 @@ void DrawTrainStrips()
 	DrawTrainFloorStrip(-20480, 0, &textinfo[aranges[2]], 0);
 }
 
+void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr)
+{
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	long x1, y1, z1, x2, y2, z2, x3, y3, x4, y4;
+	long cR, cG, cB, c1, c2, s1, s2, s1h, s2h, scale;
+	long sin, cos, sx1, sx2, sy1, sy2, cx1, cx2, cy1, cy2;
+
+	if (sptr->Flags & 8)
+	{
+		z1 = zptr[0];
+		
+		if (z1 <= 0)
+			return;
+
+		if (z1 >= 0x5000)
+		{
+			sptr->On = 0;
+			return;
+		}
+
+		if (sptr->Flags & 2)
+		{
+			scale = sptr->Size << sptr->Scalar;
+			s1 = ((phd_persp * sptr->Size) << sptr->Scalar) / z1;
+			s2 = ((phd_persp * sptr->Size) << sptr->Scalar) / z1;
+
+			if (s1 > scale)
+				s1 = scale;
+			else if (s1 < smallest_size)
+				s1 = smallest_size;
+
+			if (s2 > scale)
+				s2 = scale;
+			else if (s2 < smallest_size)
+				s2 = smallest_size;
+		}
+		else
+		{
+			s1 = sptr->Size;
+			s2 = sptr->Size;
+		}
+
+		x1 = xyptr[0];
+		y1 = xyptr[1];
+		s1h = s1 >> 1;
+		s2h = s2 >> 1;
+
+		if (x1 + s1h >= phd_winxmin && x1 - s1h < phd_winxmax && y1 + s2h >= phd_winymin && y1 - s2h < phd_winymax)
+		{
+			if (sptr->Flags & 0x10)
+			{
+				sin = rcossin_tbl[sptr->RotAng << 1];
+				cos = rcossin_tbl[(sptr->RotAng << 1) + 1];
+				sx1 = (-s1h * sin) >> 12;
+				sx2 = (s1h * sin) >> 12;
+				sy1 = (-s2h * sin) >> 12;
+				sy2 = (s2h * sin) >> 12;
+				cx1 = (-s1h * cos) >> 12;
+				cx2 = (s1h * cos) >> 12;
+				cy1 = (-s2h * cos) >> 12;
+				cy2 = (s2h * cos) >> 12;
+				x1 = sx1 - cy1 + xyptr[0];
+				x2 = sx2 - cy1 + xyptr[0];
+				x3 = sx2 - cy2 + xyptr[0];
+				x4 = sx1 - cy2 + xyptr[0];
+				y1 = cx1 + sy1 + xyptr[1];
+				y2 = cx2 + sy1 + xyptr[1];
+				y3 = cx2 + sy2 + xyptr[1];
+				y4 = cx1 + sy2 + xyptr[1];
+				setXY4(v, x1, y1, x2, y2, x3, y3, x4, y4, z1, clipflags);
+			}
+			else
+			{
+				x1 = xyptr[0] - s1h;
+				x2 = xyptr[0] + s1h;
+				y1 = xyptr[1] - s2h;
+				y2 = xyptr[1] + s2h;
+				setXY4(v, x1, y1, x2, y1, x2, y2, x1, y2, z1, clipflags);
+			}
+
+			sprite = &spriteinfo[sptr->Def];
+
+			if (z1 <= 0x3000)
+			{
+				cR = sptr->R;
+				cG = sptr->G;
+				cB = sptr->B;
+			}
+			else
+			{
+				cR = ((0x5000 - z1) * sptr->R) >> 13;
+				cG = ((0x5000 - z1) * sptr->G) >> 13;
+				cB = ((0x5000 - z1) * sptr->B) >> 13;
+			}
+
+			c1 = RGBA(cR, cG, cB, 0xFF);
+			v[0].color = c1;
+			v[1].color = c1;
+			v[2].color = c1;
+			v[3].color = c1;
+			v[0].specular = 0xFF000000;
+			v[1].specular = 0xFF000000;
+			v[2].specular = 0xFF000000;
+			v[3].specular = 0xFF000000;
+
+			if (sptr->TransType)
+				tex.drawtype = 2;
+			else
+				tex.drawtype = 1;
+
+			tex.tpage = sprite->tpage;
+			tex.u1 = sprite->x1;
+			tex.v1 = sprite->y1;
+			tex.u2 = sprite->x2;
+			tex.v2 = sprite->y1;
+			tex.u3 = sprite->x2;
+			tex.v3 = sprite->y2;
+			tex.u4 = sprite->x1;
+			tex.v4 = sprite->y2;
+			AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+		}
+	}
+	else
+	{
+		x1 = xyptr[0];
+		y1 = xyptr[1];
+		x2 = xyptr[2];
+		y2 = xyptr[3];
+		z1 = zptr[0];
+		z2 = zptr[1];
+
+		if (z1 <= 0x3000)
+		{
+			cR = sptr->R;
+			cG = sptr->G;
+			cB = sptr->B;
+		}
+		else
+		{
+			cR = ((0x5000 - z1) * sptr->R) >> 13;
+			cG = ((0x5000 - z1) * sptr->G) >> 13;
+			cB = ((0x5000 - z1) * sptr->B) >> 13;
+		}
+
+		c1 = RGBA(cR, cG, cB, 0xFF);
+		c2 = RGBA(cR >> 1, cG >> 1, cB >> 1, 0xFF);
+		
+		if (ClipLine(x1, y1, z1, x2, y2, z2, phd_winxmin, phd_winymin, phd_winxmax, phd_winymax))
+		{
+			v[0].sx = (float)x1;
+			v[0].sy = (float)y1;
+			v[0].rhw = f_mpersp / z1 * f_moneopersp;
+			v[0].sz = f_a - v[0].rhw * f_boo;
+			v[0].color = c1;
+			v[0].specular = 0xFF000000;
+			v[1].sx = (float)x2;
+			v[1].sy = (float)y2;
+			v[1].rhw = f_mpersp / z1 * f_moneopersp;
+			v[1].sz = f_a - v[1].rhw * f_boo;
+			v[1].color = c2;
+			v[1].specular = 0xFF000000;
+			AddLineSorted(v, &v[1], 6);
+		}
+	}
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
 	INJECT(0x004876C0, S_PrintShadow, replace);
+	INJECT(0x00488140, S_DrawDrawSparks, replace);
 }
