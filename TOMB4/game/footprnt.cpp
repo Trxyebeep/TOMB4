@@ -51,18 +51,35 @@ void AddFootPrint(ITEM_INFO* item)
 }
 
 #ifdef FOOTPRINTS
-void S_DrawFootPrints()
+static void ProjectTriPoints(FOOTPRINT* print, PHD_VECTOR* pos, long& x, long& y, long& z)
 {
 	FLOOR_INFO* floor;
+	long height, cy;
+	short room_number;
+
+	room_number = lara_item->room_number;
+	floor = GetFloor(print->x + pos->x, print->y, print->z + pos->z, &room_number);
+	height = GetHeight(floor, print->x + pos->x, print->y, print->z + pos->z);
+	cy = height > print->y ? print->y - height : height - print->y;
+
+	if (ABS(cy) < 128)
+		pos->y = cy;
+
+	x = (phd_mxptr[M00] * pos->x + phd_mxptr[M01] * pos->y + phd_mxptr[M02] * pos->z + phd_mxptr[M03]) >> 14;
+	y = (phd_mxptr[M10] * pos->x + phd_mxptr[M11] * pos->y + phd_mxptr[M12] * pos->z + phd_mxptr[M13]) >> 14;
+	z = (phd_mxptr[M20] * pos->x + phd_mxptr[M21] * pos->y + phd_mxptr[M22] * pos->z + phd_mxptr[M23]) >> 14;
+}
+
+void S_DrawFootPrints()
+{
 	FOOTPRINT* print;
 	SPRITESTRUCT* sprite;
 	D3DTLVERTEX v[3];
 	PHD_VECTOR pos;
 	TEXTURESTRUCT tex;
 	float u1, v1, u2, v2;
-	long x1, y1, z1, x2, y2, z2, x3, y3, z3, a, height;
-	short room_number;
-
+	long x1, y1, z1, x2, y2, z2, x3, y3, z3, a;
+	
 	for (int i = 0; i < 32; i++)
 	{
 		print = &FootPrint[i];
@@ -84,41 +101,17 @@ void S_DrawFootPrints()
 			pos.x = 0;
 			pos.y = 0;
 			pos.z = -64;
-
-			room_number = lara_item->room_number;
-			floor = GetFloor(print->x + pos.x, print->y, print->z + pos.z, &room_number);
-			height = GetHeight(floor, print->x + pos.x, print->y, print->z + pos.z);
-			pos.y = height > print->y ? print->y - height : height - print->y;
-
-			x1 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
-			y1 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
-			z1 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+			ProjectTriPoints(print, &pos, x1, y1, z1);
 
 			pos.x = -128;
 			pos.y = 0;
 			pos.z = 64;
-
-			room_number = lara_item->room_number;
-			floor = GetFloor(print->x + pos.x, print->y, print->z + pos.z, &room_number);
-			height = GetHeight(floor, print->x + pos.x, print->y, print->z + pos.z);
-			pos.y = height > print->y ? print->y - height : height - print->y;
-
-			x2 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
-			y2 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
-			z2 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+			ProjectTriPoints(print, &pos, x2, y2, z2);
 
 			pos.x = 128;
 			pos.y = 0;
 			pos.z = 64;
-
-			room_number = lara_item->room_number;
-			floor = GetFloor(print->x + pos.x, print->y, print->z + pos.z, &room_number);
-			height = GetHeight(floor, print->x + pos.x, print->y, print->z + pos.z);
-			pos.y = height > print->y ? print->y - height : height - print->y;
-
-			x3 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
-			y3 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
-			z3 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+			ProjectTriPoints(print, &pos, x3, y3, z3);
 
 			phd_PopMatrix();
 			setXYZ3(v, x1, y1, z1, x2, y2, z2, x3, y3, z3, clipflags);
