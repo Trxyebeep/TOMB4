@@ -5,6 +5,12 @@
 #include "../game/control.h"
 #include "function_table.h"
 
+#ifdef SMOOTH_SHADOWS
+#include "../tomb4/tomb4.h"
+
+#define CIRCUMFERENCE_POINTS 32 // Number of points in the circumference
+#endif
+
 #define LINE_POINTS	4	//number of points in each grid line
 #define POINT_HEIGHT_CORRECTION	196	//if the difference between the floor below Lara and the floor height below the point is greater than this value, point height is corrected to lara's floor level.
 #define NUM_TRIS	14	//number of triangles needed to create the shadow (this depends on what shape you're doing)
@@ -30,6 +36,158 @@ long ShadowTable[NUM_TRIS * 3] =	//num of triangles * 3 points
 14, 10, 11
 };
 
+#ifdef SMOOTH_SHADOWS
+static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
+{
+	TEXTURESTRUCT Tex;
+	D3DTLVERTEX v[3];
+	PHD_VECTOR pos;
+	PHD_VECTOR cv[CIRCUMFERENCE_POINTS];
+	PHD_VECTOR cp[CIRCUMFERENCE_POINTS];
+	PHD_VECTOR ccv;
+	PHD_VECTOR ccp;
+	long fx, fy, fz, x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, xSize, zSize, xDist, zDist;
+	short room_number;
+
+	xSize = size * (box[1] - box[0]) / 192;	//x size of grid
+	zSize = size * (box[5] - box[4]) / 192;	//z size of grid
+	xDist = xSize / LINE_POINTS;			//distance between each point of the grid on X
+	zDist = zSize / LINE_POINTS;			//distance between each point of the grid on Z
+	x = xDist + (xDist >> 1);
+	z = zDist + (zDist >> 1);
+
+	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++)
+	{
+		cp[i].x = x * phd_sin(65536 * i / CIRCUMFERENCE_POINTS) >> 14;
+		cp[i].z = z * phd_cos(65536 * i / CIRCUMFERENCE_POINTS) >> 14;
+		cv[i].x = cp[i].x;
+		cv[i].z = cp[i].z;
+	}
+
+	phd_PushUnitMatrix();
+
+	if (item == lara_item)	//position the grid
+	{
+		pos.x = 0;
+		pos.y = 0;
+		pos.z = 0;
+		GetLaraJointPos(&pos, LM_TORSO);
+		room_number = lara_item->room_number;
+		y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
+
+		if (y == NO_HEIGHT)
+			y = item->floor;
+	}
+	else
+	{
+		pos.x = item->pos.x_pos;
+		y = item->floor;
+		pos.z = item->pos.z_pos;
+	}
+
+	y -= 16;
+	phd_TranslateRel(pos.x, y, pos.z);
+	phd_RotY(item->pos.y_rot);	//rot the grid to correct Y
+
+	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++)
+	{
+		x = cp[i].x;
+		z = cp[i].z;
+		cp[i].x = (x * phd_mxptr[M00] + z * phd_mxptr[M02] + phd_mxptr[M03]) >> 14;
+		cp[i].z = (x * phd_mxptr[M20] + z * phd_mxptr[M22] + phd_mxptr[M23]) >> 14;
+	}
+
+	ccp.x = phd_mxptr[M03] >> 14;
+	ccp.z = phd_mxptr[M23] >> 14;
+	phd_PopMatrix();
+
+	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++)
+	{
+		room_number = item->room_number;
+		cp[i].y = GetHeight(GetFloor(cp[i].x, item->floor, cp[i].z, &room_number), cp[i].x, item->floor, cp[i].z);
+
+		if (ABS(cp[i].y - item->floor) > POINT_HEIGHT_CORRECTION)
+			cp[i].y = item->floor;
+	}
+
+	room_number = item->room_number;
+	ccp.y = GetHeight(GetFloor(ccp.x, item->floor, ccp.z, &room_number), ccp.x, item->floor, ccp.z);
+
+	if (ABS(ccp.y - item->floor) > POINT_HEIGHT_CORRECTION)
+		ccp.y = item->floor;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(pos.x, y, pos.z);
+	phd_RotY(item->pos.y_rot);
+
+	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++)
+	{
+		fx = cv[i].x;
+		fy = (cp[i].y - item->floor);
+		fz = cv[i].z;
+		cv[i].x = (phd_mxptr[M00] * fx + phd_mxptr[M01] * fy + phd_mxptr[M02] * fz + phd_mxptr[M03]) >> 14;
+		cv[i].y = (phd_mxptr[M10] * fx + phd_mxptr[M11] * fy + phd_mxptr[M12] * fz + phd_mxptr[M13]) >> 14;
+		cv[i].z = (phd_mxptr[M20] * fx + phd_mxptr[M21] * fy + phd_mxptr[M22] * fz + phd_mxptr[M23]) >> 14;
+	}
+
+	fy = (ccp.y - item->floor);
+	ccv.x = (phd_mxptr[M01] * fy + phd_mxptr[M03]) >> 14;
+	ccv.y = (phd_mxptr[M11] * fy + phd_mxptr[M13]) >> 14;
+	ccv.z = (phd_mxptr[M21] * fy + phd_mxptr[M23]) >> 14;
+	phd_PopMatrix();
+
+	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++) // Draw the pizza
+	{
+		x1 = (long)cv[i].x;
+		y1 = (long)cv[i].y;
+		z1 = (long)cv[i].z;
+		x2 = (long)cv[(i + 1) % CIRCUMFERENCE_POINTS].x;
+		y2 = (long)cv[(i + 1) % CIRCUMFERENCE_POINTS].y;
+		z2 = (long)cv[(i + 1) % CIRCUMFERENCE_POINTS].z;
+		x3 = (long)ccv.x;
+		y3 = (long)ccv.y;
+		z3 = (long)ccv.z;
+		setXYZ3(v, x1, y1, z1, x2, y2, z2, x3, y3, z3, clipflags);
+
+		if (tomb4.shadow_mode == 3)	//psx like?
+		{
+			v[0].color = 0x00000000;
+			v[1].color = 0x00000000;
+			v[2].color = 0xFF000000;
+		}
+		else
+		{
+			v[0].color = 0x4F000000;
+			v[1].color = 0x4F000000;
+			v[2].color = 0x4F000000;
+		}
+
+		if (item->after_death)
+		{
+			v[0].color = 0x80000000 - (item->after_death << 24);
+			v[1].color = v[0].color;
+			v[2].color = v[0].color;
+		}
+
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		Tex.flag = 0;
+		Tex.tpage = 0;
+		Tex.drawtype = 3;
+		Tex.u1 = 0;
+		Tex.v1 = 0;
+		Tex.u2 = 0;
+		Tex.v2 = 0;
+		Tex.u3 = 0;
+		Tex.v3 = 0;
+		Tex.u4 = 0;
+		Tex.v4 = 0;
+		AddTriSorted(v, 0, 1, 2, &Tex, 1);
+	}
+}
+#endif
+
 void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 {
 	TEXTURESTRUCT Tex;
@@ -44,6 +202,14 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 	long triA, triB, triC;
 	long x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, xSize, zSize, xDist, zDist;
 	short room_number;
+
+#ifdef SMOOTH_SHADOWS
+	if (tomb4.shadow_mode != 1)
+	{
+		S_PrintCircleShadow(size, box, item);
+		return;
+	}
+#endif
 
 	xSize = size * (box[1] - box[0]) / 192;	//x size of grid
 	zSize = size * (box[5] - box[4]) / 192;	//z size of grid

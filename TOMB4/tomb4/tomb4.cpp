@@ -17,11 +17,18 @@ void init_tomb4_stuff()
 		sprintf(buf, "footprints");
 		tomb4.footprints = 1;							//footprints on
 		REG_WriteBool(buf, tomb4.footprints);
+
+		sprintf(buf, "shadow");
+		tomb4.shadow_mode = 3;							//PSX like shadow
+		REG_WriteLong(buf, tomb4.shadow_mode);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
 		sprintf(buf, "footprints");
 		REG_ReadBool(buf, tomb4.footprints, 1);
+
+		sprintf(buf, "shadow");
+		REG_ReadLong(buf, tomb4.shadow_mode, 3);
 	}
 
 	CloseRegistry();
@@ -35,6 +42,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "footprints");
 	REG_WriteBool(buf, tomb4.footprints);
+
+	sprintf(buf, "shadow");
+	REG_WriteLong(buf, tomb4.shadow_mode);
 
 	CloseRegistry();
 }
