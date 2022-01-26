@@ -786,7 +786,7 @@ void lara_col_crawl(ITEM_INFO* item, COLL_INFO* coll)
 	coll->slopes_are_pits = 1;
 	coll->slopes_are_walls = 1;
 	coll->facing = lara.move_angle;
-	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, -400);
+	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
 
 	if (LaraDeflectEdgeDuck(item, coll))
 	{
