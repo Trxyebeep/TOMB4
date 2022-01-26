@@ -586,7 +586,7 @@ void DrawRooms(short CurrentRoom)
 						LightningSFXDelay--;
 
 					if (!LightningSFXDelay)
-						SoundEffect(182, 0, 0);
+						SoundEffect(SFX_THUNDER_RUMBLE, 0, SFX_DEFAULT);
 				}
 			}
 

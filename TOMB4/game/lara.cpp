@@ -2950,7 +2950,7 @@ void lara_as_death(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_col_death(ITEM_INFO* item, COLL_INFO* coll)
 {
-	StopSoundEffect(30);
+	StopSoundEffect(SFX_LARA_FALL);
 	lara.move_angle = item->pos.y_rot;
 	coll->bad_pos = 384;
 	coll->bad_neg = -384;
@@ -2970,7 +2970,7 @@ void lara_as_fastfall(ITEM_INFO* item, COLL_INFO* coll)
 	item->speed = 95 * item->speed / 100;
 
 	if (item->fallspeed == 154)
-		SoundEffect(30, &item->pos, 0);
+		SoundEffect(SFX_LARA_FALL, &item->pos, SFX_DEFAULT);
 }
 
 void lara_col_fastfall(ITEM_INFO* item, COLL_INFO* coll)
@@ -2994,7 +2994,7 @@ void lara_col_fastfall(ITEM_INFO* item, COLL_INFO* coll)
 			item->frame_number = anims[ANIM_LANDFAR].frame_base;
 		}
 
-		StopSoundEffect(30);
+		StopSoundEffect(SFX_LARA_FALL);
 		item->fallspeed = 0;
 		item->gravity_status = 0;
 
@@ -3017,7 +3017,7 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 	}
 
 	if (item->anim_number != 226 && item->anim_number != 228)
-		StopSoundEffect(3);
+		StopSoundEffect(SFX_LARA_SLIPPING);
 
 	if (UseInventoryItems(item))
 		return;
@@ -3678,7 +3678,7 @@ void lara_col_poledown(ITEM_INFO* item, COLL_INFO* coll)
 	else
 		item->item_flags[2] += 256;
 
-	SoundEffect(340, &item->pos, 0);
+	SoundEffect(SFX_LARA_POLE_LOOP, &item->pos, SFX_DEFAULT);
 
 	if (item->item_flags[2] <= 16384)
 	{

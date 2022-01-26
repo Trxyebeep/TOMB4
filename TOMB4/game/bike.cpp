@@ -360,8 +360,8 @@ void BikeExplode(ITEM_INFO* item)
 	ExplodingDeath2(lara.vehicle, -2, 256);
 	KillItem(lara.vehicle);
 	item->status = ITEM_DEACTIVATED;
-	SoundEffect(105, 0, 0);
-	SoundEffect(106, 0, 0);
+	SoundEffect(SFX_EXPLOSION1, 0, SFX_DEFAULT);
+	SoundEffect(SFX_EXPLOSION1, 0, SFX_DEFAULT);
 	lara.vehicle = NO_ITEM;
 }
 

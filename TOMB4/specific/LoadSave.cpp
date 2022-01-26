@@ -211,13 +211,13 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 
 	if (dbinput & IN_FORWARD)
 	{
-		SoundEffect(111, 0, 2);
+		SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
 		selection >>= 1;
 	}
 
 	if (dbinput & IN_BACK)
 	{
-		SoundEffect(111, 0, 2);
+		SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
 		selection <<= 1;
 	}
 
@@ -229,7 +229,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 
 	if (dbinput & IN_DESELECT)
 	{
-		SoundEffect(109, 0, 2);
+		SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 		menu = 0;
 		dbinput &= ~IN_DESELECT;
 		selection = 0x20;
@@ -247,7 +247,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 
 		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
 		{
-			SoundEffect(109, 0, 2);
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			tomb4.footprints = !tomb4.footprints;
 			changed = 1;
 		}
@@ -452,13 +452,13 @@ void DoOptions()
 		{
 			if (dbinput & IN_FORWARD)
 			{
-				SoundEffect(111, 0, 2);
+				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
 				selection >>= 1;
 			}
 
 			if (dbinput & IN_BACK)
 			{
-				SoundEffect(111, 0, 2);
+				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
 				selection <<= 1;
 			}
 		}
@@ -469,7 +469,7 @@ void DoOptions()
 
 			if (keymap[DIK_ESCAPE])
 			{
-				SoundEffect(109, 0, 2);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 				controls_selection = 0;
 				dbinput = 0;
 				waiting_for_key = 0;
@@ -529,7 +529,7 @@ void DoOptions()
 
 		if (dbinput & IN_SELECT && selection > 1 && ControlMethod < 2)
 		{
-			SoundEffect(109, 0, 2);
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			controls_selection = selection;
 			waiting_for_key = 1;
 			memset(keymap, 0, sizeof(keymap));
@@ -537,7 +537,7 @@ void DoOptions()
 
 		if (dbinput & IN_SELECT && ControlMethod == 2)
 		{
-			SoundEffect(109, 0, 2);
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			ControlMethod = 0;
 			memcpy(layout[1], layout, 72);
 		}
@@ -546,13 +546,13 @@ void DoOptions()
 		{
 			if (dbinput & IN_LEFT)
 			{
-				SoundEffect(109, 0, 2);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 				ControlMethod--;
 			}
 
 			if (dbinput & IN_RIGHT)
 			{
-				SoundEffect(109, 0, 2);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 				ControlMethod++;
 			}
 
@@ -585,7 +585,7 @@ void DoOptions()
 
 		if (dbinput & IN_DESELECT)
 		{
-			SoundEffect(109, 0, 2);
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 
 			if (ControlMethod < 2)
 				menu = 0;
@@ -640,26 +640,26 @@ void DoOptions()
 #endif
 		if (dbinput & IN_FORWARD)
 		{
-			SoundEffect(111, 0, 2);
+			SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
 			selection >>= 1;
 		}
 
 		if (dbinput & IN_BACK)
 		{
-			SoundEffect(111, 0, 2);
+			SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
 			selection <<= 1;
 		}
 
 		if (dbinput & IN_SELECT && selection & 1)
 		{
-			SoundEffect(109, 0, 2);
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			menu = 1;
 		}
 
 #ifdef GENERAL_FIXES
 		if (dbinput & IN_SELECT && selection & 0x20)
 		{
-			SoundEffect(109, 0, 2);
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			selection = 1;
 			menu = 200;
 		}
@@ -712,7 +712,7 @@ void DoOptions()
 				{
 					S_SoundStopAllSamples();
 					sfx_bak = SFXVolume;
-					sfx_breath_db = SoundEffect(36, 0, 0);
+					sfx_breath_db = SoundEffect(SFX_LARA_BREATH, 0, SFX_DEFAULT);
 					DSChangeVolume(0, -100 * ((100 - SFXVolume) >> 1));
 				}
 				else if (sfx_breath_db != -1 && DSIsChannelPlaying(0))
@@ -742,7 +742,7 @@ void DoOptions()
 				S_SoundStopAllSamples();
 				DXChangeOutputFormat(sfx_frequencies[SoundQuality], 0);
 				sfx_quality_bak = SoundQuality;
-				SoundEffect(109, 0, 2);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			}
 		}
 		else if (selection & 16)
@@ -752,7 +752,7 @@ void DoOptions()
 				if (App.AutoTarget)
 					App.AutoTarget = 0;
 
-				SoundEffect(109, 0, 2);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			}
 
 			if (dbinput & IN_RIGHT)
@@ -760,7 +760,7 @@ void DoOptions()
 				if (!App.AutoTarget)
 					App.AutoTarget = 1;
 
-				SoundEffect(109, 0, 2);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			}
 
 			savegame.AutoTarget = App.AutoTarget;
