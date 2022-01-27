@@ -25,3 +25,4 @@ void DrawGunshells();
 #define SetGunFlash	( (void(__cdecl*)(short)) 0x00439B80 )
 #define DrawGunflashes	( (void(__cdecl*)()) 0x00439C00 )
 #define S_DrawFires	( (void(__cdecl*)()) 0x00438560 )
+#define	CreateBubble	( (void(__cdecl*)(PHD_3DPOS*, short, long, long, long, long, long , long)) 0x004397F0 )
