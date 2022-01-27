@@ -391,8 +391,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00434440		TriggerRicochetSpark
 0x00434770		TriggerFlareSparks
 0x004349F0		TriggerExplosionSparks
-0x00434DC0		TriggerExplosionSmokeEnd
-0x00434FA0		TriggerExplosionSmoke
+0x00434DC0	+	TriggerExplosionSmokeEnd
+0x00434FA0	+	TriggerExplosionSmoke
 0x00435130		TriggerFireFlame
 0x00435570		TriggerSuperJetFlame
 0x004357C0		TriggerRocketSmoke
