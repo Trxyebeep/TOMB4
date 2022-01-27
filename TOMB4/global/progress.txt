@@ -1734,7 +1734,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/polyinsert.cpp
 
-0x00480A50		DrawSortList
+0x00480A50	+	DrawSortList
 0x004812D0	+	HWR_DrawSortList
 0x00481760		DoSort
 0x00481810		SortPolyList

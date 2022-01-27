@@ -377,6 +377,7 @@
 #define EnemyBites	ARRAY_(0x004AED00, BITE_INFO, [])
 #define draw_room_list	ARRAY_(0x004BF424, long, [128])
 #define draw_rooms	ARRAY_(0x007FDF80, short, [100])
+#define Bucket	ARRAY_(0x004BFEA0, TEXTUREBUCKET, [20])
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1

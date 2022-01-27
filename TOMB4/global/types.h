@@ -1551,6 +1551,13 @@ struct TEXTURE
 	long bumptpage;
 };
 
+struct TEXTUREBUCKET
+{
+	long tpage;
+	long cnt;
+	D3DTLBUMPVERTEX Vertex[544];
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {
