@@ -462,6 +462,11 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr
 			v[2].specular = 0xFF000000;
 			v[3].specular = 0xFF000000;
 
+#ifdef GENERAL_FIXES
+			if (sptr->TransType == 3)
+				tex.drawtype = 5;
+			else
+#endif
 			if (sptr->TransType)
 				tex.drawtype = 2;
 			else

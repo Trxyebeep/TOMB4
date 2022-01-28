@@ -144,6 +144,15 @@ void ControlSmokeEmitter(short item_number)
 		sptr->dR = 64;
 		sptr->dG = 64;
 		sptr->dB = 64;
+
+#ifdef GENERAL_FIXES
+		if (item->object_number == SMOKE_EMITTER_BLACK)
+		{
+			sptr->dR = 96;
+			sptr->dG = 96;
+			sptr->dB = 96;
+		}
+#endif
 		sptr->FadeToBlack = 16;
 		sptr->ColFadeSpeed = (GetRandomControl() & 3) + 8;
 		sptr->Life = (GetRandomControl() & 7) + 28;
@@ -220,12 +229,21 @@ void TriggerExplosionSmokeEnd(long x, long y, long z, long uw)
 	}
 	else
 	{
+#ifdef GENERAL_FIXES
+		sptr->sR = 196;
+		sptr->sG = 196;
+		sptr->sB = 196;
+		sptr->dR = 96;
+		sptr->dG = 96;
+		sptr->dB = 96;
+#else
 		sptr->sR = 144;
 		sptr->sG = 144;
 		sptr->sB = 144;
 		sptr->dR = 64;
 		sptr->dG = 64;
 		sptr->dB = 64;
+#endif
 	}
 
 	sptr->ColFadeSpeed = 8;
@@ -293,12 +311,23 @@ void TriggerExplosionSmoke(long x, long y, long z, long uw)
 
 	sptr = &spark[GetFreeSpark()];
 	sptr->On = 1;
+
+#ifdef GENERAL_FIXES
+	sptr->sR = 196;
+	sptr->sG = 196;
+	sptr->sB = 196;
+	sptr->dR = 128;
+	sptr->dG = 128;
+	sptr->dB = 128;
+#else
 	sptr->sR = 144;
 	sptr->sG = 144;
 	sptr->sB = 144;
 	sptr->dR = 64;
 	sptr->dG = 64;
 	sptr->dB = 64;
+#endif
+
 	sptr->ColFadeSpeed = 2;
 	sptr->FadeToBlack = 8;
 	sptr->TransType = 3;
