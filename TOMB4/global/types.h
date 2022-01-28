@@ -42,6 +42,9 @@ do \
 #define	CLRB(clr)	((clr) & 0xFF)			//and 0xFF
 #define RGB_M(clr, m)	(clr = (clr & 0xFF000000) | (((CLRR(clr) * 8 * m) >> 8) << 16) | (((CLRG(clr) * 8 * m) >> 8) << 8) | ((CLRB(clr) * 8 * m) >> 8))
 #define SCRIPT_TEXT(num)		(&gfStringWad[gfStringOffset[num]])
+#define SetCutPlayed(num)	(CutSceneTriggered |= 1 << (num))
+#define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
+#define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
 
 enum font_flags
 {

@@ -6,13 +6,30 @@
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
+#include "../specific/specificfx.h"
+#include "../specific/file.h"
+#include "../specific/function_table.h"
+#include "items.h"
+#include "lot.h"
+#include "../specific/polyinsert.h"
+#include "spotcam.h"
+#include "health.h"
+#include "sound.h"
+#include "../specific/audio.h"
+#include "camera.h"
+#include "control.h"
+#include "tomb4fx.h"
+#include "../specific/dxsound.h"
+#include "text.h"
+#include "deltapak.h"
+#include "draw.h"
 
 void DoGameflow()
 {
 	uchar* gf;
 	uchar n;
 
-	PlayFmvNow();
+	PlayFmvNow(0);
 	do_boot_screen(Gameflow->Language);
 	num_fmvs = 0;
 	fmv_to_play[0] = 0;
@@ -282,7 +299,196 @@ void DoGameflow()
 	}
 }
 
+void DoLevel(uchar Name, uchar Audio)
+{
+	long gamestatus;
+
+	gamestatus = 0;
+	SetFade(255, 0);
+
+	if (gfGameMode != 4)
+	{
+		savegame.Level.Timer = 0;
+		savegame.Level.Distance = 0;
+		savegame.Level.AmmoUsed = 0;
+		savegame.Level.AmmoHits = 0;
+		savegame.Level.Kills = 0;
+		savegame.Level.Secrets = 0;
+		savegame.Level.HealthUsed = 0;
+	}
+
+	S_LoadLevelFile(Name);
+	SetFogColor(gfFog.r, gfFog.g, gfFog.b);
+	InitialiseFXArray(1);
+	InitialiseLOTarray(1);
+	ClearFXFogBulbs();
+	InitSpotCamSequences();
+	InitialisePickUpDisplay();
+	SOUND_Stop();
+	bDisableLaraControl = 0;
+
+	if (gfGameMode == 4)
+	{
+		sgRestoreGame();
+		gfRequiredStartPos = 0;
+		gfInitialiseGame = 0;
+		gfFog.r = savegame.fog_colour.r;
+		gfFog.g = savegame.fog_colour.g;
+		gfFog.b = savegame.fog_colour.b;
+
+		if (IsVolumetric())
+			SetFogColor(gfFog.r, gfFog.g, gfFog.b);
+	}
+	else
+	{
+		if (gfInitialiseGame)
+		{
+			GameTimer = 0;
+			gfRequiredStartPos = 0;
+			gfInitialiseGame = 0;
+			CutSceneTriggered = 0;
+			FmvSceneTriggered = 0;
+		}
+		else
+			sgRestoreLevel();
+
+		if (gfLevelFlags & GF_REMOVEAMULET)
+			lara.questitems &= ~1;
+
+		savegame.Level.Timer = 0;
+		CurrentAtmosphere = Audio;
+	}
+
+	S_CDPlay(CurrentAtmosphere, 1);
+	IsAtmospherePlaying = 1;
+	ScreenFadedOut = 0;
+	ScreenFading = 0;
+	ScreenFadeBack = 0;
+	dScreenFade = 255;
+	ScreenFade = 255;
+
+	if (!gfCutNumber || CheckCutPlayed(gfCutNumber))
+	{
+		cutseq_num = 0;
+		gfCutNumber = 0;
+		SetScreenFadeIn(16);
+	}
+	else
+	{
+		cutseq_num = gfCutNumber;
+		gfCutNumber = 0;
+		ScreenFadedOut = 1;
+	}
+
+	InitialiseCamera();
+	bUseSpotCam = 0;
+	gfGameMode = 0;
+	gfLevelComplete = 0;
+	nFrames = 2;
+	framecount = 0;
+	gfStatus = ControlPhase(2, 0);
+	dbinput = 0;
+
+	while (!gfStatus)
+	{
+		S_InitialisePolyList();
+
+		if (gfLegendTime && !DestFadeScreenHeight && !FadeScreenHeight && !cutseq_num)
+		{
+			PrintString((ushort)(phd_winwidth >> 1), (ushort)(phd_winymax - font_height), 2, SCRIPT_TEXT(gfLegend), FF_CENTER);
+			gfLegendTime--;
+		}
+
+		nFrames = DrawPhaseGame();
+		handle_cutseq_triggering(Name);
+
+		if (DEL_playingamefmv)
+		{
+			DEL_playingamefmv = 0;
+			S_CDStop();
+			PlayFmvNow(7);
+			DelsHandyTeleportLara(54179, -8192, 50899, -32703);
+		}
+
+		if (gfLevelComplete)
+		{
+			gfStatus = 3;
+			break;
+		}
+
+		gfStatus = ControlPhase(nFrames, 0);
+
+		if (gfStatus && !gamestatus)
+		{
+			if (lara_item->hit_points < 0)
+			{
+				gamestatus = gfStatus;
+				SetFade(0, 255);
+				gfStatus = 0;
+			}
+			else
+				break;
+		}
+
+		if (gamestatus)
+		{
+			gfStatus = 0;
+
+			if (DoFade == 2)
+				gfStatus = gamestatus;
+		}
+	}
+
+	S_SoundStopAllSamples();
+	S_CDStop();
+
+	if (gfStatus == 3)
+	{
+		if (fmv_to_play[0] & 0x80)
+		{
+			if ((fmv_to_play[0] & 0x7F) == 9 && gfLevelComplete != 10)
+				fmv_to_play[0] = 0;
+
+			if ((fmv_to_play[0] & 0x7F) == 8 && gfLevelComplete != 22)
+				fmv_to_play[0] = 0;
+		}
+
+		if (fmv_to_play[0] && PlayFmvNow(fmv_to_play[0] & 0x7F) == 2)
+		{
+			if (fmv_to_play[1])
+				PlayFmvNow(fmv_to_play[1] & 0x7F);
+		}
+	}
+
+	num_fmvs = 0;
+	fmv_to_play[1] = 0;
+	fmv_to_play[0] = 0;
+	lara.examine3 = 0;
+	lara.examine2 = 0;
+	lara.examine1 = 0;
+	RenderLoadPic(0);
+
+	if (gfStatus == 3)
+	{
+		if (gfLevelComplete == 39)
+		{
+			input = 0;
+			reset_flag = 0;
+			gfStatus = 1;
+			bDoCredits = 1;
+			return;
+		}
+
+		if (gfLevelComplete == 25 && skipped_level)
+			lara.vehicle = -1;
+	}
+
+	input = 0;
+	reset_flag = 0;
+}
+
 void inject_gameflow(bool replace)
 {
 	INJECT(0x00451770, DoGameflow, replace);
+	INJECT(0x00452710, DoLevel, replace);
 }

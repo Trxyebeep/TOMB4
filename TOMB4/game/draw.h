@@ -31,3 +31,4 @@ void RenderIt(short CurrentRoom);
 #define UpdateSkyLightning	( (void(__cdecl*)()) 0x00451180 )
 #define GetRoomBounds	( (void(__cdecl*)()) 0x0044F5D0 )
 #define PrintObjects	( (void(__cdecl*)(short)) 0x0044F330 )
+#define DrawPhaseGame	( (long(__cdecl*)()) 0x0044EBA0 )
