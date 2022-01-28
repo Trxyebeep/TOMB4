@@ -94,10 +94,10 @@ void S_DrawFootPrints()
 
 			print->Active--;
 
-			if (print->Active > 0xFF)
-				col = 0xFF;
+			if (print->Active < 29)
+				col = print->Active << 2;
 			else
-				col = print->Active;
+				col = 112;
 
 			phd_PushMatrix();
 			phd_TranslateAbs(print->x, print->y - 1, print->z);
