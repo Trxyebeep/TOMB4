@@ -534,7 +534,7 @@ long TitleOptions()
 		switch (menu_to_display)
 		{
 		case 1:
-			PrintString(phd_centerx, font_height + phd_winymin, 6, SCRIPT_TEXT(355), FF_CENTER);
+			PrintString(phd_centerx, font_height + phd_winymin, 6, SCRIPT_TEXT(TXT_Select_Level), FF_CENTER);
 
 			if (Gameflow->nLevels < 10)
 			{
@@ -604,10 +604,10 @@ long TitleOptions()
 		case 0:
 			ShowTitle();
 			Chris_Menu = 0;
-			PrintString(phd_centerx, phd_winymax - 4 * font_height, (selected_option & 1) ? 1 : 2, SCRIPT_TEXT(174), FF_CENTER);
-			PrintString(phd_centerx, phd_winymax - 3 * font_height, (selected_option & 2) ? 1 : 2, SCRIPT_TEXT(173), FF_CENTER);
-			PrintString(phd_centerx, phd_winymax - 2 * font_height, (selected_option & 4) ? 1 : 2, SCRIPT_TEXT(304), FF_CENTER);
-			PrintString(phd_centerx, phd_winymax - 1 * font_height, (selected_option & 8) ? 1 : 2, SCRIPT_TEXT(336), FF_CENTER);
+			PrintString(phd_centerx, phd_winymax - 4 * font_height, (selected_option & 1) ? 1 : 2, SCRIPT_TEXT(TXT_New_Game), FF_CENTER);
+			PrintString(phd_centerx, phd_winymax - 3 * font_height, (selected_option & 2) ? 1 : 2, SCRIPT_TEXT(TXT_Load_Game), FF_CENTER);
+			PrintString(phd_centerx, phd_winymax - 2 * font_height, (selected_option & 4) ? 1 : 2, SCRIPT_TEXT(TXT_Options), FF_CENTER);
+			PrintString(phd_centerx, phd_winymax - 1 * font_height, (selected_option & 8) ? 1 : 2, SCRIPT_TEXT(TXT_Exit), FF_CENTER);
 			flag = 8;
 			break;
 
