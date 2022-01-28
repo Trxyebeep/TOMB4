@@ -3879,7 +3879,7 @@ void lara_col_poleup(ITEM_INFO* item, COLL_INFO* coll)
 	if (input & IN_LOOK)
 		LookUpDown();
 
-	if (!(input & (IN_ACTION | IN_FORWARD)) || item->hit_points <= 0)
+	if (((input & (IN_FORWARD | IN_ACTION)) != (IN_FORWARD | IN_ACTION)) || item->hit_points <= 0)
 		item->goal_anim_state = AS_POLESTAT;
 
 	room_num = item->room_number;
