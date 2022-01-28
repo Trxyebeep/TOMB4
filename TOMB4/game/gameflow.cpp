@@ -3,6 +3,9 @@
 #include "../specific/function_stubs.h"
 #include "../specific/output.h"
 #include "savegame.h"
+#ifdef GENERAL_FIXES
+#include "../tomb4/tomb4.h"
+#endif
 
 void DoGameflow()
 {
@@ -16,6 +19,10 @@ void DoGameflow()
 	fmv_to_play[1] = 0;
 	gfCurrentLevel = Gameflow->TitleEnabled ? 0 : 1;
 	gf = &gfScriptWad[gfScriptOffset[gfCurrentLevel]];
+
+#ifdef GENERAL_FIXES
+	init_tomb4_stuff();	//This is only called once at the beginning of the game, and these settings can technically be considered 'gameflow' so this is fine here
+#endif
 
 	while (1)
 	{

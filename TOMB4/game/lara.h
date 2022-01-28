@@ -3,6 +3,10 @@
 
 void inject_lara(bool replace);
 
+extern void (*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll);
+extern void (*lara_collision_routines[118])(ITEM_INFO* item, COLL_INFO* coll);
+
+void lara_void_func(ITEM_INFO* item, COLL_INFO* coll);
 void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll);
 void SetCornerAnim(ITEM_INFO* item, COLL_INFO* coll, short rot, short flip);
 long CanLaraHangSideways(ITEM_INFO* item, COLL_INFO* coll, short angle);
@@ -46,6 +50,8 @@ void lara_col_monkeyl(ITEM_INFO* item, COLL_INFO* coll);
 void lara_as_monkeyr(ITEM_INFO* item, COLL_INFO* coll);
 void lara_col_monkeyr(ITEM_INFO* item, COLL_INFO* coll);
 void lara_as_hangturnl(ITEM_INFO* item, COLL_INFO* coll);
+void lara_as_hangturnr(ITEM_INFO* item, COLL_INFO* coll);
+void lara_col_hangturnlr(ITEM_INFO* item, COLL_INFO* coll);
 void lara_as_monkey180(ITEM_INFO* item, COLL_INFO* coll);
 void lara_col_monkey180(ITEM_INFO* item, COLL_INFO* coll);
 void lara_as_hangleft(ITEM_INFO* item, COLL_INFO* coll);

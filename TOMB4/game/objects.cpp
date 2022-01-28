@@ -25,7 +25,7 @@ void ControlMapper(short item_number)
 
 	if (item->frame_number - anims[item->anim_number].frame_base >= 200)
 	{
-		SoundEffect(308, &item->pos, 0);
+		SoundEffect(SFX_MAPPER_LAZER, &item->pos, SFX_DEFAULT);
 		item->mesh_bits |= 2;
 		pos.x = 0;
 		pos.y = 0;
@@ -110,7 +110,7 @@ void ControlLightningConductor(short item_number)
 
 	if (item->item_flags[0])
 	{
-		SoundEffect(197, &item->pos, 0);
+		SoundEffect(SFX_ELEC_ARCING_LOOP, &item->pos, SFX_DEFAULT);
 		item->item_flags[0]--;
 		b = (GetRandomControl() & 0x3F) + 192;
 		g = b - (GetRandomControl() & 0x1F);
@@ -164,7 +164,7 @@ void ControlLightningConductor(short item_number)
 	}
 	else if (!(GetRandomControl() & 0x3F))
 	{
-		SoundEffect(183, &item->pos, 0);
+		SoundEffect(SFX_THUNDER_CRACK, &item->pos, SFX_DEFAULT);
 		item->item_flags[0] = (GetRandomControl() & 3) + 4;
 		item->item_flags[1] = (GetRandomControl() & 0x3FF) - 512;
 	}

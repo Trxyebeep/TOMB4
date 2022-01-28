@@ -120,7 +120,6 @@ enum lara_anim_state
 	AS_ROPEBACK = 115,
 	AS_MOVE = 116,
 	AS_TWODOOR = 117,
-	AS_SWIMCHEAT = 118,
 
 	NUM_LARA_STATES
 };

@@ -8,6 +8,9 @@
 #include "drawroom.h"
 #include "3dmath.h"
 #include "polyinsert.h"
+#include "../game/effects.h"
+#include "../game/draw.h"
+#include "specificfx.h"
 
 void phd_PutPolygons(short* objptr, long clip)	//whore
 {
@@ -398,10 +401,66 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 	}
 }
 
+void _InsertRoom(ROOM_INFO* r)
+{
+	SetD3DViewMatrix();
+	InsertRoom(r);
+}
+
+void RenderLoadPic(long unused)
+{
+	short poisoned;
+
+	camera.pos.y = load_cam.y;
+	camera.pos.x = load_cam.x;
+	camera.pos.z = load_cam.z;
+	lara_item->pos.x_pos = camera.pos.x;
+	lara_item->pos.y_pos = camera.pos.y;
+	lara_item->pos.z_pos = camera.pos.z;
+	camera.target.x = load_target.x;
+	camera.target.y = load_target.y;
+	camera.target.z = load_target.z;
+	camera.pos.room_number = load_roomnum;
+
+	if (load_roomnum == 255)
+		return;
+
+	KillActiveBaddies((ITEM_INFO*)0xABCDEF);
+	SetFade(255, 0);
+	poisoned = lara.poisoned;
+	FadeScreenHeight = 0;
+	lara.poisoned = 0;
+	GlobalFogOff = 1;
+	BinocularRange = 0;
+
+	if (App.dx.InScene)
+		_EndScene();
+
+	do
+	{
+		phd_LookAt(camera.pos.x, camera.pos.y, camera.pos.z, camera.target.x, camera.target.y, camera.target.z, 0);
+		S_InitialisePolyList();
+		RenderIt(camera.pos.room_number);
+		S_OutputPolyList();
+		S_DumpScreen();
+
+	} while (DoFade != 2);
+
+	phd_LookAt(camera.pos.x, camera.pos.y, camera.pos.z, camera.target.x, camera.target.y, camera.target.z, 0);
+	S_InitialisePolyList();
+	RenderIt(camera.pos.room_number);
+	S_OutputPolyList();
+	S_DumpScreen();
+	lara.poisoned = poisoned;
+	GlobalFogOff = 0;
+}
+
 void inject_output(bool replace)
 {
 	INJECT(0x0047DA60, phd_PutPolygons, replace);
 	INJECT(0x00480310, phd_PutPolygons_train, replace);
 	INJECT(0x00480220, ProjectTrainVerts, replace);
 	INJECT(0x0047D900, PrelightVerts, replace);
+	INJECT(0x0047F950, _InsertRoom, replace);
+	INJECT(0x00480570, RenderLoadPic, replace);
 }

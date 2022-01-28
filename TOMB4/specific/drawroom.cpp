@@ -2,6 +2,8 @@
 #include "drawroom.h"
 #include "function_stubs.h"
 #include "dxshell.h"
+#include "polyinsert.h"
+#include "function_table.h"
 
 void ProjectVerts(long nVerts, D3DTLVERTEX* v, short* clip)
 {
@@ -461,10 +463,132 @@ void ProcessRoomData(ROOM_INFO* r)
 	r->SourceVB->Optimize(App.dx._lpD3DDevice, 0);
 }
 
+void PrelightVertsNonMMX(long nVerts, D3DTLVERTEX* v, ROOM_INFO* r)
+{
+	long* prelight;
+	long pR, pG, pB, vR, vG, vB, cR, cG, cB;
+
+	if (bWaterEffect && !(r->flags & 1))
+		prelight = r->prelightwater;
+	else
+		prelight = r->prelight;
+
+	for (int i = 0; i < r->nWaterVerts; i++)
+	{
+		pR = r->prelight[i] & 0xFF0000;
+		pG = r->prelight[i] & 0xFF00;
+		pB = r->prelight[i] & 0xFF;
+		vR = v->color & 0xFF0000;
+		vG = v->color & 0xFF00;
+		vB = v->color & 0xFF;
+		cR = pR + vR;
+		cG = pG + vG;
+		cB = pB + vB;
+
+		if (cR > 0xFF0000)
+			cR = 0xFF0000;
+
+		if (cG > 0xFF00)
+			cG = 0xFF00;
+
+		if (cB > 0xFF)
+			cB = 0xFF;
+
+		v->specular &= 0xFF000000;
+		v->color = (v->color & 0xFF000000) | cR | cG | cB;
+	}
+
+	for (int i = r->nWaterVerts; i < r->nVerts; i++)
+	{
+		pR = prelight[i] & 0xFF0000;
+		pG = prelight[i] & 0xFF00;
+		pB = prelight[i] & 0xFF;
+		vR = v->color & 0xFF0000;
+		vG = v->color & 0xFF00;
+		vB = v->color & 0xFF;
+		cR = pR + vR;
+		cG = pG + vG;
+		cB = pB + vB;
+
+		if (cR > 0xFF0000)
+			cR = 0xFF0000;
+
+		if (cG > 0xFF00)
+			cG = 0xFF00;
+
+		if (cB > 0xFF)
+			cB = 0xFF;
+
+		v->color = (v->color & 0xFF000000) | cR | cG | cB;
+		CalcColorSplit(v->color, &v->color);
+		v++;
+	}
+}
+
+void InsertRoom(ROOM_INFO* r)
+{
+	TEXTURESTRUCT* pTex;
+	D3DTLVERTEX* v;
+	short* data;
+	short numQuads, numTris;
+	bool doublesided;
+
+	clip_left = r->left;
+	clip_right = r->right;
+	clip_bottom = r->bottom;
+	clip_top = r->top;
+
+	if (r->nVerts)
+	{
+		DXAttempt(DestVB->ProcessVertices(D3DVOP_LIGHT | D3DVOP_TRANSFORM, 0, r->nVerts, r->SourceVB, 0, App.dx._lpD3DDevice, 0));
+		DestVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
+		bWaterEffect = camera.underwater != 0;
+		ProjectWaterVerts(r->nWaterVerts, v, clipflags);
+		ProjectShoreVerts(r->nShoreVerts, &v[r->nWaterVerts], &clipflags[r->nWaterVerts]);
+		ProjectVerts(r->nVerts - r->nWaterVerts - r->nShoreVerts, &v[r->nWaterVerts + r->nShoreVerts], &clipflags[r->nWaterVerts + r->nShoreVerts]);
+
+		if (App.mmx)
+			PrelightVertsMMX(r->nVerts, v, r);
+		else
+			PrelightVertsNonMMX(r->nVerts, v, r);
+
+		data = r->FaceData;
+		numQuads = *data++;
+
+		for (int i = 0; i < numQuads; i++, data += 5)
+		{
+			pTex = &textinfo[data[4] & 0x3FFF];
+			doublesided = (data[4] >> 15) & 1;
+
+			if (!pTex->drawtype)
+				AddQuadZBuffer(v, data[0], data[1], data[2], data[3], pTex, doublesided);
+			else if (pTex->drawtype <= 2)
+				AddQuadSorted(v, data[0], data[1], data[2], data[3], pTex, doublesided);
+		}
+
+		numTris = *data++;
+
+		for (int i = 0; i < numTris; i++, data += 4)
+		{
+			pTex = &textinfo[data[3] & 0x3FFF];
+			doublesided = (data[3] >> 15) & 1;
+
+			if (!pTex->drawtype)
+				AddTriZBuffer(v, data[0], data[1], data[2], pTex, doublesided);
+			else if (pTex->drawtype <= 2)
+				AddTriSorted(v, data[0], data[1], data[2], pTex, doublesided);
+		}
+
+		DestVB->Unlock();
+	}
+}
+
 void inject_drawroom(bool replace)
 {
 	INJECT(0x00471E00, ProjectVerts, replace);
 	INJECT(0x00471F40, ProjectWaterVerts, replace);
 	INJECT(0x00472190, ProjectShoreVerts, replace);
 	INJECT(0x00471420, ProcessRoomData, replace);
+	INJECT(0x004724C0, PrelightVertsNonMMX, replace);
+	INJECT(0x00472650, InsertRoom, replace);
 }

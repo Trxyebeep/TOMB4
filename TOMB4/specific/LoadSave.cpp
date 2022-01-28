@@ -10,6 +10,9 @@
 #include "polyinsert.h"
 #include "winmain.h"
 #include "output.h"
+#ifdef GENERAL_FIXES
+#include "../tomb4/tomb4.h"
+#endif
 
 void S_DrawHealthBar(long pos)
 {
@@ -194,6 +197,99 @@ void DoBar(long x, long y, long width, long height, long pos, long clr1, long cl
 
 #pragma warning(push)
 #pragma warning(disable : 4244)
+
+#ifdef GENERAL_FIXES
+static void TroyeMenu(long textY, long& menu, ulong& selection)
+{
+	long num;
+	char buffer[80];
+	bool changed;
+
+	num = 2;
+	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
+	PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 1 ? 1 : 2, "FootPrints", 0);
+	PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 2 ? 1 : 2, "Shadow mode", 0);
+
+	if (dbinput & IN_FORWARD)
+	{
+		SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+		selection >>= 1;
+	}
+
+	if (dbinput & IN_BACK)
+	{
+		SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+		selection <<= 1;
+	}
+
+	if (!selection)
+		selection = 1;
+
+	if (selection > (ulong)(1 << (num - 1)))
+		selection = 1 << (num - 1);
+
+	if (dbinput & IN_DESELECT)
+	{
+		SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+		menu = 0;
+		dbinput &= ~IN_DESELECT;
+		selection = 0x20;
+		return;
+	}
+
+	strcpy(buffer, tomb4.footprints ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 2 * font_height, selection & 1 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.shadow_mode == 1 ? "original" : tomb4.shadow_mode == 2 ? "circle" : "PSX");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 3 * font_height, selection & 2 ? 1 : 6, buffer, 0);
+
+	changed = 0;
+
+	switch (selection)
+	{
+	case 1 << 0:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.footprints = !tomb4.footprints;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 1:
+
+		if (dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.shadow_mode++;
+
+			if (tomb4.shadow_mode > 3)
+				tomb4.shadow_mode = 1;
+
+			changed = 1;
+		}
+
+		if (dbinput & IN_LEFT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.shadow_mode--;
+
+			if (tomb4.shadow_mode < 1)
+				tomb4.shadow_mode = 3;
+
+			changed = 1;
+		}
+
+		break;
+	}
+
+	if (changed)
+		save_new_tomb4_settings();
+}
+#endif
+
 void DoOptions()
 {
 	JOYINFOEX joy;
@@ -229,6 +325,14 @@ void DoOptions()
 
 	if (menu)	//controls menu
 	{
+#ifdef GENERAL_FIXES	//excuse me let me just 
+		if (menu == 200)
+		{
+			TroyeMenu(textY, menu, selection);
+			return;
+		}
+#endif
+
 		if (Gameflow->Language == 2)
 			keyboard_buttons = GermanKeyboard;
 		else
@@ -378,13 +482,13 @@ void DoOptions()
 		{
 			if (dbinput & IN_FORWARD)
 			{
-				SoundEffect(111, 0, 2);
+				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
 				selection >>= 1;
 			}
 
 			if (dbinput & IN_BACK)
 			{
-				SoundEffect(111, 0, 2);
+				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
 				selection <<= 1;
 			}
 		}
@@ -395,7 +499,7 @@ void DoOptions()
 
 			if (keymap[DIK_ESCAPE])
 			{
-				SoundEffect(109, 0, 2);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 				controls_selection = 0;
 				dbinput = 0;
 				waiting_for_key = 0;
@@ -455,7 +559,7 @@ void DoOptions()
 
 		if (dbinput & IN_SELECT && selection > 1 && ControlMethod < 2)
 		{
-			SoundEffect(109, 0, 2);
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			controls_selection = selection;
 			waiting_for_key = 1;
 			memset(keymap, 0, sizeof(keymap));
@@ -463,7 +567,7 @@ void DoOptions()
 
 		if (dbinput & IN_SELECT && ControlMethod == 2)
 		{
-			SoundEffect(109, 0, 2);
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			ControlMethod = 0;
 			memcpy(layout[1], layout, 72);
 		}
@@ -472,13 +576,13 @@ void DoOptions()
 		{
 			if (dbinput & IN_LEFT)
 			{
-				SoundEffect(109, 0, 2);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 				ControlMethod--;
 			}
 
 			if (dbinput & IN_RIGHT)
 			{
-				SoundEffect(109, 0, 2);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 				ControlMethod++;
 			}
 
@@ -511,7 +615,7 @@ void DoOptions()
 
 		if (dbinput & IN_DESELECT)
 		{
-			SoundEffect(109, 0, 2);
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 
 			if (ControlMethod < 2)
 				menu = 0;
@@ -522,7 +626,11 @@ void DoOptions()
 	}
 	else	//'main' menu
 	{
+#ifdef GENERAL_FIXES	//1 more option
+		num = 6;
+#else
 		num = 5;
+#endif
 		textY = 3 * font_height;
 		PrintString(phd_centerx, textY, 6, SCRIPT_TEXT(304), FF_CENTER);
 		PrintString(phd_centerx, textY + font_height + (font_height >> 1), selection & 1 ? 1 : 2, SCRIPT_TEXT(337), FF_CENTER);
@@ -557,23 +665,35 @@ void DoOptions()
 
 		PrintString(phd_centerx + (phd_centerx >> 2), textY + 6 * font_height, selection & 0x10 ? 1 : 6, quality_text, 0);
 
+#ifdef GENERAL_FIXES	//yay!
+		PrintString(phd_centerx, (font_height >> 1) + textY + 7 * font_height, selection & 0x20 ? 1 : 2, "tomb4 options", FF_CENTER);
+#endif
 		if (dbinput & IN_FORWARD)
 		{
-			SoundEffect(111, 0, 2);
+			SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
 			selection >>= 1;
 		}
 
 		if (dbinput & IN_BACK)
 		{
-			SoundEffect(111, 0, 2);
+			SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
 			selection <<= 1;
 		}
 
 		if (dbinput & IN_SELECT && selection & 1)
 		{
-			SoundEffect(109, 0, 2);
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			menu = 1;
 		}
+
+#ifdef GENERAL_FIXES
+		if (dbinput & IN_SELECT && selection & 0x20)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			selection = 1;
+			menu = 200;
+		}
+#endif
 
 		if (!selection)
 			selection = 1;
@@ -622,7 +742,7 @@ void DoOptions()
 				{
 					S_SoundStopAllSamples();
 					sfx_bak = SFXVolume;
-					sfx_breath_db = SoundEffect(36, 0, 0);
+					sfx_breath_db = SoundEffect(SFX_LARA_BREATH, 0, SFX_DEFAULT);
 					DSChangeVolume(0, -100 * ((100 - SFXVolume) >> 1));
 				}
 				else if (sfx_breath_db != -1 && DSIsChannelPlaying(0))
@@ -652,7 +772,7 @@ void DoOptions()
 				S_SoundStopAllSamples();
 				DXChangeOutputFormat(sfx_frequencies[SoundQuality], 0);
 				sfx_quality_bak = SoundQuality;
-				SoundEffect(109, 0, 2);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			}
 		}
 		else if (selection & 16)
@@ -662,7 +782,7 @@ void DoOptions()
 				if (App.AutoTarget)
 					App.AutoTarget = 0;
 
-				SoundEffect(109, 0, 2);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			}
 
 			if (dbinput & IN_RIGHT)
@@ -670,7 +790,7 @@ void DoOptions()
 				if (!App.AutoTarget)
 					App.AutoTarget = 1;
 
-				SoundEffect(109, 0, 2);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			}
 
 			savegame.AutoTarget = App.AutoTarget;

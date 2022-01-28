@@ -51,6 +51,16 @@ enum font_flags
 	FF_CENTER = 0x8000
 };
 
+enum room_flags
+{
+	ROOM_UNDERWATER = 0x1,
+	ROOM_OUTSIDE = 0x8,
+	ROOM_DYNAMIC_LIT = 0x10,
+	ROOM_NOT_INSIDE = 0x20,
+	ROOM_INSIDE = 0x40,
+	ROOM_NO_LENSFLARE = 0x80
+};
+
 enum quadrant_names
 {
 	NORTH,
@@ -1488,4 +1498,71 @@ struct FOOTPRINT
 	short YRot;
 	short Active;
 };
+
+struct DISPLAYPU
+{
+	short life;
+	short object_number;
+};
+
+struct GUNSHELL_STRUCT
+{
+	PHD_3DPOS pos;
+	short fallspeed;
+	short room_number;
+	short speed;
+	short counter;
+	short DirXrot;
+	short object_number;
+};
+
+struct BITE_INFO
+{
+	long x;
+	long y;
+	long z;
+	long mesh_num;
+};
+
+struct D3DTLBUMPVERTEX
+{
+	D3DVALUE sx;
+	D3DVALUE sy;
+	D3DVALUE sz;
+	D3DVALUE rhw;
+	D3DCOLOR color;
+	D3DCOLOR specular;
+	D3DVALUE tu;
+	D3DVALUE tv;
+	D3DVALUE tx;
+	D3DVALUE ty;
+};
+
+struct TEXTURE
+{
+	IDirect3DTexture2* tex;
+	LPDIRECTDRAWSURFACE4 surface;
+	ulong xoff;
+	ulong yoff;
+	ulong width;
+	ulong height;
+	long tpage;
+	bool bump;
+	long bumptpage;
+};
+
+struct TEXTUREBUCKET
+{
+	long tpage;
+	long cnt;
+	D3DTLBUMPVERTEX Vertex[544];
+};
+
+#ifdef GENERAL_FIXES
+struct tomb4_options	//keep this at the bottom of the file, please
+{
+	bool footprints;
+	ulong shadow_mode;			//1-> original, 2-> circle, 3-> PSX color like circle
+};
+#endif
 #pragma pack(pop)

@@ -5,6 +5,7 @@ void inject_tomb4fx(bool replace);
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments);
 long ExplodingDeath2(short item_number, long mesh_bits, short Flags);
+void DrawGunshells();
 
 #define ClearFires	( (void(__cdecl*)()) 0x004384F0 )
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
@@ -21,3 +22,7 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags);
 #define	SetFadeClip	( (void(__cdecl*)(short, short)) 0x00439D40 )
 #define	SetScreenFadeOut	( (void(__cdecl*)(long, long)) 0x00439DB0 )
 #define	SetScreenFadeIn	( (void(__cdecl*)(long)) 0x00439E00 )
+#define SetGunFlash	( (void(__cdecl*)(short)) 0x00439B80 )
+#define DrawGunflashes	( (void(__cdecl*)()) 0x00439C00 )
+#define S_DrawFires	( (void(__cdecl*)()) 0x00438560 )
+#define	CreateBubble	( (void(__cdecl*)(PHD_3DPOS*, short, long, long, long, long, long , long)) 0x004397F0 )

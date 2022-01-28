@@ -351,14 +351,14 @@ x for functions decompiled but not injected, for one reason or another.
 		game/draw.cpp
 
 0x0044EBA0		DrawPhaseGame
-0x0044EC10		DrawRooms
-0x0044F2D0		S_InsertRoom
+0x0044EC10	+	DrawRooms
+0x0044F2D0	+	S_InsertRoom
 0x0044F330		PrintObjects
 0x0044F5D0		GetRoomBounds
 0x0044F790		SetRoomBounds
 0x0044FB10		DrawEffect
 0x0044FC00		calc_animating_item_clip_window
-0x0044FF60		DrawAnimatingItem
+0x0044FF60	+	DrawAnimatingItem
 0x00450520	+	InitInterpolate
 0x00450560	+	phd_PopMatrix_I
 0x00450590	+	phd_PushMatrix_I
@@ -373,14 +373,14 @@ x for functions decompiled but not injected, for one reason or another.
 0x00450810	+	phd_PutPolygons_I
 0x00450840	+	InterpolateMatrix
 0x00450AB0	+	InterpolateArmMatrix
-0x00450BB0		CalculateObjectLighting
-0x00450CB0		CalculateObjectLightingLara
+0x00450BB0	+	CalculateObjectLighting
+0x00450CB0	+	CalculateObjectLightingLara
 0x00450DC0		GetFrames
 0x00450E60		GetBoundsAccurate
 0x00450EE0		GetBestFrame
 0x00450F10		mRotBoundingBoxNoPersp
 0x00451180		UpdateSkyLightning
-0x00451240		RenderIt
+0x00451240	+	RenderIt
 
 
 		game/effect2.cpp
@@ -391,8 +391,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00434440		TriggerRicochetSpark
 0x00434770		TriggerFlareSparks
 0x004349F0		TriggerExplosionSparks
-0x00434DC0		TriggerExplosionSmokeEnd
-0x00434FA0		TriggerExplosionSmoke
+0x00434DC0	+	TriggerExplosionSmokeEnd
+0x00434FA0	+	TriggerExplosionSmoke
 0x00435130		TriggerFireFlame
 0x00435570		TriggerSuperJetFlame
 0x004357C0		TriggerRocketSmoke
@@ -408,7 +408,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004361A0		TriggerDynamic
 0x00436250		TriggerDynamic_MIRROR
 0x00436320		ClearDynamics
-0x00436340		ControlSmokeEmitter
+0x00436340	+	ControlSmokeEmitter
 0x00436900		ControlColouredLights
 0x004369B0		ControlEnemyMissle
 
@@ -517,12 +517,13 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/health.cpp
 
-0x00452C70		FlashIt
-0x00452CA0		DrawGameInfo
-0x00452DE0		DrawHealthBar
-0x00452EA0		DrawAirBar
-0x00452F40		InitialisePickUpDisplay
-0x00452F80		DrawPickups
+0x00452C70	+	FlashIt
+0x00452CA0	+	DrawGameInfo
+0x00452DE0	+	DrawHealthBar
+0x00452EA0	+	DrawAirBar
+0x00452F40	+	InitialisePickUpDisplay
+0x00452F80	+	DrawPickups
+0x00453030	+	AddDisplayPickup
 
 
 		game/horse.cpp
@@ -1109,7 +1110,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00459100		RopeCollision
 0x004592E0		RopeNodeCollision
 0x004593B0		RopeControl
-0x00459410		DrawRopeList
+0x00459410	+	DrawRopeList
 0x00459450		Normalise
 0x00459510		ModelRigid
 0x00459640		ModelRigidRope
@@ -1314,7 +1315,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00439060		GetFreeGunshell
 0x004390F0		TriggerGunShell
 0x00439340		UpdateGunShells
-0x004395B0		DrawGunshells
+0x004395B0	+	DrawGunshells
 0x00439660		TriggerSmallSplash
 0x00439780		GetFreeBubble
 0x004397F0		CreateBubble
@@ -1522,8 +1523,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00471F40	+	ProjectWaterVerts
 0x00472190	+	ProjectShoreVerts
 0x00472400		PrelightVertsMMX
-0x004724C0		PrelightVertsNonMMX
-0x00472650		InsertRoom
+0x004724C0	+	PrelightVertsNonMMX
+0x00472650	+	InsertRoom
 0x004728B0		InitBuckets
 0x004728D0		FindBucket
 0x004729E0		DrawBucket
@@ -1717,7 +1718,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0047DA60	+	phd_PutPolygons
 0x0047E8B0		phd_PutPolygonsPickup
 0x0047F620		phd_PutPolygonSkyMesh
-0x0047F950		_InsertRoom
+0x0047F950	+	_InsertRoom
 0x0047F970		S_DrawPickup
 0x0047FA10		S_OutputPolyList
 0x0047FCA0		S_DumpScreen
@@ -1725,7 +1726,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00480070		S_AnimateTextures
 0x00480220	+	ProjectTrainVerts
 0x00480310	+	phd_PutPolygons_train
-0x00480570		RenderLoadPic
+0x00480570	+	RenderLoadPic
 0x00480700		DDCopyBitmap
 0x00480850		LoadBitmap
 0x004808E0		do_boot_screen
@@ -1733,8 +1734,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/polyinsert.cpp
 
-0x00480A50		DrawSortList
-0x004812D0		HWR_DrawSortList
+0x00480A50	+	DrawSortList
+0x004812D0	+	HWR_DrawSortList
 0x00481760		DoSort
 0x00481810		SortPolyList
 0x00481860		InitialiseSortList
@@ -1767,14 +1768,14 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/registry.cpp
 
-0x00484B00		REG_OpenKey
-0x00484B30		REG_CloseKey
-0x00484B40		REG_WriteLong
-0x00484B60		REG_WriteBool
-0x00484B90		REG_ReadLong
-0x00484BF0		REG_ReadBool
-0x00484C70		OpenRegistry
-0x00484CC0		CloseRegistry
+0x00484B00	+	REG_OpenKey
+0x00484B30	+	REG_CloseKey
+0x00484B40	+	REG_WriteLong
+0x00484B60	+	REG_WriteBool
+0x00484B90	+	REG_ReadLong
+0x00484BF0	+	REG_ReadBool
+0x00484C70	+	OpenRegistry
+0x00484CC0	+	CloseRegistry
 0x00484CD0		LoadSettings
 0x00485190		SaveSetup
 0x004853F0		SaveSettings
@@ -1794,7 +1795,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00487B60		InitTarget_2
 0x00487C30		InitBinoculars
 0x00487D00		DrawBinoculars
-0x00488140		S_DrawDrawSparks
+0x00488140	+	S_DrawDrawSparks
 0x00488690		ClipLine
 0x00488950		DrawFlatSky
 0x00489360		ClipCheckPoint

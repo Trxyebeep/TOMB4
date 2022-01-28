@@ -30,7 +30,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -90,7 +90,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -111,7 +111,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;NDEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;NDEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -271,6 +271,7 @@
     <ClInclude Include="TOMB4\specific\winmain.h" />
     <ClInclude Include="TOMB4\tomb4\framework.h" />
     <ClInclude Include="TOMB4\tomb4\pch.h" />
+    <ClInclude Include="TOMB4\tomb4\tomb4.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TOMB4\game\ahmet.cpp" />
@@ -382,6 +383,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TOMB4\tomb4\tomb4.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="TOMB4\global\progress.txt" />

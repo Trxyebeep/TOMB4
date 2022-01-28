@@ -17,9 +17,17 @@ void gar_RotYXZsuperpack(short** pprot, long skip);
 void phd_PutPolygons_I(short* ptr, long clip);
 void InterpolateMatrix();
 void InterpolateArmMatrix(long* mx);
+void S_InsertRoom(short room_number);
+void CalculateObjectLighting(ITEM_INFO* item, short* frame);
+void CalculateObjectLightingLara();
+void DrawAnimatingItem(ITEM_INFO* item);
+void DrawRooms(short CurrentRoom);
+void RenderIt(short CurrentRoom);
 
 #define GetFrames	( (long(__cdecl*)(ITEM_INFO*, short*[], long*)) 0x00450DC0 )
 #define GetBestFrame	( (short*(__cdecl*)(ITEM_INFO*)) 0x00450EE0 )
 #define GetBoundsAccurate	( (short*(__cdecl*)(ITEM_INFO*)) 0x00450E60 )
-#define CalculateObjectLighting	( (void(__cdecl*)(ITEM_INFO*, short*)) 0x00450BB0 )
-#define CalculateObjectLightingLara	( (void(__cdecl*)()) 0x00450CB0 )
+#define calc_animating_item_clip_window	( (void(__cdecl*)(ITEM_INFO*, short*)) 0x0044FC00 )
+#define UpdateSkyLightning	( (void(__cdecl*)()) 0x00451180 )
+#define GetRoomBounds	( (void(__cdecl*)()) 0x0044F5D0 )
+#define PrintObjects	( (void(__cdecl*)(short)) 0x0044F330 )
