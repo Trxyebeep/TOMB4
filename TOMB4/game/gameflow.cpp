@@ -3,9 +3,6 @@
 #include "../specific/function_stubs.h"
 #include "../specific/output.h"
 #include "savegame.h"
-#ifdef GENERAL_FIXES
-#include "../tomb4/tomb4.h"
-#endif
 #include "../specific/specificfx.h"
 #include "../specific/file.h"
 #include "../specific/function_table.h"
@@ -23,6 +20,11 @@
 #include "text.h"
 #include "deltapak.h"
 #include "draw.h"
+#include "../specific/LoadSave.h"
+#include "../specific/gamemain.h"
+#ifdef GENERAL_FIXES
+#include "../tomb4/tomb4.h"
+#endif
 
 void DoGameflow()
 {
@@ -487,8 +489,333 @@ void DoLevel(uchar Name, uchar Audio)
 	reset_flag = 0;
 }
 
+#pragma warning(push)
+#pragma warning(disable : 4244)
+long TitleOptions()
+{
+	static __int64 selected_option = 1;
+	static __int64 selected_option_bak = 0;
+	__int64 i, flag;
+	long ret, ret2, ii, n, n2, load, num, height;
+	static long load_or_new;
+	static long always0 = 0;//leftover debug thing? if it's ever 1, the menu and logo don't show.
+	static long gfLevelComplete_bak;
+	static long menu_to_display = 0;//0 main menu, 1 level select, 2 the reload menu, 3 the options menu
+	static long selected_level = 0;
+
+	ret = 0;
+
+	if (load_or_new)
+	{
+		ret2 = load_or_new;
+
+		if (DoFade == 2)
+		{
+			gfLevelComplete = (uchar)gfLevelComplete_bak;
+			gfLevelComplete_bak = 0;
+			load_or_new = 0;
+			return ret2;
+		}
+
+		input = 0;
+		dbinput = 0;
+	}
+
+	if (bDoCredits)
+	{
+		if (DoCredits())
+			return 0;
+
+		bDoCredits = 0;
+	}
+
+	if (!always0)
+	{
+		switch (menu_to_display)
+		{
+		case 1:
+			PrintString(phd_centerx, font_height + phd_winymin, 6, SCRIPT_TEXT(355), FF_CENTER);
+
+			if (Gameflow->nLevels < 10)
+			{
+				n2 = 1;
+				num = Gameflow->nLevels - 1;
+			}
+			else
+			{
+				i = selected_option;
+				n = 0;
+				num = 10;
+
+				while (i)
+				{
+					i >>= 1;
+					n++;
+				}
+
+				n2 = n - 9;
+
+				if (n2 < 1)
+					n2 = 1;
+				else if (n2 > 1)
+				{
+					PrintString(32, 3 * font_height + phd_winymin, 6, &title_string[4], 0);
+					PrintString(phd_winxmax - 48, 3 * font_height + phd_winymin, 6, &title_string[4], 0);
+				}
+
+				if (n != Gameflow->nLevels - 1)
+				{
+					PrintString(32, 12 * font_height + phd_winymin, 6, &title_string[0], 0);
+					PrintString(phd_winxmax - 48, 12 * font_height + phd_winymin, 6, &title_string[0], 0);
+				}
+			}
+
+			height = 2 * font_height + phd_winymin;
+
+			for (ii = n2; ii < num + n2; ii++)
+			{
+				n = ii - 1;
+				height += font_height;
+				PrintString(phd_centerx, height, (selected_option & ((__int64)1 << n)) ? 1 : 2, SCRIPT_TEXT(gfLevelNames[ii]), FF_CENTER);
+			}
+
+			ret = 0;
+			flag = 1i64 << (Gameflow->nLevels - 2);
+			break;
+
+		case 2:
+
+			if (Gameflow->LoadSaveEnabled)
+			{
+				load = DoLoadSave(IN_LOAD);
+
+				if (load >= 0)
+				{
+					S_LoadGame(load);
+					ret = 2;
+				}
+
+				break;
+			}
+
+			SoundEffect(SFX_LARA_NO, 0, SFX_ALWAYS);
+			menu_to_display = 0;
+
+		case 0:
+			ShowTitle();
+			Chris_Menu = 0;
+			PrintString(phd_centerx, phd_winymax - 4 * font_height, (selected_option & 1) ? 1 : 2, SCRIPT_TEXT(174), FF_CENTER);
+			PrintString(phd_centerx, phd_winymax - 3 * font_height, (selected_option & 2) ? 1 : 2, SCRIPT_TEXT(173), FF_CENTER);
+			PrintString(phd_centerx, phd_winymax - 2 * font_height, (selected_option & 4) ? 1 : 2, SCRIPT_TEXT(304), FF_CENTER);
+			PrintString(phd_centerx, phd_winymax - 1 * font_height, (selected_option & 8) ? 1 : 2, SCRIPT_TEXT(336), FF_CENTER);
+			flag = 8;
+			break;
+
+		case 3:
+			DoOptions();
+			break;
+		}
+
+		if (menu_to_display < 2)
+		{
+			if (dbinput & IN_FORWARD)
+			{
+				if (selected_option > 1)
+					selected_option >>= 1;
+
+				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+			}
+
+			if (dbinput & IN_BACK)
+			{
+				if (selected_option < flag)
+					selected_option <<= 1;
+
+				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+			}
+		}
+
+		if (dbinput & IN_DESELECT && menu_to_display > 0)
+		{
+			menu_to_display = 0;
+			selected_option = selected_option_bak;
+			S_SoundStopAllSamples();
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+		}
+
+		if (dbinput & IN_SELECT && !keymap[DIK_LALT] && menu_to_display < 2)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+
+			if (!menu_to_display)
+			{
+				if (selected_option > 0 && selected_option <= 8)
+				{
+					switch (selected_option)
+					{
+					case 1:
+
+						if (Gameflow->PlayAnyLevel)
+						{
+							selected_option_bak = selected_option;
+							menu_to_display = 1;
+						}
+						else
+						{
+							gfLevelComplete = 1;
+							ret = 3;
+						}
+
+						break;
+
+					case 2:
+						GetSaveLoadFiles();
+						selected_option_bak = selected_option;
+						menu_to_display = 2;
+						break;
+
+					case 3:
+					case 5:
+					case 6:
+					case 7:
+						break;
+
+					case 4:
+						selected_option_bak = selected_option;
+						menu_to_display = 3;
+						break;
+
+					case 8:
+						ret = 4;
+						break;
+					}
+				}
+			}
+			else if (menu_to_display == 1)
+			{
+				gfLevelComplete = 0;
+				n2 = (long)selected_option;
+
+				while (n2)
+				{
+					n2 >>= 1;
+					gfLevelComplete++;
+				}
+
+				ret = 3;
+			}
+		}
+	}
+
+	if (thread_ended)
+		return 4;
+
+	if (ret)
+	{
+		load_or_new = ret;
+		gfLevelComplete_bak = gfLevelComplete;
+		gfLevelComplete = 0;
+		ret = 0;
+		SetFade(0, 255);
+	}
+
+	return ret;
+}
+#pragma warning(pop)
+
+void DoTitle(uchar Name, uchar Audio)
+{
+	SetFade(255, 0);
+	num_fmvs = 0;
+	fmv_to_play[1] = 0;
+	fmv_to_play[0] = 0;
+	sgInitialiseHub(1);
+	savegame.Level.Timer = 0;
+	savegame.Level.Distance = 0;
+	savegame.Level.AmmoUsed = 0;
+	savegame.Level.AmmoHits = 0;
+	savegame.Level.Kills = 0;
+	savegame.Level.Secrets = 0;
+	savegame.Level.HealthUsed = 0;
+	savegame.Game.AmmoHits = 0;
+	savegame.Game.Timer = 0;
+	savegame.Game.Distance = 0;
+	savegame.Game.AmmoUsed = 0;
+	savegame.Game.Kills = 0;
+	savegame.Game.Secrets = 0;
+	savegame.Game.HealthUsed = 0;
+	savegame.HaveBikeBooster = 0;
+	S_LoadLevelFile(Name);
+	GLOBAL_lastinvitem = -1;
+	InitSpotCamSequences();
+	title_controls_locked_out = 0;
+	InitialiseFXArray(1);
+	InitialiseLOTarray(1);
+	SetFogColor(gfFog.r, gfFog.g, gfFog.b);
+	ClearFXFogBulbs();
+	InitialisePickUpDisplay();
+	SOUND_Stop();
+	S_CDPlay(Audio, 1);
+	IsAtmospherePlaying = 0;
+	InitialiseCamera();
+
+	if (bDoCredits)
+	{
+		cutseq_num = 28;
+		SetFadeClip(32, 1);
+		ScreenFadedOut = 1;
+		ScreenFade = 255;
+		dScreenFade = 255;
+		S_CDPlay(98, 1);
+	}
+	else
+	{
+		InitialiseSpotCam(1);
+		ScreenFadedOut = 0;
+		ScreenFade = 0;
+		dScreenFade = 0;
+		ScreenFadeBack = 0;
+		ScreenFadeSpeed = 8;
+		ScreenFading = 0;
+	}
+
+	bUseSpotCam = 1;
+	lara_item->mesh_bits = 0;
+	gfGameMode = 1;
+	gfLevelComplete = 0;
+	nFrames = 2;
+	gfStatus = ControlPhase(2, 0);
+
+	while (!gfStatus)
+	{
+		S_InitialisePolyList();
+		gfStatus = TitleOptions();	//INLINEDDDDD!!!!!
+
+		if (gfStatus)
+			break;
+
+		handle_cutseq_triggering(Name);
+		nFrames = DrawPhaseGame();
+		gfStatus = ControlPhase(nFrames, 0);
+	}
+
+	S_SoundStopAllSamples();
+	S_CDStop();
+	bUseSpotCam = 0;
+	bDisableLaraControl = 0;
+
+	if (gfLevelComplete == 1 && gfStatus != 2)
+		PlayFmvNow(12);
+
+	if (gfStatus != 4)
+		RenderLoadPic(0);
+
+	input = 0;
+}
+
 void inject_gameflow(bool replace)
 {
 	INJECT(0x00451770, DoGameflow, replace);
 	INJECT(0x00452710, DoLevel, replace);
+	INJECT(0x00451E30, DoTitle, replace);
 }

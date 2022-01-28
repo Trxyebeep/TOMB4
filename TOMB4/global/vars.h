@@ -323,6 +323,8 @@
 #define nFrames	VAR_U_(0x004AF454, long)
 #define DestFadeScreenHeight	VAR_U_(0x004BF382, short)
 #define DEL_playingamefmv	VAR_U_(0x004BF65C, char)
+#define Chris_Menu	VAR_U_(0x004BF66C, char)
+#define title_controls_locked_out	VAR_U_(0x007FD268, char)
 
 
 
@@ -381,6 +383,8 @@
 #define draw_room_list	ARRAY_(0x004BF424, long, [128])
 #define draw_rooms	ARRAY_(0x007FDF80, short, [100])
 #define Bucket	ARRAY_(0x004BFEA0, TEXTUREBUCKET, [20])
+#define title_string	ARRAY_(0x004AFAA4, char, [8])
+#define	gfLevelNames	ARRAY_(0x007FD2C0, uchar, [40])
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1

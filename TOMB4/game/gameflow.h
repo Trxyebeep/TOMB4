@@ -5,8 +5,9 @@ void inject_gameflow(bool replace);
 
 void DoGameflow();
 void DoLevel(uchar Name, uchar Audio);
+void DoTitle(uchar Name, uchar Audio);
 
-#define DoTitle	( (void(__cdecl*)(uchar, uchar)) 0x00451E30 )
+#define DoCredits	( (long(__cdecl*)()) 0x00452B80 )
 
 enum gf_commands
 {

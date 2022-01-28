@@ -479,7 +479,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x00451510		LoadGameflow
 0x00451770	+	DoGameflow
-0x00451E30		DoTitle
+0x00451E30	+	DoTitle
 0x00452710	+	DoLevel
 0x00452B80		DoCredits
 
