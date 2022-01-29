@@ -388,6 +388,8 @@
 #define Bucket	ARRAY_(0x004BFEA0, TEXTUREBUCKET, [20])
 #define title_string	ARRAY_(0x004AFAA4, char, [8])
 #define	gfLevelNames	ARRAY_(0x007FD2C0, uchar, [40])
+#define Drips	ARRAY_(0x00800DC0, DRIP_STRUCT, [32])
+#define GlobalCollisionBounds	ARRAY_(0x007FE7F0, short, [6])
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1

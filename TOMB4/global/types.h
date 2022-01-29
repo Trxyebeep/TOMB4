@@ -1570,6 +1570,23 @@ struct THREAD
 	ulong address;
 };
 
+struct DRIP_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	uchar On;
+	uchar R;
+	uchar G;
+	uchar B;
+	short Yvel;
+	uchar Gravity;
+	uchar Life;
+	short RoomNumber;
+	uchar Outside;
+	uchar Pad;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {

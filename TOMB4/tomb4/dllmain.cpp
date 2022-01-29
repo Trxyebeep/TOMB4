@@ -35,6 +35,7 @@
 #include "../specific/polyinsert.h"
 #include "../game/effect2.h"
 #include "../specific/file.h"
+#include "../game/ahmet.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -89,6 +90,7 @@ void inject_all(bool replace)
 	inject_polyinsert(replace);
 	inject_effect2(replace);
 	inject_file(replace);
+	inject_ahmet(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

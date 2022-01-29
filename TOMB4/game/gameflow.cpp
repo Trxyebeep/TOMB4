@@ -694,11 +694,11 @@ long TitleOptions()
 			else if (menu_to_display == 1)
 			{
 				gfLevelComplete = 0;
-				n2 = (long)selected_option;
+				i = selected_option;
 
-				while (n2)
+				while (i)
 				{
-					n2 >>= 1;
+					i >>= 1;
 					gfLevelComplete++;
 				}
 

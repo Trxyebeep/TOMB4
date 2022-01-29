@@ -667,10 +667,10 @@ void construct_object_list()
 		insert_object_into_list(INV_BIGMEDI_ITEM);
 
 	if (lara.small_water_skin)
-		insert_object_into_list_v2(lara.small_water_skin + INV_WATERSKIN1_EMPTY_ITEM - 1);
+		insert_object_into_list(lara.small_water_skin + INV_WATERSKIN1_EMPTY_ITEM - 1);
 
 	if (lara.big_water_skin)
-		insert_object_into_list_v2(lara.big_water_skin + INV_WATERSKIN2_EMPTY_ITEM - 1);
+		insert_object_into_list(lara.big_water_skin + INV_WATERSKIN2_EMPTY_ITEM - 1);
 
 	if (lara.crowbar)
 		insert_object_into_list(INV_CROWBAR_ITEM);
