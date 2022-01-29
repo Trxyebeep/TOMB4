@@ -1617,7 +1617,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00476410		S_GetUVRotateTextures
 0x00476470		LoadLevel
 0x00476790		FreeLevel
-0x004768C0		S_LoadLevelFile
+0x004768C0	+	S_LoadLevelFile
 
 
 		specific/function_stubs.cpp

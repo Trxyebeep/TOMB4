@@ -707,7 +707,7 @@ long TitleOptions()
 		}
 	}
 
-	if (thread_ended)
+	if (MainThread.ended)
 		return 4;
 
 	if (ret)

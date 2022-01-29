@@ -1,4 +1,6 @@
 #pragma once
 #include "../global/vars.h"
 
-#define S_LoadLevelFile	( (void(__cdecl*)(uchar)) 0x004768C0 )
+void inject_file(bool replace);
+
+long S_LoadLevelFile(long num);

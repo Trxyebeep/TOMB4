@@ -2566,8 +2566,8 @@ long S_CallInventory2()
 			val = 1;
 		}
 
-		if (thread_ended)
-			return thread_ended;
+		if (MainThread.ended)
+			return MainThread.ended;
 
 		S_DisplayMonoScreen();
 		do_debounced_joystick_poo();

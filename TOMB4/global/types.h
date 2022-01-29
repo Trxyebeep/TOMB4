@@ -1561,6 +1561,15 @@ struct TEXTUREBUCKET
 	D3DTLBUMPVERTEX Vertex[544];
 };
 
+struct THREAD
+{
+	volatile long active;
+	long unk;
+	volatile long ended;
+	ulong handle;
+	ulong address;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {

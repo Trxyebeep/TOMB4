@@ -29,7 +29,6 @@
 #define Gameflow	VAR_U_(0x007FD278, GAMEFLOW*)
 #define FadeScreenHeight	VAR_U_(0x004BF380, short)
 #define gfGameMode	VAR_U_(0x004AF451, char)
-#define thread_ended	VAR_U_(0x00533B10, long)
 #define BinocularRange	VAR_U_(0x004BF3E4, long)
 #define BinocularOldCamera	VAR_U_(0x004BF3EC, camera_type)
 #define LaserSight	VAR_U_(0x004BF3F0, long)
@@ -325,6 +324,10 @@
 #define DEL_playingamefmv	VAR_U_(0x004BF65C, char)
 #define Chris_Menu	VAR_U_(0x004BF66C, char)
 #define title_controls_locked_out	VAR_U_(0x007FD268, char)
+#define MainThread	VAR_U_(0x00533B08, THREAD)
+#define LevelLoadingThread	VAR_U_(0x005333A8, THREAD)
+#define gfFilenameWad	VAR_U_(0x007FD28C, char*)
+#define gfFilenameOffset	VAR_U_(0x007FD2EC, ushort*)
 
 
 
