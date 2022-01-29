@@ -7,6 +7,9 @@
 #include "../specific/function_stubs.h"
 #include "sound.h"
 #include "items.h"
+#include "control.h"
+#include "objects.h"
+#include "lot.h"
 
 short ScalesBounds[12] = { -1408, -640, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 
@@ -95,7 +98,46 @@ void ScalesCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+long ReTriggerAhmet(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (item->current_anim_state == 7 && item->frame_number == anims[item->anim_number].frame_end)
+	{
+		FlashFadeR = 255;
+		FlashFadeG = 64;
+		FlashFadeB = 0;
+		FlashFader = 32;
+		item->pos.x_pos = ((item->item_flags[0] & 0xFFFF) << 10) | 512;
+		item->pos.y_pos = (item->item_flags[1] & 0xFFFF) << 8;
+		item->pos.z_pos = ((item->item_flags[2] & 0xFFFF) << 10) | 512;
+		IsRoomOutside(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+
+		if (item->room_number != IsRoomOutsideNo)
+			ItemNewRoom(item_number, IsRoomOutsideNo);
+
+		item->anim_number = objects[AHMET].anim_index;
+		item->frame_number = anims[item->anim_number].frame_base;
+		item->current_anim_state = 1;
+		item->goal_anim_state = 1;
+		item->hit_points = objects[AHMET].hit_points;
+		AddActiveItem(item_number);
+		item->flags &= ~IFL_INVISIBLE;
+		item->after_death = 0;
+		item->collidable = 1;
+		item->status = ITEM_ACTIVE;
+		EnableBaddieAI(item_number, 1);
+		item->trigger_flags = 1;
+		return 1;
+	}
+
+	return 0;
+}
+
 void inject_ahmet(bool replace)
 {
 	INJECT(0x00401AC0, ScalesCollision, replace);
+	INJECT(0x00401990, ReTriggerAhmet, replace);
 }
