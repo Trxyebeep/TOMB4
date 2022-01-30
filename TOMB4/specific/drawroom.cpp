@@ -468,7 +468,7 @@ void PrelightVertsNonMMX(long nVerts, D3DTLVERTEX* v, ROOM_INFO* r)
 	long* prelight;
 	long pR, pG, pB, vR, vG, vB, cR, cG, cB;
 
-	if (bWaterEffect && !(r->flags & 1))
+	if (bWaterEffect && !(r->flags & ROOM_UNDERWATER))
 		prelight = r->prelightwater;
 	else
 		prelight = r->prelight;

@@ -586,8 +586,8 @@ void DrawRooms(short CurrentRoom)
 	phd_bottom = phd_winymax;
 	r->test_right = phd_winxmax;
 	r->test_bottom = phd_winymax;
-	outside = r->flags & 8;
-	camera_underwater = r->flags & 1;
+	outside = r->flags & ROOM_OUTSIDE;
+	camera_underwater = r->flags & ROOM_UNDERWATER;
 	r->bound_active = 2;
 	draw_room_list[0] = CurrentRoom;
 	room_list_start = 0;

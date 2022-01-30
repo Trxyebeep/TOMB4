@@ -347,7 +347,7 @@ static long CanGetOff(short num)	//always called with num = 1
 
 void BikeExplode(ITEM_INFO* item)
 {
-	if (room[item->room_number].flags & 1)
+	if (room[item->room_number].flags & ROOM_UNDERWATER)
 		TriggerUnderwaterExplosion(item, 1);
 	else
 	{
@@ -552,7 +552,7 @@ void AnimateBike(ITEM_INFO* item, long hitWall, long killed)
 		}
 	}
 
-	if (room[item->room_number].flags & 1)
+	if (room[item->room_number].flags & ROOM_UNDERWATER)
 	{
 		lara_item->goal_anim_state = 20;
 		lara_item->hit_points = 0;
