@@ -541,7 +541,7 @@ static void DoMirrorStuff()
 			}
 
 			lara.left_arm.frame_number = 0;
-			lara.right_arm.frame_number = 0; lara.right_arm.frame_number = 0;
+			lara.right_arm.frame_number = 0;
 			lara.left_arm.frame_base = anims[lara.left_arm.anim_number].frame_ptr;
 			lara.right_arm.frame_base = anims[lara.right_arm.anim_number].frame_ptr;
 		}
