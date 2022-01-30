@@ -530,18 +530,20 @@ static void DoMirrorStuff()
 		{
 			if (lara.gun_type == WEAPON_REVOLVER)
 			{
-				lara.left_arm.anim_number = objects[SIXSHOOTER_ANIM].anim_index + 2;
-				lara.right_arm.anim_number = objects[SIXSHOOTER_ANIM].anim_index + 2;
+				lara.left_arm.anim_number = objects[SIXSHOOTER_ANIM].anim_index + 3;
+				lara.right_arm.anim_number = objects[SIXSHOOTER_ANIM].anim_index + 3;
+				lara.left_arm.frame_number = anims[lara.left_arm.anim_number].frame_base;
+				lara.right_arm.frame_number = anims[lara.right_arm.anim_number].frame_base;
 			}
 
 			if (lara.gun_type == WEAPON_CROSSBOW)
 			{
 				lara.left_arm.anim_number = objects[CROSSBOW_ANIM].anim_index + 2;			
 				lara.right_arm.anim_number = objects[CROSSBOW_ANIM].anim_index + 2;
+				lara.left_arm.frame_number = 0;
+				lara.right_arm.frame_number = 0;
 			}
 
-			lara.left_arm.frame_number = 0;
-			lara.right_arm.frame_number = 0;
 			lara.left_arm.frame_base = anims[lara.left_arm.anim_number].frame_ptr;
 			lara.right_arm.frame_base = anims[lara.right_arm.anim_number].frame_ptr;
 		}
