@@ -229,7 +229,7 @@ void DoGameflow()
 
 		case CMD_LENSFLARE:
 			gfLensFlare.x = ((gf[1] << 8) | gf[0]) << 8;
-			gfLensFlare.y = ((gf[3] << 8) | gf[2]) << 8;
+			gfLensFlare.y = short((gf[3] << 8) | gf[2]) << 8;
 			gfLensFlare.z = ((gf[5] << 8) | gf[4]) << 8;
 			gfLensFlareColour.r = gf[6];
 			gfLensFlareColour.g = gf[7];
