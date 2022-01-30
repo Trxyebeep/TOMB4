@@ -13,7 +13,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00401000		InitialiseAhmet
 0x00401080		AhmetControl
 0x00401730		ExplodeAhmet
-0x004017E0		ScalesControl
+0x004017E0	+	ScalesControl
 0x00401990	+	ReTriggerAhmet
 0x00401AC0	+	ScalesCollision
 

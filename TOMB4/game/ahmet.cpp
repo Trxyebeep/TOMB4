@@ -10,6 +10,7 @@
 #include "control.h"
 #include "objects.h"
 #include "lot.h"
+#include "switch.h"
 
 short ScalesBounds[12] = { -1408, -640, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 
@@ -136,8 +137,67 @@ long ReTriggerAhmet(short item_number)
 	return 0;
 }
 
+void ScalesControl(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+	FLOOR_INFO* floor;
+	long flags, numTriggers;
+	short itemNos[8];
+	short room_number;
+
+	item = &items[item_number];
+
+	if (item->frame_number == anims[item->anim_number].frame_end)
+	{
+		if (item->current_anim_state == 1 || item->item_flags[1])
+		{
+			if (item->anim_number == objects[item->object_number].anim_index)
+			{
+				RemoveActiveItem(item_number);
+				item->status = ITEM_INACTIVE;
+				item->item_flags[1] = 0;
+			}
+			else if (ReTriggerAhmet(short((long)lara.GeneralPtr)))	//stupid
+			{
+				for (numTriggers = GetSwitchTrigger(item, itemNos, 0); numTriggers > 0; numTriggers--)
+				{
+					item2 = &items[itemNos[numTriggers - 1]];
+
+					if (item2->object_number != FLAME_EMITTER2)
+						item2->flags = 1024;
+				}
+
+				item->goal_anim_state = 1;
+			}
+		}
+		else
+		{
+			if (item->current_anim_state == 2)
+			{
+				flags = -512;
+				RemoveActiveItem(item_number);
+				item->status = ITEM_INACTIVE;
+			}
+			else
+			{
+				flags = -1024;
+				item->item_flags[1] = 1;
+			}
+
+			room_number = item->room_number;
+			floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+			GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+			TestTriggers(trigger_index, 1, flags);
+		}
+	}
+
+	AnimateItem(item);
+}
+
 void inject_ahmet(bool replace)
 {
 	INJECT(0x00401AC0, ScalesCollision, replace);
 	INJECT(0x00401990, ReTriggerAhmet, replace);
+	INJECT(0x004017E0, ScalesControl, replace);
 }
