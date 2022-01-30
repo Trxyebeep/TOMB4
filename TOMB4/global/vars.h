@@ -390,6 +390,7 @@
 #define	gfLevelNames	ARRAY_(0x007FD2C0, uchar, [40])
 #define Drips	ARRAY_(0x00800DC0, DRIP_STRUCT, [32])
 #define GlobalCollisionBounds	ARRAY_(0x007FE7F0, short, [6])
+#define Slist	ARRAY_(0x007F6EE0, SPHERE, [34])
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1

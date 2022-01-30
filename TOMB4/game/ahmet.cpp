@@ -11,6 +11,9 @@
 #include "objects.h"
 #include "lot.h"
 #include "switch.h"
+#include "sphere.h"
+#include "effect2.h"
+#include "box.h"
 
 short ScalesBounds[12] = { -1408, -640, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 
@@ -195,9 +198,44 @@ void ScalesControl(short item_number)
 	AnimateItem(item);
 }
 
+void ExplodeAhmet(ITEM_INFO* item)
+{
+	SPHERE* sphere;
+	long spheres;
+
+	if (!(wibble & 7))
+	{
+		for (spheres = GetSpheres(item, Slist, 1); spheres > 0; spheres--)
+		{
+			sphere = &Slist[spheres];
+			TriggerFireFlame(sphere->x, sphere->y, sphere->z, -1, 1);
+		}
+	}
+
+	TriggerDynamic(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 13, (GetRandomControl() & 0x3F) + 192, (GetRandomControl() & 0x1F) + 96, 0);
+	SoundEffect(SFX_LOOP_FOR_SMALL_FIRES, &item->pos, SFX_DEFAULT);
+}
+
+void InitialiseAhmet(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	InitialiseCreature(item_number);
+	item->anim_number = objects[AHMET].anim_index;
+	item->frame_number = anims[item->anim_number].frame_base;
+	item->current_anim_state = 1;
+	item->goal_anim_state = 1;
+	item->item_flags[0] = short(item->pos.x_pos >> 10);
+	item->item_flags[1] = short(item->pos.y_pos >> 8);
+	item->item_flags[2] = short(item->pos.z_pos >> 10);
+}
+
 void inject_ahmet(bool replace)
 {
 	INJECT(0x00401AC0, ScalesCollision, replace);
 	INJECT(0x00401990, ReTriggerAhmet, replace);
 	INJECT(0x004017E0, ScalesControl, replace);
+	INJECT(0x00401730, ExplodeAhmet, replace);
+	INJECT(0x00401000, InitialiseAhmet, replace);
 }

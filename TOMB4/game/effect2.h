@@ -14,3 +14,4 @@ void TriggerExplosionSmoke(long x, long y, long z, long uw);
 #define TriggerDynamic	( (void(__cdecl*)(long, long, long, long, long, long, long)) 0x004361A0 )
 #define GetFreeSpark	( (long(__cdecl*)()) 0x00433D30 )
 #define TriggerExplosionSparks	( (void(__cdecl*)(long, long, long, long, long, long, short)) 0x004349F0 )
+#define TriggerFireFlame	( (void(__cdecl*)(long, long, long, long, long)) 0x00435130 )
