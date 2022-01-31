@@ -466,7 +466,7 @@ void S_InitialisePolyList()
 	rect.x2 = App.dx.rViewport.left + App.dx.rViewport.right;
 	rect.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
 
-	if (gfCurrentLevel & GF_TRAIN)
+	if (gfLevelFlags & GF_TRAIN)
 		col = 0xCEAE60;
 	else if (gfCurrentLevel == 5 || gfCurrentLevel == 6)
 	{
