@@ -78,9 +78,31 @@ void SaveLaraData()
 	savegame.cutscene_triggered = CutSceneTriggered;
 }
 
+void WriteSG(void* pointer, long size)
+{
+	char* data;
+
+	SGcount += size;
+
+	for (data = (char*)pointer; size > 0; size--)
+		*SGpoint++ = *data++;
+}
+
+void ReadSG(void* pointer, long size)
+{
+	char* data;
+
+	SGcount += size;
+
+	for (data = (char*)pointer; size > 0; size--)
+		*data++ = *SGpoint++;
+}
+
 void inject_savegame(bool replace)
 {
 	INJECT(0x0045A0E0, CheckSumValid, replace);
 	INJECT(0x0045A100, sgInitialiseHub, replace);
 	INJECT(0x0045A1B0, SaveLaraData, replace);
+	INJECT(0x0045B000, WriteSG, replace);
+	INJECT(0x0045BD80, ReadSG, replace);
 }

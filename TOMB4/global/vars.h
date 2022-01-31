@@ -330,6 +330,8 @@
 #define gfFilenameOffset	VAR_U_(0x007FD2EC, ushort*)
 #define mesh_base	VAR_U_(0x00533A7C, short*)
 #define malloc_buffer	VAR_U_(0x00533A7C, char*)
+#define SGcount	VAR_U_(0x004BF6D8, long)
+#define SGpoint	VAR_U_(0x004BF6D4, char*)
 
 
 
