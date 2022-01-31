@@ -1587,6 +1587,18 @@ struct DRIP_STRUCT
 	uchar Pad;
 };
 
+struct AI_INFO
+{
+	short zone_number;
+	short enemy_zone;
+	long distance;
+	long ahead;
+	long bite;
+	short angle;
+	short x_angle;
+	short enemy_facing;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {
