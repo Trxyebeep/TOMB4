@@ -1037,7 +1037,7 @@ struct SAVEGAME_INFO	//savegame is at 007F76C0
 	short WeaponCurrent;
 	short WeaponGoal;
 	CVECTOR fog_colour;
-	uchar SavedHubLara : 1;	//flag that we saved Lara's data when we initialised hub, only set to 1 when InitialiseHub is called with 1
+	uchar HubSavedLara : 1;	//flag that we saved Lara's data when we initialised hub, only set to 1 when InitialiseHub is called with 1
 	uchar AutoTarget : 1;
 	uchar HaveBikeBooster : 1;	//have the bike nitro thing
 	char buffer[15410];
