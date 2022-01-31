@@ -1,6 +1,9 @@
 #include "../tomb4/pch.h"
 #include "savegame.h"
 #include "objects.h"
+#include "traps.h"
+#include "items.h"
+#include "laramisc.h"
 
 long CheckSumValid(char* buffer)
 {
@@ -98,6 +101,70 @@ void ReadSG(void* pointer, long size)
 		*data++ = *SGpoint++;
 }
 
+void SaveHubData(long index)
+{
+	savegame.HubSizes[index] = ushort(SGcount - savegame.HubOffsets[index]);
+
+	if (index < 10)
+		savegame.HubSizes[index - 9] = savegame.HubSizes[index] + savegame.HubOffsets[index];
+}
+
+void RestoreLaraData(long FullSave)
+{
+	ITEM_INFO* item;
+
+	if (!FullSave)
+		savegame.Lara.item_number = lara.item_number;
+
+	memcpy(&lara, &savegame.Lara, sizeof(lara));
+	lara.target = 0;
+	lara.spaz_effect = 0;
+	lara.left_arm.frame_base = (short*)((long)lara.left_arm.frame_base + (long)objects[PISTOLS_ANIM].frame_base);
+	lara.right_arm.frame_base = (short*)((long)lara.right_arm.frame_base + (long)objects[PISTOLS_ANIM].frame_base);
+	lara.GeneralPtr = (void*)((long)lara.GeneralPtr + (long)malloc_buffer);
+
+	if (lara.burn)
+	{
+		lara.burn = 0;
+		LaraBurn();
+	}
+
+	if (lara.weapon_item != NO_ITEM)
+	{
+		lara.weapon_item = CreateItem();
+		item = &items[lara.weapon_item];
+		item->object_number = savegame.WeaponObject;
+		item->anim_number = savegame.WeaponAnim;
+		item->frame_number = savegame.WeaponFrame;
+		item->current_anim_state = savegame.WeaponCurrent;
+		item->goal_anim_state = savegame.WeaponGoal;
+		item->status = ITEM_ACTIVE;
+		item->room_number = 255;
+	}
+
+	if (savegame.HubSavedLara)
+	{
+		LaraInitialiseMeshes();
+		savegame.HubSavedLara &= ~1;
+		lara.last_gun_type = WEAPON_PISTOLS;
+		lara.gun_type = WEAPON_PISTOLS;
+		lara.request_gun_type = WEAPON_PISTOLS;
+
+		if (lara.weapon_item != NO_ITEM)
+		{
+			KillItem(lara.weapon_item);
+			lara.weapon_item = NO_ITEM;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 15; i++)
+			lara.mesh_ptrs[i] = (short*)((long)lara.mesh_ptrs[i] + (long)mesh_base);
+	}
+
+	CutSceneTriggered = savegame.cutscene_triggered;
+}
+
 void inject_savegame(bool replace)
 {
 	INJECT(0x0045A0E0, CheckSumValid, replace);
@@ -105,4 +172,6 @@ void inject_savegame(bool replace)
 	INJECT(0x0045A1B0, SaveLaraData, replace);
 	INJECT(0x0045B000, WriteSG, replace);
 	INJECT(0x0045BD80, ReadSG, replace);
+	INJECT(0x0045A470, SaveHubData, replace);
+	INJECT(0x0045B080, RestoreLaraData, replace);
 }

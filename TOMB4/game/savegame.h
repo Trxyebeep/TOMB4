@@ -8,6 +8,8 @@ void sgInitialiseHub(long dont_save_lara);
 void SaveLaraData();
 void WriteSG(void* pointer, long size);
 void ReadSG(void* pointer, long size);
+void SaveHubData(long index);
+void RestoreLaraData(long FullSave);
 
 #define sgSaveLevel	( (void(__cdecl*)()) 0x0045BDC0 )
 #define sgRestoreGame	( (void(__cdecl*)()) 0x0045B040 )
