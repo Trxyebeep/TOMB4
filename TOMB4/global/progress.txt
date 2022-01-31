@@ -1135,7 +1135,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x0045A0E0	+	CheckSumValid
 0x0045A100	+	sgInitialiseHub
-0x0045A1B0		SaveLaraData
+0x0045A1B0	+	SaveLaraData
 0x0045A2E0		sgSaveGame
 0x0045A340		CreateCheckSum
 0x0045A370		OpenSaveGame

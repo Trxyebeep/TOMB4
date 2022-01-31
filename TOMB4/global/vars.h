@@ -328,6 +328,8 @@
 #define LevelLoadingThread	VAR_U_(0x005333A8, THREAD)
 #define gfFilenameWad	VAR_U_(0x007FD28C, char*)
 #define gfFilenameOffset	VAR_U_(0x007FD2EC, ushort*)
+#define mesh_base	VAR_U_(0x00533A7C, short*)
+#define malloc_buffer	VAR_U_(0x00533A7C, char*)
 
 
 
