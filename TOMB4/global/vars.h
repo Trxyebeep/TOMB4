@@ -332,6 +332,7 @@
 #define malloc_buffer	VAR_U_(0x00533A7C, char*)
 #define SGcount	VAR_U_(0x004BF6D8, long)
 #define SGpoint	VAR_U_(0x004BF6D4, char*)
+#define AIObjects	VAR_U_(0x007FD204, AIOBJECT*)
 
 
 

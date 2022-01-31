@@ -1147,7 +1147,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0045B230		RestoreLevelData
 0x0045BD80	+	ReadSG
 0x0045BDC0		sgSaveLevel
-0x0045BDF0		sgRestoreLevel
+0x0045BDF0	+	sgRestoreLevel
 
 
 		game/scarab.cpp

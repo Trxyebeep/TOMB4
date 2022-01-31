@@ -1599,6 +1599,19 @@ struct AI_INFO
 	short enemy_facing;
 };
 
+struct AIOBJECT
+{
+	short object_number;
+	short room_number;
+	long x;
+	long y;
+	long z;
+	short trigger_flags;
+	short flags;
+	short y_rot;
+	short box_number;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {
