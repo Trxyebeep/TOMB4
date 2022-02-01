@@ -247,6 +247,11 @@ void DoGameflow()
 			gfFog.r = gf[0];
 			gfFog.g = gf[1];
 			gfFog.b = gf[2];
+#ifdef GENERAL_FIXES		//fixes fog for levels that never call SetFog, like Desert Railroad.
+			savegame.fog_colour.r = gfFog.r;
+			savegame.fog_colour.g = gfFog.g;
+			savegame.fog_colour.b = gfFog.b;
+#endif
 			gf += 3;
 			break;
 
