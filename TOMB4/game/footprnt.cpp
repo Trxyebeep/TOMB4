@@ -78,7 +78,7 @@ void S_DrawFootPrints()
 	PHD_VECTOR pos;
 	TEXTURESTRUCT tex;
 	float u1, v1, u2, v2;
-	long x1, y1, z1, x2, y2, z2, x3, y3, z3, col;
+	long x1, y1, z1, x2, y2, z2, x3, y3, z3, col, opt;
 	
 	for (int i = 0; i < 32; i++)
 	{
@@ -141,7 +141,10 @@ void S_DrawFootPrints()
 			tex.v2 = v1;	//top right
 			tex.u3 = u1;
 			tex.v3 = v2;	//bottom left
+			opt = nPolyType;
+			nPolyType = 6;	//stops footprints messing up in fog :)
 			AddTriSorted(v, 0, 1, 2, &tex, 1);
+			nPolyType = opt;
 		}
 	}
 }
