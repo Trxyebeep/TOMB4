@@ -1338,7 +1338,7 @@ void do_examine_mode()
 
 void dels_give_lara_items_cheat()
 {
-	long piss;	//exception for historical purposes
+	long piss;	//for historical purposes
 
 	if (objects[CROWBAR_ITEM].loaded)
 		lara.crowbar = 1;
@@ -1358,16 +1358,16 @@ void dels_give_lara_items_cheat()
 			lara.keyitems |= 1 << piss;
 	}
 
-	for (piss = 0; piss < 4; ++piss)
+	for (piss = 0; piss < 4; piss++)
 	{
 		if (objects[PICKUP_ITEM1 + piss].loaded)
 			lara.pickupitems |= 1 << piss;
 	}
 
-	for (piss = 0; piss < 6; ++piss)
+	for (piss = 0; piss < 6; piss++)
 	{
 		if (objects[QUEST_ITEM1 + piss].loaded)
-			lara.pickupitems |= 1 << piss;
+			lara.questitems |= 1 << piss;
 	}
 
 	if (objects[WATERSKIN1_EMPTY].loaded)
