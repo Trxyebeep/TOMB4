@@ -333,6 +333,8 @@
 #define SGcount	VAR_U_(0x004BF6D8, long)
 #define SGpoint	VAR_U_(0x004BF6D4, char*)
 #define AIObjects	VAR_U_(0x007FD204, AIOBJECT*)
+#define TriggerTimer	VAR_U_(0x004BF3FC, char)
+#define flipeffect	VAR_U_(0x004AEBFC, long)
 
 
 
