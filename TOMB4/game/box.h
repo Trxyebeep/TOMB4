@@ -21,3 +21,5 @@ void CreatureDie(short item_number, long explode);
 typedef short(__cdecl* generate)(long, long, long, short, short, short);
 #define CreatureEffectT	( (short(__cdecl*)(ITEM_INFO*, BITE_INFO*, short, short, generate)) 0x00442170 )
 #define CreatureEffect	( (short(__cdecl*)(ITEM_INFO*, BITE_INFO*, generate)) 0x00442110 )
+#define CreatureUnderwater	( (void(__cdecl*)(ITEM_INFO*, long)) 0x00442080 )
+#define CreatureFloat	( (void(__cdecl*)(short)) 0x00441F80 )

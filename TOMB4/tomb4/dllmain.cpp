@@ -38,6 +38,7 @@
 #include "../game/ahmet.h"
 #include "../game/savegame.h"
 #include "../game/effects.h"
+#include "../game/croc.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -95,6 +96,7 @@ void inject_all(bool replace)
 	inject_ahmet(replace);
 	inject_savegame(replace);
 	inject_effects(replace);
+	inject_croc(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
