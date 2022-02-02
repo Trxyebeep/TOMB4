@@ -1352,8 +1352,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x00464030	+	DrawTrainFloor
 0x004640A0	+	DrawTrainObjects
-0x004644B0		InitialiseTrainJeep
-0x00464520		TrainJeepControl
+0x004644B0	+	InitialiseTrainJeep
+0x00464520	+	TrainJeepControl
 
 
 		game/traps.cpp

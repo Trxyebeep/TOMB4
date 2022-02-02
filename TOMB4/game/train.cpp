@@ -3,6 +3,9 @@
 #include "../specific/3dmath.h"
 #include "../specific/output.h"
 #include "../specific/specificfx.h"
+#include "sound.h"
+#include "control.h"
+#include "items.h"
 
 void DrawTrainObjects()
 {
@@ -87,8 +90,64 @@ void DrawTrainFloor()
 	lara_item->pos.x_pos = x;
 }
 
+void InitialiseTrainJeep(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+
+	item = &items[item_number];
+	item->item_flags[0] = -80;
+
+	for (int i = 0; i < level_items; i++)	//find your raghead
+	{
+		item2 = &items[i];
+
+		if (item != item2 && item2->trigger_flags == item->trigger_flags)
+		{
+			item->item_flags[1] = i;
+			item2->item_flags[0] = -80;
+			item2->pos.y_pos = item->pos.y_pos - 1024;
+		}
+	}
+}
+
+void TrainJeepControl(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+	short room_number;
+
+	item = &items[item_number];
+	item2 = &items[item->item_flags[1]];
+
+	if (item->item_flags[0] == -80)
+	{
+		if (item->item_flags[2] < 0x4000)
+			item->item_flags[2] += 32;
+	}
+	else if (item->item_flags[2] > 1024)
+		item->item_flags[2] -= 512;
+
+	SoundEffect(SFX_JEEP_MOVE, &item->pos, (item->item_flags[2] << 9) + (0x1000000 | SFX_SETVOL));
+	item->pos.x_pos += item->item_flags[0];
+	AnimateItem(item);
+	room_number = item->room_number;
+	GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+
+	if (room_number != item->room_number)
+		ItemNewRoom(item_number, room_number);
+
+	if (item2->item_flags[0] > -40 || item2->hit_points < 1)
+		item->item_flags[0] += 3;
+
+	if (item->item_flags[0] > 400)
+		KillItem(item_number);
+}
+
 void inject_train(bool replace)
 {
 	INJECT(0x004640A0, DrawTrainObjects, replace);
 	INJECT(0x00464030, DrawTrainFloor, replace);
+	INJECT(0x004644B0, InitialiseTrainJeep, replace);
+	INJECT(0x00464520, TrainJeepControl, replace);
 }
