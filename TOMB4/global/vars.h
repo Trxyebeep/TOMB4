@@ -341,6 +341,7 @@
 #define malloc_ptr	VAR_U_(0x007E71BC, char*)
 #define malloc_free	VAR_U_(0x007E71D4, long)
 #define malloc_used	VAR_U_(0x007E71D0, long)
+#define baddie_slots	VAR_U_(0x007FD1FC, CREATURE_INFO*)
 
 
 

@@ -40,6 +40,7 @@
 #include "../game/effects.h"
 #include "../game/croc.h"
 #include "../specific/function_stubs.h"
+#include "../game/bat.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -99,6 +100,7 @@ void inject_all(bool replace)
 	inject_effects(replace);
 	inject_croc(replace);
 	inject_funcstubs(replace);
+	inject_bat(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

@@ -29,8 +29,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/bat.cpp
 
-0x00402A10		InitialiseBat
-0x00402A70		BatControl
+0x00402A10	+	InitialiseBat
+0x00402A70	+	BatControl
 
 
 		game/bike.cpp
