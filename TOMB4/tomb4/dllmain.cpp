@@ -39,6 +39,7 @@
 #include "../game/savegame.h"
 #include "../game/effects.h"
 #include "../game/croc.h"
+#include "../specific/function_stubs.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -97,6 +98,7 @@ void inject_all(bool replace)
 	inject_savegame(replace);
 	inject_effects(replace);
 	inject_croc(replace);
+	inject_funcstubs(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

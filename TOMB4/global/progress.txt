@@ -1622,14 +1622,14 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/function_stubs.cpp
 
-0x00490E80		other_log
-0x00490EC0		S_ExitSystem
-0x00490EE0		GetRandomControl
-0x00490F00		GetRandomDraw
-0x00490F20		SeedRandomControl
-0x00490F30		SeedRandomDraw
-0x00490F40		init_game_malloc
-0x00490F80		game_malloc
+0x00490E80	+	other_log
+0x00490EC0	+	S_ExitSystem
+0x00490EE0	+	GetRandomControl
+0x00490F00	+	GetRandomDraw
+0x00490F20	+	SeedRandomControl
+0x00490F30	+	SeedRandomDraw
+0x00490F40	+	init_game_malloc
+0x00490F80	+	game_malloc
 
 
 		specific/function_table.cpp

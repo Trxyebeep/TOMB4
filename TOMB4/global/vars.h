@@ -329,12 +329,18 @@
 #define gfFilenameWad	VAR_U_(0x007FD28C, char*)
 #define gfFilenameOffset	VAR_U_(0x007FD2EC, ushort*)
 #define mesh_base	VAR_U_(0x00533A7C, short*)
-#define malloc_buffer	VAR_U_(0x00533A7C, char*)
+#define malloc_buffer	VAR_U_(0x007E71E4, char*)
 #define SGcount	VAR_U_(0x004BF6D8, long)
 #define SGpoint	VAR_U_(0x004BF6D4, char*)
 #define AIObjects	VAR_U_(0x007FD204, AIOBJECT*)
 #define TriggerTimer	VAR_U_(0x004BF3FC, char)
 #define flipeffect	VAR_U_(0x004AEBFC, long)
+#define rand_1	VAR_U_(0x004B96A4, long)
+#define rand_2	VAR_U_(0x004B96A8, long)
+#define malloc_size	VAR_U_(0x007E71A8, long)
+#define malloc_ptr	VAR_U_(0x007E71BC, char*)
+#define malloc_free	VAR_U_(0x007E71D4, long)
+#define malloc_used	VAR_U_(0x007E71D0, long)
 
 
 
