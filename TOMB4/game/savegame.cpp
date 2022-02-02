@@ -224,6 +224,53 @@ void sgRestoreLevel()
 	}
 }
 
+void CreateCheckSum()
+{
+	char* ptr;
+	char checksum;
+
+	savegame.Checksum = 0;
+	ptr = (char*)&savegame;
+	checksum = 0;
+
+	for (int i = 0; i < sizeof(SAVEGAME_INFO); i++)
+		checksum += *ptr++;
+
+	savegame.Checksum = -checksum;
+}
+
+void sgSaveLevel()
+{
+	long level_index;
+
+	level_index = OpenSaveGame(gfCurrentLevel, 1);
+	SaveLevelData(0);
+	SaveLaraData();
+	SaveHubData(level_index);
+}
+
+void sgSaveGame()
+{
+	long level_index;
+
+	level_index = OpenSaveGame(gfCurrentLevel, 1);
+	savegame.Game.Timer = GameTimer;
+	savegame.CurrentLevel ^= (gfCurrentLevel ^ savegame.CurrentLevel) & 0x7F;
+	SaveLevelData(1);
+	SaveLaraData();
+	SaveHubData(level_index);
+	CreateCheckSum();
+}
+
+void sgRestoreGame()
+{
+	OpenSaveGame(savegame.CurrentLevel & 0x7F, 0);
+	GameTimer = savegame.Game.Timer;
+	gfCurrentLevel = savegame.CurrentLevel & 0x7F;
+	RestoreLevelData(1);
+	RestoreLaraData(1);
+}
+
 void inject_savegame(bool replace)
 {
 	INJECT(0x0045A0E0, CheckSumValid, replace);
@@ -234,4 +281,8 @@ void inject_savegame(bool replace)
 	INJECT(0x0045A470, SaveHubData, replace);
 	INJECT(0x0045B080, RestoreLaraData, replace);
 	INJECT(0x0045BDF0, sgRestoreLevel, replace);
+	INJECT(0x0045A340, CreateCheckSum, replace);
+	INJECT(0x0045BDC0, sgSaveLevel, replace);
+	INJECT(0x0045A2E0, sgSaveGame, replace);
+	INJECT(0x0045B040, sgRestoreGame, replace);
 }
