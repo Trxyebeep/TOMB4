@@ -838,8 +838,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/laradouble.cpp
 
-0x00405EA0		InitialiseLaraDouble
-0x00405EB0		LaraDoubleControl
+0x00405EA0	+	InitialiseLaraDouble
+0x00405EB0	+	LaraDoubleControl
 
 
 		game/larafire.cpp

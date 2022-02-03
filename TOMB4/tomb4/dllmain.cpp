@@ -42,6 +42,7 @@
 #include "../specific/function_stubs.h"
 #include "../game/bat.h"
 #include "../game/clockworkbeetle.h"
+#include "../game/laradouble.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -103,6 +104,7 @@ void inject_all(bool replace)
 	inject_funcstubs(replace);
 	inject_bat(replace);
 	inject_clockwork(replace);
+	inject_laradouble(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
