@@ -206,10 +206,11 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 	char buffer[80];
 	bool changed;
 
-	num = 2;
+	num = 3;
 	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
 	PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 1 ? 1 : 2, "FootPrints", 0);
 	PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 2 ? 1 : 2, "Shadow mode", 0);
+	PrintString(phd_centerx >> 2, textY + 4 * font_height, selection & 4 ? 1 : 2, "Crawl Tilting", 0);
 
 	if (dbinput & IN_FORWARD)
 	{
@@ -243,6 +244,9 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 
 	strcpy(buffer, tomb4.shadow_mode == 1 ? "original" : tomb4.shadow_mode == 2 ? "circle" : "PSX");
 	PrintString(phd_centerx + (phd_centerx >> 1), textY + 3 * font_height, selection & 2 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.crawltilt ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 4 * font_height, selection & 4 ? 1 : 6, buffer, 0);
 
 	changed = 0;
 
@@ -280,6 +284,17 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 			if (tomb4.shadow_mode < 1)
 				tomb4.shadow_mode = 3;
 
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 2:
+
+		if (dbinput & IN_RIGHT || dbinput & IN_LEFT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.crawltilt = !tomb4.crawltilt;
 			changed = 1;
 		}
 

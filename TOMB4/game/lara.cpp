@@ -15,6 +15,9 @@
 #include "laraswim.h"
 #include "larasurf.h"
 #include "laraclmb.h"
+#ifdef GENERAL_FIXES
+#include "../tomb4/tomb4.h"
+#endif
 
 void(*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 {
@@ -260,6 +263,89 @@ void(*lara_collision_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 	lara_void_func
 };
 
+#ifdef GENERAL_FIXES
+static void TiltHer(ITEM_INFO* item, long rad)
+{
+	FLOOR_INFO* floor;
+	FLOOR_INFO* floor2;
+	long s, c, nx, nz, h, h2;
+	short room_number, rotX, rotZ;
+
+	if (!tomb4.crawltilt)
+		return;
+
+	s = (rad * phd_sin(item->pos.y_rot)) >> 14;
+	c = (rad * phd_cos(item->pos.y_rot)) >> 14;
+
+	nx = item->pos.x_pos + s;
+	nz = item->pos.z_pos + c;
+	room_number = item->room_number;
+
+	floor = GetFloor(nx, item->pos.y_pos, nz, &room_number);
+	h = GetHeight(floor, nx, item->pos.y_pos, nz);
+
+	if (ABS(item->pos.y_pos - h) > 512)
+		h = item->pos.y_pos;
+
+	nx = item->pos.x_pos - s;
+	nz = item->pos.z_pos - c;
+	room_number = item->room_number;
+
+	floor2 = GetFloor(nx, item->pos.y_pos, nz, &room_number);
+	h2 = GetHeight(floor2, nx, item->pos.y_pos, nz);
+
+	if (ABS(item->pos.y_pos - h2) > 512)
+		h2 = item->pos.y_pos;
+
+	if (floor == floor2 || ABS(h2 - h) < 256)
+	{
+		rotX = (short)phd_atan(rad * 2, h2 - h);
+
+		if (ABS(rotX - item->pos.x_rot) < 546)
+			item->pos.x_rot = rotX;
+		else if (rotX > item->pos.x_rot)
+			item->pos.x_rot += 546;
+		else if (rotX < item->pos.x_rot)
+			item->pos.x_rot -= 546;
+	}
+
+	s = (rad * phd_sin(item->pos.y_rot + 0x4000)) >> 14;
+	c = (rad * phd_cos(item->pos.y_rot + 0x4000)) >> 14;
+
+	nx = item->pos.x_pos + s;
+	nz = item->pos.z_pos + c;
+	room_number = item->room_number;
+
+	floor = GetFloor(nx, item->pos.y_pos, nz, &room_number);
+	h = GetHeight(floor, nx, item->pos.y_pos, nz);
+
+	if (ABS(item->pos.y_pos - h) > 512)
+		h = item->pos.y_pos;
+
+	nx = item->pos.x_pos - s;
+	nz = item->pos.z_pos - c;
+	room_number = item->room_number;
+
+	floor2 = GetFloor(nx, item->pos.y_pos, nz, &room_number);
+	h2 = GetHeight(floor2, nx, item->pos.y_pos, nz);
+
+	if (ABS(item->pos.y_pos - h2) > 512)
+		h2 = item->pos.y_pos;
+
+	if (ABS(h - h2) < 256)
+	{
+		rotZ = (short)phd_atan(rad * 2, h - h2);
+
+		if (ABS(rotZ - item->pos.z_rot) < 546)
+			item->pos.z_rot = rotZ;
+		else if (rotZ > item->pos.z_rot)
+			item->pos.z_rot += 546;
+		else if (rotZ < item->pos.z_rot)
+			item->pos.z_rot -= 546;
+	}
+}
+#endif
+
 void lara_void_func(ITEM_INFO* item, COLL_INFO* coll)
 {
 
@@ -330,6 +416,14 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 	else if (item->pos.z_rot > 182)
 		item->pos.z_rot -= 182;
 	else item->pos.z_rot = 0;
+
+#ifdef GENERAL_FIXES
+	if (item->pos.x_rot < -182)
+		item->pos.x_rot += 182;
+	else if (item->pos.x_rot > 182)
+		item->pos.x_rot -= 182;
+	else item->pos.x_rot = 0;
+#endif
 
 	if (lara.turn_rate < -364)
 		lara.turn_rate += 364;
@@ -892,6 +986,10 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 	coll->slopes_are_pits = 1;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
 
+#ifdef GENERAL_FIXES
+	TiltHer(item, coll->radius);
+#endif
+
 	if (LaraFallen(item, coll))
 		lara.gun_status = LG_NO_ARMS;
 	else if (!TestLaraSlide(item, coll))
@@ -1040,6 +1138,10 @@ void lara_col_crawl(ITEM_INFO* item, COLL_INFO* coll)
 	coll->facing = lara.move_angle;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
 
+#ifdef GENERAL_FIXES
+	TiltHer(item, coll->radius);
+#endif
+
 	if (LaraDeflectEdgeDuck(item, coll))
 	{
 		item->current_anim_state = AS_ALL4S;
@@ -1115,6 +1217,10 @@ void lara_col_all4turnlr(ITEM_INFO* item, COLL_INFO* coll)
 {
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
 
+#ifdef GENERAL_FIXES
+	TiltHer(item, coll->radius);
+#endif
+
 	if (!TestLaraSlide(item, coll) && coll->mid_floor != NO_HEIGHT && coll->mid_floor > -256)
 		item->pos.y_pos += coll->mid_floor;
 }
@@ -1170,6 +1276,10 @@ void lara_col_crawlb(ITEM_INFO* item, COLL_INFO* coll)
 	lara.move_angle = item->pos.y_rot + 32768;
 	coll->facing = lara.move_angle;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
+
+#ifdef GENERAL_FIXES
+	TiltHer(item, coll->radius);
+#endif
 
 	if (LaraDeflectEdgeDuck(item, coll))
 	{
