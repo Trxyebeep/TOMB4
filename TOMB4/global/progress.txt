@@ -110,7 +110,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/clockworkbeetle.cpp
 
-0x004458F0		TriggerClockworkBeetle
+0x004458F0	+	TriggerClockworkBeetle
 0x00445AD0		ControlClockworkBeetle
 
 

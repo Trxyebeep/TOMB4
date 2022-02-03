@@ -618,7 +618,8 @@ struct LARA_INFO
 	ushort keep_ducked : 1;
 	ushort IsMoving : 1;
 	ushort CanMonkeySwing : 1;
-	ushort BurnBlue : 2;
+	ushort BurnBlue : 1;
+	ushort OnBeetleFloor : 1;
 	ushort BurnSmoke : 1;
 	ushort IsDucked : 1;
 	ushort has_fired : 1;
@@ -701,7 +702,7 @@ struct LARA_INFO
 	short num_crossbow_ammo1;
 	short num_crossbow_ammo2;
 	short num_crossbow_ammo3;
-	char unused;
+	char beetle_uses;
 	char blindTimer;
 	char location;
 	char highest_location;
