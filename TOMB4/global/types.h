@@ -618,9 +618,9 @@ struct LARA_INFO
 	ushort keep_ducked : 1;
 	ushort IsMoving : 1;
 	ushort CanMonkeySwing : 1;
-	ushort BurnBlue : 1;
+	ushort Unused2 : 1;
 	ushort OnBeetleFloor : 1;
-	ushort BurnSmoke : 1;
+	ushort BurnGreen : 1;
 	ushort IsDucked : 1;
 	ushort has_fired : 1;
 	ushort Busy : 1;
