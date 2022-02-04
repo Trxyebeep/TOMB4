@@ -176,6 +176,7 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 
 	if (camera.mike_at_lara)
 	{
+		camera.actual_elevation = lara.head_y_rot + lara.torso_y_rot + lara_item->pos.y_rot;
 		camera.mike_pos.x = lara_item->pos.x_pos;
 		camera.mike_pos.y = lara_item->pos.y_pos;
 		camera.mike_pos.z = lara_item->pos.z_pos;
@@ -379,6 +380,147 @@ void LaraTorch(PHD_VECTOR* Soffset, PHD_VECTOR* Eoffset, short yrot, long bright
 	LaraTorchYRot = yrot;
 }
 
+void ChaseCamera(ITEM_INFO* item)
+{
+	FLOOR_INFO* floor;
+	GAME_VECTOR ideal;
+	GAME_VECTOR ideals[5];
+	GAME_VECTOR temp[2];
+	long distance, dx, dz, farthest, farthestnum, h, c, wx, wy, wz;
+	short angle, room_number;
+
+	if (!camera.target_elevation)
+		camera.target_elevation = -1820;
+
+	camera.target_elevation += item->pos.x_rot;
+
+	if (camera.target_elevation > 15470)
+		camera.target_elevation = 15470;
+	else if (camera.target_elevation < -15470)
+		camera.target_elevation = -15470;
+
+	distance = camera.target_distance * phd_cos(camera.target_elevation) >> 14;
+	wx = camera.target.x;
+	wy = camera.target.y;
+	wz = camera.target.z;
+	floor = GetFloor(wx, wy, wz, &camera.target.room_number);
+	h = GetHeight(floor, wx, wy, wz);
+	c = GetCeiling(floor, wx, wy, wz);
+
+	if (c + 16 > h - 16 && h != NO_HEIGHT && c != NO_HEIGHT)
+	{
+		camera.target.y = (h + c) >> 1;
+		camera.target_elevation = 0;
+	}
+	else if (wy > h - 16 && h != NO_HEIGHT)
+	{
+		camera.target.y = h - 16;
+		camera.target_elevation = 0;
+	}
+	else if (wy < c + 16 && c != NO_HEIGHT)
+	{
+		camera.target.y = c + 16;
+		camera.target_elevation = 0;
+	}
+
+	wx = camera.target.x;
+	wy = camera.target.y;
+	wz = camera.target.z;
+	GetFloor(wx, wy, wz, &camera.target.room_number);
+	room_number = camera.target.room_number;
+	floor = GetFloor(wx, wy, wz, &room_number);
+	h = GetHeight(floor, wx, wy, wz);
+	c = GetCeiling(floor, wx, wy, wz);
+
+	if (wy < c || wy > h || c >= h || h == NO_HEIGHT || c == NO_HEIGHT)
+	{
+		camera.target.x = last_target.x;
+		camera.target.y = last_target.y;
+		camera.target.z = last_target.z;
+		camera.target.room_number = last_target.room_number;
+	}
+
+	for (int i = 0; i < 5; i++)
+		ideals[i].y = (camera.target_distance * phd_sin(camera.target_elevation) >> 14) + camera.target.y;
+
+	farthest = 0x7FFFFFFF;
+	farthestnum = 0;
+
+	for (int i = 0; i < 5; i++)
+	{
+		if (i)
+			angle = (i - 1) << 14;
+		else
+			angle = camera.target_angle + item->pos.y_rot;
+
+		ideals[i].x = camera.target.x - ((distance * phd_sin(angle)) >> 14);
+		ideals[i].z = camera.target.z - ((distance * phd_cos(angle)) >> 14);
+		ideals[i].room_number = camera.target.room_number;
+
+		if (mgLOS(&camera.target, &ideals[i], 200))
+		{
+			temp[0].x = ideals[i].x;
+			temp[0].y = ideals[i].y;
+			temp[0].z = ideals[i].z;
+			temp[0].room_number = ideals[i].room_number;
+			temp[1].x = camera.pos.x;
+			temp[1].y = camera.pos.y;
+			temp[1].z = camera.pos.z;
+			temp[1].room_number = camera.pos.room_number;
+
+			if (!i)
+			{
+				farthestnum = 0;
+				break;
+			}
+
+			if (mgLOS(&temp[0], &temp[1], 0))
+			{
+				dx = SQUARE(camera.pos.x - ideals[i].x);
+				dz = SQUARE(camera.pos.z - ideals[i].z);
+				dz += dx;
+
+				if (dz < farthest)
+				{
+					farthest = dz;
+					farthestnum = i;
+				}
+			}
+		}
+		else if (!i)
+		{
+			temp[0].x = ideals[i].x;
+			temp[0].y = ideals[i].y;
+			temp[0].z = ideals[i].z;
+			temp[0].room_number = ideals[i].room_number;
+			temp[1].x = camera.pos.x;
+			temp[1].y = camera.pos.y;
+			temp[1].z = camera.pos.z;
+			temp[1].room_number = camera.pos.room_number;
+			dx = SQUARE(camera.target.x - ideals[i].x);		//no mgLOS check here?
+			dz = SQUARE(camera.target.z - ideals[i].z);
+			dz += dx;
+
+			if (dz > 0x90000)
+			{
+				farthestnum = 0;
+				break;
+			}
+		}
+	}
+
+	ideal.x = ideals[farthestnum].x;
+	ideal.y = ideals[farthestnum].y;
+	ideal.z = ideals[farthestnum].z;
+	ideal.room_number = ideals[farthestnum].room_number;
+	CameraCollisionBounds(&ideal, 384, 1);
+
+	if (camera.old_type == FIXED_CAMERA)
+		camera.speed = 1;
+
+	MoveCamera(&ideal, camera.speed);
+}
+
 void inject_camera(bool replace)
 {
 	INJECT(0x00442E70, InitialiseCamera, replace);
@@ -386,4 +528,5 @@ void inject_camera(bool replace)
 	INJECT(0x004451C0, mgLOS, replace);
 	INJECT(0x00444E00, CameraCollisionBounds, replace);
 	INJECT(0x00445890, LaraTorch, replace);
+	INJECT(0x004435E0, ChaseCamera, replace);
 }
