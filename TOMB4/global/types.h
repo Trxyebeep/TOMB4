@@ -1613,6 +1613,18 @@ struct AIOBJECT
 	short box_number;
 };
 
+struct OLD_CAMERA
+{
+	short current_anim_state;
+	short goal_anim_state;
+	long target_distance;
+	short target_angle;
+	short target_elevation;
+	PHD_3DPOS pos;
+	PHD_3DPOS pos2;
+	PHD_VECTOR t;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {

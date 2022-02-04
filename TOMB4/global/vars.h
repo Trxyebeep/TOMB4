@@ -342,6 +342,9 @@
 #define malloc_free	VAR_U_(0x007E71D4, long)
 #define malloc_used	VAR_U_(0x007E71D0, long)
 #define baddie_slots	VAR_U_(0x007FD1FC, CREATURE_INFO*)
+#define old_cam	VAR_U_(0x007FE8E0, OLD_CAMERA)
+#define	last_ideal	VAR_U_(0x007FE8B0, GAME_VECTOR)
+#define camerasnaps	VAR_U_(0x004BF3E0, char)
 
 
 
