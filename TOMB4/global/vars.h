@@ -346,6 +346,8 @@
 #define old_cam	VAR_U_(0x007FE8E0, OLD_CAMERA)
 #define	last_ideal	VAR_U_(0x007FE8B0, GAME_VECTOR)
 #define camerasnaps	VAR_U_(0x004BF3E0, char)
+#define static_lookcamp	VAR_U_(0x007FE930, GAME_VECTOR)
+#define static_lookcamt	VAR_U_(0x007FE920, GAME_VECTOR)
 
 
 
