@@ -125,6 +125,7 @@
 #define LaraTorchStart	VAR_U_(0x00536EF8, PHD_VECTOR)
 #define LaraTorchEnd	VAR_U_(0x005358D0, PHD_VECTOR)
 #define LaraTorchIntensity	VAR_U_(0x00536EE8, long)
+#define LaraTorchYRot	VAR_U_(0x00536EEC, long)
 #define SetupLight_thing	VAR_U_(0x00536EF0, long)
 #define gfUVRotate	VAR_U_(0x007FD2E9, char)
 #define TrainObjPos	VAR_U_(0x007FD2F0, long)

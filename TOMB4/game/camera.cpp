@@ -366,10 +366,24 @@ long CameraCollisionBounds(GAME_VECTOR* ideal, long push, long yfirst)
 	return 0;
 }
 
+void LaraTorch(PHD_VECTOR* Soffset, PHD_VECTOR* Eoffset, short yrot, long brightness)
+{
+	bLaraTorch = 1;
+	LaraTorchStart.x = Soffset->x;
+	LaraTorchStart.y = Soffset->y;
+	LaraTorchStart.z = Soffset->z;
+	LaraTorchEnd.x = Eoffset->x;
+	LaraTorchEnd.y = Eoffset->y;
+	LaraTorchEnd.z = Eoffset->z;
+	LaraTorchIntensity = brightness;
+	LaraTorchYRot = yrot;
+}
+
 void inject_camera(bool replace)
 {
 	INJECT(0x00442E70, InitialiseCamera, replace);
 	INJECT(0x00442F40, MoveCamera, replace);
 	INJECT(0x004451C0, mgLOS, replace);
 	INJECT(0x00444E00, CameraCollisionBounds, replace);
+	INJECT(0x00445890, LaraTorch, replace);
 }

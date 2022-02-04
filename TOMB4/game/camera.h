@@ -7,6 +7,6 @@ void InitialiseCamera();
 void MoveCamera(GAME_VECTOR* ideal, long speed);
 long mgLOS(GAME_VECTOR* start, GAME_VECTOR* target, long push);
 long CameraCollisionBounds(GAME_VECTOR* ideal, long push, long yfirst);
+void LaraTorch(PHD_VECTOR* Soffset, PHD_VECTOR* Eoffset, short yrot, long brightness);
 
 #define CalculateCamera	( (void(__cdecl*)()) 0x00444890 )
-#define LaraTorch	( (void(__cdecl*)(PHD_VECTOR*, PHD_VECTOR*, short, long)) 0x00445890 )
