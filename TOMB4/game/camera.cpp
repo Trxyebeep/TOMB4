@@ -194,8 +194,94 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 	camera.old_type = camera.type;
 }
 
+long mgLOS(GAME_VECTOR* start, GAME_VECTOR* target, long push)
+{
+	FLOOR_INFO* floor;
+	long x, y, z, h, c, cdiff, hdiff, dx, dy, dz, clipped, nc, i;
+	short room_number, room_number2;
+
+	dx = (target->x - start->x) >> 3;
+	dy = (target->y - start->y) >> 3;
+	dz = (target->z - start->z) >> 3;
+	x = start->x;
+	y = start->y;
+	z = start->z;
+	room_number = start->room_number;
+	room_number2 = room_number;
+	nc = 0;
+	clipped = 0;
+
+	for (i = 0; i < 8; i++)
+	{
+		room_number = room_number2;
+		floor = GetFloor(x, y, z, &room_number2);
+		h = GetHeight(floor, x, y, z);
+		c = GetCeiling(floor, x, y, z);
+
+		if (h == NO_HEIGHT || c == NO_HEIGHT || c >= h)
+		{
+			if (!nc)
+			{
+				x += dx;
+				y += dy;
+				z += dz;
+				continue;
+			}
+
+			clipped = 1;
+			break;
+		}
+
+		if (y > h)
+		{
+			hdiff = y - h;
+
+			if (hdiff < push)
+				y = h;
+			else
+			{
+				clipped = 1;
+				break;
+			}
+		}
+
+		if (y < c)
+		{
+			cdiff = c - y;
+
+			if (cdiff < push)
+				y = c;
+			else
+			{
+				clipped = 1;
+				break;
+			}
+		}
+
+		nc = 1;
+		x += dx;
+		y += dy;
+		z += dz;
+	}
+
+	if (i)
+	{
+		x -= dx;
+		y -= dy;
+		z -= dz;
+	}
+
+	target->x = x;
+	target->y = y;
+	target->z = z;
+	GetFloor(x, y, z, &room_number);
+	target->room_number = room_number;
+	return !clipped;
+}
+
 void inject_camera(bool replace)
 {
 	INJECT(0x00442E70, InitialiseCamera, replace);
 	INJECT(0x00442F40, MoveCamera, replace);
+	INJECT(0x004451C0, mgLOS, replace);
 }
