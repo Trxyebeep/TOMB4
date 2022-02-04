@@ -18,3 +18,5 @@ void DoOptions();
 #define CreateMonoScreen	( (void(__cdecl*)()) 0x00479F20 )
 #define S_DisplayMonoScreen	( (void(__cdecl*)()) 0x0047A500 )
 #define FreeMonoScreen	( (void(__cdecl*)()) 0x00479F40 )
+#define GetSaveLoadFiles	( (void(__cdecl*)()) 0x0047A6F0 )
+#define DoLoadSave	( (long(__cdecl*)(long)) 0x0047A880 )

@@ -313,20 +313,25 @@ void TriggerExplosionSmoke(long x, long y, long z, long uw)
 	sptr->On = 1;
 
 #ifdef GENERAL_FIXES
-	sptr->sR = 196;
-	sptr->sG = 196;
-	sptr->sB = 196;
-	sptr->dR = 128;
-	sptr->dG = 128;
-	sptr->dB = 128;
-#else
-	sptr->sR = 144;
-	sptr->sG = 144;
-	sptr->sB = 144;
-	sptr->dR = 64;
-	sptr->dG = 64;
-	sptr->dB = 64;
+	if (!uw)
+	{
+		sptr->sR = 196;
+		sptr->sG = 196;
+		sptr->sB = 196;
+		sptr->dR = 128;
+		sptr->dG = 128;
+		sptr->dB = 128;
+	}
+	else
 #endif
+	{
+		sptr->sR = 144;
+		sptr->sG = 144;
+		sptr->sB = 144;
+		sptr->dR = 64;
+		sptr->dG = 64;
+		sptr->dB = 64;
+	}
 
 	sptr->ColFadeSpeed = 2;
 	sptr->FadeToBlack = 8;

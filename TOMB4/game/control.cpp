@@ -112,7 +112,7 @@ long ControlPhase(long nframes, long demo_mode)
 			}
 		}
 
-		if (thread_ended)
+		if (MainThread.ended)
 			return 4;
 
 		if (input & IN_LOOK && (lara_item->current_anim_state == 2 && lara_item->anim_number == 103 ||

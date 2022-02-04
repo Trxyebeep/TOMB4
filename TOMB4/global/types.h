@@ -42,6 +42,9 @@ do \
 #define	CLRB(clr)	((clr) & 0xFF)			//and 0xFF
 #define RGB_M(clr, m)	(clr = (clr & 0xFF000000) | (((CLRR(clr) * 8 * m) >> 8) << 16) | (((CLRG(clr) * 8 * m) >> 8) << 8) | ((CLRB(clr) * 8 * m) >> 8))
 #define SCRIPT_TEXT(num)		(&gfStringWad[gfStringOffset[num]])
+#define SetCutPlayed(num)	(CutSceneTriggered |= 1 << (num))
+#define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
+#define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
 
 enum font_flags
 {
@@ -615,8 +618,9 @@ struct LARA_INFO
 	ushort keep_ducked : 1;
 	ushort IsMoving : 1;
 	ushort CanMonkeySwing : 1;
-	ushort BurnBlue : 2;
-	ushort BurnSmoke : 1;
+	ushort Unused2 : 1;
+	ushort OnBeetleFloor : 1;
+	ushort BurnGreen : 1;
 	ushort IsDucked : 1;
 	ushort has_fired : 1;
 	ushort Busy : 1;
@@ -698,7 +702,7 @@ struct LARA_INFO
 	short num_crossbow_ammo1;
 	short num_crossbow_ammo2;
 	short num_crossbow_ammo3;
-	char unused;
+	char beetle_uses;
 	char blindTimer;
 	char location;
 	char highest_location;
@@ -1034,7 +1038,7 @@ struct SAVEGAME_INFO	//savegame is at 007F76C0
 	short WeaponCurrent;
 	short WeaponGoal;
 	CVECTOR fog_colour;
-	uchar SavedHubLara : 1;	//flag that we saved Lara's data when we initialised hub, only set to 1 when InitialiseHub is called with 1
+	uchar HubSavedLara : 1;	//flag that we saved Lara's data when we initialised hub, only set to 1 when InitialiseHub is called with 1
 	uchar AutoTarget : 1;
 	uchar HaveBikeBooster : 1;	//have the bike nitro thing
 	char buffer[15410];
@@ -1558,11 +1562,75 @@ struct TEXTUREBUCKET
 	D3DTLBUMPVERTEX Vertex[544];
 };
 
+struct THREAD
+{
+	volatile long active;
+	long unk;
+	volatile long ended;
+	ulong handle;
+	ulong address;
+};
+
+struct DRIP_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	uchar On;
+	uchar R;
+	uchar G;
+	uchar B;
+	short Yvel;
+	uchar Gravity;
+	uchar Life;
+	short RoomNumber;
+	uchar Outside;
+	uchar Pad;
+};
+
+struct AI_INFO
+{
+	short zone_number;
+	short enemy_zone;
+	long distance;
+	long ahead;
+	long bite;
+	short angle;
+	short x_angle;
+	short enemy_facing;
+};
+
+struct AIOBJECT
+{
+	short object_number;
+	short room_number;
+	long x;
+	long y;
+	long z;
+	short trigger_flags;
+	short flags;
+	short y_rot;
+	short box_number;
+};
+
+struct OLD_CAMERA
+{
+	short current_anim_state;
+	short goal_anim_state;
+	long target_distance;
+	short target_angle;
+	short target_elevation;
+	PHD_3DPOS pos;
+	PHD_3DPOS pos2;
+	PHD_VECTOR t;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {
 	bool footprints;
 	ulong shadow_mode;			//1-> original, 2-> circle, 3-> PSX color like circle
+	bool crawltilt;
 };
 #endif
 #pragma pack(pop)

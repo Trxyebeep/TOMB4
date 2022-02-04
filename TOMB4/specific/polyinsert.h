@@ -11,3 +11,5 @@ void DrawSortList();
 #define SortPolyList	( (void(__cdecl*)(long, SORTLIST**)) 0x00481810 )
 #define InitialiseFogBulbs	( (void(__cdecl*)()) 0x00481DF0 )
 #define CreateFXBulbs	( (void(__cdecl*)()) 0x004819B0 )
+#define ClearFXFogBulbs	( (void(__cdecl*)()) 0x004818A0 )
+#define IsVolumetric	( (long(__cdecl*)()) 0x00481AD0 )

@@ -10,12 +10,12 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/ahmet.cpp
 
-0x00401000		InitialiseAhmet
-0x00401080		AhmetControl
-0x00401730		ExplodeAhmet
-0x004017E0		ScalesControl
-0x00401990		ReTriggerAhmet
-0x00401AC0		ScalesCollision
+0x00401000	+	InitialiseAhmet
+0x00401080	+	AhmetControl
+0x00401730	+	ExplodeAhmet
+0x004017E0	+	ScalesControl
+0x00401990	+	ReTriggerAhmet
+0x00401AC0	+	ScalesCollision
 
 
 		game/baboon.cpp
@@ -29,8 +29,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/bat.cpp
 
-0x00402A10		InitialiseBat
-0x00402A70		BatControl
+0x00402A10	+	InitialiseBat
+0x00402A70	+	BatControl
 
 
 		game/bike.cpp
@@ -96,22 +96,22 @@ x for functions decompiled but not injected, for one reason or another.
 		game/camera.cpp
 
 0x00442E70	+	InitialiseCamera
-0x00442F40		MoveCamera
-0x004435E0		ChaseCamera
-0x00443A50		CombatCamera
-0x00443ED0		LookCamera
-0x004447F0		FixedCamera
-0x00444890		CalculateCamera
-0x00444E00		CameraCollisionBounds
-0x004451C0		mgLOS
-0x00445310		BinocularCamera
-0x00445890		LaraTorch
+0x00442F40	+	MoveCamera
+0x004435E0	+	ChaseCamera
+0x00443A50	+	CombatCamera
+0x00443ED0	+	LookCamera
+0x004447F0	+	FixedCamera
+0x00444890	+	CalculateCamera
+0x00444E00	+	CameraCollisionBounds
+0x004451C0	+	mgLOS
+0x00445310	+	BinocularCamera
+0x00445890	+	LaraTorch
 
 
 		game/clockworkbeetle.cpp
 
-0x004458F0		TriggerClockworkBeetle
-0x00445AD0		ControlClockworkBeetle
+0x004458F0	+	TriggerClockworkBeetle
+0x00445AD0	+	ControlClockworkBeetle
 
 
 		game/collide.cpp
@@ -182,8 +182,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/croc.cpp
 
-0x00402D90		InitialiseCroc
-0x00402E30		CrocControl
+0x00402D90	+	InitialiseCroc
+0x00402E30	+	CrocControl
 0x004035D0		GetFreeLocust
 0x00403640		TriggerLocust
 0x004037B0		InitialiseLocustEmitter
@@ -442,7 +442,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00437A40		draw_left_gun
 0x00437A90		shoot_right_gun
 0x00437AA0		shoot_left_gun
-0x00437AB0		SetFog
+0x00437AB0	+	SetFog
 0x00437B60		swap_meshes_with_meshswap1
 0x00437BC0		swap_meshes_with_meshswap2
 0x00437C20		swap_meshes_with_meshswap3
@@ -479,8 +479,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x00451510		LoadGameflow
 0x00451770	+	DoGameflow
-0x00451E30		DoTitle
-0x00452710		DoLevel
+0x00451E30	+	DoTitle
+0x00452710	+	DoLevel
 0x00452B80		DoCredits
 
 
@@ -838,8 +838,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/laradouble.cpp
 
-0x00405EA0		InitialiseLaraDouble
-0x00405EB0		LaraDoubleControl
+0x00405EA0	+	InitialiseLaraDouble
+0x00405EB0	+	LaraDoubleControl
 
 
 		game/larafire.cpp
@@ -1133,21 +1133,21 @@ x for functions decompiled but not injected, for one reason or another.
 		game/savegame.cpp
 
 
-0x0045A0E0		CheckSumValid
-0x0045A100		sgInitialiseHub
-0x0045A1B0		SaveLaraData
-0x0045A2E0		sgSaveGame
-0x0045A340		CreateCheckSum
+0x0045A0E0	+	CheckSumValid
+0x0045A100	+	sgInitialiseHub
+0x0045A1B0	+	SaveLaraData
+0x0045A2E0	+	sgSaveGame
+0x0045A340	+	CreateCheckSum
 0x0045A370		OpenSaveGame
-0x0045A470		SaveHubData
+0x0045A470	+	SaveHubData
 0x0045A4B0		SaveLevelData
-0x0045B000		WriteSG
-0x0045B040		sgRestoreGame
-0x0045B080		RestoreLaraData
+0x0045B000	+	WriteSG
+0x0045B040	+	sgRestoreGame
+0x0045B080	+	RestoreLaraData
 0x0045B230		RestoreLevelData
-0x0045BD80		ReadSG
-0x0045BDC0		sgSaveLevel
-0x0045BDF0		sgRestoreLevel
+0x0045BD80	+	ReadSG
+0x0045BDC0	+	sgSaveLevel
+0x0045BDF0	+	sgRestoreLevel
 
 
 		game/scarab.cpp
@@ -1352,8 +1352,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x00464030	+	DrawTrainFloor
 0x004640A0	+	DrawTrainObjects
-0x004644B0		InitialiseTrainJeep
-0x00464520		TrainJeepControl
+0x004644B0	+	InitialiseTrainJeep
+0x00464520	+	TrainJeepControl
 
 
 		game/traps.cpp
@@ -1617,19 +1617,19 @@ x for functions decompiled but not injected, for one reason or another.
 0x00476410		S_GetUVRotateTextures
 0x00476470		LoadLevel
 0x00476790		FreeLevel
-0x004768C0		S_LoadLevelFile
+0x004768C0	+	S_LoadLevelFile
 
 
 		specific/function_stubs.cpp
 
-0x00490E80		other_log
-0x00490EC0		S_ExitSystem
-0x00490EE0		GetRandomControl
-0x00490F00		GetRandomDraw
-0x00490F20		SeedRandomControl
-0x00490F30		SeedRandomDraw
-0x00490F40		init_game_malloc
-0x00490F80		game_malloc
+0x00490E80	+	other_log
+0x00490EC0	+	S_ExitSystem
+0x00490EE0	+	GetRandomControl
+0x00490F00	+	GetRandomDraw
+0x00490F20	+	SeedRandomControl
+0x00490F30	+	SeedRandomDraw
+0x00490F40	+	init_game_malloc
+0x00490F80	+	game_malloc
 
 
 		specific/function_table.cpp
@@ -1710,7 +1710,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/output.cpp
 
-0x0047D5B0		S_InitialisePolyList
+0x0047D5B0	+	S_InitialisePolyList
 0x0047D6B0		StashSkinVertices
 0x0047D760		SkinVerticesToScratch
 0x0047D810		CalcVertsColorSplitMMX

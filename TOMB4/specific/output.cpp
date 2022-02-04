@@ -11,6 +11,7 @@
 #include "../game/effects.h"
 #include "../game/draw.h"
 #include "specificfx.h"
+#include "function_stubs.h"
 
 void phd_PutPolygons(short* objptr, long clip)	//whore
 {
@@ -455,6 +456,36 @@ void RenderLoadPic(long unused)
 	GlobalFogOff = 0;
 }
 
+void S_InitialisePolyList()
+{
+	D3DRECT rect;
+	long col;
+
+	rect.x1 = App.dx.rViewport.left;
+	rect.y1 = App.dx.rViewport.top;
+	rect.x2 = App.dx.rViewport.left + App.dx.rViewport.right;
+	rect.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
+
+	if (gfLevelFlags & GF_TRAIN)
+		col = 0xCEAE60;
+	else if (gfCurrentLevel == 5 || gfCurrentLevel == 6)
+	{
+		col = FogTableColor[19];
+		SetFogColor(CLRR(col), CLRG(col), CLRB(col));
+	}
+	else
+		col = 0;
+	
+	if (App.dx.Flags & 0x80)
+		DXAttempt(App.dx.lpViewport->Clear2(1, &rect, D3DCLEAR_TARGET, col, 1.0F, 0));
+	else
+		ClearFakeDevice(App.dx.lpD3DDevice, 1, &rect, D3DCLEAR_TARGET, col, 1.0F, 0);
+
+	_BeginScene();
+	InitBuckets();
+	InitialiseSortList();
+}
+
 void inject_output(bool replace)
 {
 	INJECT(0x0047DA60, phd_PutPolygons, replace);
@@ -463,4 +494,5 @@ void inject_output(bool replace)
 	INJECT(0x0047D900, PrelightVerts, replace);
 	INJECT(0x0047F950, _InsertRoom, replace);
 	INJECT(0x00480570, RenderLoadPic, replace);
+	INJECT(0x0047D5B0, S_InitialisePolyList, replace);
 }

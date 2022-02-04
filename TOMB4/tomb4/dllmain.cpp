@@ -34,6 +34,15 @@
 #include "../specific/registry.h"
 #include "../specific/polyinsert.h"
 #include "../game/effect2.h"
+#include "../specific/file.h"
+#include "../game/ahmet.h"
+#include "../game/savegame.h"
+#include "../game/effects.h"
+#include "../game/croc.h"
+#include "../specific/function_stubs.h"
+#include "../game/bat.h"
+#include "../game/clockworkbeetle.h"
+#include "../game/laradouble.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -87,6 +96,15 @@ void inject_all(bool replace)
 	inject_registry(replace);
 	inject_polyinsert(replace);
 	inject_effect2(replace);
+	inject_file(replace);
+	inject_ahmet(replace);
+	inject_savegame(replace);
+	inject_effects(replace);
+	inject_croc(replace);
+	inject_funcstubs(replace);
+	inject_bat(replace);
+	inject_clockwork(replace);
+	inject_laradouble(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

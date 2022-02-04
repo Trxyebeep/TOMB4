@@ -14,6 +14,7 @@
 #include "larafire.h"
 #include "../specific/input.h"
 #include "health.h"
+#include "gameflow.h"
 
 COMBINELIST dels_handy_combine_table[23] =
 {
@@ -42,7 +43,7 @@ COMBINELIST dels_handy_combine_table[23] =
 	{combine_ClockWorkBeetle, INV_MECHANICAL_SCARAB_ITEM, INV_WINDING_KEY_ITEM, INV_CLOCKWORK_BEETLE_ITEM}
 };
 
-short optmessages[9] = { 40, 41, 42, 43, 44, 45, 46, 47, 48 };
+short optmessages[9] = { TXT_USE, TXT_CHOOSE_AMMO, TXT_COMBINE, TXT_SEPERATE, TXT_EQUIP, TXT_COMBINE_WITH, TXT_LOAD_GAME, TXT_SAVE_GAME, TXT_EXAMINE };
 RINGME pcring1;
 RINGME pcring2;
 
@@ -666,10 +667,10 @@ void construct_object_list()
 		insert_object_into_list(INV_BIGMEDI_ITEM);
 
 	if (lara.small_water_skin)
-		insert_object_into_list_v2(lara.small_water_skin + INV_WATERSKIN1_EMPTY_ITEM - 1);
+		insert_object_into_list(lara.small_water_skin + INV_WATERSKIN1_EMPTY_ITEM - 1);
 
 	if (lara.big_water_skin)
-		insert_object_into_list_v2(lara.big_water_skin + INV_WATERSKIN2_EMPTY_ITEM - 1);
+		insert_object_into_list(lara.big_water_skin + INV_WATERSKIN2_EMPTY_ITEM - 1);
 
 	if (lara.crowbar)
 		insert_object_into_list(INV_CROWBAR_ITEM);
@@ -1313,8 +1314,8 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2),
 			INV_EXAMINE2_ITEM, examine_mode, 0, 0, 0, 0, 0);
 		objme->scale1 = saved_scale;
-		PrintString((ushort)phd_centerx, (ushort)yoff, 5, SCRIPT_TEXT(201), FF_CENTER);
-		PrintString((ushort)phd_centerx, (ushort)(yoff + phd_winheight / 2), 5, SCRIPT_TEXT(202), FF_CENTER);
+		PrintString((ushort)phd_centerx, (ushort)yoff, 5, SCRIPT_TEXT(TXT_RULES1), FF_CENTER);
+		PrintString((ushort)phd_centerx, (ushort)(yoff + phd_winheight / 2), 5, SCRIPT_TEXT(TXT_RULES2), FF_CENTER);
 		break;
 
 	case INV_EXAMINE3_ITEM:
@@ -1323,7 +1324,7 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2 - 8),
 			INV_EXAMINE3_ITEM, examine_mode, 0x8000, 0x4000, 0x4000, 96, 0);
 		objme->scale1 = saved_scale;
-		PrintString((ushort)phd_centerx, (ushort)yoff2, 8, SCRIPT_TEXT(203), FF_CENTER);
+		PrintString((ushort)phd_centerx, (ushort)yoff2, 8, SCRIPT_TEXT(TXT_PETEPOO), FF_CENTER);
 		break;
 	}
 
@@ -1337,7 +1338,7 @@ void do_examine_mode()
 
 void dels_give_lara_items_cheat()
 {
-	long piss;	//exception for historical purposes
+	long piss;	//for historical purposes
 
 	if (objects[CROWBAR_ITEM].loaded)
 		lara.crowbar = 1;
@@ -1357,16 +1358,16 @@ void dels_give_lara_items_cheat()
 			lara.keyitems |= 1 << piss;
 	}
 
-	for (piss = 0; piss < 4; ++piss)
+	for (piss = 0; piss < 4; piss++)
 	{
 		if (objects[PICKUP_ITEM1 + piss].loaded)
 			lara.pickupitems |= 1 << piss;
 	}
 
-	for (piss = 0; piss < 6; ++piss)
+	for (piss = 0; piss < 6; piss++)
 	{
 		if (objects[QUEST_ITEM1 + piss].loaded)
-			lara.pickupitems |= 1 << piss;
+			lara.questitems |= 1 << piss;
 	}
 
 	if (objects[WATERSKIN1_EMPTY].loaded)
@@ -1846,7 +1847,7 @@ void draw_ammo_selector()
 		if (i == *current_ammo_type)	//current ammo type selected?
 		{
 			if (ammo_object_list[i].amount == -1)
-				sprintf(cunter, SCRIPT_TEXT(39), SCRIPT_TEXT(objme->objname));
+				sprintf(cunter, SCRIPT_TEXT(TXT_Unlimited_s), SCRIPT_TEXT(objme->objname));
 			else
 				sprintf(cunter, "%d x %s", ammo_object_list[i].amount, SCRIPT_TEXT(objme->objname));
 
@@ -2403,7 +2404,7 @@ void draw_current_object_list(long ringnum)
 			if (nummeup)
 			{
 				if (nummeup == -1)
-					sprintf(textbufme, SCRIPT_TEXT(39), SCRIPT_TEXT(objme->objname));
+					sprintf(textbufme, SCRIPT_TEXT(TXT_Unlimited_s), SCRIPT_TEXT(objme->objname));
 				else
 					sprintf(textbufme, "%d x %s", nummeup, SCRIPT_TEXT(objme->objname));
 			}
@@ -2565,8 +2566,8 @@ long S_CallInventory2()
 			val = 1;
 		}
 
-		if (thread_ended)
-			return thread_ended;
+		if (MainThread.ended)
+			return MainThread.ended;
 
 		S_DisplayMonoScreen();
 		do_debounced_joystick_poo();

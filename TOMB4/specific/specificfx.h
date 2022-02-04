@@ -29,3 +29,4 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr
 #define DrawLightning	( (void(__cdecl*)()) 0x0048D9B0 )
 #define SetFade	( (void(__cdecl*)(long, long)) 0x0048C240 )
 #define ClipLine	( (long(__cdecl*)(long&, long&, long, long&, long&, long, long, long, long, long)) 0x00488690 )
+#define ShowTitle	( (void(__cdecl*)()) 0x0048B130 )
