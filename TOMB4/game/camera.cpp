@@ -279,9 +279,97 @@ long mgLOS(GAME_VECTOR* start, GAME_VECTOR* target, long push)
 	return !clipped;
 }
 
+long CameraCollisionBounds(GAME_VECTOR* ideal, long push, long yfirst)
+{
+	FLOOR_INFO* floor;
+	long wx, wy, wz, h, c;
+	short room_number;
+
+	wx = ideal->x;
+	wy = ideal->y;
+	wz = ideal->z;
+
+	if (yfirst)
+	{
+		room_number = ideal->room_number;
+		floor = GetFloor(wx, wy, wz, &room_number);
+		h = GetHeight(floor, wx, wy, wz);
+		c = GetCeiling(floor, wx, wy, wz);
+
+		if (c > wy - 255 && h < wy + 255 && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
+			wy = (h + c) >> 1;
+		else if (h < wy + 255 && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
+			wy = h - 255;
+		else if (c > wy - 255 && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
+			wy = c + 255;
+	}
+
+	room_number = ideal->room_number;
+	floor = GetFloor(wx - push, wy, wz, &room_number);
+	h = GetHeight(floor, wx - push, wy, wz);
+	c = GetCeiling(floor, wx - push, wy, wz);
+
+	if (h < wy || h == NO_HEIGHT || c == NO_HEIGHT || c >= h || wy < c)
+		wx = push + (wx & ~0x3FF);
+
+	room_number = ideal->room_number;
+	floor = GetFloor(wx, wy, wz - push, &room_number);
+	h = GetHeight(floor, wx, wy, wz - push);
+	c = GetCeiling(floor, wx, wy, wz - push);
+
+	if (h < wy || h == NO_HEIGHT || c == NO_HEIGHT || c >= h || wy < c)
+		wz = push + (wz & ~0x3FF);
+
+	room_number = ideal->room_number;
+	floor = GetFloor(wx + push, wy, wz, &room_number);
+	h = GetHeight(floor, wx + push, wy, wz);
+	c = GetCeiling(floor, wx + push, wy, wz);
+
+	if (h < wy || h == NO_HEIGHT || c == NO_HEIGHT || c >= h || wy < c)
+		wx = (wx | 0x3FF) - push;
+
+	room_number = ideal->room_number;
+	floor = GetFloor(wx, wy, wz + push, &room_number);
+	h = GetHeight(floor, wx, wy, wz + push);
+	c = GetCeiling(floor, wx, wy, wz + push);
+
+	if (h < wy || h == NO_HEIGHT || c == NO_HEIGHT || c >= h || wy < c)
+		wz = (wz | 0x3FF) - push;
+
+	if (!yfirst)
+	{
+		room_number = ideal->room_number;
+		floor = GetFloor(wx, wy, wz, &room_number);
+		h = GetHeight(floor, wx, wy, wz);
+		c = GetCeiling(floor, wx, wy, wz);
+
+		if (c > wy - 255 && h < wy + 255 && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
+			wy = (h + c) >> 1;
+		else if (h < wy + 255 && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
+			wy = h - 255;
+		else if (c > wy - 255 && c < h && c != NO_HEIGHT && h != NO_HEIGHT)
+			wy = c + 255;
+	}
+
+	room_number = ideal->room_number;
+	floor = GetFloor(wx, wy, wz, &room_number);
+	h = GetHeight(floor, wx, wy, wz);
+	c = GetCeiling(floor, wx, wy, wz);
+
+	if (h < wy || wy < c || h == NO_HEIGHT || c == NO_HEIGHT || c >= h)
+		return 1;
+
+	GetFloor(wx, wy, wz, &ideal->room_number);
+	ideal->x = wx;
+	ideal->y = wy;
+	ideal->z = wz;
+	return 0;
+}
+
 void inject_camera(bool replace)
 {
 	INJECT(0x00442E70, InitialiseCamera, replace);
 	INJECT(0x00442F40, MoveCamera, replace);
 	INJECT(0x004451C0, mgLOS, replace);
+	INJECT(0x00444E00, CameraCollisionBounds, replace);
 }
