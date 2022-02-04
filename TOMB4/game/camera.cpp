@@ -919,6 +919,39 @@ void LookCamera(ITEM_INFO* item)
 	lara.torso_y_rot = tyrot;
 }
 
+void FixedCamera()
+{
+	OBJECT_VECTOR* fixed;
+	GAME_VECTOR ideal;
+
+	if (UseForcedFixedCamera)
+	{
+		ideal.x = ForcedFixedCamera.x;
+		ideal.y = ForcedFixedCamera.y;
+		ideal.z = ForcedFixedCamera.z;
+		ideal.room_number = ForcedFixedCamera.room_number;
+	}
+	else
+	{
+		fixed = &camera.fixed[camera.number];
+		ideal.x = fixed->x;
+		ideal.y = fixed->y;
+		ideal.z = fixed->z;
+		ideal.room_number = fixed->data;
+	}
+
+	camera.fixed_camera = 1;
+	MoveCamera(&ideal, 1);
+
+	if (camera.timer)
+	{
+		camera.timer--;
+
+		if (!camera.timer)
+			camera.timer = -1;
+	}
+}
+
 void inject_camera(bool replace)
 {
 	INJECT(0x00442E70, InitialiseCamera, replace);
@@ -929,4 +962,5 @@ void inject_camera(bool replace)
 	INJECT(0x004435E0, ChaseCamera, replace);
 	INJECT(0x00443A50, CombatCamera, replace);
 	INJECT(0x00443ED0, LookCamera, replace);
+	INJECT(0x004447F0, FixedCamera, replace);
 }
