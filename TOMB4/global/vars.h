@@ -30,6 +30,7 @@
 #define FadeScreenHeight	VAR_U_(0x004BF380, short)
 #define gfGameMode	VAR_U_(0x004AF451, char)
 #define BinocularRange	VAR_U_(0x004BF3E4, long)
+#define ExittingBinos	VAR_U_(0x004BF3D4, long)
 #define BinocularOldCamera	VAR_U_(0x004BF3EC, camera_type)
 #define LaserSight	VAR_U_(0x004BF3F0, long)
 #define camera	VAR_U_(0x007FE820, CAMERA_INFO)

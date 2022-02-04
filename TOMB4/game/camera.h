@@ -12,5 +12,6 @@ void ChaseCamera(ITEM_INFO* item);
 void CombatCamera(ITEM_INFO* item);
 void LookCamera(ITEM_INFO* item);
 void FixedCamera();
+void BinocularCamera(ITEM_INFO* item);
 
 #define CalculateCamera	( (void(__cdecl*)()) 0x00444890 )
