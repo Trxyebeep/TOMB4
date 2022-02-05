@@ -83,12 +83,12 @@ void cutseq_kill_item(long num);
 ITEM_INFO* cutseq_restore_item(long num);
 long Load_and_Init_Cutseq(long num);
 void init_cutseq_actors(char* data, long resident);
+void init_voncroy_meshbits(long num);
+void DelsHandyTeleportLara(long x, long y, long z, long yrot);
+void nail_intelligent_object(short num);
+void handle_lara_chatting(short* _ranges);
+void handle_actor_chatting(long speechslot, long node, long slot, long objslot, short* ranges);
 
-#define handle_actor_chatting	( (void(__cdecl*)(long, long, long, long, short*)) 0x0046D270 )
 #define trigger_item_in_room	( (void(__cdecl*)(long, long)) 0x0046D350 )
 #define untrigger_item_in_room	( (void(__cdecl*)(long, long)) 0x0046D3D0 )
-#define DelsHandyTeleportLara	( (void(__cdecl*)(long, long, long, long)) 0x0046D040 )
-#define init_voncroy_meshbits	( (void(__cdecl*)(long)) 0x0046D030 )
-#define handle_lara_chatting	( (void(__cdecl*)(short*)) 0x0046D1F0 )
-#define nail_intelligent_object	( (void(__cdecl*)(short)) 0x0046D160 )
 #define find_a_fucking_item	( (ITEM_INFO*(__cdecl*)(long)) 0x0046D450 )

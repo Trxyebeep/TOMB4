@@ -16,6 +16,7 @@
 #include "lara2gun.h"
 #include "effect2.h"
 #include "effects.h"
+#include "lot.h"
 
 short frig_shadow_bbox[6] = { -165, 150, -777, 1, -87, 78 };
 short frig_jeep_shadow_bbox[6] = { -600, 600, -777, 1, -600, 600 };
@@ -1499,6 +1500,115 @@ void init_cutseq_actors(char* data, long resident)
 	InitialiseHair();
 }
 
+void init_voncroy_meshbits(long num)
+{
+	cutseq_meshswapbits[num] = 0x240080;
+}
+
+void DelsHandyTeleportLara(long x, long y, long z, long yrot)
+{
+	lara_item->pos.x_pos = x;
+	lara_item->pos.y_pos = y;
+	lara_item->pos.z_pos = z;
+	lara.head_x_rot = 0;
+	lara.head_y_rot = 0;
+	lara.torso_x_rot = 0;
+	lara.torso_y_rot = 0;
+	lara_item->pos.x_rot = 0;
+	lara_item->pos.y_rot = (short)yrot;
+	lara_item->pos.z_rot = 0;
+	IsRoomOutside(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+
+	if (IsRoomOutsideNo != lara_item->room_number)
+		ItemNewRoom(lara.item_number, IsRoomOutsideNo);
+
+	lara_item->current_anim_state = AS_STOP;
+	lara_item->goal_anim_state = AS_STOP;
+	lara_item->anim_number = ANIM_STOP;
+	lara_item->frame_number = anims[ANIM_STOP].frame_base;
+	lara_item->speed = 0;
+	lara_item->fallspeed = 0;
+	lara_item->gravity_status = 0;
+	lara.gun_status = LG_NO_ARMS;
+	camera.fixed_camera = 1;
+}
+
+void nail_intelligent_object(short num)
+{
+	ITEM_INFO* item;
+
+	for (int i = 0; i < level_items; i++)
+	{
+		item = &items[i];
+
+		if (item->object_number == num)
+		{
+			item->status = ITEM_INVISIBLE;
+			RemoveActiveItem(i);
+			DisableBaddieAI(i);
+		}
+	}
+}
+
+void handle_lara_chatting(short* _ranges)
+{
+	long r1, r2, f;
+
+	lara_chat_cnt = (lara_chat_cnt - 1) & 1;
+	f = GLOBAL_cutseq_frame;
+
+	while (1)
+	{
+		r1 = _ranges[0];
+		r2 = _ranges[1];
+
+		if (r1 == -1)
+		{
+			lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA_SKIN].mesh_index + 2 * LM_HEAD];
+			return;
+		}
+
+		if (f > r1 && f < r2)
+			break;
+
+		_ranges += 2;
+	}
+
+	if (!lara_chat_cnt)
+		lara.mesh_ptrs[LM_HEAD] = meshes[objects[(GetRandomControl() & 3) + LARA_SPEECH_HEAD1].mesh_index + 2 * LM_HEAD];
+}
+
+void handle_actor_chatting(long speechslot, long node, long slot, long objslot, short* _ranges)
+{
+	long r1, r2, f, rnd;
+
+	rnd = GetRandomControl() & 1;
+	f = GLOBAL_cutseq_frame;
+
+	while (1)
+	{
+		r1 = _ranges[0];
+		r2 = _ranges[1];
+
+		if (r1 == -1)
+		{
+			cutseq_meshswapbits[slot] &= ~(1 << node);
+			return;
+		}
+
+		if (f > r1 && f < r2)
+			break;
+
+		_ranges += 2;
+	}
+
+	cutseq_meshswapbits[slot] |= (1 << node);
+	meshes[objects[objslot].mesh_index + (2 * node) + 1] = meshes[objects[speechslot + rnd].mesh_index + 2 * node];
+
+	if ((GetRandomControl() & 7) >= 6)
+		cutseq_meshswapbits[slot] &= ~(1 << node);
+}
+
 void inject_deltapack(bool replace)
 {
 	INJECT(0x0046A6D0, handle_cutseq_triggering, replace);
@@ -1581,4 +1691,9 @@ void inject_deltapack(bool replace)
 	INJECT(0x0046CCB0, cutseq_restore_item, replace);
 	INJECT(0x0046CD20, Load_and_Init_Cutseq, replace);
 	INJECT(0x0046CE30, init_cutseq_actors, replace);
+	INJECT(0x0046D030, init_voncroy_meshbits, replace);
+	INJECT(0x0046D040, DelsHandyTeleportLara, replace);
+	INJECT(0x0046D160, nail_intelligent_object, replace);
+	INJECT(0x0046D1F0, handle_lara_chatting, replace);
+	INJECT(0x0046D270, handle_actor_chatting, replace);
 }

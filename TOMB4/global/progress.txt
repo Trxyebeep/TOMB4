@@ -303,11 +303,11 @@ x for functions decompiled but not injected, for one reason or another.
 0x0046CCB0	+	cutseq_restore_item
 0x0046CD20	+	Load_and_Init_Cutseq
 0x0046CE30	+	init_cutseq_actors
-0x0046D030		init_voncroy_meshbits
-0x0046D040		DelsHandyTeleportLara
-0x0046D160		nail_intelligent_object
-0x0046D1F0		handle_lara_chatting
-0x0046D270		handle_actor_chatting
+0x0046D030	+	init_voncroy_meshbits
+0x0046D040	+	DelsHandyTeleportLara
+0x0046D160	+	nail_intelligent_object
+0x0046D1F0	+	handle_lara_chatting
+0x0046D270	+	handle_actor_chatting
 0x0046D350		trigger_item_in_room
 0x0046D3D0		untrigger_item_in_room
 0x0046D450		find_a_fucking_item
