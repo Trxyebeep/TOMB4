@@ -1625,6 +1625,16 @@ struct OLD_CAMERA
 	PHD_VECTOR t;
 };
 
+struct SHATTER_ITEM
+{
+	SPHERE Sphere;
+	ITEM_LIGHT* il;
+	short* meshp;
+	long Bit;
+	short YRot;
+	short Flags;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {

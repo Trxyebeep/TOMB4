@@ -44,6 +44,7 @@
 #include "../game/clockworkbeetle.h"
 #include "../game/laradouble.h"
 #include "../game/senet.h"
+#include "../game/sphinx.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -107,6 +108,7 @@ void inject_all(bool replace)
 	inject_clockwork(replace);
 	inject_laradouble(replace);
 	inject_senet(replace);
+	inject_sphinx(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

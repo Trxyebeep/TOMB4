@@ -1247,8 +1247,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/sphinx.cpp
 
-0x00412A60		InitialiseSphinx
-0x00412AC0		SphinxControl
+0x00412A60	+	InitialiseSphinx
+0x00412AC0	+	SphinxControl
 
 
 		game/spotcam.cpp
