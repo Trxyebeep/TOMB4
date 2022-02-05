@@ -1011,7 +1011,7 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 		if (coll->mid_floor != NO_HEIGHT && coll->mid_floor > -256)
 			item->pos.y_pos += coll->mid_floor;
 
-		if (input & IN_DUCK || lara.keep_ducked && (!(input & (IN_FLARE | IN_DRAW)) || input & IN_FORWARD) && lara.water_status != LW_WADE)
+		if ((input & IN_DUCK || lara.keep_ducked) && (!(input & (IN_FLARE | IN_DRAW)) || input & IN_FORWARD) && lara.water_status != LW_WADE)
 		{
 #ifdef GENERAL_FIXES
 			if (tomb4.flexible_crawling)
