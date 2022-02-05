@@ -91,3 +91,9 @@ void handle_actor_chatting(long speechslot, long node, long slot, long objslot, 
 void trigger_item_in_room(long room_number, long object_number);
 void untrigger_item_in_room(long room_number, long object_number);
 ITEM_INFO* find_a_fucking_item(long object_number);
+void special2_end();
+void special2_init();
+void special3_end();
+void special3_control();
+void special1_init();
+void special1_end();

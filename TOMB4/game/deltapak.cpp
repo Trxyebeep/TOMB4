@@ -17,6 +17,7 @@
 #include "effect2.h"
 #include "effects.h"
 #include "lot.h"
+#include "spotcam.h"
 
 short frig_shadow_bbox[6] = { -165, 150, -777, 1, -87, 78 };
 short frig_jeep_shadow_bbox[6] = { -600, 600, -777, 1, -600, 600 };
@@ -1666,6 +1667,75 @@ ITEM_INFO* find_a_fucking_item(long object_number)
 	return 0;
 }
 
+void special2_end()
+{
+	if (!bDoCredits)
+	{
+		InitialiseSpotCam(3);
+		lara_item->mesh_bits = 0;
+	}
+
+	Chris_Menu = 0;
+	title_controls_locked_out = 0;
+}
+
+void special2_init()
+{
+	lara_item->mesh_bits = -1;
+	Chris_Menu = 0;
+}
+
+void special3_end()
+{
+	if (!bDoCredits)
+	{
+		InitialiseSpotCam(1);
+		lara_item->mesh_bits = 0;
+	}
+
+	CutSceneTriggered = 0;
+	Chris_Menu = 0;
+	title_controls_locked_out = 0;
+}
+
+void special3_control()
+{
+	if (GLOBAL_cutseq_frame >= 348 && GLOBAL_cutseq_frame <= 358 && GLOBAL_cutseq_frame & 1)
+		DoBloodSplat(6799 - (GetRandomDraw() & 0xFF), (GetRandomDraw() & 0x1FF) - 768, 76209, 7, -1, 24);
+}
+
+void special1_init()
+{
+	ITEM_INFO* item;
+
+	for (int i = 0; i < level_items; i++)
+	{
+		item = &items[i];
+
+		if (item->object_number == ANIMATING6)
+		{
+			item->anim_number = objects[ANIMATING6].anim_index;
+			item->frame_number = anims[item->anim_number].frame_base;
+			item->flags &= ~IFL_CODEBITS;
+		}
+	}
+
+	lara_item->mesh_bits = -1;
+	Chris_Menu = 0;
+}
+
+void special1_end()
+{
+	if (!bDoCredits)
+	{
+		lara_item->mesh_bits = 0;
+		InitialiseSpotCam(2);
+	}
+
+	Chris_Menu = 0;
+	title_controls_locked_out = 0;
+}
+
 void inject_deltapack(bool replace)
 {
 	INJECT(0x0046A6D0, handle_cutseq_triggering, replace);
@@ -1756,4 +1826,10 @@ void inject_deltapack(bool replace)
 	INJECT(0x0046D350, trigger_item_in_room, replace);
 	INJECT(0x0046D3D0, untrigger_item_in_room, replace);
 	INJECT(0x0046D450, find_a_fucking_item, replace);
+	INJECT(0x0046D480, special2_end, replace);
+	INJECT(0x0046D4B0, special2_init, replace);
+	INJECT(0x0046D4D0, special3_end, replace);
+	INJECT(0x0046D510, special3_control, replace);
+	INJECT(0x0046D560, special1_init, replace);
+	INJECT(0x0046D5E0, special1_end, replace);
 }

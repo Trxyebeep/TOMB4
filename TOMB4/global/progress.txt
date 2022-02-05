@@ -311,12 +311,12 @@ x for functions decompiled but not injected, for one reason or another.
 0x0046D350	+	trigger_item_in_room
 0x0046D3D0	+	untrigger_item_in_room
 0x0046D450	+	find_a_fucking_item
-0x0046D480		special2_end
-0x0046D4B0		special2_init
-0x0046D4D0		special3_end
-0x0046D510		special3_control
-0x0046D560		special1_init
-0x0046D5E0		special1_end
+0x0046D480	+	special2_end
+0x0046D4B0	+	special2_init
+0x0046D4D0	+	special3_end
+0x0046D510	+	special3_control
+0x0046D560	+	special1_init
+0x0046D5E0	+	special1_end
 
 
 		game/demigod.cpp
