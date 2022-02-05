@@ -1602,11 +1602,14 @@ void handle_actor_chatting(long speechslot, long node, long slot, long objslot, 
 		_ranges += 2;
 	}
 
-	cutseq_meshswapbits[slot] |= (1 << node);
-	meshes[objects[objslot].mesh_index + (2 * node) + 1] = meshes[objects[speechslot + rnd].mesh_index + 2 * node];
+	if (!actor_chat_cnt)
+	{
+		cutseq_meshswapbits[slot] |= (1 << node);
+		meshes[objects[objslot].mesh_index + (2 * node) + 1] = meshes[objects[speechslot + rnd].mesh_index + 2 * node];
 
-	if ((GetRandomControl() & 7) >= 6)
-		cutseq_meshswapbits[slot] &= ~(1 << node);
+		if ((GetRandomControl() & 7) >= 6)
+			cutseq_meshswapbits[slot] &= ~(1 << node);
+	}
 }
 
 void inject_deltapack(bool replace)
