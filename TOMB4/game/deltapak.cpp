@@ -1612,6 +1612,60 @@ void handle_actor_chatting(long speechslot, long node, long slot, long objslot, 
 	}
 }
 
+void trigger_item_in_room(long room_number, long object_number)
+{
+	ITEM_INFO* item;
+	short item_number;
+
+	for (item_number = room[room_number].item_number; item_number != NO_ITEM; item_number = item->next_item)
+	{
+		item = &items[item_number];
+
+		if (item->object_number == object_number)
+		{
+			AddActiveItem(item_number);
+
+			if (object_number != DEMIGOD1)
+				item->status = ITEM_ACTIVE;
+
+			item->flags |= IFL_CODEBITS;
+		}
+	}
+}
+
+void untrigger_item_in_room(long room_number, long object_number)
+{
+	ITEM_INFO* item;
+	short item_number;
+
+	for (item_number = room[room_number].item_number; item_number != NO_ITEM; item_number = item->next_item)
+	{
+		item = &items[item_number];
+
+		if (item->object_number == object_number)
+		{
+			RemoveActiveItem(item_number);
+			item->status = ITEM_INACTIVE;
+			item->flags &= ~IFL_CODEBITS;
+		}
+	}
+}
+
+ITEM_INFO* find_a_fucking_item(long object_number)
+{
+	ITEM_INFO* item;
+
+	for (int i = 0; i < level_items; i++)
+	{
+		item = &items[i];
+
+		if (item->object_number == object_number)
+			return item;
+	}
+
+	return 0;
+}
+
 void inject_deltapack(bool replace)
 {
 	INJECT(0x0046A6D0, handle_cutseq_triggering, replace);
@@ -1699,4 +1753,7 @@ void inject_deltapack(bool replace)
 	INJECT(0x0046D160, nail_intelligent_object, replace);
 	INJECT(0x0046D1F0, handle_lara_chatting, replace);
 	INJECT(0x0046D270, handle_actor_chatting, replace);
+	INJECT(0x0046D350, trigger_item_in_room, replace);
+	INJECT(0x0046D3D0, untrigger_item_in_room, replace);
+	INJECT(0x0046D450, find_a_fucking_item, replace);
 }

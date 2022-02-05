@@ -88,7 +88,6 @@ void DelsHandyTeleportLara(long x, long y, long z, long yrot);
 void nail_intelligent_object(short num);
 void handle_lara_chatting(short* _ranges);
 void handle_actor_chatting(long speechslot, long node, long slot, long objslot, short* ranges);
-
-#define trigger_item_in_room	( (void(__cdecl*)(long, long)) 0x0046D350 )
-#define untrigger_item_in_room	( (void(__cdecl*)(long, long)) 0x0046D3D0 )
-#define find_a_fucking_item	( (ITEM_INFO*(__cdecl*)(long)) 0x0046D450 )
+void trigger_item_in_room(long room_number, long object_number);
+void untrigger_item_in_room(long room_number, long object_number);
+ITEM_INFO* find_a_fucking_item(long object_number);
