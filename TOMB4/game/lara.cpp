@@ -561,7 +561,12 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
 	item->gravity_status = 0;
 
 #ifdef GENERAL_FIXES
-	if (item->anim_number == ANIM_GRABLEDGE)
+	if (tomb4.fix_climb_up_delay)
+		flag = item->anim_number == ANIM_GRABLEDGE;
+	else
+		flag = (item->anim_number == ANIM_GRABLEDGE && item->frame_number == anims[ANIM_GRABLEDGE].frame_base + 21);
+
+	if (flag)
 #else
 	if (item->anim_number == ANIM_GRABLEDGE && item->frame_number == anims[ANIM_GRABLEDGE].frame_base + 21)
 #endif
@@ -613,7 +618,12 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
 	LaraHangTest(item, coll);
 
 #ifdef GENERAL_FIXES
-	if (item->anim_number == ANIM_GRABLEDGE)
+	if (tomb4.fix_climb_up_delay)
+		flag = item->anim_number == ANIM_GRABLEDGE;
+	else
+		flag = (item->anim_number == ANIM_GRABLEDGE && item->frame_number == anims[ANIM_GRABLEDGE].frame_base + 21);
+
+	if (flag)
 #else
 	if (item->anim_number == ANIM_GRABLEDGE && item->frame_number == anims[ANIM_GRABLEDGE].frame_base + 21)
 #endif
@@ -1003,7 +1013,16 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 
 		if (input & IN_DUCK || lara.keep_ducked && (!(input & (IN_B | IN_DRAW)) || input & IN_FORWARD) && lara.water_status != LW_WADE)
 		{
+#ifdef GENERAL_FIXES
+			if (tomb4.flexible_crawling)
+				collided = (item->anim_number == ANIM_ALL4S || item->anim_number == ANIM_ALL4S2 || item->anim_number == 266 || item->anim_number == 268);
+			else
+				collided = (item->anim_number == ANIM_ALL4S || item->anim_number == ANIM_ALL4S2);
+
+			if (collided)
+#else
 			if (item->anim_number == ANIM_ALL4S || item->anim_number == ANIM_ALL4S2)
+#endif
 			{
 				if (input & IN_FORWARD)
 				{

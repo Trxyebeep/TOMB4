@@ -1631,6 +1631,8 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool footprints;
 	ulong shadow_mode;			//1-> original, 2-> circle, 3-> PSX color like circle
 	bool crawltilt;
+	bool flexible_crawling;
+	bool fix_climb_up_delay;
 };
 #endif
 #pragma pack(pop)
