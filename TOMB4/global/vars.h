@@ -353,6 +353,10 @@
 #define cutseqpakPtr	VAR_U_(0x007F4F1C, char*)
 #define lastcamnum	VAR_U_(0x007E7228, long)
 #define GLOBAL_resident_depack_buffers	VAR_U_(0x007F4FAC, char*)
+#define SenetTargetX	VAR_U_(0x007FE204, long)
+#define SenetTargetZ	VAR_U_(0x007FE208, long)
+#define ActivePiece	VAR_U_(0x004AEBF8, char)
+#define SenetDisplacement	VAR_U_(0x004BF40C, char)
 
 
 
@@ -417,6 +421,9 @@
 #define GlobalCollisionBounds	ARRAY_(0x007FE7F0, short, [6])
 #define Slist	ARRAY_(0x007F6EE0, SPHERE, [34])
 #define FogTableColor	ARRAY_(0x004ADE1C, long, [28])
+#define SenetPieceNumbers	ARRAY_(0x004BF400, short, [6])
+#define SenetBoard	ARRAY_(0x007FE340, char, [17])
+#define ActiveSenetPieces	ARRAY_(0x007FE158, char, [6])
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1

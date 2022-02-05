@@ -1172,10 +1172,10 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/senet.cpp
 
-0x0040F320		CheckSenetWinner
-0x0040F3B0		InitialiseSenet
-0x0040F480		SenetControl
-0x0040F4D0		MakeMove
+0x0040F320	+	CheckSenetWinner
+0x0040F3B0	+	InitialiseSenet
+0x0040F480	+	SenetControl
+0x0040F4D0	+	MakeMove
 0x0040F600		InitialiseGameStix
 0x0040F630		GameStixControl
 0x0040FBD0		ShockwaveExplosion
