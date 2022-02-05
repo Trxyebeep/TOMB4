@@ -299,8 +299,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x0046CA80	+	cutseq_shoot_pistols
 0x0046CAB0	+	trigger_weapon_dynamics
 0x0046CB40	+	deal_with_pistols
-0x0046CC40		cutseq_kill_item
-0x0046CCB0		cutseq_restore_item
+0x0046CC40	+	cutseq_kill_item
+0x0046CCB0	+	cutseq_restore_item
 0x0046CD20		Load_and_Init_Cutseq
 0x0046CE30		init_cutseq_actors
 0x0046D030		init_voncroy_meshbits

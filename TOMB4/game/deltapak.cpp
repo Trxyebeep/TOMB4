@@ -1365,6 +1365,42 @@ void deal_with_pistols()
 	}
 }
 
+void cutseq_kill_item(long num)
+{
+	ITEM_INFO* item;
+
+	for (int i = 0; i < level_items; i++)
+	{
+		item = &items[i];
+
+		if (item->object_number == num)
+		{
+			old_status_flags[numnailed] = item->status;
+			item->status = ITEM_INVISIBLE;
+			numnailed++;
+		}
+	}
+}
+
+ITEM_INFO* cutseq_restore_item(long num)
+{
+	ITEM_INFO* item;
+
+	for (int i = 0; i < level_items; i++)
+	{
+		item = &items[i];
+
+		if (item->object_number == num)
+		{
+			item->status = old_status_flags[numnailed];
+			numnailed++;
+			return item;
+		}
+	}
+
+	return 0;
+}
+
 void inject_deltapack(bool replace)
 {
 	INJECT(0x0046A6D0, handle_cutseq_triggering, replace);
@@ -1443,4 +1479,6 @@ void inject_deltapack(bool replace)
 	INJECT(0x0046CA80, cutseq_shoot_pistols, replace);
 	INJECT(0x0046CAB0, trigger_weapon_dynamics, replace);
 	INJECT(0x0046CB40, deal_with_pistols, replace);
+	INJECT(0x0046CC40, cutseq_kill_item, replace);
+	INJECT(0x0046CCB0, cutseq_restore_item, replace);
 }

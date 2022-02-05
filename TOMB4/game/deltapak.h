@@ -79,6 +79,8 @@ void do_key_meshswap();
 void cutseq_shoot_pistols(long left_or_right);
 void trigger_weapon_dynamics(long left_or_right);
 void deal_with_pistols();
+void cutseq_kill_item(long num);
+ITEM_INFO* cutseq_restore_item(long num);
 
 #define Load_and_Init_Cutseq	( (long(__cdecl*)(long)) 0x0046CD20 )
 #define handle_actor_chatting	( (void(__cdecl*)(long, long, long, long, short*)) 0x0046D270 )
@@ -87,7 +89,5 @@ void deal_with_pistols();
 #define DelsHandyTeleportLara	( (void(__cdecl*)(long, long, long, long)) 0x0046D040 )
 #define init_voncroy_meshbits	( (void(__cdecl*)(long)) 0x0046D030 )
 #define handle_lara_chatting	( (void(__cdecl*)(short*)) 0x0046D1F0 )
-#define cutseq_kill_item	( (void(__cdecl*)(long)) 0x0046CC40 )
-#define cutseq_restore_item	( (void(__cdecl*)(long)) 0x0046CCB0 )
 #define nail_intelligent_object	( (void(__cdecl*)(short)) 0x0046D160 )
 #define find_a_fucking_item	( (ITEM_INFO*(__cdecl*)(long)) 0x0046D450 )
