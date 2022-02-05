@@ -81,8 +81,9 @@ void trigger_weapon_dynamics(long left_or_right);
 void deal_with_pistols();
 void cutseq_kill_item(long num);
 ITEM_INFO* cutseq_restore_item(long num);
+long Load_and_Init_Cutseq(long num);
+void init_cutseq_actors(char* data, long resident);
 
-#define Load_and_Init_Cutseq	( (long(__cdecl*)(long)) 0x0046CD20 )
 #define handle_actor_chatting	( (void(__cdecl*)(long, long, long, long, short*)) 0x0046D270 )
 #define trigger_item_in_room	( (void(__cdecl*)(long, long)) 0x0046D350 )
 #define untrigger_item_in_room	( (void(__cdecl*)(long, long)) 0x0046D3D0 )

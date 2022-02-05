@@ -350,6 +350,9 @@
 #define camerasnaps	VAR_U_(0x004BF3E0, char)
 #define static_lookcamp	VAR_U_(0x007FE930, GAME_VECTOR)
 #define static_lookcamt	VAR_U_(0x007FE920, GAME_VECTOR)
+#define cutseqpakPtr	VAR_U_(0x007F4F1C, char*)
+#define lastcamnum	VAR_U_(0x007E7228, long)
+#define GLOBAL_resident_depack_buffers	VAR_U_(0x007F4FAC, char*)
 
 
 

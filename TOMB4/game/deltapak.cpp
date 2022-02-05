@@ -1401,6 +1401,104 @@ ITEM_INFO* cutseq_restore_item(long num)
 	return 0;
 }
 
+long Load_and_Init_Cutseq(long num)
+{
+	ACTORME* actor;
+	long* headerbuf;
+	char* packed;
+	long Offset, Length;
+
+	Log(5, "Initialising Cut Scene");
+	SetCutPlayed(num);
+
+	headerbuf = (long*)cutseqpakPtr + (2 * num);	//cutseq.pak header is offsets then lengths, go to current num
+	Offset = headerbuf[0];							//first long, offset
+	Length = headerbuf[1];							//second long, length
+
+	Log(5, "Offset=%d, Length=%d\n", Offset, Length);
+	packed = &cutseqpakPtr[Offset];
+	GLOBAL_cutme = (NEW_CUTSCENE*)packed;	//go to current cut data
+	Log(5, "Loaded cutscene data...");
+	Log(5, "num actors = %d\n", GLOBAL_cutme->numactors);
+	Log(5, "num frames = %d\n", GLOBAL_cutme->numframes);
+	Log(5, "OrgX=%d,OrgY=%d,OrgZ=%d\n", GLOBAL_cutme->orgx, GLOBAL_cutme->orgy, GLOBAL_cutme->orgz);
+	Log(5, "CameraOffset=%d\n", GLOBAL_cutme->camera_offset);
+
+	for (int i = 0; i < GLOBAL_cutme->numactors; i++)
+	{
+		actor = &GLOBAL_cutme->actor_data[i];
+		Log(5, "Actor %d --- offset=%d,slot=%d,nodes=%d\n", i, actor->offset, actor->objslot, actor->nodes);
+	}
+		
+	init_cutseq_actors(packed, 0);
+	return 0;
+}
+
+void init_cutseq_actors(char* data, long resident)
+{
+	ITEM_INFO* item;
+	char* packed;
+	char* resident_addr;
+	long pda_nodes, offset;
+
+	resident_addr = GLOBAL_resident_depack_buffers;
+	lastcamnum = -1;
+	GLOBAL_playing_cutseq = 0;
+	GLOBAL_numcutseq_frames = GLOBAL_cutme->numframes;
+
+	for (int i = 0; i < GLOBAL_cutme->numactors; i++)
+	{
+		item = &duff_item[i];
+		offset = GLOBAL_cutme->actor_data[i].offset;
+		packed = &data[offset];
+		pda_nodes = GLOBAL_cutme->actor_data[i].nodes;
+
+		if (resident)
+		{
+			actor_pnodes[i] = (PACKNODE*)resident_addr;
+			resident_addr += (pda_nodes + 1) * sizeof(PACKNODE);
+		}
+		else
+			actor_pnodes[i] = (PACKNODE*)cutseq_malloc((pda_nodes + 1) * sizeof(PACKNODE));
+
+		InitPackNodes((NODELOADHEADER*)packed, actor_pnodes[i], packed, pda_nodes + 1);
+		memset(item, 0, sizeof(ITEM_INFO));
+		item->il.ambient = lara_item->il.ambient;
+		item->il.fcnt = -1;
+		item->il.room_number = -1;
+		item->il.RoomChange = 0;
+		item->il.nCurrentLights = 0;
+		item->il.nPrevLights = 0;
+		item->il.pCurrentLights = &item->il.CurrentLights;
+		item->il.pPrevLights = &item->il.PrevLights;
+		item->pos.x_pos = GLOBAL_cutme->orgx;
+		item->pos.y_pos = GLOBAL_cutme->orgy;
+		item->pos.z_pos = GLOBAL_cutme->orgz;
+		item->pos.x_rot = 0;
+		item->pos.y_rot = 0;
+		item->pos.z_rot = 0;
+		item->room_number = 0;
+	}
+
+	offset = GLOBAL_cutme->camera_offset;
+	packed = &data[offset];
+
+	if (resident)
+		camera_pnodes = (PACKNODE*)resident_addr;
+	else
+		camera_pnodes = (PACKNODE*)cutseq_malloc(2 * sizeof(PACKNODE));
+
+	InitPackNodes((NODELOADHEADER*)packed, camera_pnodes, packed, 2);
+	GLOBAL_playing_cutseq = 1;
+	GLOBAL_cutseq_frame = 0;
+	DelsHandyTeleportLara(GLOBAL_cutme->orgx, GLOBAL_cutme->orgy, GLOBAL_cutme->orgz, 0);
+	camera.pos.x = lara_item->pos.x_pos;
+	camera.pos.y = lara_item->pos.y_pos;
+	camera.pos.z = lara_item->pos.z_pos;
+	camera.pos.room_number = lara_item->room_number;
+	InitialiseHair();
+}
+
 void inject_deltapack(bool replace)
 {
 	INJECT(0x0046A6D0, handle_cutseq_triggering, replace);
@@ -1481,4 +1579,6 @@ void inject_deltapack(bool replace)
 	INJECT(0x0046CB40, deal_with_pistols, replace);
 	INJECT(0x0046CC40, cutseq_kill_item, replace);
 	INJECT(0x0046CCB0, cutseq_restore_item, replace);
+	INJECT(0x0046CD20, Load_and_Init_Cutseq, replace);
+	INJECT(0x0046CE30, init_cutseq_actors, replace);
 }
