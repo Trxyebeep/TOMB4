@@ -1287,6 +1287,24 @@ void twentytwo_end()
 	trigger_item_in_room(39, DEMIGOD3);
 }
 
+void do_spade_meshswap()
+{
+	short* temp;
+
+	temp = lara.mesh_ptrs[LM_LHAND];
+	lara.mesh_ptrs[LM_LHAND] = meshes[objects[MESHSWAP1].mesh_index + LM_LHAND * 2];
+	meshes[objects[MESHSWAP1].mesh_index + LM_LHAND * 2] = temp;
+}
+
+void do_key_meshswap()
+{
+	short* temp;
+
+	temp = lara.mesh_ptrs[LM_RHAND];
+	lara.mesh_ptrs[LM_RHAND] = meshes[objects[MESHSWAP1].mesh_index + LM_RHAND * 2];
+	meshes[objects[MESHSWAP1].mesh_index + LM_RHAND * 2] = temp;
+}
+
 void inject_deltapack(bool replace)
 {
 	INJECT(0x0046A6D0, handle_cutseq_triggering, replace);
@@ -1360,4 +1378,6 @@ void inject_deltapack(bool replace)
 	INJECT(0x0046C950, twentyseven_end, replace);
 	INJECT(0x0046C9A0, twentytwo_init, replace);
 	INJECT(0x0046C9B0, twentytwo_end, replace);
+	INJECT(0x0046C9F0, do_spade_meshswap, replace);
+	INJECT(0x0046CA50, do_key_meshswap, replace);
 }

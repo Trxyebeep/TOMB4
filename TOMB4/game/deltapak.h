@@ -74,6 +74,8 @@ void twentyseven_control();
 void twentyseven_end();
 void twentytwo_init();
 void twentytwo_end();
+void do_spade_meshswap();
+void do_key_meshswap();
 
 #define Load_and_Init_Cutseq	( (long(__cdecl*)(long)) 0x0046CD20 )
 #define cutseq_shoot_pistols	( (void(__cdecl*)(long)) 0x0046CA80 )
@@ -88,4 +90,3 @@ void twentytwo_end();
 #define cutseq_restore_item	( (void(__cdecl*)(long)) 0x0046CCB0 )
 #define nail_intelligent_object	( (void(__cdecl*)(short)) 0x0046D160 )
 #define find_a_fucking_item	( (ITEM_INFO*(__cdecl*)(long)) 0x0046D450 )
-#define do_key_meshswap	( (void(__cdecl*)()) 0x0046CA50 )

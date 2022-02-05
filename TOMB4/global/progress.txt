@@ -294,8 +294,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x0046C950	+	twentyseven_end
 0x0046C9A0	+	twentytwo_init
 0x0046C9B0	+	twentytwo_end
-0x0046C9F0		do_spade_meshswap
-0x0046CA50		do_key_meshswap
+0x0046C9F0	+	do_spade_meshswap
+0x0046CA50	+	do_key_meshswap
 0x0046CA80		cutseq_shoot_pistols
 0x0046CAB0		trigger_weapon_dynamics
 0x0046CB40		deal_with_pistols
