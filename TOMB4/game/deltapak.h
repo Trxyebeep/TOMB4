@@ -76,10 +76,11 @@ void twentytwo_init();
 void twentytwo_end();
 void do_spade_meshswap();
 void do_key_meshswap();
+void cutseq_shoot_pistols(long left_or_right);
+void trigger_weapon_dynamics(long left_or_right);
+void deal_with_pistols();
 
 #define Load_and_Init_Cutseq	( (long(__cdecl*)(long)) 0x0046CD20 )
-#define cutseq_shoot_pistols	( (void(__cdecl*)(long)) 0x0046CA80 )
-#define deal_with_pistols	( (void(__cdecl*)()) 0x0046CB40 )
 #define handle_actor_chatting	( (void(__cdecl*)(long, long, long, long, short*)) 0x0046D270 )
 #define trigger_item_in_room	( (void(__cdecl*)(long, long)) 0x0046D350 )
 #define untrigger_item_in_room	( (void(__cdecl*)(long, long)) 0x0046D3D0 )

@@ -46,6 +46,7 @@
 #define WeaponDelay	VAR_U_(0x004BF3F4, long)
 #define SmokeCountL	VAR_U_(0x00804E68, long)
 #define SmokeCountR	VAR_U_(0x00804E6C, long)
+#define SmokeWeapon	VAR_U_(0x00804F20, long)
 #define XSoff1	VAR_U_(0x00753C6C, short)
 #define XSoff2	VAR_U_(0x00753C68, short)
 #define YSoff1	VAR_U_(0x00753C7C, short)
