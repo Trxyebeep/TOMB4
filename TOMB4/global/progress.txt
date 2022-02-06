@@ -1257,7 +1257,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00460320	+	Spline
 0x00460420	+	InitialiseSpotCam
 0x00460B50	+	SetSplineData
-0x00460C70		CalculateSpotCams
+0x00460C70	+	CalculateSpotCams
 
 
 		game/switch.cpp
