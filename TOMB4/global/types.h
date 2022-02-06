@@ -1635,6 +1635,25 @@ struct SHATTER_ITEM
 	short Flags;
 };
 
+struct SPOTCAM
+{
+	long x;
+	long y;
+	long z;
+	long tx;
+	long ty;
+	long tz;
+	uchar sequence;
+	uchar camera;
+	short fov;
+	short roll;
+	short timer;
+	short speed;
+	short flags;
+	short room_number;
+	short pad;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {

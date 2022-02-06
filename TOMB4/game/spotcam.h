@@ -1,6 +1,11 @@
 #pragma once
-#include "spotcam.h"
+#include "../global/vars.h"
+
+void inject_spotcam(bool replace);
+
+void SetSplineData(long num, long cam);
+void InitialiseSpotCam(short Sequence);
+void InitSpotCamSequences();
+long Spline(long x, long* knots, long nk);
 
 #define CalculateSpotCams	( (void(__cdecl*)()) 0x00460C70 )
-#define InitSpotCamSequences	( (void(__cdecl*)()) 0x004602B0 )
-#define InitialiseSpotCam	( (void(__cdecl*)(long)) 0x00460420 )

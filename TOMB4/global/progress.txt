@@ -1253,10 +1253,10 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/spotcam.cpp
 
-0x004602B0		InitSpotCamSequences
-0x00460320		Spline
-0x00460420		InitialiseSpotCam
-0x00460B50		SetSplineData
+0x004602B0	+	InitSpotCamSequences
+0x00460320	+	Spline
+0x00460420	+	InitialiseSpotCam
+0x00460B50	+	SetSplineData
 0x00460C70		CalculateSpotCams
 
 
