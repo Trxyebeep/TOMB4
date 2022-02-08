@@ -28,3 +28,4 @@ void DrawGunshells();
 #define	CreateBubble	( (void(__cdecl*)(PHD_3DPOS*, short, long, long, long, long, long , long)) 0x004397F0 )
 #define GetFreeDrip	( (long(__cdecl*)()) 0x00439F10 )
 #define TriggerGunSmoke	( (void(__cdecl*)(long, long, long, long, long, long, long, long, long)) 0x00438940 )
+#define AddFire	( (void(__cdecl*)(long, long, long, long, short, short)) 0x00438510 )

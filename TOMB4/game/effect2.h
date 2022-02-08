@@ -16,3 +16,4 @@ void TriggerFlareSparks(long x, long y, long z, long xvel, long yvel, long zvel,
 #define GetFreeSpark	( (long(__cdecl*)()) 0x00433D30 )
 #define TriggerExplosionSparks	( (void(__cdecl*)(long, long, long, long, long, long, short)) 0x004349F0 )
 #define TriggerFireFlame	( (void(__cdecl*)(long, long, long, long, long)) 0x00435130 )
+#define TriggerSuperJetFlame	( (void(__cdecl*)(ITEM_INFO*, long, long)) 0x00435570 )

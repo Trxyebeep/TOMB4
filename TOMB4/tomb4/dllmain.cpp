@@ -46,6 +46,7 @@
 #include "../game/senet.h"
 #include "../game/sphinx.h"
 #include "../game/spotcam.h"
+#include "../game/traps.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -111,6 +112,7 @@ void inject_all(bool replace)
 	inject_senet(replace);
 	inject_sphinx(replace);
 	inject_spotcam(replace);
+	inject_traps(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

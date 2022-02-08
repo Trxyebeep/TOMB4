@@ -458,6 +458,7 @@
 #define camera_speed	ARRAY_(0x007F5A20, long, [18])
 #define SpotRemap	ARRAY_(0x007F58E8, uchar, [8])
 #define CameraCnt	ARRAY_(0x007F6EC8, uchar, [8])
+#define LibrarySerpents	ARRAY_(0x004BF2FC, char, [8])
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1
