@@ -1654,6 +1654,18 @@ struct SPOTCAM
 	short pad;
 };
 
+struct WRAITH_STRUCT
+{
+	PHD_VECTOR pos;
+	short xv;
+	short yv;
+	short zv;
+	uchar r;
+	uchar g;
+	uchar b;
+	uchar pad[3];
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {

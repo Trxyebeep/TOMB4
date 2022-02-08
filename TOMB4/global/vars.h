@@ -379,6 +379,7 @@
 #define spline_from_camera	VAR_U_(0x007F57DC, long)
 #define bCheckTrigger	VAR_U_(0x004BF6E8, long)
 #define number_spotcams	VAR_U_(0x007F5828, short)
+#define WraithSpeed	VAR_U_(0x004AD6D0, short)
 
 
 
