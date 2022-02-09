@@ -1439,7 +1439,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0041C2E0	+	InitialiseWraith
 0x0041C360	+	TriggerWraithFlame
 0x0041C4C0	+	TriggerWraithEffect
-0x0041C6E0		WraithControl
+0x0041C6E0	x	WraithControl
 
 // ======================================
 // SPECIFIC
