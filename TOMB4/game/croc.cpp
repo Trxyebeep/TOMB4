@@ -8,6 +8,8 @@
 #include "effects.h"
 #include "../specific/function_stubs.h"
 #include "sphere.h"
+#include "items.h"
+#include "../specific/output.h"
 
 static BITE_INFO croc_bite = { 0, -100, 500, 9 };
 
@@ -382,10 +384,68 @@ void TriggerLocust(ITEM_INFO* item)
 	fx->Counter = 20 * ((GetRandomControl() & 7) + 15);
 }
 
+void InitialiseLocustEmitter(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (!item->pos.y_rot)
+		item->pos.z_pos += 512;
+	else if (item->pos.y_rot == 16384)
+		item->pos.x_pos += 512;
+	else if (item->pos.y_rot == -32768)
+		item->pos.z_pos -= 512;
+	else if (item->pos.y_rot == -16384)
+		item->pos.x_pos -= 512;
+}
+
+void ControlLocustEmitter(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (!TriggerActive(item))
+		return;
+
+	if (item->trigger_flags)
+	{
+		TriggerLocust(item);
+		item->trigger_flags--;
+	}
+	else
+		KillItem(item_number);
+}
+
+void DrawLocusts()
+{
+	LOCUST_STRUCT* fx;
+	short** meshpp;
+
+	for (int i = 0; i < 64; i++)
+	{
+		fx = &Locusts[i];
+
+		if (fx->On)
+		{
+			meshpp = &meshes[objects[AHMET_MIP].mesh_index + 2 * (-GlobalCounter & 3)];
+			phd_PushMatrix();
+			phd_TranslateAbs(fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos);
+			phd_RotYXZ(fx->pos.y_rot, fx->pos.x_rot, fx->pos.z_rot);
+			phd_PutPolygons_train(*meshpp, 0);
+			phd_PopMatrix();
+		}
+	}
+}
+
 void inject_croc(bool replace)
 {
 	INJECT(0x00402D90, InitialiseCroc, replace);
 	INJECT(0x00402E30, CrocControl, replace);
 	INJECT(0x004035D0, GetFreeLocust, replace);
 	INJECT(0x00403640, TriggerLocust, replace);
+	INJECT(0x004037B0, InitialiseLocustEmitter, replace);
+	INJECT(0x00403810, ControlLocustEmitter, replace);
+	INJECT(0x00403C10, DrawLocusts, replace);
 }

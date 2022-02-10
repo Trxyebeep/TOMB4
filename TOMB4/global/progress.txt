@@ -186,10 +186,10 @@ x for functions decompiled but not injected, for one reason or another.
 0x00402E30	+	CrocControl
 0x004035D0	+	GetFreeLocust
 0x00403640	+	TriggerLocust
-0x004037B0		InitialiseLocustEmitter
-0x00403810		ControlLocustEmitter
+0x004037B0	+	InitialiseLocustEmitter
+0x00403810	+	ControlLocustEmitter
 0x00403870		UpdateLocusts
-0x00403C10		DrawLocusts
+0x00403C10	+	DrawLocusts
 0x00403C90		TriggerCrocgodMissile
 0x00403D30		TriggerCrocgodMissileFlame
 0x00403ED0		InitialiseCrocgod
