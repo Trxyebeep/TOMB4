@@ -36,7 +36,6 @@
 #define camera	VAR_U_(0x007FE820, CAMERA_INFO)
 #define BinocularOn	VAR_U_(0x004BF3E8, long)
 #define items	VAR_U_(0x007FE28C, ITEM_INFO*)
-#define objects	ARRAY_(0x0052B850, OBJECT_INFO, [465])
 #define GotLaraSpheres	VAR_U_(0x007F6EDE, char)
 #define InItemControlLoop	VAR_U_(0x004BF3F5, char)
 #define next_item_active	VAR_U_(0x007FD20A, short)
@@ -77,7 +76,6 @@
 #define bLaraTorch	VAR_U_(0x00536F10, long)
 #define phd_mxptr	VAR_U_(0x007E71D8, long*)
 #define GlobalAmbient	VAR_U_(0x005C047C, long)
-#define spark	ARRAY_(0x00801400, SPARKS, [256])
 #define height_type	VAR_U_(0x007FE290, long)
 #define bikefspeed	VAR_U_(0x004BFC08, long)
 #define dont_exit_bike	VAR_U_(0x004BFC24, char)
@@ -380,6 +378,7 @@
 #define bCheckTrigger	VAR_U_(0x004BF6E8, long)
 #define number_spotcams	VAR_U_(0x007F5828, short)
 #define WraithSpeed	VAR_U_(0x004AD6D0, short)
+#define next_locust	VAR_U_(0x004BF2E0, long)
 
 
 
@@ -460,6 +459,9 @@
 #define SpotRemap	ARRAY_(0x007F58E8, uchar, [8])
 #define CameraCnt	ARRAY_(0x007F6EC8, uchar, [8])
 #define LibrarySerpents	ARRAY_(0x004BF2FC, char, [8])
+#define spark	ARRAY_(0x00801400, SPARKS, [256])
+#define objects	ARRAY_(0x0052B850, OBJECT_INFO, [465])
+#define Locusts	ARRAY_(0x0080FA00, LOCUST_STRUCT, [64])
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1

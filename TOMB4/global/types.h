@@ -1666,6 +1666,19 @@ struct WRAITH_STRUCT
 	uchar pad[3];
 };
 
+struct LOCUST_STRUCT
+{
+	PHD_3DPOS pos;
+	short room_number;
+	short speed;
+	short Counter;
+	short LaraTarget;
+	char XTarget;
+	char ZTarget;
+	uchar On;
+	uchar flags;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {

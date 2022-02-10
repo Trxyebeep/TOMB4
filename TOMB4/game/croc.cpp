@@ -7,6 +7,7 @@
 #include "people.h"
 #include "effects.h"
 #include "../specific/function_stubs.h"
+#include "sphere.h"
 
 static BITE_INFO croc_bite = { 0, -100, 500, 9 };
 
@@ -302,8 +303,89 @@ void CrocControl(short item_number)
 		croc->LOT.fly = 0;
 }
 
+long GetFreeLocust()
+{
+	LOCUST_STRUCT* fx;
+
+	fx = &Locusts[next_locust];
+
+	for (int free = next_locust, i = 0; i < 64; i++)
+	{
+		if (fx->On)
+		{
+			if (free == 63)
+			{
+				fx = Locusts;
+				free = 0;
+			}
+			else
+			{
+				free++;
+				fx++;
+			}
+		}
+		else
+		{
+			next_locust = (free + 1) & 0x3F;
+			return free;
+		}
+	}
+
+	return NO_ITEM;
+}
+
+void TriggerLocust(ITEM_INFO* item)
+{
+	LOCUST_STRUCT* fx;
+	PHD_VECTOR vec;
+	PHD_VECTOR vec2;
+	long fx_number;
+	short angles[2];
+
+	fx_number = GetFreeLocust();
+
+	if (fx_number == NO_ITEM)
+		return;
+
+	fx = &Locusts[fx_number];
+
+	if (item->object_number == FISH)
+	{
+		vec.x = item->pos.x_pos;
+		vec.y = item->pos.y_pos;
+		vec.z = item->pos.z_pos;
+		*(long*)angles = item->pos.y_rot + 0x8000;
+	}
+	else
+	{
+		vec2.x = 0;
+		vec2.y = -96;
+		vec2.z = 144;
+		GetJointAbsPosition(item, &vec2, 9);
+		vec.x = 0;
+		vec.y = -128;
+		vec.z = 288;
+		GetJointAbsPosition(item, &vec, 9);
+		phd_GetVectorAngles(vec.x - vec2.x, vec.y - vec2.y, vec.z - vec2.z, angles);
+	}
+
+	fx->room_number = item->room_number;
+	fx->pos.x_pos = vec.x;
+	fx->pos.y_pos = vec.y;
+	fx->pos.z_pos = vec.z;
+	fx->pos.x_rot = (GetRandomControl() & 0x3FF) + angles[1] - 512;
+	fx->pos.y_rot = (GetRandomControl() & 0x7FF) + angles[0] - 1024;
+	fx->On = 1;
+	fx->flags = 0;
+	fx->speed = (GetRandomControl() & 0x1F) + 16;
+	fx->LaraTarget = GetRandomControl() & 0x1FF;
+	fx->Counter = 20 * ((GetRandomControl() & 7) + 15);
+}
+
 void inject_croc(bool replace)
 {
 	INJECT(0x00402D90, InitialiseCroc, replace);
 	INJECT(0x00402E30, CrocControl, replace);
+	INJECT(0x004035D0, GetFreeLocust, replace);
+	INJECT(0x00403640, TriggerLocust, replace);
 }
