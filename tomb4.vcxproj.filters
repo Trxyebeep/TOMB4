@@ -346,6 +346,7 @@
     <ClInclude Include="TOMB4\tomb4\tomb4.h">
       <Filter>TOMB4\tomb4</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TOMB4\game\lara.cpp">
@@ -668,5 +669,8 @@
     <Text Include="TOMB4\global\progress.txt">
       <Filter>TOMB4\global</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tomb4.rc" />
   </ItemGroup>
 </Project>

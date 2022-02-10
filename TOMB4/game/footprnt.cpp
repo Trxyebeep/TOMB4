@@ -9,6 +9,8 @@
 #include "../specific/function_table.h"
 #include "../specific/3dmath.h"
 #include "../tomb4/tomb4.h"
+
+#define PRINT_HEIGHT_CORRECTION 128 // The maximum difference between the footprint and the floor
 #endif
 
 static char footsounds[14] =
@@ -53,18 +55,6 @@ void AddFootPrint(ITEM_INFO* item)
 #ifdef FOOTPRINTS
 static void ProjectTriPoints(FOOTPRINT* print, PHD_VECTOR* pos, long& x, long& y, long& z)
 {
-	FLOOR_INFO* floor;
-	long height, cy;
-	short room_number;
-
-	room_number = lara_item->room_number;
-	floor = GetFloor(print->x + pos->x, print->y, print->z + pos->z, &room_number);
-	height = GetHeight(floor, print->x + pos->x, print->y, print->z + pos->z);
-	cy = height > print->y ? print->y - height : height - print->y;
-
-	if (ABS(cy) < 128)
-		pos->y = cy;
-
 	x = (phd_mxptr[M00] * pos->x + phd_mxptr[M01] * pos->y + phd_mxptr[M02] * pos->z + phd_mxptr[M03]) >> 14;
 	y = (phd_mxptr[M10] * pos->x + phd_mxptr[M11] * pos->y + phd_mxptr[M12] * pos->z + phd_mxptr[M13]) >> 14;
 	z = (phd_mxptr[M20] * pos->x + phd_mxptr[M21] * pos->y + phd_mxptr[M22] * pos->z + phd_mxptr[M23]) >> 14;
@@ -75,10 +65,11 @@ void S_DrawFootPrints()
 	FOOTPRINT* print;
 	SPRITESTRUCT* sprite;
 	D3DTLVERTEX v[3];
-	PHD_VECTOR pos;
+	PHD_VECTOR pos[3];
 	TEXTURESTRUCT tex;
 	float u1, v1, u2, v2;
-	long x1, y1, z1, x2, y2, z2, x3, y3, z3, col, opt;
+	long x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, col, opt;
+	short room_number;
 	
 	for (int i = 0; i < 32; i++)
 	{
@@ -99,24 +90,39 @@ void S_DrawFootPrints()
 			else
 				col = 112;
 
-			phd_PushMatrix();
-			phd_TranslateAbs(print->x, print->y - 1, print->z);
+			pos[0].x = 0;
+			pos[0].z = -64;
+			pos[1].x = -128;
+			pos[1].z = 64;
+			pos[2].x = 128;
+			pos[2].z = 64;
+
+			y = print->y;
+
+			phd_PushUnitMatrix();
+			phd_TranslateRel(print->x, y, print->z);
 			phd_RotY(print->YRot);
 
-			pos.x = 0;
-			pos.y = 0;
-			pos.z = -64;
-			ProjectTriPoints(print, &pos, x1, y1, z1);
+			for (int j = 0; j < 3; j++)
+			{
+				x = (pos[j].x * phd_mxptr[M00] + pos[j].z * phd_mxptr[M02] + phd_mxptr[M03]) >> 14;
+				z = (pos[j].x * phd_mxptr[M20] + pos[j].z * phd_mxptr[M22] + phd_mxptr[M23]) >> 14;
+				room_number = lara_item->room_number;
+				pos[j].y = GetHeight(GetFloor(x, y, z, &room_number), x, y, z) - y;
 
-			pos.x = -128;
-			pos.y = 0;
-			pos.z = 64;
-			ProjectTriPoints(print, &pos, x2, y2, z2);
+				if (ABS(pos[j].y) > PRINT_HEIGHT_CORRECTION)
+					pos[j].y = 0;
+			}
 
-			pos.x = 128;
-			pos.y = 0;
-			pos.z = 64;
-			ProjectTriPoints(print, &pos, x3, y3, z3);
+			phd_PopMatrix();
+
+			phd_PushMatrix();
+			phd_TranslateAbs(print->x, y - 16, print->z);
+			phd_RotY(print->YRot);
+
+			ProjectTriPoints(print, &pos[0], x1, y1, z1);
+			ProjectTriPoints(print, &pos[1], x2, y2, z2);
+			ProjectTriPoints(print, &pos[2], x3, y3, z3);
 
 			phd_PopMatrix();
 			setXYZ3(v, x1, y1, z1, x2, y2, z2, x3, y3, z3, clipflags);

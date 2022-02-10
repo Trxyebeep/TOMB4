@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="TOMB4\game\lara_states.h" />
     <ClInclude Include="TOMB4\game\ahmet.h" />
     <ClInclude Include="TOMB4\game\baboon.h" />
@@ -387,6 +388,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="TOMB4\global\progress.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tomb4.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
