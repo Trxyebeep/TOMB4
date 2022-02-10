@@ -424,21 +424,21 @@ void WraithControl(short item_number)
 		wraith[i + 1].yv = wraith[i].yv;
 		wraith[i + 1].zv = wraith[i].zv;
 
-		if (item->object_number == WRAITH1)	//the rgb stuff is wrong
+		if (item->object_number == WRAITH1)
 		{
 			wraith[i + 1].r = (GetRandomControl() & 0x3F) - 64;
-			wraith[i + 1].g = uchar((i + 1 + (GetRandomControl() & 0x3F)) << 4);
+			wraith[i + 1].g = uchar(16 * (8 - i) + (GetRandomControl() & 0x3F));
 			wraith[i + 1].b = GetRandomControl() & 0xF;
 		}
 		else if (item->object_number == WRAITH2)
 		{
 			wraith[i + 1].r = GetRandomControl() & 0xF;
-			wraith[i + 1].g = uchar((i + 1 + (GetRandomControl() & 0x3F)) << 4);
+			wraith[i + 1].g = uchar(16 * (8 - i) + (GetRandomControl() & 0x3F));
 			wraith[i + 1].b = (GetRandomControl() & 0x3F) - 64;
 		}
 		else
 		{
-			wraith[i + 1].r = uchar((i + 2 + (GetRandomControl() & 0x3F)) << 3);
+			wraith[i + 1].r = uchar(8 * (9 - i) + (GetRandomControl() & 0x3F));
 			wraith[i + 1].g = wraith[i + 1].r;
 			wraith[i + 1].b = wraith[i + 1].r + (GetRandomControl() & 0xF);
 		}
@@ -467,5 +467,5 @@ void inject_wraith(bool replace)
 	INJECT(0x0041C2E0, InitialiseWraith, replace);
 	INJECT(0x0041C360, TriggerWraithFlame, replace);
 	INJECT(0x0041C4C0, TriggerWraithEffect, replace);
-	INJECT(0x0041C6E0, WraithControl, 0);	//wrong light flashes
+	INJECT(0x0041C6E0, WraithControl, replace);
 }
