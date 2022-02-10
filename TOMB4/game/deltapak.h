@@ -74,18 +74,26 @@ void twentyseven_control();
 void twentyseven_end();
 void twentytwo_init();
 void twentytwo_end();
-
-#define Load_and_Init_Cutseq	( (long(__cdecl*)(long)) 0x0046CD20 )
-#define cutseq_shoot_pistols	( (void(__cdecl*)(long)) 0x0046CA80 )
-#define deal_with_pistols	( (void(__cdecl*)()) 0x0046CB40 )
-#define handle_actor_chatting	( (void(__cdecl*)(long, long, long, long, short*)) 0x0046D270 )
-#define trigger_item_in_room	( (void(__cdecl*)(long, long)) 0x0046D350 )
-#define untrigger_item_in_room	( (void(__cdecl*)(long, long)) 0x0046D3D0 )
-#define DelsHandyTeleportLara	( (void(__cdecl*)(long, long, long, long)) 0x0046D040 )
-#define init_voncroy_meshbits	( (void(__cdecl*)(long)) 0x0046D030 )
-#define handle_lara_chatting	( (void(__cdecl*)(short*)) 0x0046D1F0 )
-#define cutseq_kill_item	( (void(__cdecl*)(long)) 0x0046CC40 )
-#define cutseq_restore_item	( (void(__cdecl*)(long)) 0x0046CCB0 )
-#define nail_intelligent_object	( (void(__cdecl*)(short)) 0x0046D160 )
-#define find_a_fucking_item	( (ITEM_INFO*(__cdecl*)(long)) 0x0046D450 )
-#define do_key_meshswap	( (void(__cdecl*)()) 0x0046CA50 )
+void do_spade_meshswap();
+void do_key_meshswap();
+void cutseq_shoot_pistols(long left_or_right);
+void trigger_weapon_dynamics(long left_or_right);
+void deal_with_pistols();
+void cutseq_kill_item(long num);
+ITEM_INFO* cutseq_restore_item(long num);
+long Load_and_Init_Cutseq(long num);
+void init_cutseq_actors(char* data, long resident);
+void init_voncroy_meshbits(long num);
+void DelsHandyTeleportLara(long x, long y, long z, long yrot);
+void nail_intelligent_object(short num);
+void handle_lara_chatting(short* _ranges);
+void handle_actor_chatting(long speechslot, long node, long slot, long objslot, short* ranges);
+void trigger_item_in_room(long room_number, long object_number);
+void untrigger_item_in_room(long room_number, long object_number);
+ITEM_INFO* find_a_fucking_item(long object_number);
+void special2_end();
+void special2_init();
+void special3_end();
+void special3_control();
+void special1_init();
+void special1_end();

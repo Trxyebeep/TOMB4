@@ -1625,12 +1625,68 @@ struct OLD_CAMERA
 	PHD_VECTOR t;
 };
 
+struct SHATTER_ITEM
+{
+	SPHERE Sphere;
+	ITEM_LIGHT* il;
+	short* meshp;
+	long Bit;
+	short YRot;
+	short Flags;
+};
+
+struct SPOTCAM
+{
+	long x;
+	long y;
+	long z;
+	long tx;
+	long ty;
+	long tz;
+	uchar sequence;
+	uchar camera;
+	short fov;
+	short roll;
+	short timer;
+	short speed;
+	short flags;
+	short room_number;
+	short pad;
+};
+
+struct WRAITH_STRUCT
+{
+	PHD_VECTOR pos;
+	short xv;
+	short yv;
+	short zv;
+	uchar r;
+	uchar g;
+	uchar b;
+	uchar pad[3];
+};
+
+struct LOCUST_STRUCT
+{
+	PHD_3DPOS pos;
+	short room_number;
+	short speed;
+	short Counter;
+	short LaraTarget;
+	char XTarget;
+	char ZTarget;
+	uchar On;
+	uchar flags;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {
 	bool footprints;
 	ulong shadow_mode;			//1-> original, 2-> circle, 3-> PSX color like circle
 	bool crawltilt;
+	bool flexible_crawling;
+	bool fix_climb_up_delay;
 };
 #endif
 #pragma pack(pop)

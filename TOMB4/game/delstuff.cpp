@@ -213,7 +213,11 @@ void DrawLara(ITEM_INFO* item, long mirror)
 			else
 				xRot = phd_atan(cos, sin);
 
-			phd_RotX((short)(-xRot >> 1));
+#ifdef GENERAL_FIXES	//fixes wrong elbows when they are stretched
+			phd_RotX(short(-xRot >> 1));
+#else
+			phd_RotX(-(short)xRot >> 1);
+#endif
 			phd_PutPolygons(*meshpp, -1);
 			phd_PopMatrix();
 		}
