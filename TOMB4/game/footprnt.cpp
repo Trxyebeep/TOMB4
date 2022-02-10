@@ -53,7 +53,7 @@ void AddFootPrint(ITEM_INFO* item)
 }
 
 #ifdef FOOTPRINTS
-static void ProjectTriPoints(FOOTPRINT* print, PHD_VECTOR* pos, long& x, long& y, long& z)
+static void ProjectTriPoints(PHD_VECTOR* pos, long& x, long& y, long& z)
 {
 	x = (phd_mxptr[M00] * pos->x + phd_mxptr[M01] * pos->y + phd_mxptr[M02] * pos->z + phd_mxptr[M03]) >> 14;
 	y = (phd_mxptr[M10] * pos->x + phd_mxptr[M11] * pos->y + phd_mxptr[M12] * pos->z + phd_mxptr[M13]) >> 14;
@@ -68,7 +68,7 @@ void S_DrawFootPrints()
 	PHD_VECTOR pos[3];
 	TEXTURESTRUCT tex;
 	float u1, v1, u2, v2;
-	long x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, col, opt;
+	long x, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, col, opt;
 	short room_number;
 	
 	for (int i = 0; i < 32; i++)
@@ -97,10 +97,8 @@ void S_DrawFootPrints()
 			pos[2].x = 128;
 			pos[2].z = 64;
 
-			y = print->y;
-
 			phd_PushUnitMatrix();
-			phd_TranslateRel(print->x, y, print->z);
+			phd_TranslateRel(print->x, print->y, print->z);
 			phd_RotY(print->YRot);
 
 			for (int j = 0; j < 3; j++)
@@ -108,7 +106,7 @@ void S_DrawFootPrints()
 				x = (pos[j].x * phd_mxptr[M00] + pos[j].z * phd_mxptr[M02] + phd_mxptr[M03]) >> 14;
 				z = (pos[j].x * phd_mxptr[M20] + pos[j].z * phd_mxptr[M22] + phd_mxptr[M23]) >> 14;
 				room_number = lara_item->room_number;
-				pos[j].y = GetHeight(GetFloor(x, y, z, &room_number), x, y, z) - y;
+				pos[j].y = GetHeight(GetFloor(x, print->y, z, &room_number), x, print->y, z) - print->y;
 
 				if (ABS(pos[j].y) > PRINT_HEIGHT_CORRECTION)
 					pos[j].y = 0;
@@ -117,20 +115,20 @@ void S_DrawFootPrints()
 			phd_PopMatrix();
 
 			phd_PushMatrix();
-			phd_TranslateAbs(print->x, y - 16, print->z);
+			phd_TranslateAbs(print->x, print->y - 16, print->z);
 			phd_RotY(print->YRot);
 
-			ProjectTriPoints(print, &pos[0], x1, y1, z1);
-			ProjectTriPoints(print, &pos[1], x2, y2, z2);
-			ProjectTriPoints(print, &pos[2], x3, y3, z3);
+			ProjectTriPoints(&pos[0], x1, y1, z1);
+			ProjectTriPoints(&pos[1], x2, y2, z2);
+			ProjectTriPoints(&pos[2], x3, y3, z3);
 
 			phd_PopMatrix();
 			setXYZ3(v, x1, y1, z1, x2, y2, z2, x3, y3, z3, clipflags);
 
-			for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++)
 			{
-				v[i].color = RGBA(col, col, col, 0xFF);
-				v[i].specular = 0xFF000000;
+				v[j].color = RGBA(col, col, col, 0xFF);
+				v[j].specular = 0xFF000000;
 			}
 
 			sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 10];
