@@ -6,6 +6,7 @@ void inject_effect2(bool replace);
 void ControlSmokeEmitter(short item_number);
 void TriggerExplosionSmokeEnd(long x, long y, long z, long uw);
 void TriggerExplosionSmoke(long x, long y, long z, long uw);
+void TriggerFlareSparks(long x, long y, long z, long xvel, long yvel, long zvel, long smoke);
 
 #define	ClearDynamics	( (void(__cdecl*)()) 0x00436320 )
 #define KillEverything	( (void(__cdecl*)()) 0x00436050 )
@@ -15,3 +16,4 @@ void TriggerExplosionSmoke(long x, long y, long z, long uw);
 #define GetFreeSpark	( (long(__cdecl*)()) 0x00433D30 )
 #define TriggerExplosionSparks	( (void(__cdecl*)(long, long, long, long, long, long, short)) 0x004349F0 )
 #define TriggerFireFlame	( (void(__cdecl*)(long, long, long, long, long)) 0x00435130 )
+#define TriggerSuperJetFlame	( (void(__cdecl*)(ITEM_INFO*, long, long)) 0x00435570 )

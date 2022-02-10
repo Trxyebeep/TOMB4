@@ -25,6 +25,14 @@ void init_tomb4_stuff()
 		sprintf(buf, "crawltilt");
 		tomb4.crawltilt = 1;							//crawl tilt on
 		REG_WriteBool(buf, tomb4.crawltilt);
+
+		sprintf(buf, "flex_crawl");
+		tomb4.flexible_crawling = 1;					//on
+		REG_WriteBool(buf, tomb4.flexible_crawling);
+
+		sprintf(buf, "climbup");
+		tomb4.fix_climb_up_delay = 1;					//no delay
+		REG_WriteBool(buf, tomb4.fix_climb_up_delay);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -36,6 +44,12 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "crawltilt");
 		REG_ReadBool(buf, tomb4.crawltilt, 1);
+
+		sprintf(buf, "flex_crawl");
+		REG_ReadBool(buf, tomb4.flexible_crawling, 1);
+
+		sprintf(buf, "climbup");
+		REG_ReadBool(buf, tomb4.fix_climb_up_delay, 1);
 	}
 
 	CloseRegistry();
@@ -55,6 +69,12 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "crawltilt");
 	REG_WriteLong(buf, tomb4.crawltilt);
+
+	sprintf(buf, "flex_crawl");
+	REG_WriteBool(buf, tomb4.flexible_crawling);
+
+	sprintf(buf, "climbup");
+	REG_WriteBool(buf, tomb4.fix_climb_up_delay);
 
 	CloseRegistry();
 }

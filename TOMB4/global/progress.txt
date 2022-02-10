@@ -184,12 +184,12 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x00402D90	+	InitialiseCroc
 0x00402E30	+	CrocControl
-0x004035D0		GetFreeLocust
-0x00403640		TriggerLocust
-0x004037B0		InitialiseLocustEmitter
-0x00403810		ControlLocustEmitter
-0x00403870		UpdateLocusts
-0x00403C10		DrawLocusts
+0x004035D0	+	GetFreeLocust
+0x00403640	+	TriggerLocust
+0x004037B0	+	InitialiseLocustEmitter
+0x00403810	+	ControlLocustEmitter
+0x00403870	+	UpdateLocusts
+0x00403C10	+	DrawLocusts
 0x00403C90		TriggerCrocgodMissile
 0x00403D30		TriggerCrocgodMissileFlame
 0x00403ED0		InitialiseCrocgod
@@ -294,29 +294,29 @@ x for functions decompiled but not injected, for one reason or another.
 0x0046C950	+	twentyseven_end
 0x0046C9A0	+	twentytwo_init
 0x0046C9B0	+	twentytwo_end
-0x0046C9F0		do_spade_meshswap
-0x0046CA50		do_key_meshswap
-0x0046CA80		cutseq_shoot_pistols
-0x0046CAB0		trigger_weapon_dynamics
-0x0046CB40		deal_with_pistols
-0x0046CC40		cutseq_kill_item
-0x0046CCB0		cutseq_restore_item
-0x0046CD20		Load_and_Init_Cutseq
-0x0046CE30		init_cutseq_actors
-0x0046D030		init_voncroy_meshbits
-0x0046D040		DelsHandyTeleportLara
-0x0046D160		nail_intelligent_object
-0x0046D1F0		handle_lara_chatting
-0x0046D270		handle_actor_chatting
-0x0046D350		trigger_item_in_room
-0x0046D3D0		untrigger_item_in_room
-0x0046D450		find_a_fucking_item
-0x0046D480		special2_end
-0x0046D4B0		special2_init
-0x0046D4D0		special3_end
-0x0046D510		special3_control
-0x0046D560		special1_init
-0x0046D5E0		special1_end
+0x0046C9F0	+	do_spade_meshswap
+0x0046CA50	+	do_key_meshswap
+0x0046CA80	+	cutseq_shoot_pistols
+0x0046CAB0	+	trigger_weapon_dynamics
+0x0046CB40	+	deal_with_pistols
+0x0046CC40	+	cutseq_kill_item
+0x0046CCB0	+	cutseq_restore_item
+0x0046CD20	+	Load_and_Init_Cutseq
+0x0046CE30	+	init_cutseq_actors
+0x0046D030	+	init_voncroy_meshbits
+0x0046D040	+	DelsHandyTeleportLara
+0x0046D160	+	nail_intelligent_object
+0x0046D1F0	+	handle_lara_chatting
+0x0046D270	+	handle_actor_chatting
+0x0046D350	+	trigger_item_in_room
+0x0046D3D0	+	untrigger_item_in_room
+0x0046D450	+	find_a_fucking_item
+0x0046D480	+	special2_end
+0x0046D4B0	+	special2_init
+0x0046D4D0	+	special3_end
+0x0046D510	+	special3_control
+0x0046D560	+	special1_init
+0x0046D5E0	+	special1_end
 
 
 		game/demigod.cpp
@@ -389,7 +389,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00433D30		GetFreeSpark
 0x00433E10		UpdateSparks
 0x00434440		TriggerRicochetSpark
-0x00434770		TriggerFlareSparks
+0x00434770	+	TriggerFlareSparks
 0x004349F0		TriggerExplosionSparks
 0x00434DC0	+	TriggerExplosionSmokeEnd
 0x00434FA0	+	TriggerExplosionSmoke
@@ -1172,10 +1172,10 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/senet.cpp
 
-0x0040F320		CheckSenetWinner
-0x0040F3B0		InitialiseSenet
-0x0040F480		SenetControl
-0x0040F4D0		MakeMove
+0x0040F320	+	CheckSenetWinner
+0x0040F3B0	+	InitialiseSenet
+0x0040F480	+	SenetControl
+0x0040F4D0	+	MakeMove
 0x0040F600		InitialiseGameStix
 0x0040F630		GameStixControl
 0x0040FBD0		ShockwaveExplosion
@@ -1247,17 +1247,17 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/sphinx.cpp
 
-0x00412A60		InitialiseSphinx
-0x00412AC0		SphinxControl
+0x00412A60	+	InitialiseSphinx
+0x00412AC0	+	SphinxControl
 
 
 		game/spotcam.cpp
 
-0x004602B0		InitSpotCamSequences
-0x00460320		Spline
-0x00460420		InitialiseSpotCam
-0x00460B50		SetSplineData
-0x00460C70		CalculateSpotCams
+0x004602B0	+	InitSpotCamSequences
+0x00460320	+	Spline
+0x00460420	+	InitialiseSpotCam
+0x00460B50	+	SetSplineData
+0x00460C70	+	CalculateSpotCams
 
 
 		game/switch.cpp
@@ -1372,7 +1372,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00413E80		FallingCeiling
 0x00413F90		DartEmitterControl
 0x00414150		DartsControl
-0x004142F0		FlameEmitterControl
+0x004142F0	+	FlameEmitterControl
 0x00414670		FlameEmitter2Control
 0x004148B0		FlameEmitter3Control
 0x00414D80		FlameControl
@@ -1436,10 +1436,10 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/wraith.cpp
 
-0x0041C2E0		InitialiseWraith
-0x0041C360		TriggerWraithFlame
-0x0041C4C0		TriggerWraithEffect
-0x0041C6E0		WraithControl
+0x0041C2E0	+	InitialiseWraith
+0x0041C360	+	TriggerWraithFlame
+0x0041C4C0	+	TriggerWraithEffect
+0x0041C6E0	x	WraithControl
 
 // ======================================
 // SPECIFIC
@@ -1673,7 +1673,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00478520	+	S_CalculateStaticMeshLight
 0x00478570	+	CalcAmbientLight
 0x004786A0	+	FadeLightList
-0x00478750	x	CreateLightList
+0x00478750	+	CreateLightList
 0x00478B50	+	SetupLight
 0x00478E80	+	InitObjectLighting
 0x00479080	+	ClearObjectLighting
