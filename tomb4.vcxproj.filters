@@ -172,9 +172,6 @@
     <ClInclude Include="TOMB4\game\mirror.h">
       <Filter>TOMB4\game</Filter>
     </ClInclude>
-    <ClInclude Include="TOMB4\game\missle.h">
-      <Filter>TOMB4\game</Filter>
-    </ClInclude>
     <ClInclude Include="TOMB4\game\moveblok.h">
       <Filter>TOMB4\game</Filter>
     </ClInclude>
@@ -347,6 +344,9 @@
       <Filter>TOMB4\tomb4</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="TOMB4\game\missile.h">
+      <Filter>TOMB4\game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TOMB4\game\lara.cpp">
@@ -494,9 +494,6 @@
       <Filter>TOMB4\game</Filter>
     </ClCompile>
     <ClCompile Include="TOMB4\game\mirror.cpp">
-      <Filter>TOMB4\game</Filter>
-    </ClCompile>
-    <ClCompile Include="TOMB4\game\missle.cpp">
       <Filter>TOMB4\game</Filter>
     </ClCompile>
     <ClCompile Include="TOMB4\game\moveblok.cpp">
@@ -663,6 +660,9 @@
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\tomb4.cpp">
       <Filter>TOMB4\tomb4</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\missile.cpp">
+      <Filter>TOMB4\game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -212,7 +212,7 @@
     <ClInclude Include="TOMB4\game\laraswim.h" />
     <ClInclude Include="TOMB4\game\lot.h" />
     <ClInclude Include="TOMB4\game\mirror.h" />
-    <ClInclude Include="TOMB4\game\missle.h" />
+    <ClInclude Include="TOMB4\game\missile.h" />
     <ClInclude Include="TOMB4\game\moveblok.h" />
     <ClInclude Include="TOMB4\game\mummy.h" />
     <ClInclude Include="TOMB4\game\newinv.h" />
@@ -322,7 +322,7 @@
     <ClCompile Include="TOMB4\game\laraswim.cpp" />
     <ClCompile Include="TOMB4\game\lot.cpp" />
     <ClCompile Include="TOMB4\game\mirror.cpp" />
-    <ClCompile Include="TOMB4\game\missle.cpp" />
+    <ClCompile Include="TOMB4\game\missile.cpp" />
     <ClCompile Include="TOMB4\game\moveblok.cpp" />
     <ClCompile Include="TOMB4\game\mummy.cpp" />
     <ClCompile Include="TOMB4\game\newinv.cpp" />
