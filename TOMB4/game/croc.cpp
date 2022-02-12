@@ -647,6 +647,175 @@ void TriggerCrocgodMissileFlame(short fx_number, short xv, short yv, short zv)
 	sptr->dSize = sptr->Size >> 2;
 }
 
+void InitialiseCrocgod(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	InitialiseCreature(item_number);
+	item->anim_number = objects[MUTANT].anim_index;
+	item->frame_number = anims[item->anim_number].frame_base;
+	item->current_anim_state = 1;
+	item->goal_anim_state = 1;
+}
+
+void CrocgodControl(short item_number)
+{
+	ITEM_INFO* item;
+	CREATURE_INFO* crocgod;
+	AI_INFO info;
+	PHD_3DPOS mPos;
+	PHD_VECTOR pos;
+	PHD_VECTOR pos2;
+	short angles[2];
+	short angle, torso, neck, frame;
+
+	if (!CreatureActive(item_number))
+		return;
+
+	angle = 0;
+	torso = 0;
+	neck = 0;
+	item = &items[item_number];
+	crocgod = (CREATURE_INFO*)item->data;
+
+	if (item->hit_points <= 0)
+		item->hit_points = 0;
+	else
+	{
+		if (item->ai_bits)
+			GetAITarget(crocgod);
+		else if (crocgod->hurt_by_lara)
+			crocgod->enemy = lara_item;
+
+		item->pos.y_pos -= 768;
+		CreatureAIInfo(item, &info);
+		item->pos.y_pos += 768;
+
+		if (crocgod->enemy != lara_item)
+			phd_atan(lara_item->pos.z_pos - item->pos.z_pos, lara_item->pos.x_pos - item->pos.x_pos);
+
+		GetCreatureMood(item, &info, 1);
+		CreatureMood(item, &info, 1);
+		crocgod->maximum_turn = 0;
+		angle = CreatureTurn(item, 0);
+
+		if (item->item_flags[2] == 999)
+		{
+			torso = info.angle;
+			neck = info.x_angle;
+		}
+
+		switch (item->current_anim_state)
+		{
+		case 2:
+
+			if (item->item_flags[2] < 600)
+			{
+				item->goal_anim_state = 4;
+				item->item_flags[2]++;
+			}
+			else
+			{
+				item->item_flags[2] = 999;
+
+				if (info.distance < 0x1900000)
+					item->goal_anim_state = 5;
+				else if (info.distance < 0x3840000)
+					item->goal_anim_state = 3;
+				else if (info.distance < 0x7900000)
+					item->goal_anim_state = 4;
+			}
+
+			break;
+
+		case 3:
+			frame = item->frame_number - anims[item->anim_number].frame_base;
+
+			if (frame >= 94 && frame <= 96)
+			{
+				pos.x = 0;
+				pos.y = -96;
+				pos.z = 144;
+				GetJointAbsPosition(item, &pos, 9);
+				pos2.x = 0;
+				pos2.y = -128;
+				pos2.z = 288;
+				GetJointAbsPosition(item, &pos2, 9);
+				mPos.z_pos = pos2.z;
+				mPos.y_pos = pos2.y;
+				mPos.x_pos = pos2.x;
+				phd_GetVectorAngles(pos2.x - pos.x, pos2.y - pos.y, pos2.z - pos.z, angles);
+				mPos.y_rot = angles[0];
+				mPos.x_rot = angles[1];
+
+				if (frame == 94)
+					TriggerCrocgodMissile(&mPos, item->room_number, 0);
+				else
+				{
+					if (frame == 95)
+						mPos.y_rot = angles[0] - 2048;
+					else
+						mPos.y_rot = angles[0] + 2048;
+
+					TriggerCrocgodMissile(&mPos, item->room_number, 1);
+				}
+			}
+
+			break;
+
+		case 4:
+
+			if (item->item_flags[2] < 600)
+				item->item_flags[2]++;
+
+			if (item->item_flags[2] == 999)
+			{
+				frame = item->frame_number - anims[item->anim_number].frame_base;
+
+				if (frame >= 60 && frame <= 120)
+					TriggerLocust(item);
+			}
+
+			break;
+
+		case 5:
+			frame = item->frame_number - anims[item->anim_number].frame_base;
+
+			if (frame == 45 || frame == 60 || frame == 75)
+			{
+				pos.x = 0;
+				pos.y = -96;
+				pos.z = 144;
+				GetJointAbsPosition(item, &pos, 9);
+				pos2.x = 0;
+				pos2.y = -128;
+				pos2.z = 288;
+				GetJointAbsPosition(item, &pos2, 9);
+				mPos.z_pos = pos2.z;
+				mPos.y_pos = pos2.y;
+				mPos.x_pos = pos2.x;
+				phd_GetVectorAngles(pos2.x - pos.x, pos2.y - pos.y, pos2.z - pos.z, angles);
+				mPos.y_rot = angles[0];
+				mPos.x_rot = angles[1];
+
+				if (frame == 60)
+					TriggerCrocgodMissile(&mPos, item->room_number, 0);
+				else
+					TriggerCrocgodMissile(&mPos, item->room_number, 1);
+			}
+
+			break;
+		}
+	}
+
+	CreatureJoint(item, 0, torso);
+	CreatureJoint(item, 1, neck);
+	CreatureJoint(item, 2, torso);
+	CreatureJoint(item, 3, neck);
+	CreatureAnimation(item_number, angle, 0);
+}
+
 void inject_croc(bool replace)
 {
 	INJECT(0x00402D90, InitialiseCroc, replace);
@@ -659,4 +828,5 @@ void inject_croc(bool replace)
 	INJECT(0x00403870, UpdateLocusts, replace);
 	INJECT(0x00403C90, TriggerCrocgodMissile, replace);
 	INJECT(0x00403D30, TriggerCrocgodMissileFlame, replace);
+	INJECT(0x00403ED0, InitialiseCrocgod, replace);
 }

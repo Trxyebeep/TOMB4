@@ -192,8 +192,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00403C10	+	DrawLocusts
 0x00403C90	+	TriggerCrocgodMissile
 0x00403D30	+	TriggerCrocgodMissileFlame
-0x00403ED0		InitialiseCrocgod
-0x00403F30		CrocgodControl
+0x00403ED0	+	InitialiseCrocgod
+0x00403F30	+	CrocgodControl
 
 
 		game/deathsld.cpp
