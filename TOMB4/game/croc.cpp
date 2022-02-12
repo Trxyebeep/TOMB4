@@ -829,4 +829,5 @@ void inject_croc(bool replace)
 	INJECT(0x00403C90, TriggerCrocgodMissile, replace);
 	INJECT(0x00403D30, TriggerCrocgodMissileFlame, replace);
 	INJECT(0x00403ED0, InitialiseCrocgod, replace);
+	INJECT(0x00403F30, CrocgodControl, replace);
 }
