@@ -13,6 +13,7 @@
 #include "draw.h"
 #include "sound.h"
 #include "tomb4fx.h"
+#include "effect2.h"
 
 static BITE_INFO croc_bite = { 0, -100, 500, 9 };
 
@@ -570,6 +571,82 @@ void UpdateLocusts()
 	}
 }
 
+void TriggerCrocgodMissile(PHD_3DPOS* pos, short room_number, short num)
+{
+	FX_INFO* fx;
+	short fx_number;
+
+	fx_number = CreateEffect(room_number);
+
+	if (fx_number != NO_ITEM)
+	{
+		fx = &effects[fx_number];
+		fx->pos.x_pos = pos->x_pos;
+		fx->pos.y_pos = pos->y_pos - (GetRandomControl() & 0x3F) - 32;
+		fx->pos.z_pos = pos->z_pos;
+		fx->pos.x_rot = pos->x_rot;
+		fx->pos.y_rot = pos->y_rot;
+		fx->pos.z_rot = 0;
+		fx->room_number = room_number;
+		fx->counter = 15 + (num << 4);
+		fx->flag1 = 6;
+		fx->object_number = 384;
+		fx->speed = (GetRandomControl() & 0x1F) + 96;
+		fx->frame_number = objects[BUBBLES].mesh_index + 10;
+	}
+}
+
+void TriggerCrocgodMissileFlame(short fx_number, short xv, short yv, short zv)
+{
+	FX_INFO* fx;
+	SPARKS* sptr;
+	long dx, dz;
+
+	fx = &effects[fx_number];
+	dx = lara_item->pos.x_pos - fx->pos.x_pos;
+	dz = lara_item->pos.z_pos - fx->pos.z_pos;
+
+	if (dx < -0x4000 || dx > 0x4000 || dz < -0x4000 || dz > 0x4000)
+		return;
+
+	sptr = &spark[GetFreeSpark()];
+	sptr->On = 1;
+	sptr->sR = (GetRandomControl() & 0x3F) + 128;
+	sptr->sG = sptr->sR >> 1;
+	sptr->sB = 0;
+	sptr->dR = (GetRandomControl() & 0x3F) + 128;
+	sptr->dG = sptr->dR >> 1;
+	sptr->dB = 0;
+	sptr->FadeToBlack = 8;
+	sptr->ColFadeSpeed = (GetRandomControl() & 3) + 8;
+	sptr->TransType = 2;
+	sptr->Dynamic = -1;
+	sptr->Life = (GetRandomControl() & 7) + 32;
+	sptr->sLife = sptr->Life;
+	sptr->x = fx->pos.x_pos + (GetRandomControl() & 0xF) - 8;
+	sptr->y = fx->pos.y_pos;
+	sptr->z = fx->pos.z_pos + (GetRandomControl() & 0xF) - 8;
+	sptr->Xvel = xv;
+	sptr->Yvel = yv;
+	sptr->Zvel = zv;
+	sptr->Friction = 34;
+	sptr->Flags = 538;
+	sptr->RotAng = GetRandomControl() & 0xFFF;
+
+	if (GetRandomControl() & 1)
+		sptr->RotAdd = -32 - (GetRandomControl() & 0x1F);
+	else
+		sptr->RotAdd = (GetRandomControl() & 0x1F) + 32;
+
+	sptr->Gravity = 0;
+	sptr->MaxYvel = 0;
+	sptr->FxObj = (uchar)fx_number;
+	sptr->Scalar = 2;
+	sptr->Size = (GetRandomControl() & 0xF) + 128;
+	sptr->sSize = sptr->Size;
+	sptr->dSize = sptr->Size >> 2;
+}
+
 void inject_croc(bool replace)
 {
 	INJECT(0x00402D90, InitialiseCroc, replace);
@@ -580,4 +657,6 @@ void inject_croc(bool replace)
 	INJECT(0x00403810, ControlLocustEmitter, replace);
 	INJECT(0x00403C10, DrawLocusts, replace);
 	INJECT(0x00403870, UpdateLocusts, replace);
+	INJECT(0x00403C90, TriggerCrocgodMissile, replace);
+	INJECT(0x00403D30, TriggerCrocgodMissileFlame, replace);
 }

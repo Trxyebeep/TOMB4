@@ -190,8 +190,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00403810	+	ControlLocustEmitter
 0x00403870	+	UpdateLocusts
 0x00403C10	+	DrawLocusts
-0x00403C90		TriggerCrocgodMissile
-0x00403D30		TriggerCrocgodMissileFlame
+0x00403C90	+	TriggerCrocgodMissile
+0x00403D30	+	TriggerCrocgodMissileFlame
 0x00403ED0		InitialiseCrocgod
 0x00403F30		CrocgodControl
 
@@ -410,7 +410,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00436320		ClearDynamics
 0x00436340	+	ControlSmokeEmitter
 0x00436900		ControlColouredLights
-0x004369B0		ControlEnemyMissle
+0x004369B0		ControlEnemyMissile
 
 
 		game/effects.cpp
