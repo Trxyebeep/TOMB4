@@ -159,7 +159,8 @@ enum weapons
 	WEAPON_SHOTGUN,
 	WEAPON_GRENADE,
 	WEAPON_CROSSBOW,
-	WEAPON_FLARE
+	WEAPON_FLARE,
+	WEAPON_TORCH
 };
 
 enum lara_water_status
