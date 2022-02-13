@@ -1680,6 +1680,32 @@ struct LOCUST_STRUCT
 	uchar flags;
 };
 
+struct DOORPOS_DATA
+{
+	FLOOR_INFO* floor;
+	FLOOR_INFO data;
+	short block;
+};
+
+struct DOOR_DATA
+{
+	DOORPOS_DATA d1;
+	DOORPOS_DATA d1flip;
+	DOORPOS_DATA d2;
+	DOORPOS_DATA d2flip;
+	short Opened;
+};
+
+struct BOX_INFO
+{
+	uchar left;
+	uchar right;
+	uchar top;
+	uchar bottom;
+	short height;
+	short overlap_index;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {
