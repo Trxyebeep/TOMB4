@@ -217,7 +217,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0041D140	+	DrawLara
 0x0041D9A0	+	GetLaraJointPos
 0x0041DAF0	+	Rich_CalcLaraMatrices_Normal
-0x0041E630		Rich_CalcLaraMatrices_Interpolated
+0x0041E630	+	Rich_CalcLaraMatrices_Interpolated
 0x0041F260	+	SetLaraUnderwaterNodes
 
 
