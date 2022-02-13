@@ -7,6 +7,7 @@
 #include "hair.h"
 #include "objects.h"
 #include "control.h"
+#include "lara_states.h"
 
 char lara_underwater_skin_sweetness_table[15] =
 {
@@ -1037,6 +1038,46 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 	phd_PopMatrix();
 }
 
+void CalcLaraMatrices(long flag)
+{
+	long* bone;
+	short* frame;
+	short* frmptr[2];
+	long rate, frac;
+	short jerk;
+
+	bone = &bones[objects[lara_item->object_number].bone_index];
+	frac = GetFrames(lara_item, frmptr, &rate);
+
+	if (lara.hit_direction < 0)
+	{
+		if (frac)
+		{
+			GLaraShadowframe = GetBoundsAccurate(lara_item);
+			Rich_CalcLaraMatrices_Interpolated(frmptr[0], frmptr[1], frac, rate, bone, flag);
+			return;
+		}
+	}
+
+	if (lara.hit_direction < 0)
+		frame = *frmptr;
+	else
+	{
+		if (lara.hit_direction == 0)
+			jerk = lara.IsDucked ? ANIM_JERK_DUCKF : ANIM_JERK_FORWARD;
+		else if (lara.hit_direction == 1)
+			jerk = lara.IsDucked ? ANIM_JERK_DUCKR : ANIM_JERK_RIGHT;
+		else if (lara.hit_direction == 2)
+			jerk = lara.IsDucked ? ANIM_JERK_DUCKB : ANIM_JERK_BACK;
+		else
+			jerk = lara.IsDucked ? ANIM_JERK_DUCKL : ANIM_JERK_LEFT;
+
+		frame = &anims[jerk].frame_ptr[lara.hit_frame * (anims[jerk].interpolation >> 8)];
+	}
+
+	Rich_CalcLaraMatrices_Normal(frame, bone, flag);
+}
+
 void inject_delstuff(bool replace)
 {
 	INJECT(0x0041D140, DrawLara, replace);
@@ -1044,4 +1085,5 @@ void inject_delstuff(bool replace)
 	INJECT(0x0041F260, SetLaraUnderwaterNodes, replace);
 	INJECT(0x0041DAF0, Rich_CalcLaraMatrices_Normal, replace);
 	INJECT(0x0041E630, Rich_CalcLaraMatrices_Interpolated, replace);
+	INJECT(0x0041D010, CalcLaraMatrices, replace);
 }
