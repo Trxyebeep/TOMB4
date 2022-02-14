@@ -170,6 +170,10 @@ void WildboarControl(short item_number)
 		}
 	}
 
+	CreatureJoint(item, 0, neckX);
+	CreatureJoint(item, 1, neckY);
+	CreatureJoint(item, 2, headX);
+	CreatureJoint(item, 3, headY);
 	CreatureAnimation(item_number, angle, 0);
 }
 
