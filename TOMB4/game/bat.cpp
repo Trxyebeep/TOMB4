@@ -83,7 +83,7 @@ void BatControl(short item_number)
 					if (item2->object_number == VON_CROY)
 					{
 						dx = item2->pos.x_pos - item->pos.x_pos;
-						dz = item2->pos.z_pos - item->pos.z_pos;;
+						dz = item2->pos.z_pos - item->pos.z_pos;
 						dist = SQUARE(dx) + SQUARE(dz);
 
 						if (dist < max_dist)

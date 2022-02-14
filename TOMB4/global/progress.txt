@@ -1430,8 +1430,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/wildboar.cpp
 
-0x0041BF00		InitialiseWildboar
-0x0041BF60		WildboarControl
+0x0041BF00	+	InitialiseWildboar
+0x0041BF60	+	WildboarControl
 
 
 		game/wraith.cpp
@@ -1439,7 +1439,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0041C2E0	+	InitialiseWraith
 0x0041C360	+	TriggerWraithFlame
 0x0041C4C0	+	TriggerWraithEffect
-0x0041C6E0	x	WraithControl
+0x0041C6E0	+	WraithControl
 
 // ======================================
 // SPECIFIC
