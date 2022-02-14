@@ -19,3 +19,4 @@ long ControlPhase(long nframes, long demo_mode);
 #define FlipMap	( (void(__cdecl*)(long)) 0x0044C570 )
 #define IsRoomOutside	( (long(__cdecl*)(long, long, long)) 0x0044C9C0 )
 #define GetTargetOnLOS	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*, long, long)) 0x0044D890 )
+#define GetDoor	( (short(__cdecl*)(FLOOR_INFO*)) 0x0044BB20 )

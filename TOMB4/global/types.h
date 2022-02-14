@@ -159,7 +159,8 @@ enum weapons
 	WEAPON_SHOTGUN,
 	WEAPON_GRENADE,
 	WEAPON_CROSSBOW,
-	WEAPON_FLARE
+	WEAPON_FLARE,
+	WEAPON_TORCH
 };
 
 enum lara_water_status
@@ -1677,6 +1678,32 @@ struct LOCUST_STRUCT
 	char ZTarget;
 	uchar On;
 	uchar flags;
+};
+
+struct DOORPOS_DATA
+{
+	FLOOR_INFO* floor;
+	FLOOR_INFO data;
+	short block;
+};
+
+struct DOOR_DATA
+{
+	DOORPOS_DATA d1;
+	DOORPOS_DATA d1flip;
+	DOORPOS_DATA d2;
+	DOORPOS_DATA d2flip;
+	short Opened;
+};
+
+struct BOX_INFO
+{
+	uchar left;
+	uchar right;
+	uchar top;
+	uchar bottom;
+	short height;
+	short overlap_index;
 };
 
 #ifdef GENERAL_FIXES
