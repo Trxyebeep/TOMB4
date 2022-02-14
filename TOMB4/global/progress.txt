@@ -1699,7 +1699,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0047C6B0		DoStatScreen
 0x0047CA20		S_DisplayPauseMenu
 0x0047CC60		S_PauseMenu
-0x0047CD20		S_LoadSave
+0x0047CD20	+	S_LoadSave
 0x0047CE10	+	DoBar
 0x0047D3E0	+	S_DrawDashBar
 0x0047D420	+	S_DrawAirBar
