@@ -1714,6 +1714,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool crawltilt;
 	bool flexible_crawling;
 	bool fix_climb_up_delay;
+	bool gameover;
 };
 #endif
 #pragma pack(pop)
