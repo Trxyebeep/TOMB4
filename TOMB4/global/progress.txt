@@ -324,7 +324,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00404770	+	TriggerDemigodMissile
 0x00404840	+	TriggerDemigodMissileFlame
 0x00404A00	+	TriggerHammerSmoke
-0x00404BD0		DoDemigodEffects
+0x00404BD0	+	DoDemigodEffects
 0x00404E00		InitialiseDemigod
 0x00404EA0		DemigodControl
 

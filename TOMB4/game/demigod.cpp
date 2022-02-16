@@ -5,6 +5,8 @@
 #include "objects.h"
 #include "effect2.h"
 #include "tomb4fx.h"
+#include "sphere.h"
+#include "../specific/3dmath.h"
 
 void TriggerDemigodMissile(PHD_3DPOS* pos, short room_number, short type)
 {
@@ -157,9 +159,72 @@ void TriggerHammerSmoke(long x, long y, long z, long num)
 	}
 }
 
+void DoDemigodEffects(short item_number)
+{
+	ITEM_INFO* item;
+	PHD_3DPOS pos;
+	PHD_VECTOR pos1;
+	PHD_VECTOR pos2;
+	short angles[2];
+	short anim, frame;
+
+	item = &items[item_number];
+	anim = item->anim_number - objects[item->object_number].anim_index;
+
+	if (anim == 8 || anim == 19)
+	{
+		if (item->frame_number == anims[item->anim_number].frame_base)
+		{
+			pos1.x = -544;
+			pos1.y = 96;
+			pos1.z = 0;
+			GetJointAbsPosition(item, &pos1, 16);
+			pos2.x = -900;
+			pos2.y = 96;
+			pos2.z = 0;
+			GetJointAbsPosition(item, &pos2, 16);
+			pos.z_pos = pos1.z;
+			pos.y_pos = pos1.y;
+			pos.x_pos = pos1.x;
+			phd_GetVectorAngles(pos2.x - pos1.x, pos2.y - pos1.y, pos2.z - pos1.z, angles);
+			pos.x_rot = angles[1];
+			pos.y_rot = angles[0];
+
+			if (item->object_number == DEMIGOD3)
+				TriggerDemigodMissile(&pos, item->room_number, 3);
+			else
+				TriggerDemigodMissile(&pos, item->room_number, 5);
+		}
+	}
+	else if (anim == 16)
+	{
+		frame = item->frame_number - anims[item->anim_number].frame_base;
+
+		if (frame >= 8 && frame <= 64)
+		{
+			pos1.x = 0;
+			pos1.y = 0;
+			pos1.z = 192;
+			pos2.x = 0;
+			pos2.y = 0;
+			pos2.z = 384;
+			GetJointAbsPosition(item, &pos1, GlobalCounter & 1 ? 18 : 17);
+			GetJointAbsPosition(item, &pos2, GlobalCounter & 1 ? 18 : 17);
+			pos.z_pos = pos1.z;
+			pos.y_pos = pos1.y;
+			pos.x_pos = pos1.x;
+			phd_GetVectorAngles(pos2.x - pos1.x, pos2.y - pos1.y, pos2.z - pos1.z, angles);
+			pos.x_rot = angles[1];
+			pos.y_rot = angles[0];
+			TriggerDemigodMissile(&pos, item->room_number, 4);
+		}
+	}
+}
+
 void inject_demigod(bool replace)
 {
 	INJECT(0x00404770, TriggerDemigodMissile, replace);
 	INJECT(0x00404840, TriggerDemigodMissileFlame, replace);
 	INJECT(0x00404A00, TriggerHammerSmoke, replace);
+	INJECT(0x00404BD0, DoDemigodEffects, replace);
 }
