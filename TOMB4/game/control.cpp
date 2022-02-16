@@ -442,7 +442,82 @@ long ControlPhase(long nframes, long demo_mode)
 	return 0;
 }
 
+void FlipMap(long FlipNumber)
+{
+	ROOM_INFO* r;
+	ROOM_INFO* flipped;
+	CREATURE_INFO* cinfo;
+	ROOM_INFO temp;
+
+	for (int i = 0; i < number_rooms; i++)
+	{
+		r = &room[i];
+
+		if (r->flipped_room >= 0 && r->FlipNumber == FlipNumber)
+		{
+#ifdef GENERAL_FIXES	//reset lighting room so objects take the new room's light...
+			for (int j = r->item_number; j != NO_ITEM; j = items[j].next_item)
+				items[j].il.room_number = 255;
+#endif
+			RemoveRoomFlipItems(r);
+			flipped = &room[r->flipped_room];
+			memcpy(&temp, r, sizeof(temp));
+			memcpy(r, flipped, sizeof(ROOM_INFO));
+			memcpy(flipped, &temp, sizeof(ROOM_INFO));
+			r->flipped_room = flipped->flipped_room;
+			flipped->flipped_room = -1;
+			r->item_number = flipped->item_number;
+			r->fx_number = flipped->fx_number;
+			AddRoomFlipItems(r);
+		}
+	}
+
+	flip_stats[FlipNumber] = !flip_stats[FlipNumber];
+	flip_status = flip_stats[FlipNumber];
+
+	for (short slot = 0; slot < 5; slot++)
+	{
+		cinfo = &baddie_slots[slot];
+		cinfo->LOT.target_box = 2047;
+	}
+}
+
+void RemoveRoomFlipItems(ROOM_INFO* r)
+{
+	ITEM_INFO* item;
+
+	for (short item_num = r->item_number; item_num != NO_ITEM; item_num = item->next_item)
+	{
+		item = &items[item_num];
+
+		if (item->flags & IFL_INVISIBLE && objects[item->object_number].intelligent)
+		{
+			if (item->hit_points <= 0 && item->hit_points != -16384)
+				KillItem(item_num);
+		}
+	}
+}
+
+void AddRoomFlipItems(ROOM_INFO* r)
+{
+	ITEM_INFO* item;
+
+	for (short item_num = r->item_number; item_num != NO_ITEM; item_num =item->next_item)
+	{
+		item = &items[item_num];
+
+		if (items[item_num].object_number == RAISING_BLOCK1 && item->item_flags[1])
+			AlterFloorHeight(item, -1024);
+
+		if (item->object_number == RAISING_BLOCK2 && item->item_flags[1])
+			AlterFloorHeight(item, -2048);
+	}
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
+	INJECT(0x0044C570, FlipMap, replace);
+	INJECT(0x0044C670, RemoveRoomFlipItems, replace);
+	INJECT(0x0044C6F0, AddRoomFlipItems, replace);
 }

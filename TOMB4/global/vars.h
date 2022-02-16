@@ -380,6 +380,8 @@
 #define WraithSpeed	VAR_U_(0x004AD6D0, short)
 #define next_locust	VAR_U_(0x004BF2E0, long)
 #define boxes	VAR_U_(0x007FE9B0, BOX_INFO*)
+#define number_rooms	VAR_U_(0x00533A5C, short)
+#define flip_status	VAR_U_(0x007FE218, long)
 
 
 
