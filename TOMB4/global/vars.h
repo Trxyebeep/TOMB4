@@ -463,6 +463,7 @@
 #define CameraCnt	ARRAY_(0x007F6EC8, uchar, [8])
 #define LibrarySerpents	ARRAY_(0x004BF2FC, char, [8])
 #define spark	ARRAY_(0x00801400, SPARKS, [256])
+#define smoke_spark	ARRAY_(0x007FF100, SMOKE_SPARKS, [32])
 #define objects	ARRAY_(0x0052B850, OBJECT_INFO, [465])
 #define Locusts	ARRAY_(0x0080FA00, LOCUST_STRUCT, [64])
 
