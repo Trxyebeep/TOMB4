@@ -49,6 +49,7 @@
 #include "../game/traps.h"
 #include "../game/wraith.h"
 #include "../game/wildboar.h"
+#include "../game/demigod.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -117,6 +118,7 @@ void inject_all(bool replace)
 	inject_traps(replace);
 	inject_wraith(replace);
 	inject_wildboar(replace);
+	inject_demigod(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
