@@ -7,6 +7,7 @@
 #include "tomb4fx.h"
 #include "sphere.h"
 #include "../specific/3dmath.h"
+#include "box.h"
 
 void TriggerDemigodMissile(PHD_3DPOS* pos, short room_number, short type)
 {
@@ -221,10 +222,32 @@ void DoDemigodEffects(short item_number)
 	}
 }
 
+void InitialiseDemigod(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+
+	item = &items[item_number];
+	InitialiseCreature(item_number);
+	item->anim_number = objects[item->object_number].anim_index;
+	item->frame_number = anims[item->anim_number].frame_base;
+	item->current_anim_state = 0;
+	item->goal_anim_state = 0;
+
+	for (int i = 0; i < level_items; i++)
+	{
+		item2 = &items[i];
+
+		if (item != item2 && item2->object_number == DEMIGOD3 && !item2->item_flags[0])
+			item->item_flags[0] = i;
+	}
+}
+
 void inject_demigod(bool replace)
 {
 	INJECT(0x00404770, TriggerDemigodMissile, replace);
 	INJECT(0x00404840, TriggerDemigodMissileFlame, replace);
 	INJECT(0x00404A00, TriggerHammerSmoke, replace);
 	INJECT(0x00404BD0, DoDemigodEffects, replace);
+	INJECT(0x00404E00, InitialiseDemigod, replace);
 }
