@@ -8,3 +8,4 @@ void TriggerDemigodMissileFlame(short fx_number, short xv, short yv, short zv);
 void TriggerHammerSmoke(long x, long y, long z, long num);
 void DoDemigodEffects(short item_number);
 void InitialiseDemigod(short item_number);
+void DemigodControl(short item_number);
