@@ -7,6 +7,8 @@ void DrawTrainStrips();
 void S_PrintShadow(short size, short* box, ITEM_INFO* item);
 void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr);
 void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long unk);
+void Draw2DSprite(long x, long y, long slot, long unused, long unused2);
+void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long spriteSlot);
 
 #define setXY4	( (void(__cdecl*)(D3DTLVERTEX*, long, long, long, long, long, long, long, long, long, short*)) 0x00485600 )
 #define setXYZ3	( (void(__cdecl*)(D3DTLVERTEX*, long, long, long, long, long, long, long, long, long, short*)) 0x00485D90 )

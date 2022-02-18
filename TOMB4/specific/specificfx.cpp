@@ -4,6 +4,9 @@
 #include "../game/delstuff.h"
 #include "../game/control.h"
 #include "function_table.h"
+#include "../game/objects.h"
+#include "polyinsert.h"
+#include "function_stubs.h"
 
 #ifdef SMOOTH_SHADOWS
 #include "../tomb4/tomb4.h"
@@ -613,10 +616,142 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	AddLineSorted(v, &v[1], 6);
 }
 
+void Draw2DSprite(long x, long y, long slot, long unused, long unused2)
+{
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	long x0, y0;
+
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + slot];
+	x0 = long(x + (sprite->width >> 8) * ((float)phd_centerx / 320.0F));
+	y0 = long(y + 1 + (sprite->height >> 8) * ((float)phd_centery / 240.0F));
+	setXY4(v, x, y, x0, y, x0, y0, x, y0, (long)f_mznear, clipflags);
+	v[0].specular = 0xFF000000;
+	v[1].specular = 0xFF000000;
+	v[2].specular = 0xFF000000;
+	v[3].specular = 0xFF000000;
+	v[0].color = 0xFFFFFFFF;
+	v[1].color = 0xFFFFFFFF;
+	v[2].color = 0xFFFFFFFF;
+	v[3].color = 0xFFFFFFFF;
+	tex.drawtype = 1;
+	tex.flag = 0;
+	tex.tpage = sprite->tpage;
+	tex.u1 = sprite->x1;
+	tex.v1 = sprite->y1;
+	tex.u2 = sprite->x2;
+	tex.v2 = sprite->y1;
+	tex.u3 = sprite->x2;
+	tex.v3 = sprite->y2;
+	tex.u4 = sprite->x1;
+	tex.v4 = sprite->y2;
+	AddQuadClippedSorted(v, 0, 1, 2, 3, &tex, 0);
+}
+
+void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long spriteSlot)	//ux and uy are not used
+{
+	D3DTLVERTEX v[2];
+	float x, y, x0, y0, x1, y1;
+	long rSize, rVel, rMVel, rTVel, angle;
+
+	x = (float)phd_winxmax / 512.0F * 448.0F;
+	y = (float)phd_winymax / 240.0F * 224.0F;
+#ifndef GENERAL_FIXES
+	Draw2DSprite(long(x + 24), long(y - 16), spriteSlot + 17, RGBONLY(GetRandomDraw() & 0xFF, GetRandomDraw() & 0xFF, GetRandomDraw() & 0xFF), 0);
+#endif
+	rSize = (7 * size) >> 3;
+	rVel = ABS(vel >> 1);
+
+	if (rVel)
+	{
+		rVel += (((rVel - 4096) >> 5) * phd_sin((GlobalCounter & 7) << 13)) >> 14;
+
+		if (rVel < 0)
+			rVel = 0;
+	}
+
+	rMVel = maxVel >> 1;
+	rTVel = turboVel >> 1;
+#ifdef GENERAL_FIXES
+	rTVel += rTVel >> 1;
+#endif
+	angle = -0x4000;
+
+#ifdef GENERAL_FIXES
+	for (int i = 0; i <= rTVel; i += 1536)
+#else
+	for (int i = 0; i <= rTVel; i += 2048)
+#endif
+	{
+		x0 = ((rSize * (phd_sin(angle + i)) >> 13) - ((rSize * phd_sin(angle + i)) >> 15)) * ((float)phd_winxmax / 512.0F);
+		y0 = (-(rSize * phd_cos(angle + i)) >> 14) * (float)phd_winymax / 240.0F;
+		x1 = ((size * (phd_sin(angle + i)) >> 13) - ((size * phd_sin(angle + i)) >> 15)) * ((float)phd_winxmax / 512.0F);
+		y1 = (-(size * phd_cos(angle + i)) >> 14) * (float)phd_winymax / 240.0F;
+
+		v[0].sx = x + x0;
+		v[0].sy = y + y0;
+		v[0].sz = f_mznear;
+		v[0].rhw = f_moneoznear;
+
+		v[1].sx = x + x1;
+		v[1].sy = y + y1;
+		v[1].sz = f_mznear;
+		v[1].rhw = f_moneoznear;
+
+		if (i > rMVel)
+		{
+			v[0].color = 0xFFFF0000;
+			v[1].color = 0xFFFF0000;
+		}
+		else
+		{
+			v[0].color = 0xFFFFFFFF;
+			v[1].color = 0xFFFFFFFF;
+		}
+
+#ifdef GENERAL_FIXES
+		v[0].specular = 0xFF000000;	//originally uninitialized..
+#endif
+
+		v[1].specular = v[0].specular;
+		AddLineSorted(v, &v[1], 6);
+	}
+#ifdef GENERAL_FIXES
+	Draw2DSprite(long(v[0].sx), long(y - 32), spriteSlot + 17, RGBONLY(GetRandomDraw() & 0xFF, GetRandomDraw() & 0xFF, GetRandomDraw() & 0xFF), 0);
+#endif
+	size -= size >> 4;
+	x0 = ((-4 * (phd_sin(angle + rVel)) >> 13) - ((-4 * phd_sin(angle + rVel)) >> 15)) * ((float)phd_winxmax / 512.0F);
+	y0 = (-(-4 * phd_cos(angle + rVel)) >> 14) * (float)phd_winymax / 240.0F;
+	x1 = ((size * (phd_sin(angle + rVel)) >> 13) - ((size * phd_sin(angle + rVel)) >> 15)) * ((float)phd_winxmax / 512.0F);
+	y1 = (-(size * phd_cos(angle + rVel)) >> 14) * (float)phd_winymax / 240.0F;
+
+	v[0].sx = x + x0;
+	v[0].sy = y + y0;
+	v[0].sz = f_mznear;
+	v[0].rhw = f_moneoznear;
+
+	v[1].sx = x + x1;
+	v[1].sy = y + y1;
+	v[1].sz = f_mznear;
+	v[1].rhw = f_moneoznear;
+
+#ifdef GENERAL_FIXES
+	v[0].color = 0xFFA0C0FF;	//blueish color, PSX does A0C0E0, changed blue to FF to be as visible
+	v[0].specular = 0xFF000000;	//originally uninitialized
+#endif
+
+	v[1].color = v[0].color;
+	v[1].specular = v[0].specular;
+	AddLineSorted(v, &v[1], 6);
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
 	INJECT(0x004876C0, S_PrintShadow, replace);
 	INJECT(0x00488140, S_DrawDrawSparks, replace);
 	INJECT(0x0048C6C0, DrawBikeSpeedo, replace);
+	INJECT(0x0048D3D0, Draw2DSprite, replace);
+	INJECT(0x0048D580, DrawJeepSpeedo, replace);
 }
