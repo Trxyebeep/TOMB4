@@ -6,11 +6,11 @@ void inject_specificfx(bool replace);
 void DrawTrainStrips();
 void S_PrintShadow(short size, short* box, ITEM_INFO* item);
 void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr);
+void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long unk);
 
 #define setXY4	( (void(__cdecl*)(D3DTLVERTEX*, long, long, long, long, long, long, long, long, long, short*)) 0x00485600 )
 #define setXYZ3	( (void(__cdecl*)(D3DTLVERTEX*, long, long, long, long, long, long, long, long, long, short*)) 0x00485D90 )
 
-#define DrawBikeSpeedo	( (void(__cdecl*)(long, long, long, long, long, long, long)) 0x0048C6C0 )
 #define DrawTrainFloorStrip	( (void(__cdecl*)(long, long, TEXTURESTRUCT*, long)) 0x0048B480 )
 #define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )
 #define DrawFlatSky	( (void(__cdecl*)(ulong, long, long, long)) 0x00488950 )

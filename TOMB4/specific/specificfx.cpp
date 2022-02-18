@@ -528,9 +528,86 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr
 	}
 }
 
+void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long unk)	//ux and uy are not used
+{
+	D3DTLVERTEX v[2];
+	float x, y, x0, y0, x1, y1;
+	long rSize, rVel, rMVel, rTVel, angle;
+
+	x = (float)phd_winxmax / 512.0F * 448.0F;
+	y = (float)phd_winymax / 240.0F * 224.0F;
+	rSize = (7 * size) >> 3;
+	rVel = ABS(vel >> 1);
+
+	if (rVel)
+	{
+		rVel += (((rVel - 4096) >> 5) * phd_sin((GlobalCounter & 7) << 13)) >> 14;
+
+		if (rVel < 0)
+			rVel = 0;
+	}
+
+	rMVel = maxVel >> 1;
+	rTVel = turboVel >> 1;
+	angle = -0x4000;
+
+	for (int i = 0; i <= rTVel; i += 2048)
+	{
+		x0 = ((rSize * (phd_sin(angle + i)) >> 13) - ((rSize * phd_sin(angle + i)) >> 15)) * ((float)phd_winxmax / 512.0F);
+		y0 = (-(rSize * phd_cos(angle + i)) >> 14) * (float)phd_winymax / 240.0F;
+		x1 = ((size * (phd_sin(angle + i)) >> 13) - ((size * phd_sin(angle + i)) >> 15)) * ((float)phd_winxmax / 512.0F);
+		y1 = (-(size * phd_cos(angle + i)) >> 14) * (float)phd_winymax / 240.0F;
+
+		v[0].sx = x + x0;
+		v[0].sy = y + y0;
+		v[0].sz = f_mznear;
+		v[0].rhw = f_moneoznear;
+
+		v[1].sx = x + x1;
+		v[1].sy = y + y1;
+		v[1].sz = f_mznear;
+		v[1].rhw = f_moneoznear;
+
+		if (i > rMVel)
+		{
+			v[0].color = 0xFFFF0000;
+			v[1].color = 0xFFFF0000;
+		}
+		else
+		{
+			v[0].color = 0xFFFFFFFF;
+			v[1].color = 0xFFFFFFFF;
+		}
+
+		v[1].specular = v[0].specular;	//uninitialized
+		AddLineSorted(v, &v[1], 6);
+	}
+
+	size -= size >> 4;
+	x0 = ((-4 * (phd_sin(angle + rVel)) >> 13) - ((-4 * phd_sin(angle + rVel)) >> 15)) * ((float)phd_winxmax / 512.0F);
+	y0 = (-(-4 * phd_cos(angle + rVel)) >> 14) * (float)phd_winymax / 240.0F;
+	x1 = ((size * (phd_sin(angle + rVel)) >> 13) - ((size * phd_sin(angle + rVel)) >> 15)) * ((float)phd_winxmax / 512.0F);
+	y1 = (-(size * phd_cos(angle + rVel)) >> 14) * (float)phd_winymax / 240.0F;
+
+	v[0].sx = x + x0;
+	v[0].sy = y + y0;
+	v[0].sz = f_mznear;
+	v[0].rhw = f_moneoznear;
+
+	v[1].sx = x + x1;
+	v[1].sy = y + y1;
+	v[1].sz = f_mznear;
+	v[1].rhw = f_moneoznear;
+
+	v[1].color = v[0].color;
+	v[1].specular = v[0].specular;
+	AddLineSorted(v, &v[1], 6);
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
 	INJECT(0x004876C0, S_PrintShadow, replace);
 	INJECT(0x00488140, S_DrawDrawSparks, replace);
+	INJECT(0x0048C6C0, DrawBikeSpeedo, replace);
 }
