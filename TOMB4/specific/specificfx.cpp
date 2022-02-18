@@ -579,7 +579,11 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 			v[1].color = 0xFFFFFFFF;
 		}
 
-		v[1].specular = v[0].specular;	//uninitialized
+#ifdef GENERAL_FIXES
+		v[0].specular = 0xFF000000;	//originally uninitialized..
+#endif
+
+		v[1].specular = v[0].specular;
 		AddLineSorted(v, &v[1], 6);
 	}
 
@@ -598,6 +602,11 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	v[1].sy = y + y1;
 	v[1].sz = f_mznear;
 	v[1].rhw = f_moneoznear;
+
+#ifdef GENERAL_FIXES
+	v[0].color = 0xFFA0C0FF;	//blueish color, PSX does A0C0E0, changed blue to FF to be as visible
+	v[0].specular = 0xFF000000;	//originally uninitialized
+#endif
 
 	v[1].color = v[0].color;
 	v[1].specular = v[0].specular;
