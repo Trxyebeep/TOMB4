@@ -1103,7 +1103,7 @@ void BinocularCamera(ITEM_INFO* item)
 	{
 		ammo = get_current_ammo_pointer(lara.gun_type);
 
-		if (inputBusy & IN_ACTION && !WeaponDelay && !ammo[0])
+		if (inputBusy & IN_ACTION && !WeaponDelay && ammo[0])
 		{
 			Fire = 1;
 
