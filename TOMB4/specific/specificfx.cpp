@@ -631,10 +631,24 @@ void Draw2DSprite(long x, long y, long slot, long unused, long unused2)
 	v[1].specular = 0xFF000000;
 	v[2].specular = 0xFF000000;
 	v[3].specular = 0xFF000000;
-	v[0].color = 0xFFFFFFFF;
-	v[1].color = 0xFFFFFFFF;
-	v[2].color = 0xFFFFFFFF;
-	v[3].color = 0xFFFFFFFF;
+
+#ifdef GENERAL_FIXES
+	if (slot == unused)	//'unused' is now the current gear, fight me
+	{
+		v[0].color = 0xFFFFFFFF;
+		v[1].color = 0xFFFFFFFF;
+		v[2].color = 0xFFFFFFFF;
+		v[3].color = 0xFFFFFFFF;
+	}
+	else
+	{
+		v[0].color = 0xFF404040;
+		v[1].color = 0xFF404040;
+		v[2].color = 0xFF404040;
+		v[3].color = 0xFF404040;
+	}
+#endif
+
 	tex.drawtype = 1;
 	tex.flag = 0;
 	tex.tpage = sprite->tpage;
@@ -654,6 +668,9 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	D3DTLVERTEX v[2];
 	float x, y, x0, y0, x1, y1;
 	long rSize, rVel, rMVel, rTVel, angle;
+#ifdef GENERAL_FIXES
+	long sX, sY;
+#endif
 
 	x = (float)phd_winxmax / 512.0F * 448.0F;
 	y = (float)phd_winymax / 240.0F * 224.0F;
@@ -717,9 +734,7 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 		v[1].specular = v[0].specular;
 		AddLineSorted(v, &v[1], 6);
 	}
-#ifdef GENERAL_FIXES
-	Draw2DSprite(long(v[0].sx), long(y - 32), spriteSlot + 17, RGBONLY(GetRandomDraw() & 0xFF, GetRandomDraw() & 0xFF, GetRandomDraw() & 0xFF), 0);
-#endif
+
 	size -= size >> 4;
 	x0 = ((-4 * (phd_sin(angle + rVel)) >> 13) - ((-4 * phd_sin(angle + rVel)) >> 15)) * ((float)phd_winxmax / 512.0F);
 	y0 = (-(-4 * phd_cos(angle + rVel)) >> 14) * (float)phd_winymax / 240.0F;
@@ -739,6 +754,11 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 #ifdef GENERAL_FIXES
 	v[0].color = 0xFFA0C0FF;	//blueish color, PSX does A0C0E0, changed blue to FF to be as visible
 	v[0].specular = 0xFF000000;	//originally uninitialized
+	sX = long(x + 16 * ((float)phd_winxmax / 512.0F));
+	sY = long(y - 20 * ((float)phd_winymax / 240.0F));
+	Draw2DSprite(sX, sY, 17, spriteSlot + 17, 0);
+	sY = long(y - 6 * ((float)phd_winymax / 240.0F));
+	Draw2DSprite(sX, sY, 18, spriteSlot + 17, 0);
 #endif
 
 	v[1].color = v[0].color;
