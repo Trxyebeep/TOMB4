@@ -18,6 +18,7 @@
 #include "delstuff.h"
 #include "laraflar.h"
 #include "collide.h"
+#include "effects.h"
 
 void InitialiseBike(short item_number)
 {
@@ -783,6 +784,72 @@ void BikeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		ObjectCollision(item_number, l, coll);
 }
 
+long BikeBaddieCollision(ITEM_INFO* bike)
+{
+	ITEM_INFO* item;
+	OBJECT_INFO* obj;
+	short* doors;
+	long j, dx, dy, dz;
+	short room_count, item_number;
+
+	room_count = 1;
+	rooms_around_the_bike[0] = bike->room_number;
+	doors = room[bike->room_number].door;
+
+	for (int i = *doors++; i > 0; i--, doors += 16)
+	{
+		for (j = 0; j < room_count; j++)
+		{
+			if (rooms_around_the_bike[j] == *doors)
+				break;
+		}
+
+		if (j == room_count)
+		{
+			rooms_around_the_bike[room_count] = *doors;
+			room_count++;
+		}
+	}
+
+	for (int i = 0; i < room_count; i++)
+	{
+		for (item_number = room[rooms_around_the_bike[i]].item_number; item_number != NO_ITEM; item_number = item->next_item)
+		{
+			item = &items[item_number];
+
+			if (item->collidable && item->status != ITEM_INVISIBLE && item != lara_item && item != bike)
+			{
+				obj = &objects[item->object_number];
+
+				if (obj->collision && obj->intelligent)
+				{
+					dx = bike->pos.x_pos - item->pos.x_pos;
+					dy = bike->pos.y_pos - item->pos.y_pos;
+					dz = bike->pos.z_pos - item->pos.z_pos;
+
+					if (dx > -2048 && dx < 2048 && dz > -2048 && dz < 2048 && dy > -2048 && dy < 2048)
+					{
+						if (TestBoundsCollide(item, bike, 500))
+						{
+							if (item->object_number == MUTANT)
+								return 1;
+
+							if (item->hit_points)
+								SoundEffect(SFX_BIKE_HIT_ENEMIES, &item->pos, SFX_DEFAULT);
+
+							DoLotsOfBlood(item->pos.x_pos, bike->pos.y_pos - 256, item->pos.z_pos, (GetRandomControl() & 3) + 8,
+								bike->pos.y_rot, item->room_number, 3);
+							item->hit_points = 0;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
 void inject_bike(bool replace)
 {
 	INJECT(0x00464610, InitialiseBike, replace);
@@ -799,4 +866,5 @@ void inject_bike(bool replace)
 	INJECT(0x004654A0, BikeCheckGetOff, replace);
 	INJECT(0x00465770, DoDynamics, replace);
 	INJECT(0x00464680, BikeCollision, replace);
+	INJECT(0x00466290, BikeBaddieCollision, replace);
 }

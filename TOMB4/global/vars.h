@@ -467,6 +467,7 @@
 #define objects	ARRAY_(0x0052B850, OBJECT_INFO, [465])
 #define Locusts	ARRAY_(0x0080FA00, LOCUST_STRUCT, [64])
 #define ground_zone	ARRAY_(0x007FE980, short*, [5][2])
+#define rooms_around_the_bike	ARRAY_(0x007F5020, short, [22])
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1
