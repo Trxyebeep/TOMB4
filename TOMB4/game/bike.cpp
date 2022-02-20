@@ -16,6 +16,8 @@
 #include "sound.h"
 #include "lara_states.h"
 #include "delstuff.h"
+#include "laraflar.h"
+#include "collide.h"
 
 void InitialiseBike(short item_number)
 {
@@ -712,6 +714,75 @@ static long DoDynamics(long height, long fallspeed, long* ypos, long zero)
 	return fallspeed;
 }
 
+void BikeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	BIKEINFO* bike;
+	short angle;
+
+	if (l->hit_points < 0 || lara.vehicle != NO_ITEM)
+		return;
+
+	item = &items[item_number];
+	bike = (BIKEINFO*)item->data;
+
+	if (bike->light_intensity)
+	{
+		bike->light_intensity = bike->light_intensity - (bike->light_intensity >> 3) - 1;
+		TriggerBikeBeam(item);
+	}
+
+	if (GetOnBike(item_number, coll))
+	{
+		lara.vehicle = item_number;
+
+		if (lara.gun_type == WEAPON_FLARE)
+		{
+			CreateFlare(FLARE_ITEM, 0);
+			undraw_flare_meshes();
+			lara.flare_control_left = 0;
+			lara.gun_type = LG_NO_ARMS;
+			lara.request_gun_type = WEAPON_NONE;
+			lara.flare_age = 0;
+		}
+
+		lara.gun_status = LG_HANDS_BUSY;
+		angle = short(phd_atan(item->pos.z_pos - l->pos.z_pos, item->pos.x_pos - l->pos.x_pos) - item->pos.y_rot);
+
+		if (angle <= -8190 || angle >= 24570)
+		{
+			if (GLOBAL_inventoryitemchosen == PUZZLE_ITEM1)
+			{
+				l->anim_number = objects[VEHICLE_EXTRA].anim_index + 28;
+				GLOBAL_inventoryitemchosen = NO_ITEM;
+				savegame.HaveBikeBooster = 1;
+			}
+			else
+				l->anim_number = objects[VEHICLE_EXTRA].anim_index + 9;
+
+			l->goal_anim_state = 9;
+			l->current_anim_state = 9;
+		}
+
+		l->frame_number = anims[l->anim_number].frame_base;
+		item->hit_points = 1;
+		l->pos.x_pos = item->pos.x_pos;
+		l->pos.y_pos = item->pos.y_pos;
+		l->pos.z_pos = item->pos.z_pos;
+		l->pos.y_rot = item->pos.y_rot;
+		lara.head_x_rot = 0;
+		lara.head_y_rot = 0;
+		lara.torso_x_rot = 0;
+		lara.torso_y_rot = 0;
+		lara.hit_direction = -1;
+		AnimateItem(l);
+		bike->unused1 = 0;
+		item->flags |= IFL_TRIGGERED;
+	}
+	else
+		ObjectCollision(item_number, l, coll);
+}
+
 void inject_bike(bool replace)
 {
 	INJECT(0x00464610, InitialiseBike, replace);
@@ -727,4 +798,5 @@ void inject_bike(bool replace)
 	INJECT(0x00465660, TestHeight, replace);
 	INJECT(0x004654A0, BikeCheckGetOff, replace);
 	INJECT(0x00465770, DoDynamics, replace);
+	INJECT(0x00464680, BikeCollision, replace);
 }

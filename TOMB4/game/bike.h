@@ -12,5 +12,6 @@ void BikeExplode(ITEM_INFO* item);
 void AnimateBike(ITEM_INFO* item, long hitWall, long killed);
 void BikeStart(ITEM_INFO* item, ITEM_INFO* l);
 long BikeCheckGetOff();
+void BikeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 
 #define BikeControl	( (void(__cdecl*)(short)) 0x00464C70 )

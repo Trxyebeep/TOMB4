@@ -36,7 +36,7 @@ x for functions decompiled but not injected, for one reason or another.
 		game/bike.cpp
 
 0x00464610	+	InitialiseBike
-0x00464680		BikeCollision
+0x00464680	+	BikeCollision
 0x00464850	+	TriggerBikeBeam
 0x004648F0	+	GetOnBike
 0x00464A30	+	DrawBikeBeam
@@ -179,6 +179,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044D820		FireCrossBowFromLaserSight
 0x0044D890		GetTargetOnLOS
 0x0044DE50		ExplodeItemNode
+
 
 		game/croc.cpp
 
