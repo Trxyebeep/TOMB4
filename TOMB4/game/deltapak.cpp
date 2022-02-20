@@ -1626,7 +1626,7 @@ void trigger_item_in_room(long room_number, long object_number)
 		{
 			AddActiveItem(item_number);
 
-			if (object_number != DEMIGOD1)
+			if (object_number != DEMIGOD3)
 				item->status = ITEM_ACTIVE;
 
 			item->flags |= IFL_CODEBITS;

@@ -5,6 +5,13 @@ void inject_objects(bool replace);
 
 void ControlMapper(short item_number);
 void ControlLightningConductor(short item_number);
+void BridgeFlatFloor(ITEM_INFO* item, long x, long y, long z, long* height);
+void BridgeFlatCeiling(ITEM_INFO* item, long x, long y, long z, long* height);
+long GetOffset(ITEM_INFO* item, long x, long z);
+void BridgeTilt1Floor(ITEM_INFO* item, long x, long y, long z, long* height);
+void BridgeTilt1Ceiling(ITEM_INFO* item, long x, long y, long z, long* height);
+void BridgeTilt2Floor(ITEM_INFO* item, long x, long y, long z, long* height);
+void BridgeTilt2Ceiling(ITEM_INFO* item, long x, long y, long z, long* height);
 
 #define AnimateWaterfalls	( (void(__cdecl*)()) 0x00456420 )
 

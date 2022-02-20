@@ -1103,7 +1103,7 @@ void BinocularCamera(ITEM_INFO* item)
 	{
 		ammo = get_current_ammo_pointer(lara.gun_type);
 
-		if (inputBusy & IN_ACTION && !WeaponDelay && !ammo[0])
+		if (inputBusy & IN_ACTION && !WeaponDelay && ammo[0])
 		{
 			Fire = 1;
 
@@ -1138,8 +1138,8 @@ void CalculateCamera()
 {
 	ITEM_INFO* item;
 	short* bounds;
-	long shift, fixed_camera, y, gotit, dx, dz;
-	short change, tilt;
+	long shift, fixed_camera, y, dx, dz;
+	short gotit, change, tilt;
 
 	if (BinocularRange)
 	{
@@ -1203,20 +1203,21 @@ void CalculateCamera()
 		dx = camera.item->pos.x_pos - item->pos.x_pos;
 		dz = camera.item->pos.z_pos - item->pos.z_pos;
 		shift = phd_sqrt(SQUARE(dx) + SQUARE(dz));
-		gotit = (phd_atan(dz, dx) - item->pos.y_rot) >> 1;
+		gotit = short(phd_atan(dz, dx) - item->pos.y_rot);
+		gotit >>= 1;
 		bounds = GetBoundsAccurate(camera.item);
 		tilt = (short)phd_atan(shift, y - (bounds[2] + bounds[3]) / 2 - camera.item->pos.y_pos) >> 1;
 
 		if (gotit > -9100 && gotit < 9100 && tilt > -15470 && tilt < 15470)
 		{
-			change = short(gotit - lara.head_y_rot);
+			change = gotit - lara.head_y_rot;
 
 			if (change > 728)
 				lara.head_y_rot += 728;
 			else if (change < -728)
 				lara.head_y_rot -= 728;
 			else
-				lara.head_y_rot = (short)gotit;
+				lara.head_y_rot = gotit;
 
 			lara.torso_y_rot = lara.head_y_rot;
 			change = tilt - lara.head_x_rot;

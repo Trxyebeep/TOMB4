@@ -1706,6 +1706,39 @@ struct BOX_INFO
 	short overlap_index;
 };
 
+struct SMOKE_SPARKS
+{
+	long x;
+	long y;
+	long z;
+	short Xvel;
+	short Yvel;
+	short Zvel;
+	short Gravity;
+	short RotAng;
+	short Flags;
+	uchar sSize;
+	uchar dSize;
+	uchar Size;
+	uchar Friction;
+	uchar Scalar;
+	uchar Def;
+	char RotAdd;
+	char MaxYvel;
+	uchar On;
+	uchar sShade;
+	uchar dShade;
+	uchar Shade;
+	uchar ColFadeSpeed;
+	uchar FadeToBlack;
+	char sLife;
+	char Life;
+	uchar TransType;
+	uchar FxObj;
+	uchar NodeNumber;
+	uchar mirror;
+};
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {
@@ -1714,6 +1747,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool crawltilt;
 	bool flexible_crawling;
 	bool fix_climb_up_delay;
+	bool gameover;
 };
 #endif
 #pragma pack(pop)
