@@ -9,7 +9,7 @@
 
 #pragma warning(push)
 #pragma warning(disable : 4244)
-void S_CalculateStaticMeshLight(int x, int y, int z, int shade, ROOM_INFO* r)
+void S_CalculateStaticMeshLight(long x, long y, long z, long shade, ROOM_INFO* r)
 {
 	StaticMeshLightItem.il.ambient = r->ambient;
 	StaticMeshLightItem.il.item_pos.x = x;
@@ -47,9 +47,9 @@ void InitItemDynamicLighting(ITEM_INFO* item)
 			D3DDynamics[i].D3DLight2.dvPosition.y = d.y;
 			D3DDynamics[i].D3DLight2.dvPosition.z = d.z;
 			D3DDynamics[i].D3DLight2.dwFlags = D3DLIGHT_ALL;
-			D3DDynamics[i].D3DLight2.dcvColor.r = dptr->r * 0.0039215689F;
-			D3DDynamics[i].D3DLight2.dcvColor.g = dptr->g * 0.0039215689F;
-			D3DDynamics[i].D3DLight2.dcvColor.b = dptr->b * 0.0039215689F;
+			D3DDynamics[i].D3DLight2.dcvColor.r = dptr->r / 255.0F;
+			D3DDynamics[i].D3DLight2.dcvColor.g = dptr->g / 255.0F;
+			D3DDynamics[i].D3DLight2.dcvColor.b = dptr->b / 255.0F;
 			D3DDynamics[i].D3DLight2.dltType = D3DLIGHT_POINT;
 			D3DDynamics[i].D3DLight2.dvAttenuation1 = 1;
 			D3DDynamics[i].D3DLight2.dvRange = (dptr->falloff >> 1) + (dptr->falloff >> 3);
@@ -83,8 +83,8 @@ void InitItemDynamicLighting(ITEM_INFO* item)
 		d.z = LaraTorchStart.z - item->il.item_pos.z;
 		ApplyMatrix(w2v_matrix, &d, &vec);
 		ApplyTransposeMatrix(phd_mxptr, &vec, &d);
-		D3DDynamics[last_off].D3DLight2.dcvColor.r = LaraTorchIntensity * 0.0039215689F;
-		D3DDynamics[last_off].D3DLight2.dcvColor.g = LaraTorchIntensity * 0.0039215689F;
+		D3DDynamics[last_off].D3DLight2.dcvColor.r = LaraTorchIntensity / 255.0F;
+		D3DDynamics[last_off].D3DLight2.dcvColor.g = LaraTorchIntensity / 255.0F;
 		D3DDynamics[last_off].D3DLight2.dcvColor.b = 0;
 		D3DDynamics[last_off].D3DLight2.dvPosition.x = d.x;
 		D3DDynamics[last_off].D3DLight2.dvPosition.y = d.y;
@@ -118,9 +118,9 @@ void InitDynamicLighting()
 
 		if (dptr->on)
 		{
-			D3DDynamics[i].D3DLight2.dcvColor.r = dptr->r * 0.0039215689F;
-			D3DDynamics[i].D3DLight2.dcvColor.g = dptr->g * 0.0039215689F;
-			D3DDynamics[i].D3DLight2.dcvColor.b = dptr->b * 0.0039215689F;
+			D3DDynamics[i].D3DLight2.dcvColor.r = dptr->r / 255.0F;
+			D3DDynamics[i].D3DLight2.dcvColor.g = dptr->g / 255.0F;
+			D3DDynamics[i].D3DLight2.dcvColor.b = dptr->b / 255.0F;
 			D3DDynamics[i].D3DLight2.dvPosition.x = dptr->x;
 			D3DDynamics[i].D3DLight2.dvPosition.y = dptr->y;
 			D3DDynamics[i].D3DLight2.dvPosition.z = dptr->z;
@@ -145,8 +145,8 @@ void InitDynamicLighting()
 
 	if (last_off >= 0 && bLaraTorch)
 	{
-		D3DDynamics[last_off].D3DLight2.dcvColor.r = LaraTorchIntensity * 0.0039215689F;
-		D3DDynamics[last_off].D3DLight2.dcvColor.g = LaraTorchIntensity * 0.0039215689F;
+		D3DDynamics[last_off].D3DLight2.dcvColor.r = LaraTorchIntensity / 255.0F;
+		D3DDynamics[last_off].D3DLight2.dcvColor.g = LaraTorchIntensity / 255.0F;
 		D3DDynamics[last_off].D3DLight2.dcvColor.b = 0;
 		D3DDynamics[last_off].D3DLight2.dvPosition.x = LaraTorchStart.x;
 		D3DDynamics[last_off].D3DLight2.dvPosition.y = LaraTorchStart.y;
