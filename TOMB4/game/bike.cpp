@@ -19,6 +19,7 @@
 #include "laraflar.h"
 #include "collide.h"
 #include "effects.h"
+#include "debris.h"
 
 void InitialiseBike(short item_number)
 {
@@ -850,6 +851,110 @@ long BikeBaddieCollision(ITEM_INFO* bike)
 	return 0;
 }
 
+void BikeCollideStaticObjects(long x, long y, long z, short room_number, long height)
+{
+	MESH_INFO* mesh;
+	STATIC_INFO* sinfo;
+	ROOM_INFO* r;
+	PHD_VECTOR pos;
+	short* doors;
+	long j;
+	short room_count, rn;
+
+	pos.x = x;
+	pos.y = y;
+	pos.z = z;
+	BikeCollideStaticBounds[0] = x + 256;
+	BikeCollideStaticBounds[1] = x - 256;
+	BikeCollideStaticBounds[2] = y;
+	BikeCollideStaticBounds[3] = y - height;
+	BikeCollideStaticBounds[4] = z + 256;
+	BikeCollideStaticBounds[5] = z - 256;
+	room_count = 1;
+	rooms_around_the_bike[0] = room_number;
+	doors = room[room_number].door;
+
+	for (int i = *doors++; i > 0; i--, doors += 16)
+	{
+		for (j = 0; j < room_count; j++)
+		{
+			if (rooms_around_the_bike[j] == *doors)
+				break;
+		}
+
+		if (j == room_count)
+		{
+			rooms_around_the_bike[room_count] = *doors;
+			room_count++;
+		}
+	}
+
+	for (int i = 0; i < room_count; i++)
+	{
+		rn = rooms_around_the_bike[i];
+		r = &room[rn];
+		mesh = r->mesh;
+
+		for (j = r->num_meshes; j > 0; j--, mesh++)
+		{
+			sinfo = &static_objects[mesh->static_number];
+
+			if (mesh->Flags & 1)
+			{
+				if (mesh->static_number >= SHATTER0 && mesh->static_number <= SHATTER9)
+				{
+					CollidedStaticBikeBounds[2] = mesh->y + sinfo->y_maxc;
+					CollidedStaticBikeBounds[3] = mesh->y + sinfo->y_minc;
+
+					if (mesh->y_rot == -0x8000)
+					{
+						CollidedStaticBikeBounds[0] = mesh->x - sinfo->x_minc;
+						CollidedStaticBikeBounds[1] = mesh->x - sinfo->x_maxc;
+						CollidedStaticBikeBounds[4] = mesh->z - sinfo->z_minc;
+						CollidedStaticBikeBounds[5] = mesh->z - sinfo->z_maxc;
+					}
+					else if (mesh->y_rot == -0x4000)
+					{
+						CollidedStaticBikeBounds[0] = mesh->x - sinfo->z_minc;
+						CollidedStaticBikeBounds[1] = mesh->x - sinfo->z_maxc;
+						CollidedStaticBikeBounds[4] = mesh->z + sinfo->x_maxc;
+						CollidedStaticBikeBounds[5] = mesh->z + sinfo->x_minc;
+					}
+					else if (mesh->y_rot == 0x4000)
+					{
+						CollidedStaticBikeBounds[0] = mesh->x + sinfo->z_maxc;
+						CollidedStaticBikeBounds[1] = mesh->x + sinfo->z_minc;
+						CollidedStaticBikeBounds[4] = mesh->z - sinfo->x_minc;
+						CollidedStaticBikeBounds[5] = mesh->z - sinfo->x_maxc;
+					}
+					else
+					{
+						CollidedStaticBikeBounds[0] = mesh->x + sinfo->x_maxc;
+						CollidedStaticBikeBounds[1] = mesh->x + sinfo->x_minc;
+						CollidedStaticBikeBounds[4] = mesh->z + sinfo->z_maxc;
+						CollidedStaticBikeBounds[5] = mesh->z + sinfo->z_minc;
+					}
+
+					if (BikeCollideStaticBounds[0] > CollidedStaticBikeBounds[1] &&
+						BikeCollideStaticBounds[1] < CollidedStaticBikeBounds[0] &&
+						BikeCollideStaticBounds[2] > CollidedStaticBikeBounds[3] &&
+						BikeCollideStaticBounds[3] < CollidedStaticBikeBounds[2] &&
+						BikeCollideStaticBounds[4] > CollidedStaticBikeBounds[5] &&
+						BikeCollideStaticBounds[5] < CollidedStaticBikeBounds[4])
+					{
+						ShatterObject(0, mesh, -128, rn, 0);
+						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)&pos, SFX_DEFAULT);
+						SmashedMeshRoom[SmashedMeshCount] = rn;
+						SmashedMesh[SmashedMeshCount] = mesh;
+						SmashedMeshCount++;
+						mesh->Flags &= ~1;
+					}
+				}
+			}
+		}
+	}
+}
+
 void inject_bike(bool replace)
 {
 	INJECT(0x00464610, InitialiseBike, replace);
@@ -867,4 +972,5 @@ void inject_bike(bool replace)
 	INJECT(0x00465770, DoDynamics, replace);
 	INJECT(0x00464680, BikeCollision, replace);
 	INJECT(0x00466290, BikeBaddieCollision, replace);
+	INJECT(0x00465F80, BikeCollideStaticObjects, replace);
 }
