@@ -41,7 +41,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004648F0	+	GetOnBike
 0x00464A30	+	DrawBikeBeam
 0x00464C20	+	DrawBikeExtras
-0x00464C70		BikeControl
+0x00464C70	+	BikeControl
 0x00465220	+	TriggerExhaustSmoke
 0x004653D0	+	BikeExplode
 0x004654A0	+	BikeCheckGetOff

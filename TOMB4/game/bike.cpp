@@ -503,7 +503,7 @@ void AnimateBike(ITEM_INFO* item, long hitWall, long killed)
 			if (item->pos.y_pos == item->floor)
 			{
 				lara_item->goal_anim_state = 17;
-				dmg = (short)(bikefspeed - 140);
+				dmg = short(bikefspeed - 140);
 
 				if (dmg > 0)
 				{
@@ -1373,6 +1373,184 @@ long BikeDynamics(ITEM_INFO* item)
 	return anim;
 }
 
+void BikeControl(short item_number)
+{
+	ITEM_INFO* item;
+	BIKEINFO* bike;
+	FLOOR_INFO* floor;
+	PHD_VECTOR flPos, frPos, fmPos;
+	PHD_VECTOR pos;
+	long front_left, front_right, front_mid;
+	long hitWall, h, driving, killed, pitch, oldY, hdiff, smokeVel;
+	short room_number, wheelRot, xRot, zRot;
+	static uchar ExhaustSmokeVel;
+
+	driving = -1;
+	killed = 0;
+#ifdef GENERAL_FIXES
+	pitch = 0;
+#endif
+	item = &items[lara.vehicle];
+	bike = (BIKEINFO*)item->data;
+	hitWall = BikeDynamics(item);
+
+	if (hitWall == -888)	//hit the crocgod
+	{
+		ExplodingDeath2(lara.item_number, -1, 256);
+		lara_item->hit_points = 0;
+		lara_item->flags |= IFL_INVISIBLE;
+		BikeExplode(item);
+		return;
+	}
+
+	room_number = item->room_number;
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+	GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	GetCeiling(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	front_left = TestHeight(item, 500, -350, &flPos);
+	front_right = TestHeight(item, 500, 128, &frPos);
+	front_mid = TestHeight(item, -500, 0, &fmPos);
+	room_number = item->room_number;
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+	h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	TestTriggers(trigger_index, 0, 0);
+	TestTriggers(trigger_index, 1, 0);
+
+	if (lara_item->hit_points <= 0)
+	{
+		killed = 1;
+		input &= ~(IN_FORWARD | IN_BACK | IN_LEFT | IN_RIGHT);	//should be IN_ACTION instead?
+	}
+
+	if (bike->flags)
+		hitWall = 0;
+	else
+	{
+		TriggerBikeBeam(item);
+
+		if (lara_item->current_anim_state < 9 || lara_item->current_anim_state > 10)
+			driving = UserControl(item, h, &pitch);
+		else
+		{
+			driving = -1;
+			hitWall = 0;
+		}
+	}
+
+	if (bike->velocity > 0 || bike->unused1)
+	{
+		bike->pitch2 = pitch;
+
+		if (bike->pitch2 < -0x8000)
+			bike->pitch2 = -0x8000;
+		else if (bike->pitch2 > 0xA000)
+			bike->pitch2 = 0xA000;
+
+		SoundEffect(SFX_BIKE_MOVING, &item->pos, (bike->pitch2 << 8) + (SFX_SETPITCH | 0x1000000));
+	}
+	else
+	{
+		if (driving != -1)
+		{
+			SoundEffect(SFX_BIKE_IDLE, &item->pos, SFX_DEFAULT);
+			SoundEffect(SFX_BIKE_MOVING, &item->pos, (bike->pitch2 << 8) + (SFX_SETPITCH | 0x1000000));
+		}
+
+		bike->pitch2 = 0;
+	}
+
+	item->floor = h;
+	wheelRot = short(bike->velocity >> 2);
+	bike->right_front_wheelrot -= wheelRot;
+	bike->right_back_wheelrot -= wheelRot;
+	bike->left_wheelrot -= wheelRot;
+	bikefspeed = item->fallspeed;
+	oldY = item->pos.y_pos;
+	item->fallspeed = (short)DoDynamics(h, item->fallspeed, &item->pos.y_pos, 0);
+	hdiff = (frPos.y + flPos.y) >> 1;
+
+	if (fmPos.y < front_mid)
+	{
+		if (hdiff < (front_left + front_right) >> 1)
+			xRot = (short)phd_atan(125, oldY - item->pos.y_pos);
+		else
+			xRot = (short)phd_atan(500, item->pos.y_pos - hdiff);
+	}
+	else
+	{
+		if (hdiff < (front_left + front_right) >> 1)
+			xRot = (short)phd_atan(500, front_mid - item->pos.y_pos);
+		else
+			xRot = (short)phd_atan(1000, front_mid - hdiff);
+	}
+
+	zRot = (short)phd_atan(350, hdiff - flPos.y);
+	item->pos.x_rot += (xRot - item->pos.x_rot) >> 2;
+	item->pos.z_rot += (zRot - item->pos.z_rot) >> 2;
+
+	if (!(bike->flags & 0x80))
+	{
+		if (room_number != item->room_number)
+		{
+			ItemNewRoom(lara.vehicle, room_number);
+			ItemNewRoom(lara.item_number, room_number);
+		}
+
+		lara_item->pos.x_pos = item->pos.x_pos;
+		lara_item->pos.y_pos = item->pos.y_pos;
+		lara_item->pos.z_pos = item->pos.z_pos;
+		lara_item->pos.x_rot = item->pos.x_rot;
+		lara_item->pos.y_rot = item->pos.y_rot;
+		lara_item->pos.z_rot = item->pos.z_rot;
+		AnimateBike(item, hitWall, killed);
+		AnimateItem(lara_item);
+		item->anim_number = objects[MOTORBIKE].anim_index + lara_item->anim_number - objects[VEHICLE_EXTRA].anim_index;
+		item->frame_number = lara_item->frame_number + anims[item->anim_number].frame_base - anims[lara_item->anim_number].frame_base;
+		camera.target_elevation = -5460;
+
+		if (bike->flags & 0x40 && item->pos.y_pos == item->floor)
+		{
+			ExplodingDeath2(lara.item_number, -1, 256);
+			lara_item->hit_points = 0;
+			lara_item->flags |= IFL_INVISIBLE;
+			BikeExplode(item);
+			return;
+		}
+	}
+
+	if (lara_item->current_anim_state == 9 || lara_item->current_anim_state == 10)
+		ExhaustSmokeVel = 0;
+	else
+	{
+		pos.x = 56;
+		pos.y = -144;
+		pos.z = -500;
+		GetJointAbsPosition(item, &pos, 0);
+
+		if (item->speed > 32)
+		{
+			if (item->speed < 64)
+				TriggerExhaustSmoke(pos.x, pos.y, pos.z, item->pos.y_rot + 0x8000, 64 - item->speed, 1);
+		}
+		else
+		{
+			if (ExhaustSmokeVel < 16)
+			{
+				smokeVel = ((GetRandomControl() & 7) + (GetRandomControl() & 0x10) + 2 * ExhaustSmokeVel) << 6;
+				ExhaustSmokeVel++;
+			}
+			else if (GetRandomControl() & 3)
+				smokeVel = 0;
+			else
+				smokeVel = ((GetRandomControl() & 0xF) + (GetRandomControl() & 0x10)) << 6;
+
+			TriggerExhaustSmoke(pos.x, pos.y, pos.z, item->pos.y_rot + 0x8000, smokeVel, 0);
+		}
+	}
+
+	BikeCheckGetOff();
+}
+
 void inject_bike(bool replace)
 {
 	INJECT(0x00464610, InitialiseBike, replace);
@@ -1393,4 +1571,5 @@ void inject_bike(bool replace)
 	INJECT(0x00465F80, BikeCollideStaticObjects, replace);
 	INJECT(0x00466AB0, UserControl, replace);
 	INJECT(0x004657E0, BikeDynamics, replace);
+	INJECT(0x00464C70, BikeControl, replace);
 }

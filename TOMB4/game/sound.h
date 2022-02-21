@@ -8,11 +8,11 @@
 
 enum sfx_options
 {
-    SFX_DEFAULT,
-    SFX_WATER,
-    SFX_ALWAYS,
-    SFX_SETPITCH,
-    SFX_SETVOL
+    SFX_DEFAULT     = 0,
+    SFX_WATER       = 1,
+    SFX_ALWAYS      = 2,
+    SFX_SETPITCH    = 4,
+    SFX_SETVOL      = 8
 };
 
 enum sound_effect_names
