@@ -47,7 +47,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004654A0	+	BikeCheckGetOff
 0x00465660	+	TestHeight
 0x00465770	+	DoDynamics
-0x004657E0		BikeDynamics
+0x004657E0	+	BikeDynamics
 0x00465F80	+	BikeCollideStaticObjects
 0x00466290	+	BikeBaddieCollision
 0x004664B0	+	AnimateBike

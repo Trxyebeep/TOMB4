@@ -21,6 +21,7 @@
 #include "effects.h"
 #include "debris.h"
 #include "lara.h"
+#include "jeep.h"
 
 void InitialiseBike(short item_number)
 {
@@ -1136,6 +1137,242 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 	return 0;
 }
 
+long BikeDynamics(ITEM_INFO* item)
+{
+	BIKEINFO* bike;
+	FLOOR_INFO* floor;
+	PHD_VECTOR pos, newPos;
+	PHD_VECTOR flPos, frPos, blPos, brPos, fmPos, flPos2, frPos2, blPos2, brPos2, fmPos2;
+	long front_left, front_right, back_left, back_right, front_mid, front_left2, front_right2, back_left2, back_right2, front_mid2;
+	long h, speed, shift, shift2, anim, dx, dz;
+	short ang, ang2, vel, room_number;
+
+	dont_exit_bike = 0;
+	bike = (BIKEINFO*)item->data;
+	front_left = TestHeight(item, 500, -350, &flPos);
+	front_right = TestHeight(item, 500, 128, &frPos);
+	back_left = TestHeight(item, -500, -350, &blPos);
+	back_right = TestHeight(item, -500, 128, &brPos);
+	front_mid = TestHeight(item, -500, 0, &fmPos);
+	pos.x = item->pos.x_pos;
+	pos.y = item->pos.y_pos;
+	pos.z = item->pos.z_pos;
+
+	if (blPos.y > back_left)
+		blPos.y = back_left;
+
+	if (brPos.y > back_right)
+		brPos.y = back_right;
+
+	if (flPos.y > front_left)
+		flPos.y = front_left;
+
+	if (frPos.y > front_right)
+		frPos.y = front_right;
+
+	if (fmPos.y > front_mid)
+		fmPos.y = front_mid;
+
+	if (item->pos.y_pos <= item->floor - 8)
+	{
+		if (bike->bike_turn < -91)
+			bike->bike_turn += 91;
+		else if (bike->bike_turn > 91)
+			bike->bike_turn -= 91;
+		else
+			bike->bike_turn = 0;
+
+		item->pos.y_rot += short(bike->bike_turn + bike->extra_rotation);
+		bike->move_angle += (item->pos.y_rot - bike->move_angle) >> 5;
+	}
+	else
+	{
+		if (bike->bike_turn < -182)
+			bike->bike_turn += 182;
+		else if (bike->bike_turn > 182)
+			bike->bike_turn -= 182;
+		else
+			bike->bike_turn = 0;
+
+		item->pos.y_rot += short(bike->bike_turn + bike->extra_rotation);
+		ang = item->pos.y_rot - bike->move_angle;
+		vel = short(728 - ((2 * bike->velocity) >> 10));
+
+		if (!(input & IN_ACTION) && bike->velocity > 0)
+			vel += vel >> 1;
+
+		if (ang < -273)
+		{
+			if (ang < -8190)
+				bike->move_angle = item->pos.y_rot + 8190;
+			else
+				bike->move_angle -= vel;
+		}
+		else if (ang > 273)
+		{
+			if (ang > 8190)
+				bike->move_angle = item->pos.y_rot - 8190;
+			else
+				bike->move_angle += vel;
+		}
+		else
+			bike->move_angle = item->pos.y_rot;
+	}
+
+	room_number = item->room_number;
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+	h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+
+	if (item->pos.y_pos < h)
+		speed = item->speed;
+	else
+		speed = (item->speed * phd_cos(item->pos.x_rot)) >> 14;
+
+	item->pos.x_pos += (speed * phd_sin(bike->move_angle)) >> 14;
+	item->pos.z_pos += (speed * phd_cos(bike->move_angle)) >> 14;
+
+	if (item->pos.y_pos >= h)
+	{
+		ang = (100 * phd_sin(item->pos.x_rot)) >> 14;
+
+		if (ABS(ang) > 16)
+		{
+			ang2 = (100 * phd_sin(item->pos.x_rot)) >> 14;
+
+			if (ang < 0)
+				ang2 = -ang;
+
+			if (ang2 > 24)
+				dont_exit_bike = 1;
+
+			ang <<= 4;
+			bike->velocity -= ang;
+		}
+
+		ang = (128 * phd_sin(item->pos.z_rot)) >> 14;
+
+		if (ABS(ang) > 32)
+		{
+			dont_exit_bike = 1;
+
+			if (ang < 0)
+				ang2 = item->pos.y_rot - 0x4000;
+			else
+				ang2 = item->pos.y_rot + 0x4000;
+
+			item->pos.x_pos += ((ABS(ang) - 24) * phd_sin(ang2)) >> 14;
+			item->pos.z_pos += ((ABS(ang) - 24) * phd_cos(ang2)) >> 14;
+		}
+	}
+
+	if (bike->velocity <= 0x8000 || bike->flags & 0x100)
+	{
+		if (bike->velocity > 0xC000)
+			bike->velocity = 0xC000;
+		else if (bike->velocity < -0x3000)
+			bike->velocity = -0x3000;
+	}
+	else
+		bike->velocity -= 0x440;
+
+	newPos.x = item->pos.x_pos;
+	newPos.z = item->pos.z_pos;
+
+	if (!(item->flags & 0x100))
+	{
+		if (BikeBaddieCollision(item))	//this returns = we hit the crocgod, explode her
+			return -888;
+
+		BikeCollideStaticObjects(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 512);
+	}
+
+	shift = 0;
+	shift2 = 0;
+	front_left2 = TestHeight(item, 500, -350, &flPos2);
+
+	if (front_left2 < flPos.y - 256)
+		shift = ABS(DoShift(item, &flPos2, &flPos) << 2);
+
+	back_left2 = TestHeight(item, -500, -350, &blPos2);
+
+	if (back_left2 < blPos.y - 256)
+	{
+		if (shift)
+			shift += ABS(DoShift(item, &blPos2, &blPos) << 2);
+		else
+			shift -= ABS(DoShift(item, &blPos2, &blPos) << 2);
+	}
+
+	front_right2 = TestHeight(item, 500, 128, &frPos2);
+
+	if (front_right2 < frPos.y - 256)
+		shift2 -= abs(DoShift(item, &frPos2, &frPos) << 2);	//using the ABS macro gives wrong results??
+
+	front_mid2 = TestHeight(item, -500, 0, &fmPos2);
+
+	if (front_mid2 < fmPos.y - 256)
+		DoShift(item, &fmPos2, &fmPos);
+
+	back_right2 = TestHeight(item, -500, 128, &brPos2);
+
+	if (back_right2 < brPos.y - 256)
+	{
+		if (shift2)
+			shift2 -= ABS(DoShift(item, &brPos2, &brPos) << 2);
+		else
+			shift2 += ABS(DoShift(item, &brPos2, &brPos) << 2);
+	}
+
+	if (shift)
+		shift2 = shift;
+
+	room_number = item->room_number;
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+	h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+
+	if (h < item->pos.y_pos - 256)
+		DoShift(item, (PHD_VECTOR*)&item->pos, &pos);
+
+	if (!bike->velocity)
+		shift2 = 0;
+
+	bike->rot_thing = short((bike->rot_thing + shift2) >> 1);
+
+	if (ABS(bike->rot_thing) < 2)
+		bike->rot_thing = 0;
+
+	if (ABS(bike->rot_thing) < 4)
+		bike->extra_rotation = bike->rot_thing;
+	else
+		bike->extra_rotation += (bike->rot_thing - bike->extra_rotation) >> 2;
+
+	anim = GetCollisionAnim(item, &newPos, bike);
+
+	if (anim)
+	{
+		dx = item->pos.x_pos - pos.x;
+		dz = item->pos.z_pos - pos.z;
+		speed = (dx * phd_sin(bike->move_angle) + dz * phd_cos(bike->move_angle)) >> 14;
+		speed <<= 8;
+
+		if (&items[lara.vehicle] == item && bike->velocity >= 0x8000 && speed < bike->velocity - 10)	//did we just stop randomly (i.e hit a wall)
+		{
+			lara_item->hit_points -= short((bike->velocity - speed) >> 7);
+			lara_item->hit_status = 1;
+		}
+
+		if (bike->velocity > 0 && speed < bike->velocity)
+			bike->velocity = speed < 0 ? 0 : speed;
+		else if (bike->velocity < 0 && speed > bike->velocity)
+			bike->velocity = speed > 0 ? 0 : speed;
+
+		if (bike->velocity < -0x3000)
+			bike->velocity = 0x3000;
+	}
+
+	return anim;
+}
+
 void inject_bike(bool replace)
 {
 	INJECT(0x00464610, InitialiseBike, replace);
@@ -1155,4 +1392,5 @@ void inject_bike(bool replace)
 	INJECT(0x00466290, BikeBaddieCollision, replace);
 	INJECT(0x00465F80, BikeCollideStaticObjects, replace);
 	INJECT(0x00466AB0, UserControl, replace);
+	INJECT(0x004657E0, BikeDynamics, replace);
 }
