@@ -52,7 +52,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00466290	+	BikeBaddieCollision
 0x004664B0	+	AnimateBike
 0x004668E0	+	CanGetOff
-0x00466AB0		UserControl
+0x00466AB0	+	UserControl
 0x00466E90	+	BikeStart
 
 
