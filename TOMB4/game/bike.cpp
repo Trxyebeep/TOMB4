@@ -70,9 +70,9 @@ void TriggerBikeBeam(ITEM_INFO* item)
 	d.y = -470;
 	d.z = 20780;
 	GetJointAbsPosition(item, &d, 0);
-	intensity = bike->light_intensity << 1;
+	intensity = (bike->light_intensity << 1) - (GetRandomControl() & 0xF);
 
-	if (intensity>0)
+	if (intensity > 0)
 		LaraTorch(&s, &d, item->pos.y_rot, intensity);
 	else
 		bLaraTorch = 0;
