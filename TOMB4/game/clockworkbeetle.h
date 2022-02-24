@@ -3,5 +3,5 @@
 
 void inject_clockwork(bool replace);
 
-void TriggerClockworkBeetle(long flag);
+ITEM_INFO* TriggerClockworkBeetle(long flag);
 void ControlClockworkBeetle(short item_number);

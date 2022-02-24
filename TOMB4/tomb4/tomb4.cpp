@@ -1,6 +1,7 @@
 #include "../tomb4/pch.h"
 #include "tomb4.h"
 #include "../specific/registry.h"
+#include "libs/discordRPC/discord_rpc.h"
 
 tomb4_options tomb4;
 
@@ -87,4 +88,53 @@ void save_new_tomb4_settings()
 	REG_WriteBool(buf, tomb4.gameover);
 
 	CloseRegistry();
+}
+
+void RPC_Init()
+{
+	DiscordEventHandlers handlers;
+
+	memset(&handlers, 0, sizeof(handlers));
+	Discord_Initialize("504081066848681984", &handlers, 1, 0);	//OG TR4 app ID for now
+}
+
+const char* RPC_GetLevelName()
+{
+	if (!gfCurrentLevel)
+		return "In Title";
+	else
+		return SCRIPT_TEXT(gfLevelNames[gfCurrentLevel]);
+}
+
+const char* RPC_GetTimer()
+{
+	long sec, days, hours, min;
+	static char buf[64];
+
+	sec = GameTimer / 30;
+	days = sec / 86400;
+	hours = (sec % 86400) / 3600;
+	min = (sec / 60) % 60;
+	sec = (sec % 60);
+	sprintf(buf, "Time Taken: %02d:%02d:%02d", (days * 24) + hours, min, sec);
+	return buf;
+}
+
+void RPC_Update()
+{
+	DiscordRichPresence RPC;
+
+	memset(&RPC, 0, sizeof(RPC));
+
+	RPC.details = RPC_GetLevelName();
+
+	RPC.state = RPC_GetTimer();
+
+	RPC.instance = 1;
+	Discord_UpdatePresence(&RPC);
+}
+
+void RPC_close()
+{
+	Discord_Shutdown();
 }

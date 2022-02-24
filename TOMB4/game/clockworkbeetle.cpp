@@ -9,7 +9,7 @@
 #include "../specific/function_stubs.h"
 #include "../specific/3dmath.h"
 
-void TriggerClockworkBeetle(long flag)
+ITEM_INFO* TriggerClockworkBeetle(long flag)
 {
 	ITEM_INFO* item;
 	ITEM_INFO* item2;
@@ -71,8 +71,12 @@ void TriggerClockworkBeetle(long flag)
 
 			if (!item->item_flags[0])
 				item->item_flags[3] = 150;
+
+			return item;
 		}
 	}
+
+	return 0;
 }
 
 void ControlClockworkBeetle(short item_number)
