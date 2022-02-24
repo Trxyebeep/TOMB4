@@ -406,6 +406,7 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="TOMB4\tomb4\libs\discordRPC\discord-rpc.lib" />
+    <Library Include="TOMB4\tomb4\libs\discordRPC\discord-rpcd.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
