@@ -382,6 +382,10 @@
 #define boxes	VAR_U_(0x007FE9B0, BOX_INFO*)
 #define number_rooms	VAR_U_(0x00533A5C, short)
 #define flip_status	VAR_U_(0x007FE218, long)
+#define wav_file_buffer	VAR_U_(0x004BFE5C, uchar*)
+#define ADPCMBuffer	VAR_U_(0x004BFE60, uchar*)
+#define gfScriptFile	VAR_U_(0x007FD2AC, uchar*)
+#define gfLanguageFile	VAR_U_(0x007FD26C, uchar*)
 
 
 

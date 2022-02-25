@@ -130,9 +130,6 @@ long ControlPhase(long nframes, long demo_mode)
 	short item_num, nex, fx_num;
 
 	RegeneratePickups();
-#ifdef DISCORD_RPC
-	RPC_Init();
-#endif
 
 	if (nframes > 10)
 		nframes = 10;
@@ -208,9 +205,6 @@ long ControlPhase(long nframes, long demo_mode)
 				if (Gameflow->DemoDisc && reset_flag)
 				{
 					reset_flag = 0;
-#ifdef DISCORD_RPC
-					RPC_close();
-#endif
 					return 4;
 				}
 
@@ -240,12 +234,7 @@ long ControlPhase(long nframes, long demo_mode)
 		}
 
 		if (MainThread.ended)
-		{
-#ifdef DISCORD_RPC
-			RPC_close();
-#endif
 			return 4;
-		}
 
 		if (input & IN_LOOK && (lara_item->current_anim_state == 2 && lara_item->anim_number == 103 ||
 			(lara.IsDucked && input & IN_DUCK && lara_item->anim_number == 222 && lara_item->goal_anim_state == 71)))
