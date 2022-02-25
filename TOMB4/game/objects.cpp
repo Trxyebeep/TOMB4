@@ -190,7 +190,7 @@ long GetOffset(ITEM_INFO* item, long x, long z)
 {
 	if (!item->pos.y_rot)
 		return -x & 0x3FF;
-	else if (item->pos.y_rot == 0x8000)
+	else if (item->pos.y_rot == -0x8000)
 		return x & 0x3FF;
 	else if (item->pos.y_rot == 0x4000)
 		return z & 0x3FF;
