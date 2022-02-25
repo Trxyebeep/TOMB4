@@ -170,8 +170,91 @@ void ControlLightningConductor(short item_number)
 	}
 }
 
+void BridgeFlatFloor(ITEM_INFO* item, long x, long y, long z, long* height)
+{
+	if (item->pos.y_pos >= y)
+	{
+		*height = item->pos.y_pos;
+		height_type = WALL;
+		OnObject = 1;
+	}
+}
+
+void BridgeFlatCeiling(ITEM_INFO* item, long x, long y, long z, long* height)
+{
+	if (item->pos.y_pos < y)
+		*height = item->pos.y_pos + 256;
+}
+
+long GetOffset(ITEM_INFO* item, long x, long z)
+{
+	if (!item->pos.y_rot)
+		return -x & 0x3FF;
+	else if (item->pos.y_rot == 0x8000)
+		return x & 0x3FF;
+	else if (item->pos.y_rot == 0x4000)
+		return z & 0x3FF;
+	else
+		return -z & 0x3FF;
+}
+
+void BridgeTilt1Floor(ITEM_INFO* item, long x, long y, long z, long* height)
+{
+	long level;
+
+	level = item->pos.y_pos + (GetOffset(item, x, z) >> 2);
+
+	if (level >= y)
+	{
+		*height = level;
+		height_type = WALL;
+		OnObject = 1;
+	}
+}
+
+void BridgeTilt1Ceiling(ITEM_INFO* item, long x, long y, long z, long* height)
+{
+	long level;
+
+	level = item->pos.y_pos + (GetOffset(item, x, z) >> 2);
+
+	if (level < y)
+		*height = level + 256;
+}
+
+void BridgeTilt2Floor(ITEM_INFO* item, long x, long y, long z, long* height)
+{
+	long level;
+
+	level = item->pos.y_pos + (GetOffset(item, x, z) >> 1);
+
+	if (level >= y)
+	{
+		*height = level;
+		height_type = WALL;
+		OnObject = 1;
+	}
+}
+
+void BridgeTilt2Ceiling(ITEM_INFO* item, long x, long y, long z, long* height)
+{
+	long level;
+
+	level = item->pos.y_pos + (GetOffset(item, x, z) >> 1);
+
+	if (level < y)
+		*height = level + 256;
+}
+
 void inject_objects(bool replace)
 {
 	INJECT(0x00456580, ControlMapper, replace);
 	INJECT(0x00456CD0, ControlLightningConductor, replace);
+	INJECT(0x00455EA0, BridgeFlatFloor, replace);
+	INJECT(0x00455ED0, BridgeFlatCeiling, replace);
+	INJECT(0x00455EF0, GetOffset, replace);
+	INJECT(0x00455F30, BridgeTilt1Floor, replace);
+	INJECT(0x00455F80, BridgeTilt1Ceiling, replace);
+	INJECT(0x00455FC0, BridgeTilt2Floor, replace);
+	INJECT(0x00456010, BridgeTilt2Ceiling, replace);
 }

@@ -13,3 +13,4 @@ void DrawSortList();
 #define CreateFXBulbs	( (void(__cdecl*)()) 0x004819B0 )
 #define ClearFXFogBulbs	( (void(__cdecl*)()) 0x004818A0 )
 #define IsVolumetric	( (long(__cdecl*)()) 0x00481AD0 )
+#define AddQuadClippedSorted	( (void(__cdecl*)(D3DTLVERTEX*, short, short, short, short, TEXTURESTRUCT*, long)) 0x004842A0 )

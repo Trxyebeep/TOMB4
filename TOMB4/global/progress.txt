@@ -165,9 +165,9 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044BC80		xLOS
 0x0044BFD0		zLOS
 0x0044C320		ClipTarget
-0x0044C570		FlipMap
-0x0044C670		RemoveRoomFlipItems
-0x0044C6F0		AddRoomFlipItems
+0x0044C570	+	FlipMap
+0x0044C670	+	RemoveRoomFlipItems
+0x0044C6F0	+	AddRoomFlipItems
 0x0044C770		TriggerCDTrack
 0x0044C790		TriggerNormalCDTrack
 0x0044C820		CheckNoColFloorTriangle
@@ -190,10 +190,10 @@ x for functions decompiled but not injected, for one reason or another.
 0x00403810	+	ControlLocustEmitter
 0x00403870	+	UpdateLocusts
 0x00403C10	+	DrawLocusts
-0x00403C90		TriggerCrocgodMissile
-0x00403D30		TriggerCrocgodMissileFlame
-0x00403ED0		InitialiseCrocgod
-0x00403F30		CrocgodControl
+0x00403C90	+	TriggerCrocgodMissile
+0x00403D30	+	TriggerCrocgodMissileFlame
+0x00403ED0	+	InitialiseCrocgod
+0x00403F30	+	CrocgodControl
 
 
 		game/deathsld.cpp
@@ -213,11 +213,11 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/delstuff.cpp
 
-0x0041D010		CalcLaraMatrices
+0x0041D010	+	CalcLaraMatrices
 0x0041D140	+	DrawLara
 0x0041D9A0	+	GetLaraJointPos
-0x0041DAF0		Rich_CalcLaraMatrices_Normal
-0x0041E630		Rich_CalcLaraMatrices_Interpolated
+0x0041DAF0	+	Rich_CalcLaraMatrices_Normal
+0x0041E630	+	Rich_CalcLaraMatrices_Interpolated
 0x0041F260	+	SetLaraUnderwaterNodes
 
 
@@ -321,12 +321,12 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/demigod.cpp
 
-0x00404770		TriggerDemigodMissile
-0x00404840		TriggerDemigodMissileFlame
-0x00404A00		TriggerHammerSmoke
-0x00404BD0		DoDemigodEffects
-0x00404E00		InitialiseDemigod
-0x00404EA0		DemigodControl
+0x00404770	+	TriggerDemigodMissile
+0x00404840	+	TriggerDemigodMissileFlame
+0x00404A00	+	TriggerHammerSmoke
+0x00404BD0	+	DoDemigodEffects
+0x00404E00	+	InitialiseDemigod
+0x00404EA0	+	DemigodControl
 
 
 		game/dog.cpp
@@ -410,7 +410,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00436320		ClearDynamics
 0x00436340	+	ControlSmokeEmitter
 0x00436900		ControlColouredLights
-0x004369B0		ControlEnemyMissle
+0x004369B0		ControlEnemyMissile
 
 
 		game/effects.cpp
@@ -556,7 +556,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00453870		InitialiseStatuePlinth
 0x004538A0		InitialiseEffects
 0x00453980		InitialiseSmokeEmitter
-0x00453A30		InitialiseDoor
+0x00453A30	+	InitialiseDoor
 0x00453E40		InitialisePulley
 0x00453E90		InitialisePickUp
 0x00453F30		init_all_ropes
@@ -1042,13 +1042,13 @@ x for functions decompiled but not injected, for one reason or another.
 0x00455AE0		EarthQuake
 0x00455CF0		SmashObject
 0x00455DF0		SmashObjectControl
-0x00455EA0		BridgeFlatFloor
-0x00455ED0		BridgeFlatCeiling
-0x00455EF0		GetOffset
-0x00455F30		BridgeTilt1Floor
-0x00455F80		BridgeTilt1Ceiling
-0x00455FC0		BridgeTilt2Floor
-0x00456010		BridgeTilt2Ceiling
+0x00455EA0	+	BridgeFlatFloor
+0x00455ED0	+	BridgeFlatCeiling
+0x00455EF0	+	GetOffset
+0x00455F30	+	BridgeTilt1Floor
+0x00455F80	+	BridgeTilt1Ceiling
+0x00455FC0	+	BridgeTilt2Floor
+0x00456010	+	BridgeTilt2Ceiling
 0x00456050		ControlAnimatingSlots
 0x00456120		PoleCollision
 0x00456360		ControlTriggerTriggerer
@@ -1430,8 +1430,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/wildboar.cpp
 
-0x0041BF00		InitialiseWildboar
-0x0041BF60		WildboarControl
+0x0041BF00	+	InitialiseWildboar
+0x0041BF60	+	WildboarControl
 
 
 		game/wraith.cpp
@@ -1439,7 +1439,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0041C2E0	+	InitialiseWraith
 0x0041C360	+	TriggerWraithFlame
 0x0041C4C0	+	TriggerWraithEffect
-0x0041C6E0	x	WraithControl
+0x0041C6E0	+	WraithControl
 
 // ======================================
 // SPECIFIC
@@ -1642,7 +1642,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00476AC0		HWBeginScene
 0x00476B10		HWEndScene
 0x00476B30		HWInitialise
-0x00476E80		SetFogColor
+0x00476E80	+	SetFogColor
 
 
 		specific/gamemain.cpp
@@ -1699,7 +1699,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0047C6B0		DoStatScreen
 0x0047CA20		S_DisplayPauseMenu
 0x0047CC60		S_PauseMenu
-0x0047CD20		S_LoadSave
+0x0047CD20	+	S_LoadSave
 0x0047CE10	+	DoBar
 0x0047D3E0	+	S_DrawDashBar
 0x0047D420	+	S_DrawAirBar
@@ -1816,11 +1816,11 @@ x for functions decompiled but not injected, for one reason or another.
 0x0048C280		DoScreenFade
 0x0048C400		DrawPsxTile
 0x0048C5F0		DrawFlash
-0x0048C6C0		DrawBikeSpeedo
+0x0048C6C0	+	DrawBikeSpeedo
 0x0048CAA0		DrawShockwaves
 0x0048D160		S_DrawDarts
-0x0048D3D0		Draw2DSprite
-0x0048D580		DrawJeepSpeedo
+0x0048D3D0	+	Draw2DSprite
+0x0048D580	+	DrawJeepSpeedo
 0x0048D9B0		DrawLightning
 
 

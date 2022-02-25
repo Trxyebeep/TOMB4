@@ -33,6 +33,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "climbup");
 		tomb4.fix_climb_up_delay = 1;					//no delay
 		REG_WriteBool(buf, tomb4.fix_climb_up_delay);
+
+		sprintf(buf, "gameover");
+		tomb4.gameover = 1;								//on
+		REG_WriteBool(buf, tomb4.gameover);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -50,6 +54,9 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "climbup");
 		REG_ReadBool(buf, tomb4.fix_climb_up_delay, 1);
+
+		sprintf(buf, "gameover");
+		REG_ReadBool(buf, tomb4.gameover, 1);
 	}
 
 	CloseRegistry();
@@ -75,6 +82,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "climbup");
 	REG_WriteBool(buf, tomb4.fix_climb_up_delay);
+
+	sprintf(buf, "gameover");
+	REG_WriteBool(buf, tomb4.gameover);
 
 	CloseRegistry();
 }

@@ -22,6 +22,105 @@
 #include "scarab.h"
 #include "croc.h"
 
+#ifdef GENERAL_FIXES
+#include "../specific/output.h"
+#include "gameflow.h"
+#include "../tomb4/tomb4.h"
+
+char DeathMenuActive;
+
+static long S_Death()
+{
+	long selection, menu, ret;
+
+	CreateMonoScreen();
+	selection = 0;
+	menu = 0;
+	ret = 0;
+	DeathMenuActive = 1;
+
+	while (!ret)
+	{
+		S_InitialisePolyList();
+		SetDebounce = 1;
+		S_UpdateInput();
+		UpdatePulseColour();
+		lara.death_count++;
+		S_DisplayMonoScreen();
+
+		if (Gameflow->LoadSaveEnabled)
+		{
+			if (!menu)	//"main" menu
+			{
+				PrintString((ushort)phd_centerx, (ushort)phd_centery, 3, SCRIPT_TEXT(TXT_GAME_OVER), FF_CENTER);
+				PrintString((ushort)phd_centerx, ushort(phd_centery + 2 * font_height), !selection ? 1 : 2, SCRIPT_TEXT(TXT_Load_Game), FF_CENTER);
+				PrintString((ushort)phd_centerx, ushort(phd_centery + 3 * font_height), selection == 1 ? 1 : 2, SCRIPT_TEXT(TXT_Exit_to_Title), FF_CENTER);
+
+				if (selection)
+				{
+					if (dbinput & IN_FORWARD)
+					{
+						selection = 0;
+						SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+					}
+
+					if (dbinput & IN_SELECT)
+					{
+						lara.death_count = 0;
+						ret = 1;
+						SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+					}
+				}
+				else
+				{
+					if (dbinput & IN_BACK)
+					{
+						selection = 1;
+						SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+					}
+
+					if (dbinput & IN_SELECT)
+					{
+						menu = 1;
+						SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+					}
+				}
+			}
+			else if (menu == 1)	//reload
+			{
+				lara.death_count = 0;
+				ret = go_and_load_game();
+
+				if (ret)
+				{
+					if (ret > 0)
+						ret = 2;
+					else
+					{
+						menu = 0;
+						ret = 0;
+					}
+				}
+			}
+		}
+		else
+		{
+			PrintString((ushort)phd_centerx, (ushort)phd_centery, 3, SCRIPT_TEXT(TXT_GAME_OVER), FF_CENTER);
+
+			if (lara.death_count > 300 || (lara.death_count > 150 && input != IN_NONE))
+				return 1;
+		}
+
+		S_OutputPolyList();
+		camera.number_frames = S_DumpScreen();
+	}
+
+	DeathMenuActive = 0;
+	FreeMonoScreen();
+	return ret;
+}
+#endif
+
 long ControlPhase(long nframes, long demo_mode)
 {
 	ITEM_INFO* item;
@@ -80,16 +179,35 @@ long ControlPhase(long nframes, long demo_mode)
 		if (gfLevelComplete)
 			return 3;
 		
-		if (reset_flag || lara.death_count > 300 || lara.death_count > 60 && input)
+#ifdef GENERAL_FIXES
+		if (tomb4.gameover)
 		{
-			if (Gameflow->DemoDisc && reset_flag)
+			if (reset_flag)
 			{
 				reset_flag = 0;
-				return 4;
+				return 1;
 			}
 
-			reset_flag = 0;
-			return 1;
+			if (lara.death_count > 90)
+			{
+				reset_flag = 0;
+				return S_Death();
+			}
+		}
+		else
+#endif
+		{
+			if (reset_flag || lara.death_count > 300 || lara.death_count > 60 && input)
+			{
+				if (Gameflow->DemoDisc && reset_flag)
+				{
+					reset_flag = 0;
+					return 4;
+				}
+
+				reset_flag = 0;
+				return 1;
+			}
 		}
 
 		if (demo_mode && input == IN_ALL)
@@ -324,7 +442,82 @@ long ControlPhase(long nframes, long demo_mode)
 	return 0;
 }
 
+void FlipMap(long FlipNumber)
+{
+	ROOM_INFO* r;
+	ROOM_INFO* flipped;
+	CREATURE_INFO* cinfo;
+	ROOM_INFO temp;
+
+	for (int i = 0; i < number_rooms; i++)
+	{
+		r = &room[i];
+
+		if (r->flipped_room >= 0 && r->FlipNumber == FlipNumber)
+		{
+#ifdef GENERAL_FIXES	//reset lighting room so objects take the new room's light...
+			for (int j = r->item_number; j != NO_ITEM; j = items[j].next_item)
+				items[j].il.room_number = 255;
+#endif
+			RemoveRoomFlipItems(r);
+			flipped = &room[r->flipped_room];
+			memcpy(&temp, r, sizeof(temp));
+			memcpy(r, flipped, sizeof(ROOM_INFO));
+			memcpy(flipped, &temp, sizeof(ROOM_INFO));
+			r->flipped_room = flipped->flipped_room;
+			flipped->flipped_room = -1;
+			r->item_number = flipped->item_number;
+			r->fx_number = flipped->fx_number;
+			AddRoomFlipItems(r);
+		}
+	}
+
+	flip_stats[FlipNumber] = !flip_stats[FlipNumber];
+	flip_status = flip_stats[FlipNumber];
+
+	for (short slot = 0; slot < 5; slot++)
+	{
+		cinfo = &baddie_slots[slot];
+		cinfo->LOT.target_box = 2047;
+	}
+}
+
+void RemoveRoomFlipItems(ROOM_INFO* r)
+{
+	ITEM_INFO* item;
+
+	for (short item_num = r->item_number; item_num != NO_ITEM; item_num = item->next_item)
+	{
+		item = &items[item_num];
+
+		if (item->flags & IFL_INVISIBLE && objects[item->object_number].intelligent)
+		{
+			if (item->hit_points <= 0 && item->hit_points != -16384)
+				KillItem(item_num);
+		}
+	}
+}
+
+void AddRoomFlipItems(ROOM_INFO* r)
+{
+	ITEM_INFO* item;
+
+	for (short item_num = r->item_number; item_num != NO_ITEM; item_num =item->next_item)
+	{
+		item = &items[item_num];
+
+		if (items[item_num].object_number == RAISING_BLOCK1 && item->item_flags[1])
+			AlterFloorHeight(item, -1024);
+
+		if (item->object_number == RAISING_BLOCK2 && item->item_flags[1])
+			AlterFloorHeight(item, -2048);
+	}
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
+	INJECT(0x0044C570, FlipMap, replace);
+	INJECT(0x0044C670, RemoveRoomFlipItems, replace);
+	INJECT(0x0044C6F0, AddRoomFlipItems, replace);
 }
