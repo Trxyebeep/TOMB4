@@ -14,3 +14,6 @@ void SetFogColor(long r, long g, long b);
 #define _BeginScene	( *(HRESULT(__cdecl**)()) 0x00533AE8 )
 #define _EndScene	( *(HRESULT(__cdecl**)()) 0x00533ADC )
 #define _NVisible	( (bool(__cdecl*)(D3DTLVERTEX, D3DTLVERTEX, D3DTLVERTEX)) 0x00476990 )
+
+#define InitialiseFunctionTable	( (void(__cdecl*)()) 0x00476A30 )
+#define HWInitialise	( (void(__cdecl*)()) 0x00476B30 )

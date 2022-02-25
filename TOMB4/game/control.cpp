@@ -143,6 +143,9 @@ long ControlPhase(long nframes, long demo_mode)
 	{
 		GlobalCounter++;
 		UpdateSky();
+#ifdef DISCORD_RPC
+		RPC_Update();
+#endif
 
 		if (S_UpdateInput() == IN_ALL)
 			return 0;

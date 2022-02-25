@@ -5,14 +5,15 @@
 #define SoundEffect	( (long(__cdecl*)(long, PHD_3DPOS*, long)) 0x0045F1F0 )
 #define StopSoundEffect	( (void(__cdecl*)(long)) 0x0045FA10 )
 #define SOUND_Stop  ( (void(__cdecl*)()) 0x0045FA70 )
+#define SOUND_Init  ( (void(__cdecl*)()) 0x0045FAA0 )
 
 enum sfx_options
 {
-    SFX_DEFAULT,
-    SFX_WATER,
-    SFX_ALWAYS,
-    SFX_SETPITCH,
-    SFX_SETVOL
+    SFX_DEFAULT     = 0,
+    SFX_WATER       = 1,
+    SFX_ALWAYS      = 2,
+    SFX_SETPITCH    = 4,
+    SFX_SETVOL      = 8
 };
 
 enum sound_effect_names
