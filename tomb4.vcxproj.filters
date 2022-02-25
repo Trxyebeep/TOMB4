@@ -17,6 +17,12 @@
     <Filter Include="TOMB4\specific">
       <UniqueIdentifier>{20418847-c257-4ca3-aa9f-335a8c09ee31}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TOMB4\tomb4\libs">
+      <UniqueIdentifier>{5c39a589-f8ba-43da-bdcb-b7937f7aae29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TOMB4\tomb4\libs\discordRPC">
+      <UniqueIdentifier>{e82e7d15-cb73-411f-ace4-74f040ce47e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TOMB4\tomb4\framework.h">
@@ -347,6 +353,12 @@
       <Filter>TOMB4\tomb4</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="TOMB4\tomb4\libs\discordRPC\discord_register.h">
+      <Filter>TOMB4\tomb4\libs\discordRPC</Filter>
+    </ClInclude>
+    <ClInclude Include="TOMB4\tomb4\libs\discordRPC\discord_rpc.h">
+      <Filter>TOMB4\tomb4\libs\discordRPC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TOMB4\game\lara.cpp">
@@ -672,5 +684,13 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tomb4.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="TOMB4\tomb4\libs\discordRPC\discord-rpc.lib">
+      <Filter>TOMB4\tomb4\libs\discordRPC</Filter>
+    </Library>
+    <Library Include="TOMB4\tomb4\libs\discordRPC\discord-rpcd.lib">
+      <Filter>TOMB4\tomb4\libs\discordRPC</Filter>
+    </Library>
   </ItemGroup>
 </Project>

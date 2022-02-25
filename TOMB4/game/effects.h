@@ -9,3 +9,4 @@ void SetFog(ITEM_INFO* item);
 #define KillActiveBaddies	( (void(__cdecl*)(ITEM_INFO*)) 0x00437930 )
 #define DoBloodSplat	( (short(__cdecl*)(long, long, long, short, short, short)) 0x00437180 )
 #define ItemNearLara	( (long(__cdecl*)(PHD_3DPOS*, long)) 0x00437050 )
+#define DoLotsOfBlood	( (void(__cdecl*)(long, long, long, short, short, short, long)) 0x004371F0 )

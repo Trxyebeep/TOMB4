@@ -90,7 +90,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;DISCORD_RPC;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -101,7 +101,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalOptions>/SECTION:.text,RWE %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/SECTION:.text,RWE /IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -111,7 +111,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;NDEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;DISCORD_RPC;NDEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -124,7 +124,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalOptions>/SECTION:.text,RWE %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/SECTION:.text,RWE /IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -271,6 +271,8 @@
     <ClInclude Include="TOMB4\specific\time.h" />
     <ClInclude Include="TOMB4\specific\winmain.h" />
     <ClInclude Include="TOMB4\tomb4\framework.h" />
+    <ClInclude Include="TOMB4\tomb4\libs\discordRPC\discord_register.h" />
+    <ClInclude Include="TOMB4\tomb4\libs\discordRPC\discord_rpc.h" />
     <ClInclude Include="TOMB4\tomb4\pch.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4.h" />
   </ItemGroup>
@@ -391,6 +393,14 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tomb4.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="TOMB4\tomb4\libs\discordRPC\discord-rpc.lib">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </Library>
+    <Library Include="TOMB4\tomb4\libs\discordRPC\discord-rpcd.lib">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </Library>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

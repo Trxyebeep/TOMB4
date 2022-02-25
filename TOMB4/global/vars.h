@@ -382,6 +382,10 @@
 #define boxes	VAR_U_(0x007FE9B0, BOX_INFO*)
 #define number_rooms	VAR_U_(0x00533A5C, short)
 #define flip_status	VAR_U_(0x007FE218, long)
+#define wav_file_buffer	VAR_U_(0x004BFE5C, uchar*)
+#define ADPCMBuffer	VAR_U_(0x004BFE60, uchar*)
+#define gfScriptFile	VAR_U_(0x007FD2AC, uchar*)
+#define gfLanguageFile	VAR_U_(0x007FD26C, uchar*)
 
 
 
@@ -467,6 +471,9 @@
 #define objects	ARRAY_(0x0052B850, OBJECT_INFO, [465])
 #define Locusts	ARRAY_(0x0080FA00, LOCUST_STRUCT, [64])
 #define ground_zone	ARRAY_(0x007FE980, short*, [5][2])
+#define rooms_around_the_bike	ARRAY_(0x007F5020, short, [22])
+#define BikeCollideStaticBounds	ARRAY_(0x004BFC28, long, [6])		//bike bounds used to collide with statics
+#define CollidedStaticBikeBounds	ARRAY_(0x004BFC0C, long, [6])	//the bounds of the static the bike is trying to collide with
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1

@@ -51,6 +51,7 @@
 #include "../game/wildboar.h"
 #include "../game/demigod.h"
 #include "../specific/function_table.h"
+#include "../specific/gamemain.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -121,6 +122,7 @@ void inject_all(bool replace)
 	inject_wildboar(replace);
 	inject_demigod(replace);
 	inject_functbl(replace);
+	inject_gamemain(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

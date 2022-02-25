@@ -583,6 +583,21 @@ void InsertRoom(ROOM_INFO* r)
 	}
 }
 
+void CalcTriFaceNormal(D3DVECTOR* p1, D3DVECTOR* p2, D3DVECTOR* p3, D3DVECTOR* N)
+{
+	FVECTOR u, v;
+
+	u.x = p1->x - p2->x;
+	u.y = p1->y - p2->y;
+	u.z = p1->z - p2->z;
+	v.x = p3->x - p2->x;
+	v.y = p3->y - p2->y;
+	v.z = p3->z - p2->z;
+	N->x = v.z * u.y - v.y * u.z;
+	N->y = v.x * u.z - v.z * u.x;
+	N->z = v.y * u.x - v.x * u.y;
+}
+
 void inject_drawroom(bool replace)
 {
 	INJECT(0x00471E00, ProjectVerts, replace);
@@ -591,4 +606,5 @@ void inject_drawroom(bool replace)
 	INJECT(0x00471420, ProcessRoomData, replace);
 	INJECT(0x004724C0, PrelightVertsNonMMX, replace);
 	INJECT(0x00472650, InsertRoom, replace);
+	INJECT(0x00472EE0, CalcTriFaceNormal, replace);
 }

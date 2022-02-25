@@ -36,23 +36,23 @@ x for functions decompiled but not injected, for one reason or another.
 		game/bike.cpp
 
 0x00464610	+	InitialiseBike
-0x00464680		BikeCollision
+0x00464680	+	BikeCollision
 0x00464850	+	TriggerBikeBeam
 0x004648F0	+	GetOnBike
 0x00464A30	+	DrawBikeBeam
 0x00464C20	+	DrawBikeExtras
-0x00464C70		BikeControl
+0x00464C70	+	BikeControl
 0x00465220	+	TriggerExhaustSmoke
 0x004653D0	+	BikeExplode
 0x004654A0	+	BikeCheckGetOff
 0x00465660	+	TestHeight
 0x00465770	+	DoDynamics
-0x004657E0		BikeDynamics
-0x00465F80		BikeCollideStaticObjects
-0x00466290		BikeBaddieCollision
+0x004657E0	+	BikeDynamics
+0x00465F80	+	BikeCollideStaticObjects
+0x00466290	+	BikeBaddieCollision
 0x004664B0	+	AnimateBike
 0x004668E0	+	CanGetOff
-0x00466AB0		UserControl
+0x00466AB0	+	UserControl
 0x00466E90	+	BikeStart
 
 
@@ -179,6 +179,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044D820		FireCrossBowFromLaserSight
 0x0044D890		GetTargetOnLOS
 0x0044DE50		ExplodeItemNode
+
 
 		game/croc.cpp
 
@@ -1529,7 +1530,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004728D0		FindBucket
 0x004729E0		DrawBucket
 0x00472C10		DrawBuckets
-0x00472EE0		CalcTriFaceNormal
+0x00472EE0	+	CalcTriFaceNormal
 0x00472F50		CreateVertexNormals
 
 
@@ -1647,9 +1648,9 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/gamemain.cpp
 
-0x00476EC0		GameMain
+0x00476EC0	+	GameMain
 0x00476FA0		GameInitialise
-0x004770C0		GameClose
+0x004770C0	+	GameClose
 0x00477180		init_water_table
 0x004773F0		GetRandom
 0x00477430		S_SaveGame
