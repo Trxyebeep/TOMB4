@@ -379,6 +379,8 @@
 #define number_spotcams	VAR_U_(0x007F5828, short)
 #define WraithSpeed	VAR_U_(0x004AD6D0, short)
 #define next_locust	VAR_U_(0x004BF2E0, long)
+#define	tiltyoff	VAR_U_(0x007FE20C, long)
+#define	tiltxoff	VAR_U_(0x007FE214, long)
 
 
 
