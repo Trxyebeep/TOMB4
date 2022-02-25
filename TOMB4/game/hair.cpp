@@ -49,10 +49,11 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	PHD_VECTOR pos;
 	SPHERE sphere[6];
 	long* bone;
-	short* rot;
+	short* rot[2];
+	short* frm[2];
 	short* objptr;
 	short* frame;
-	long water, height, size, dist, x, y, z, dx, dy, dz;
+	long frac, rate, water, height, size, dist, x, y, z, dx, dy, dz;
 	short room_num, jerk;
 
 	obj = &objects[LARA];
@@ -60,7 +61,10 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	if (!cutscenething)
 	{
 		if (lara.hit_direction < 0)
+		{
 			frame = GetBestFrame(lara_item);
+			frac = GetFrames(lara_item, frm, &rate); // Interpolate the frames if necessary
+		}
 		else
 		{
 			if (lara.hit_direction == 0)
@@ -95,103 +99,218 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 			frame = anims[jerk].frame_ptr;
 			size = anims[jerk].interpolation >> 8;
 			frame += lara.hit_frame * size;
+			frm[0] = frame;
+			frac = 0;
 		}
 	}
 	else
+	{
 		frame = cutscenething;
+		frm[0] = frame;
+		frac = 0;
+	}
 
 	phd_PushUnitMatrix();
 	phd_mxptr[M03] = lara_item->pos.x_pos << 14;
 	phd_mxptr[M13] = lara_item->pos.y_pos << 14;
 	phd_mxptr[M23] = lara_item->pos.z_pos << 14;
 	phd_RotYXZ(lara_item->pos.y_rot, lara_item->pos.x_rot, lara_item->pos.z_rot);
-	rot = frame + 9;
-	bone = &bones[obj->bone_index];
-	phd_TranslateRel(frame[6], frame[7], frame[8]);
-	gar_RotYXZsuperpack(&rot, 0);
 
-	phd_PushMatrix();
-	objptr = lara.mesh_ptrs[LM_HIPS];
-	phd_TranslateRel(objptr[0], objptr[1], objptr[2]);
-	sphere[0].x = phd_mxptr[M03] >> 14;
-	sphere[0].y = phd_mxptr[M13] >> 14;
-	sphere[0].z = phd_mxptr[M23] >> 14;
-	sphere[0].r = objptr[3];
-	phd_PopMatrix();
-
-	phd_TranslateRel(bone[25], bone[26], bone[27]);
-	gar_RotYXZsuperpack(&rot, 6);
-	phd_RotYXZ(lara.torso_y_rot, lara.torso_x_rot, lara.torso_z_rot);
-
-	phd_PushMatrix();
-	objptr = lara.mesh_ptrs[LM_TORSO];
-	phd_TranslateRel(objptr[0] - 9, objptr[1], objptr[2] + 25);	//repositioned to avoid floating hair
-	sphere[1].x = phd_mxptr[M03] >> 14;
-	sphere[1].y = phd_mxptr[M13] >> 14;
-	sphere[1].z = phd_mxptr[M23] >> 14;
-	sphere[1].r = objptr[3];
-
-	if (gfLevelFlags & GF_YOUNGLARA)
-		sphere[1].r -= (sphere[1].r >> 2) + (sphere[1].r >> 3);
-
-	phd_PopMatrix();
-
-	phd_PushMatrix();
-	phd_TranslateRel(bone[29], bone[30], bone[31]);
-	gar_RotYXZsuperpack(&rot, 0);
-	objptr = lara.mesh_ptrs[LM_RINARM];
-	phd_TranslateRel(objptr[0], objptr[1], objptr[2]);
-	sphere[3].x = phd_mxptr[M03] >> 14;
-	sphere[3].y = phd_mxptr[M13] >> 14;
-	sphere[3].z = phd_mxptr[M23] >> 14;
-	sphere[3].r = 4 * objptr[3] / 3;	//limited rad to avoid floating hair when crawling with the new neck sphere
-	phd_PopMatrix();
-
-	phd_PushMatrix();
-	phd_TranslateRel(bone[41], bone[42], bone[43]);
-	gar_RotYXZsuperpack(&rot, 2);
-	objptr = lara.mesh_ptrs[LM_LINARM];
-	phd_TranslateRel(objptr[0], objptr[1], objptr[2]);
-	sphere[4].x = phd_mxptr[M03] >> 14;
-	sphere[4].y = phd_mxptr[M13] >> 14;
-	sphere[4].z = phd_mxptr[M23] >> 14;
-	sphere[4].r = 4 * objptr[3] / 3;	//limited rad to avoid floating hair when crawling with the new neck sphere
-	phd_PopMatrix();
-	phd_TranslateRel(bone[53], bone[54], bone[55]);
-	gar_RotYXZsuperpack(&rot, 2);
-	phd_RotYXZ(lara.head_y_rot, lara.head_x_rot, lara.head_z_rot);
-
-	phd_PushMatrix();
-	objptr = lara.mesh_ptrs[LM_HEAD];
-	phd_TranslateRel(objptr[0] - 2, objptr[1], objptr[2]);	//repositioned to avoid floating hair
-	sphere[2].x = phd_mxptr[M03] >> 14;
-	sphere[2].y = phd_mxptr[M13] >> 14;
-	sphere[2].z = phd_mxptr[M23] >> 14;
-	sphere[2].r = objptr[3];
-	phd_PopMatrix();
-
-	if (gfLevelFlags & GF_YOUNGLARA)
+	if (frac)
 	{
-		sphere[1].x = (sphere[1].x + sphere[2].x) >> 1;
-		sphere[1].y = (sphere[1].y + sphere[2].y) >> 1;
-		sphere[1].z = (sphere[1].z + sphere[2].z) >> 1;
+		InitInterpolate(frac, rate);
+		rot[0] = frm[0] + 9;
+		rot[1] = frm[1] + 9;
+		bone = &bones[obj->bone_index];
+		phd_TranslateRel_ID(frm[0][6], frm[0][7], frm[0][8], frm[1][6], frm[1][7], frm[1][8]);
+		gar_RotYXZsuperpack_I(&rot[0], &rot[1], 0);
+
+		phd_PushMatrix_I();
+		objptr = lara.mesh_ptrs[LM_HIPS];
+		phd_TranslateRel_I(*objptr, objptr[1], objptr[2]);
+		InterpolateMatrix();
+		sphere[0].x = phd_mxptr[M03] >> 14;
+		sphere[0].y = phd_mxptr[M13] >> 14;
+		sphere[0].z = phd_mxptr[M23] >> 14;
+		sphere[0].r = objptr[3];
+		phd_PopMatrix_I();
+
+		phd_TranslateRel_I(bone[25], bone[26], bone[27]);
+		gar_RotYXZsuperpack_I(&rot[0], &rot[1], 6);
+		phd_RotYXZ_I(lara.torso_y_rot, lara.torso_x_rot, lara.torso_z_rot);
+
+		phd_PushMatrix_I();
+		objptr = lara.mesh_ptrs[LM_TORSO];
+		phd_TranslateRel_I(*objptr - 9, objptr[1], objptr[2] + 25);//repositioned to avoid floaty hair
+		InterpolateMatrix();
+		sphere[1].x = phd_mxptr[M03] >> 14;
+		sphere[1].y = phd_mxptr[M13] >> 14;
+		sphere[1].z = phd_mxptr[M23] >> 14;
+		sphere[1].r = objptr[3];
+
+		if (gfLevelFlags & GF_YOUNGLARA)
+			sphere[1].r -= (sphere[1].r >> 2) + (sphere[1].r >> 3);
+
+		phd_PopMatrix_I();
+
+		phd_PushMatrix_I();
+		phd_TranslateRel_I(bone[29], bone[30], bone[31]);
+		gar_RotYXZsuperpack_I(&rot[0], &rot[1], 0);
+		objptr = lara.mesh_ptrs[LM_RINARM];
+		phd_TranslateRel_I(*objptr, objptr[1], objptr[2]);
+		InterpolateMatrix();
+		sphere[3].x = phd_mxptr[M03] >> 14;
+		sphere[3].y = phd_mxptr[M13] >> 14;
+		sphere[3].z = phd_mxptr[M23] >> 14;
+		sphere[3].r = 4 * objptr[3] / 3;	//limited rad to avoid floating hair when crawling with the new neck sphere
+		phd_PopMatrix_I();
+
+		phd_PushMatrix_I();
+		phd_TranslateRel_I(bone[41], bone[42], bone[43]);
+		gar_RotYXZsuperpack_I(&rot[0], &rot[1], 2);
+		objptr = lara.mesh_ptrs[LM_LINARM];
+		phd_TranslateRel_I(*objptr, objptr[1], objptr[2]);
+		InterpolateMatrix();
+		sphere[4].x = phd_mxptr[M03] >> 14;
+		sphere[4].y = phd_mxptr[M13] >> 14;
+		sphere[4].z = phd_mxptr[M23] >> 14;
+		sphere[4].r = 4 * objptr[3] / 3;	//limited rad to avoid floating hair when crawling with the new neck sphere
+		phd_PopMatrix_I();
+		phd_TranslateRel_I(bone[53], bone[54], bone[55]);
+		gar_RotYXZsuperpack_I(&rot[0], &rot[1], 2);
+		phd_RotYXZ_I(lara.head_y_rot, lara.head_x_rot, lara.head_z_rot);
+
+		phd_PushMatrix_I();
+		objptr = lara.mesh_ptrs[LM_HEAD];
+		phd_TranslateRel_I(*objptr - 2, objptr[1], objptr[2]);//repositioned to avoid floaty hair
+		InterpolateMatrix();
+		sphere[2].x = phd_mxptr[M03] >> 14;
+		sphere[2].y = phd_mxptr[M13] >> 14;
+		sphere[2].z = phd_mxptr[M23] >> 14;
+		sphere[2].r = objptr[3];
+		phd_PopMatrix_I();
+
+		if (gfLevelFlags & GF_YOUNGLARA)
+		{
+			sphere[1].x = (sphere[1].x + sphere[2].x) >> 1;
+			sphere[1].y = (sphere[1].y + sphere[2].y) >> 1;
+			sphere[1].z = (sphere[1].z + sphere[2].z) >> 1;
+		}
+
+		sphere[5].x = (2 * sphere[2].x + sphere[1].x) / 3;//sphere[5] is an extra sphere added between the head and torso sphere to simulate a neck sphere
+		sphere[5].y = (2 * sphere[2].y + sphere[1].y) / 3;
+		sphere[5].z = (2 * sphere[2].z + sphere[1].z) / 3;
+		sphere[5].r = gfLevelFlags & GF_YOUNGLARA ? 0 : 5 * sphere[2].r / 4;
+
+		if (pigtail)
+			phd_TranslateRel_I(44, -48, -50);
+		else
+		{
+			if (gfLevelFlags & GF_YOUNGLARA)
+				phd_TranslateRel_I(-52, -48, -50);
+			else
+				phd_TranslateRel_I(-4, -4, -48);
+		}
+
+		InterpolateMatrix();
+		pos.x = phd_mxptr[M03] >> 14;
+		pos.y = phd_mxptr[M13] >> 14;
+		pos.z = phd_mxptr[M23] >> 14;
+	}
+	else
+	{
+		rot[0] = frm[0] + 9;
+		bone = &bones[obj->bone_index];
+		phd_TranslateRel(frm[0][6], frm[0][7], frm[0][8]);
+		gar_RotYXZsuperpack(&rot[0], 0);
+
+		phd_PushMatrix();
+		objptr = lara.mesh_ptrs[LM_HIPS];
+		phd_TranslateRel(*objptr, objptr[1], objptr[2]);
+		sphere[0].x = phd_mxptr[M03] >> 14;
+		sphere[0].y = phd_mxptr[M13] >> 14;
+		sphere[0].z = phd_mxptr[M23] >> 14;
+		sphere[0].r = objptr[3];
+		phd_PopMatrix();
+
+		phd_TranslateRel(bone[25], bone[26], bone[27]);
+		gar_RotYXZsuperpack(&rot[0], 6);
+		phd_RotYXZ(lara.torso_y_rot, lara.torso_x_rot, lara.torso_z_rot);
+
+		phd_PushMatrix();
+		objptr = lara.mesh_ptrs[LM_TORSO];
+		phd_TranslateRel(*objptr - 9, objptr[1], objptr[2] + 25);//repositioned to avoid floaty hair
+		sphere[1].x = phd_mxptr[M03] >> 14;
+		sphere[1].y = phd_mxptr[M13] >> 14;
+		sphere[1].z = phd_mxptr[M23] >> 14;
+		sphere[1].r = objptr[3];
+
+		if (gfLevelFlags & GF_YOUNGLARA)
+			sphere[1].r -= (sphere[1].r >> 2) + (sphere[1].r >> 3);
+
+		phd_PopMatrix();
+
+		phd_PushMatrix();
+		phd_TranslateRel(bone[29], bone[30], bone[31]);
+		gar_RotYXZsuperpack(&rot[0], 0);
+		objptr = lara.mesh_ptrs[LM_RINARM];
+		phd_TranslateRel(*objptr, objptr[1], objptr[2]);
+		sphere[3].x = phd_mxptr[M03] >> 14;
+		sphere[3].y = phd_mxptr[M13] >> 14;
+		sphere[3].z = phd_mxptr[M23] >> 14;
+		sphere[3].r = 4 * objptr[3] / 3;	//limited rad to avoid floating hair when crawling with the new neck sphere
+		phd_PopMatrix();
+
+		phd_PushMatrix();
+		phd_TranslateRel(bone[41], bone[42], bone[43]);
+		gar_RotYXZsuperpack(&rot[0], 2);
+		objptr = lara.mesh_ptrs[LM_LINARM];
+		phd_TranslateRel(*objptr, objptr[1], objptr[2]);
+		sphere[4].x = phd_mxptr[M03] >> 14;
+		sphere[4].y = phd_mxptr[M13] >> 14;
+		sphere[4].z = phd_mxptr[M23] >> 14;
+		sphere[4].r = 4 * objptr[3] / 3;	//limited rad to avoid floating hair when crawling with the new neck sphere
+		phd_PopMatrix();
+		phd_TranslateRel(bone[53], bone[54], bone[55]);
+		gar_RotYXZsuperpack(&rot[0], 2);
+		phd_RotYXZ(lara.head_y_rot, lara.head_x_rot, lara.head_z_rot);
+
+		phd_PushMatrix();
+		objptr = lara.mesh_ptrs[LM_HEAD];
+		phd_TranslateRel(*objptr - 2, objptr[1], objptr[2]);//repositioned to avoid floaty hair
+		sphere[2].x = phd_mxptr[M03] >> 14;
+		sphere[2].y = phd_mxptr[M13] >> 14;
+		sphere[2].z = phd_mxptr[M23] >> 14;
+		sphere[2].r = objptr[3];
+		phd_PopMatrix();
+
+		if (gfLevelFlags & GF_YOUNGLARA)
+		{
+			sphere[1].x = (sphere[1].x + sphere[2].x) >> 1;
+			sphere[1].y = (sphere[1].y + sphere[2].y) >> 1;
+			sphere[1].z = (sphere[1].z + sphere[2].z) >> 1;
+		}
+
+		sphere[5].x = (2 * sphere[2].x + sphere[1].x) / 3;//sphere[5] is an extra sphere added between the head and torso sphere to simulate a neck sphere
+		sphere[5].y = (2 * sphere[2].y + sphere[1].y) / 3;
+		sphere[5].z = (2 * sphere[2].z + sphere[1].z) / 3;
+		sphere[5].r = gfLevelFlags & GF_YOUNGLARA ? 0 : 5 * sphere[2].r / 4;
+
+		if (pigtail)
+			phd_TranslateRel(44, -48, -50);
+		else
+		{
+			if (gfLevelFlags & GF_YOUNGLARA)
+				phd_TranslateRel(-52, -48, -50);
+			else
+				phd_TranslateRel(-4, -4, -48);
+		}
+
+		pos.x = phd_mxptr[M03] >> 14;
+		pos.y = phd_mxptr[M13] >> 14;
+		pos.z = phd_mxptr[M23] >> 14;
 	}
 
-	sphere[5].x = (2 * sphere[2].x + sphere[1].x) / 3;//sphere[5] is an extra sphere added between the head and torso sphere to simulate a neck sphere
-	sphere[5].y = (2 * sphere[2].y + sphere[1].y) / 3;
-	sphere[5].z = (2 * sphere[2].z + sphere[1].z) / 3;
-	sphere[5].r = gfLevelFlags & GF_YOUNGLARA ? 0 : 5 * sphere[2].r / 4;
-
-	if (pigtail)
-		phd_TranslateRel(44, -48, -50);
-	else if (gfLevelFlags & GF_YOUNGLARA)
-		phd_TranslateRel(-52, -48, -50);
-	else
-		phd_TranslateRel(-4, -4, -48);
-
-	pos.x = phd_mxptr[M03] >> 14;
-	pos.y = phd_mxptr[M13] >> 14;
-	pos.z = phd_mxptr[M23] >> 14;
 	phd_PopMatrix();
 	obj = &objects[HAIR];
 	bone = &bones[obj->bone_index];

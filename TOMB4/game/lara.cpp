@@ -264,85 +264,149 @@ void(*lara_collision_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 };
 
 #ifdef GENERAL_FIXES
-static void TiltHer(ITEM_INFO* item, long rad)
+static void TiltHer(ITEM_INFO* item, long rad, long height)
 {
 	FLOOR_INFO* floor;
-	FLOOR_INFO* floor2;
-	long s, c, nx, nz, h, h2;
+	FVECTOR plane;
+	long wy[4];
+	long yT, wx, wz, cx, cz, x, z, ctx, cty, ctz, tx, ty, tz, dy;
 	short room_number, rotX, rotZ;
 
-	if (!tomb4.crawltilt)
-		return;
-
-	s = (rad * phd_sin(item->pos.y_rot)) >> 14;
-	c = (rad * phd_cos(item->pos.y_rot)) >> 14;
-
-	nx = item->pos.x_pos + s;
-	nz = item->pos.z_pos + c;
+	yT = item->pos.y_pos - height - 162;
 	room_number = item->room_number;
+	floor = GetFloor(item->pos.x_pos, yT, item->pos.z_pos, &room_number);
+	GetHeight(floor, item->pos.x_pos, yT, item->pos.z_pos);
 
-	floor = GetFloor(nx, item->pos.y_pos, nz, &room_number);
-	h = GetHeight(floor, nx, item->pos.y_pos, nz);
-
-	if (ABS(item->pos.y_pos - h) > 512)
-		h = item->pos.y_pos;
-
-	nx = item->pos.x_pos - s;
-	nz = item->pos.z_pos - c;
-	room_number = item->room_number;
-
-	floor2 = GetFloor(nx, item->pos.y_pos, nz, &room_number);
-	h2 = GetHeight(floor2, nx, item->pos.y_pos, nz);
-
-	if (ABS(item->pos.y_pos - h2) > 512)
-		h2 = item->pos.y_pos;
-
-	if (floor == floor2 || ABS(h2 - h) < 256)
+	if (!OnObject)
 	{
-		rotX = (short)phd_atan(rad * 2, h2 - h);
-
-		if (ABS(rotX - item->pos.x_rot) < 546)
-			item->pos.x_rot = rotX;
-		else if (rotX > item->pos.x_rot)
-			item->pos.x_rot += 546;
-		else if (rotX < item->pos.x_rot)
-			item->pos.x_rot -= 546;
+		plane.x = -(float)tiltxoff / 4;
+		plane.y = -(float)tiltyoff / 4;
+	}
+	else
+	{
+		wx = item->pos.x_pos & 0xFFFFFC00 | 0xFF;
+		wz = item->pos.z_pos & 0xFFFFFC00 | 0xFF;
+		room_number = item->room_number;
+		floor = GetFloor(wx, yT, wz, &room_number);
+		wy[0] = GetHeight(floor, wx, yT, wz);
+		wx = item->pos.x_pos & 0xFFFFFC00 | 0x2FF;
+		wz = item->pos.z_pos & 0xFFFFFC00 | 0xFF;
+		room_number = item->room_number;
+		floor = GetFloor(wx, yT, wz, &room_number);
+		wy[1] = GetHeight(floor, wx, yT, wz);
+		wx = item->pos.x_pos & 0xFFFFFC00 | 0xFF;
+		wz = item->pos.z_pos & 0xFFFFFC00 | 0x2FF;
+		room_number = item->room_number;
+		floor = GetFloor(wx, yT, wz, &room_number);
+		wy[2] = GetHeight(floor, wx, yT, wz);
+		plane.x = (float)(wy[1] - wy[0]) / 512;
+		plane.y = (float)(wy[2] - wy[0]) / 512;
 	}
 
-	s = (rad * phd_sin(item->pos.y_rot + 0x4000)) >> 14;
-	c = (rad * phd_cos(item->pos.y_rot + 0x4000)) >> 14;
+	plane.z = item->pos.y_pos - plane.x * item->pos.x_pos - plane.y * item->pos.z_pos;
+	cx = item->pos.x_pos >> 10;
+	cz = item->pos.z_pos >> 10;
 
-	nx = item->pos.x_pos + s;
-	nz = item->pos.z_pos + c;
-	room_number = item->room_number;
-
-	floor = GetFloor(nx, item->pos.y_pos, nz, &room_number);
-	h = GetHeight(floor, nx, item->pos.y_pos, nz);
-
-	if (ABS(item->pos.y_pos - h) > 512)
-		h = item->pos.y_pos;
-
-	nx = item->pos.x_pos - s;
-	nz = item->pos.z_pos - c;
-	room_number = item->room_number;
-
-	floor2 = GetFloor(nx, item->pos.y_pos, nz, &room_number);
-	h2 = GetHeight(floor2, nx, item->pos.y_pos, nz);
-
-	if (ABS(item->pos.y_pos - h2) > 512)
-		h2 = item->pos.y_pos;
-
-	if (ABS(h - h2) < 256)
+	for (int i = 0; i < 4; i++)
 	{
-		rotZ = (short)phd_atan(rad * 2, h - h2);
+		wx = item->pos.x_pos + (rad * phd_sin(item->pos.y_rot + 16384 * i) >> 14);
+		wz = item->pos.z_pos + (rad * phd_cos(item->pos.y_rot + 16384 * i) >> 14);
+		x = wx >> 10;
+		z = wz >> 10;
 
-		if (ABS(rotZ - item->pos.z_rot) < 546)
-			item->pos.z_rot = rotZ;
-		else if (rotZ > item->pos.z_rot)
-			item->pos.z_rot += 546;
-		else if (rotZ < item->pos.z_rot)
-			item->pos.z_rot -= 546;
+		if (x != cx || z != cz)
+		{
+			if (x > cx)
+			{
+				ctx = item->pos.x_pos | 0x3FF;
+				tx = ctx + 1;
+			}
+			else if (x < cx)
+			{
+				ctx = item->pos.x_pos & 0xFFFFFC00;
+				tx = ctx - 1;
+			}
+			else
+			{
+				ctx = item->pos.x_pos & 0xFFFFFC00 | ((item->pos.x_pos & 0x3FF) + (wx & 0x3FF) < 1024 ? 0xFF : 0x2FF);
+				tx = ctx;
+			}
+
+			if (z > cz)
+			{
+				ctz = item->pos.z_pos | 0x3FF;
+				tz = ctz + 1;
+			}
+			else if (z < cz)
+			{
+				ctz = item->pos.z_pos & 0xFFFFFC00;
+				tz = ctz - 1;
+			}
+			else
+			{
+				ctz = item->pos.z_pos & 0xFFFFFC00 | ((item->pos.z_pos & 0x3FF) + (wz & 0x3FF) < 1024 ? 0xFF : 0x2FF);
+				tz = ctz;
+			}
+
+			room_number = item->room_number;
+			floor = GetFloor(ctx, yT, ctz, &room_number);
+			cty = GetHeight(floor, ctx, yT, ctz);
+			room_number = item->room_number;
+			floor = GetFloor(tx, yT, tz, &room_number);
+			ty = GetHeight(floor, tx, yT, tz);
+
+			if (ABS(cty - ty) > 1)
+				wy[i] = (long)(plane.x * wx + plane.y * wz + plane.z);
+			else
+			{
+				room_number = item->room_number;
+				floor = GetFloor(wx, yT, wz, &room_number);
+				wy[i] = GetHeight(floor, wx, yT, wz);
+			}
+		}
+		else
+		{
+			room_number = item->room_number;
+			floor = GetFloor(wx, yT, wz, &room_number);
+			wy[i] = GetHeight(floor, wx, yT, wz);
+		}
 	}
+
+	dy = wy[0] - wy[2];
+	rotX = (short)phd_atan(2 * rad, dy);
+
+	if (dy > 0 && rotX > 0 || dy < 0 && rotX < 0)
+		rotX = -rotX;
+
+	dy = wy[3] - wy[1];
+	rotZ = (short)phd_atan(2 * rad, dy);
+
+	if (dy > 0 && rotZ > 0 || dy < 0 && rotZ < 0)
+		rotZ = -rotZ;
+
+	if (ABS(rotX - item->pos.x_rot) < 546)
+		item->pos.x_rot = rotX;
+	else if (rotX > item->pos.x_rot)
+		item->pos.x_rot += 546;
+	else if (rotX < item->pos.x_rot)
+		item->pos.x_rot -= 546;
+
+	if (item->pos.x_rot > 8192)
+		item->pos.x_rot = 8192;
+	else if (item->pos.x_rot < -8192)
+		item->pos.x_rot = -8192;
+
+	if (ABS(rotZ - item->pos.z_rot) < 546)
+		item->pos.z_rot = rotZ;
+	else if (rotZ > item->pos.z_rot)
+		item->pos.z_rot += 546;
+	else if (rotZ < item->pos.z_rot)
+		item->pos.z_rot -= 546;
+
+	if (item->pos.z_rot > 8192)
+		item->pos.z_rot = 8192;
+	else if (item->pos.z_rot < -8192)
+		item->pos.z_rot = -8192;
 }
 #endif
 
@@ -997,7 +1061,7 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
 
 #ifdef GENERAL_FIXES
-	TiltHer(item, coll->radius);
+	TiltHer(item, 140, 400);
 #endif
 
 	if (LaraFallen(item, coll))
@@ -1158,7 +1222,7 @@ void lara_col_crawl(ITEM_INFO* item, COLL_INFO* coll)
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
 
 #ifdef GENERAL_FIXES
-	TiltHer(item, coll->radius);
+	TiltHer(item, 140, 400);
 #endif
 
 	if (LaraDeflectEdgeDuck(item, coll))
@@ -1237,7 +1301,7 @@ void lara_col_all4turnlr(ITEM_INFO* item, COLL_INFO* coll)
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
 
 #ifdef GENERAL_FIXES
-	TiltHer(item, coll->radius);
+	TiltHer(item, 140, 400);
 #endif
 
 	if (!TestLaraSlide(item, coll) && coll->mid_floor != NO_HEIGHT && coll->mid_floor > -256)
@@ -1297,7 +1361,7 @@ void lara_col_crawlb(ITEM_INFO* item, COLL_INFO* coll)
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
 
 #ifdef GENERAL_FIXES
-	TiltHer(item, coll->radius);
+	TiltHer(item, 140, 400);
 #endif
 
 	if (LaraDeflectEdgeDuck(item, coll))
