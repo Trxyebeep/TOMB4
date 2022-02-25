@@ -95,13 +95,18 @@ void RPC_Init()
 	DiscordEventHandlers handlers;
 
 	memset(&handlers, 0, sizeof(handlers));
-	Discord_Initialize("504081066848681984", &handlers, 1, 0);	//OG TR4 app ID for now
+	Discord_Initialize("946240885866262598", &handlers, 1, 0);
 }
 
 const char* RPC_GetLevelName()
 {
 	if (!gfCurrentLevel)
-		return "In Title";
+	{
+		if (bDoCredits)
+			return "In Credits";
+		else
+			return "In Title";
+	}
 	else
 		return SCRIPT_TEXT(gfLevelNames[gfCurrentLevel]);
 }
@@ -120,6 +125,146 @@ const char* RPC_GetTimer()
 	return buf;
 }
 
+const char* RPC_GetLevelPic()
+{
+	switch (gfCurrentLevel)
+	{
+	case 1:
+		return "angkor";
+		
+	case 2:
+		return "iris";
+
+	case 3:
+		return "seth";
+
+	case 4:
+		return "chamber";
+
+	case 5:
+		return "valley";
+
+	case 6:
+		return "kv5";
+
+	case 7:
+		return "karnak";
+
+	case 8:
+		return "hypostyle";
+
+	case 9:
+		return "lake";
+
+		//10 doesnt exist
+
+	case 11:
+		return "senet";
+
+	case 12:
+		return "guardian";
+
+	case 13:
+		return "train";
+
+	case 14:
+		return "alexandria";
+
+	case 15:
+		return "coastal";
+
+	case 16:
+		return "isis";
+
+	case 17:
+		return "cleopetra";
+
+	case 18:
+		return "catacomb";
+
+	case 19:
+		return "poseidon";
+
+	case 20:
+		return "library";
+
+	case 21:
+		return "demi";
+
+	case 22:
+		return "city";
+
+	case 23:
+		return "trenches";
+
+	case 24:
+		return "tulun";
+
+	case 25:
+		return "bazaar";
+
+	case 26:
+		return "gate";
+
+	case 27:
+		return "citadel";
+
+	case 28:
+		return "sphinx";
+
+		//29 doesn't exist
+
+	case 30:
+		return "under";
+
+	case 31:
+		return "menkaure";
+
+	case 32:
+		return "inmenkaure";
+
+	case 33:
+		return "mastabas";
+
+	case 34:
+		return "great";
+
+	case 35:
+		return "khufu";
+
+	case 36:
+		return "ingreat";
+
+	case 37:
+		return "horusa";
+
+	case 38:
+		return "horusb";
+
+	default:
+		return "default";
+	}
+}
+
+const char* RPC_GetHealthPic()
+{
+	if (lara_item->hit_points > 666)
+		return "green";
+	
+	if (lara_item->hit_points > 333)
+		return "yellow";
+
+	return "red";
+}
+
+const char* RPC_GetHealthPercentage()
+{
+	static char buf[32];
+
+	sprintf(buf, "Health: %i%%", lara_item->hit_points / 10);
+	return buf;
+}
+
 void RPC_Update()
 {
 	DiscordRichPresence RPC;
@@ -127,6 +272,11 @@ void RPC_Update()
 	memset(&RPC, 0, sizeof(RPC));
 
 	RPC.details = RPC_GetLevelName();
+	RPC.largeImageKey = RPC_GetLevelPic();
+	RPC.largeImageText = RPC.details;
+
+	RPC.smallImageKey = RPC_GetHealthPic();
+	RPC.smallImageText = RPC_GetHealthPercentage();
 
 	RPC.state = RPC_GetTimer();
 
