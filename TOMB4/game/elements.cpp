@@ -6,6 +6,11 @@
 #include "draw.h"
 #include "switch.h"
 #include "items.h"
+#include "control.h"
+#include "sound.h"
+#include "../specific/function_stubs.h"
+#include "tomb4fx.h"
+#include "effect2.h"
 
 short ElementPuzzleBounds[12] = { 0, 0, -64, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
@@ -124,8 +129,102 @@ void InitialiseElementPuzzle(short item_number)
 		item->mesh_bits = 0;
 }
 
+void ControlElementPuzzle(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+	long r, g, numTriggers;
+	short itemNos[8];
+	short fade, itemNum;
+
+	item = &items[item_number];
+
+	if (!TriggerActive(item))
+		return;
+
+	if (item->trigger_flags == 1)
+	{
+		SoundEffect(SFX_LOOP_FOR_SMALL_FIRES, &item->pos, SFX_DEFAULT);
+		r = (GetRandomControl() & 0x3F) + 192;
+		g = (GetRandomControl() & 0x1F) + 96;
+
+		if (!item->item_flags[3])
+			fade = 0;
+		else
+		{
+			item->item_flags[3]--;
+			fade = 255 - GetRandomControl() % ((91 - item->item_flags[3]) << 2);
+
+			if (fade < 1)
+				fade = 1;
+
+			if (fade <= 255)
+			{
+				r = (r * fade) >> 8;
+				g = (g * fade) >> 8;
+			}
+		}
+
+		AddFire(item->pos.x_pos, item->pos.y_pos - 620, item->pos.z_pos, 1, item->room_number, fade);
+		TriggerDynamic(item->pos.x_pos, item->pos.y_pos - 768, item->pos.z_pos, 12, r, g, 0);
+	}
+	else if (item->trigger_flags == 3)
+	{
+		if (item->item_flags[1] > 90)
+			SoundEffect(SFX_JOBY_WIND, &item->pos, SFX_DEFAULT);
+
+		if (item->item_flags[1] < 60)
+		{
+			item->item_flags[1]++;
+			return;
+		}
+
+		item->item_flags[0]++;
+
+		if (item->item_flags[0] == 90)
+		{
+			for (numTriggers = GetSwitchTrigger(item, itemNos, 0); numTriggers > 0; numTriggers--)
+			{
+				itemNum = itemNos[numTriggers - 1];
+				item2 = &items[itemNum];
+				AddActiveItem(itemNum);
+				item2->status = ITEM_ACTIVE;
+				item2->flags |= IFL_CODEBITS;
+			}
+
+			KillItem(item_number);
+		}
+		else
+		{
+			for (itemNum = room[item->room_number].item_number; itemNum != NO_ITEM; itemNum = item2->next_item)
+			{
+				item2 = &items[itemNum];
+
+				if (item2->object_number == FLAME_EMITTER2)
+				{
+					if (item->item_flags[0] != 89)
+					{
+						item2->item_flags[3] = 255 - GetRandomControl() % (item->item_flags[0] << 2);
+
+						if (item2->item_flags[3] < 2)
+							item2->item_flags[3] = 2;
+						else
+							continue;
+					}
+
+					RemoveActiveItem(itemNum);
+					item2->status = ITEM_INACTIVE;
+				}
+				else if (item2->object_number == ELEMENT_PUZZLE && item2->trigger_flags == 1 && !item2->item_flags[3])
+					item2->item_flags[3] = 90;
+			}
+		}
+	}
+}
+
 void inject_elements(bool replace)
 {
 	INJECT(0x00454B60, ElementPuzzleCollision, replace);
 	INJECT(0x00454EF0, InitialiseElementPuzzle, replace);
+	INJECT(0x00454F50, ControlElementPuzzle, replace);
 }
