@@ -108,7 +108,24 @@ void ElementPuzzleCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		ObjectCollisionNoBigPush(item_number, l, coll);
 }
 
+void InitialiseElementPuzzle(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (!item->trigger_flags)
+		item->mesh_bits = 80;
+	else if (item->trigger_flags == 1)
+		item->mesh_bits = 65;
+	else if (item->trigger_flags == 2)
+		item->mesh_bits = 68;
+	else
+		item->mesh_bits = 0;
+}
+
 void inject_elements(bool replace)
 {
 	INJECT(0x00454B60, ElementPuzzleCollision, replace);
+	INJECT(0x00454EF0, InitialiseElementPuzzle, replace);
 }

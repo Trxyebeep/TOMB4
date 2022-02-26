@@ -458,7 +458,7 @@ x for functions decompiled but not injected, for one reason or another.
 		game/elements.cpp
 
 0x00454B60	+	ElementPuzzleCollision
-0x00454EF0		InitialiseElementPuzzle
+0x00454EF0	+	InitialiseElementPuzzle
 0x00454F50		ControlElementPuzzle
 
 
