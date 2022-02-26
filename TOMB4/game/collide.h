@@ -13,3 +13,4 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 #define	ItemPushLara	( (long(__cdecl*)(ITEM_INFO*, ITEM_INFO*, COLL_INFO*, long, long)) 0x00447750 )
 #define TestLaraPosition	( (long(__cdecl*)(short*, ITEM_INFO*, ITEM_INFO*)) 0x00447F30 )
 #define ObjectCollision	( (void(__cdecl*)(short, ITEM_INFO*, COLL_INFO*)) 0x004475F0 )
+#define ObjectCollisionNoBigPush	( (void(__cdecl*)(short, ITEM_INFO*, COLL_INFO*)) 0x00447660 )
