@@ -38,6 +38,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "gameover");
 		tomb4.gameover = 1;								//on
 		REG_WriteBool(buf, tomb4.gameover);
+
+		sprintf(buf, "barMode");
+		tomb4.bar_mode = 3;								//PSX
+		REG_WriteLong(buf, tomb4.bar_mode);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -58,6 +62,9 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "gameover");
 		REG_ReadBool(buf, tomb4.gameover, 1);
+
+		sprintf(buf, "barMode");
+		REG_ReadLong(buf, tomb4.bar_mode, 3);
 	}
 
 	CloseRegistry();
@@ -86,6 +93,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "gameover");
 	REG_WriteBool(buf, tomb4.gameover);
+
+	sprintf(buf, "barMode");
+	REG_WriteLong(buf, tomb4.bar_mode);
 
 	CloseRegistry();
 }

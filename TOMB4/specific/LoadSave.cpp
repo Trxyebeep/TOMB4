@@ -20,27 +20,401 @@
 #include "../game/control.h"
 #endif
 
+#ifdef IMPROVED_BARS
+static GouraudBarColourSet healthBarColourSet =
+{
+	{ 64, 96, 128, 96, 64 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 128, 192, 255, 192, 128 },
+	{ 0, 0, 0, 0, 0 }
+};
+
+static GouraudBarColourSet poisonBarColourSet =
+{
+	{ 96, 176, 240, 176, 96 },
+	{ 96, 176, 240, 176, 96 },
+	{ 0, 0, 0, 0, 0 },
+	{ 96, 176, 240, 176, 96 },
+	{ 96, 176, 240, 176, 96 },
+	{ 0, 0, 0, 0, 0 }
+};
+
+static GouraudBarColourSet airBarColourSet =
+{
+	{ 0, 0, 0, 0, 0 },
+	{ 113, 146, 113, 93, 74 },
+	{ 123, 154, 123, 107, 91 },
+	{ 0, 0, 0, 0, 0 },
+	{ 113, 146, 113, 93, 74 },
+	{ 0, 0, 0, 0, 0 }
+};
+
+static GouraudBarColourSet dashBarColourSet =
+{
+	{ 144, 192, 240, 192, 144 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 144, 192, 240, 192, 144 },
+	{ 144, 192, 240, 192, 144 },
+	{ 0, 0, 0, 0, 0 }
+};
+
+static GouraudBarColourSet loadBarColourSet =
+{
+	{ 48, 96, 127, 80, 32 },
+	{ 0, 0, 0, 0, 0 },
+	{ 48, 96, 127, 80, 32 },
+	{ 0, 0, 0, 0, 0 },
+	{ 48, 96, 127, 80, 32 },
+	{ 48, 96, 127, 80, 32 }
+};
+
+static GouraudBarColourSet enemyBarColourSet =
+{
+	{ 128, 192, 255, 192, 128 },
+	{ 64, 96, 128, 96, 64 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 123, 154, 123, 107, 91 },
+	{ 0, 0, 0, 0, 0 }
+};
+
+static void S_DrawGouraudBar(int x, int y, int width, int height, int value, GouraudBarColourSet* colour)
+{
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	float fx, fx2, fy, fy2, fvalue;
+	long r, g, b;
+
+	clipflags[0] = 0;
+	clipflags[1] = 0;
+	clipflags[2] = 0;
+	clipflags[3] = 0;
+	nPolyType = 4;
+	tex.drawtype = 0;
+	tex.tpage = 0;
+	fx = phd_winxmax * 0.0015625F;
+	fy = phd_winymax * 0.0020833334F;
+	fvalue = 0.0099999998F * value;
+	fx2 = width * fvalue;
+	fy2 = height * 0.1666666716F;
+	v[0].specular = 0xFF000000;
+	v[1].specular = 0xFF000000;
+	v[2].specular = 0xFF000000;
+	v[3].specular = 0xFF000000;
+	v[0].sx = x * fx;
+	v[1].sx = x * fx + fx2 * fx;
+	v[2].sx = x * fx;
+	v[3].sx = x * fx + fx2 * fx;
+	v[0].sy = y * fy - fy2 * fy;
+	v[1].sy = y * fy - fy2 * fy;
+	v[2].sy = y * fy;
+	v[3].sy = y * fy;
+	v[0].sz = f_mznear;
+	v[1].sz = f_mznear;
+	v[2].sz = f_mznear;
+	v[3].sz = f_mznear;
+	v[0].rhw = f_mpersp / f_mznear * f_moneopersp;
+	v[1].rhw = f_mpersp / f_mznear * f_moneopersp;
+	v[2].rhw = f_mpersp / f_mznear * f_moneopersp;
+	v[3].rhw = f_mpersp / f_mznear * f_moneopersp;
+
+	v[0].sy += fy2 * fy;
+	v[1].sy += fy2 * fy;
+	v[2].sy += fy2 * fy;
+	v[3].sy += fy2 * fy;
+
+	v[0].color = 0xFF000000;
+	v[1].color = 0xFF000000;
+
+	r = colour->abLeftRed[0];
+	g = colour->abLeftGreen[0];
+	b = colour->abLeftBlue[0];
+	r -= r >> 2;
+	g -= g >> 2;
+	b -= b >> 2;
+	v[2].color = RGBONLY(r, g, b);
+
+	r = (long)((1 - fvalue) * colour->abLeftRed[0] + fvalue * colour->abRightRed[0]);
+	g = (long)((1 - fvalue) * colour->abLeftGreen[0] + fvalue * colour->abRightGreen[0]);
+	b = (long)((1 - fvalue) * colour->abLeftBlue[0] + fvalue * colour->abRightBlue[0]);
+	r -= r >> 2;
+	g -= g >> 2;
+	b -= b >> 2;
+	v[3].color = RGBONLY(r, g, b);
+
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);
+
+	for (int i = 0; i < 4; i++)
+	{
+		v[0].sy += fy2 * fy;
+		v[1].sy += fy2 * fy;
+		v[2].sy += fy2 * fy;
+		v[3].sy += fy2 * fy;
+		v[0].color = RGBONLY(colour->abLeftRed[i], colour->abLeftGreen[i], colour->abLeftBlue[i]);
+		r = (long)((1 - fvalue) * colour->abLeftRed[i] + fvalue * colour->abRightRed[i]);
+		g = (long)((1 - fvalue) * colour->abLeftGreen[i] + fvalue * colour->abRightGreen[i]);
+		b = (long)((1 - fvalue) * colour->abLeftBlue[i] + fvalue * colour->abRightBlue[i]);
+		v[1].color = RGBONLY(r, g, b);
+		v[2].color = RGBONLY(colour->abLeftRed[i + 1], colour->abLeftGreen[i + 1], colour->abLeftBlue[i + 1]);
+		r = (long)((1 - fvalue) * colour->abLeftRed[i + 1] + fvalue * colour->abRightRed[i + 1]);
+		g = (long)((1 - fvalue) * colour->abLeftGreen[i + 1] + fvalue * colour->abRightGreen[i + 1]);
+		b = (long)((1 - fvalue) * colour->abLeftBlue[i + 1] + fvalue * colour->abRightBlue[i + 1]);
+		v[3].color = RGBONLY(r, g, b);
+		AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);
+	}
+
+	v[0].sy += fy2 * fy;
+	v[1].sy += fy2 * fy;
+	v[2].sy += fy2 * fy;
+	v[3].sy += fy2 * fy;
+
+	r = colour->abLeftRed[4];
+	g = colour->abLeftGreen[4];
+	b = colour->abLeftBlue[4];
+	r -= r >> 2;
+	g -= g >> 2;
+	b -= b >> 2;
+	v[0].color = RGBONLY(r, g, b);
+
+	r = (long)((1 - fvalue) * colour->abLeftRed[4] + fvalue * colour->abRightRed[4]);
+	g = (long)((1 - fvalue) * colour->abLeftGreen[4] + fvalue * colour->abRightGreen[4]);
+	b = (long)((1 - fvalue) * colour->abLeftBlue[4] + fvalue * colour->abRightBlue[4]);
+	r -= r >> 2;
+	g -= g >> 2;
+	b -= b >> 2;
+	v[1].color = RGBONLY(r, g, b);
+
+	v[2].color = 0xFF000000;
+	v[3].color = 0xFF000000;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);
+
+	v[0].sx = x * fx - 2;
+	v[1].sx = x * fx + width * fx + 2;
+	v[2].sx = x * fx - 2;
+	v[3].sx = x * fx + width * fx + 2;
+	v[0].sy = y * fy;
+	v[1].sy = y * fy;
+	v[2].sy = y * fy + height * fy;
+	v[3].sy = y * fy + height * fy;
+	v[0].sz = f_mznear + 1;
+	v[1].sz = f_mznear + 1;
+	v[2].sz = f_mznear + 1;
+	v[3].sz = f_mznear + 1;
+	v[0].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[1].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[2].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[3].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[0].color = 0;
+	v[1].color = 0;
+	v[2].color = 0;
+	v[3].color = 0;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//black background
+
+	v[0].sx = x * fx - 3;
+	v[1].sx = x * fx + width * fx + 3;
+	v[2].sx = x * fx - 3;
+	v[3].sx = x * fx + width * fx + 3;
+	v[0].sy = y * fy - 1;
+	v[1].sy = y * fy - 1;
+	v[2].sy = y * fy + height * fy + 1;
+	v[3].sy = y * fy + height * fy + 1;
+	v[0].sz = f_mznear + 2;
+	v[1].sz = f_mznear + 2;
+	v[2].sz = f_mznear + 2;
+	v[3].sz = f_mznear + 2;
+	v[0].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[1].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[2].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[3].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[0].color = 0xFFFFFFFF;
+	v[1].color = 0xFFFFFFFF;
+	v[2].color = 0xFFFFFFFF;
+	v[3].color = 0xFFFFFFFF;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//white border
+}
+
+static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long clr1, long clr2)
+{
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	float fx, fx2, fy, fw, fh, r1, g1, b1, r2, g2, b2, r, g, b, mul;
+	long lr, lg, lb, clr_11, clr_12, clr_21, clr_22;
+
+	clipflags[0] = 0;
+	clipflags[1] = 0;
+	clipflags[2] = 0;
+	clipflags[3] = 0;
+	nPolyType = 4;
+	tex.drawtype = 0;
+	tex.tpage = 0;
+	fx = (float)phd_winxmax * 0.0015625F;
+	fy = (float)phd_winymax * 0.0020833334F;
+	fw = (float)width;
+	fh = (float)(height >> 1);
+	fx2 = (fw * fx) * 0.0099999998F * (float)pos;
+	v[0].specular = 0xFF000000;
+	v[1].specular = 0xFF000000;
+	v[2].specular = 0xFF000000;
+	v[3].specular = 0xFF000000;
+	v[0].sx = (float)x * fx;
+	v[1].sx = ((float)x * fx) + fx2;
+	v[2].sx = (float)x * fx;
+	v[3].sx = ((float)x * fx) + fx2;
+	v[0].sy = (float)y * fy;
+	v[1].sy = (float)y * fy;
+	v[2].sy = ((float)y * fy) + (fh * fy);
+	v[3].sy = ((float)y * fy) + (fh * fy);
+	v[0].sz = f_mznear;
+	v[1].sz = f_mznear;
+	v[2].sz = f_mznear;
+	v[3].sz = f_mznear;
+	v[0].rhw = f_mpersp / f_mznear * f_moneopersp;
+	v[1].rhw = f_mpersp / f_mznear * f_moneopersp;
+	v[2].rhw = f_mpersp / f_mznear * f_moneopersp;
+	v[3].rhw = f_mpersp / f_mznear * f_moneopersp;
+
+	r1 = (float)CLRR(clr1);		//get rgbs
+	g1 = (float)CLRG(clr1);
+	b1 = (float)CLRB(clr1);
+	r2 = (float)CLRR(clr2);
+	g2 = (float)CLRG(clr2);
+	b2 = (float)CLRB(clr2);
+
+	mul = fx2 / (fw * fx);		//mix
+	r = r1 + ((r2 - r1) * mul);
+	g = g1 + ((g2 - g1) * mul);
+	b = b1 + ((b2 - b1) * mul);
+
+	lr = (long)r1;
+	lg = (long)g1;
+	lb = (long)b1;
+	clr_11 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);	//clr1 is taken as is
+	clr_12 = RGBONLY(lr, lg, lb);
+
+	lr = (long)r;
+	lg = (long)g;
+	lb = (long)b;
+	clr_21 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);	//clr2 is the mix
+	clr_22 = RGBONLY(lr, lg, lb);
+
+	v[0].color = clr_11;
+	v[1].color = clr_21;
+	v[2].color = clr_12;
+	v[3].color = clr_22;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//top half
+
+	v[0].color = clr_12;
+	v[1].color = clr_22;
+	v[2].color = clr_11;
+	v[3].color = clr_21;
+	v[0].sy = ((float)y * fy) + (fh * fy);
+	v[1].sy = ((float)y * fy) + (fh * fy);
+	v[2].sy = (fh * fy) + (fh * fy) + ((float)y * fy);
+	v[3].sy = (fh * fy) + (fh * fy) + ((float)y * fy);
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);		//bottom half
+
+	v[0].sx = (float)x * fx;
+	v[1].sx = (fw * fx) + ((float)x * fx);
+	v[2].sx = (float)x * fx;
+	v[3].sx = (fw * fx) + ((float)x * fx);
+	v[0].sy = (float)y * fy;
+	v[1].sy = (float)y * fy;
+	v[2].sy = (fh * fy) + (fh * fy) + ((float)y * fy);
+	v[3].sy = (fh * fy) + (fh * fy) + ((float)y * fy);
+	v[0].sz = f_mznear + 1;
+	v[1].sz = f_mznear + 1;
+	v[2].sz = f_mznear + 1;
+	v[3].sz = f_mznear + 1;
+	v[0].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[1].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[2].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[3].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[0].color = 0;
+	v[1].color = 0;
+	v[2].color = 0;
+	v[3].color = 0;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//black background
+
+	v[0].sx = ((float)x * fx) - 1;
+	v[1].sx = (fw * fx) + ((float)x * fx) + 1;
+	v[2].sx = ((float)x * fx) - 1;
+	v[3].sx = (fw * fx) + ((float)x * fx) + 1;
+	v[0].sy = ((float)y * fy) - 1;
+	v[1].sy = ((float)y * fy) - 1;
+	v[2].sy = (fh * fy) + (fh * fy) + ((float)y * fy) + 1;
+	v[3].sy = (fh * fy) + (fh * fy) + ((float)y * fy) + 1;
+	v[0].sz = f_mznear + 2;
+	v[1].sz = f_mznear + 2;
+	v[2].sz = f_mznear + 2;
+	v[3].sz = f_mznear + 2;
+	v[0].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[1].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[2].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[3].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[0].color = 0xFFFFFFFF;
+	v[1].color = 0xFFFFFFFF;
+	v[2].color = 0xFFFFFFFF;
+	v[3].color = 0xFFFFFFFF;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//white border
+}
+#endif
+
 void S_DrawHealthBar(long pos)
 {
 	if (gfCurrentLevel)
 	{
-		if (lara.poisoned)
-			DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFFFF00);	//yellow
+#ifdef IMPROVED_BARS
+		if (tomb4.bar_mode == 2)
+		{
+			if (lara.poisoned)
+				S_DoTR5Bar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xA00000, 0xA0A000);
+			else
+				S_DoTR5Bar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xA00000, 0x00A000);
+		}
+		else if (tomb4.bar_mode == 3)
+			S_DrawGouraudBar(font_height >> 2, font_height >> 2, 150, 12, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
 		else
-			DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFF0000);	//red
+#endif
+		{
+			if (lara.poisoned)
+				DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFFFF00);	//yellow
+			else
+				DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFF0000);	//red
+		}
 	}
 }
 
 void S_DrawAirBar(long pos)
 {
 	if (gfCurrentLevel)
-		DoBar(490 - (font_height >> 2), (font_height >> 2) + (font_height >> 1), 150, 12, pos, 0xFF000000, 0xFF0000FF);	//blue
+	{
+#ifdef IMPROVED_BARS
+		if (tomb4.bar_mode == 2)
+			S_DoTR5Bar(490 - (font_height >> 2), (font_height >> 2) + (font_height >> 1), 150, 12, pos, 0x0000A0, 0x0050A0);
+		else if (tomb4.bar_mode == 3)
+			S_DrawGouraudBar(490 - (font_height >> 2), (font_height >> 2) + (font_height >> 1), 150, 12, pos, &airBarColourSet);
+		else
+#endif
+			DoBar(490 - (font_height >> 2), (font_height >> 2) + (font_height >> 1), 150, 12, pos, 0xFF000000, 0xFF0000FF);	//blue
+	}
 }
 
 void S_DrawDashBar(long pos)
 {
 	if (gfCurrentLevel)
-		DoBar(490 - (font_height >> 2), font_height >> 2, 150, 12, pos, 0xFF000000, 0xFF00FF00);	//green
+	{
+#ifdef IMPROVED_BARS
+		if (tomb4.bar_mode == 2)
+			S_DoTR5Bar(490 - (font_height >> 2), font_height >> 2, 150, 12, pos, 0xA0A000, 0x00A000);
+		else if (tomb4.bar_mode == 3)
+			S_DrawGouraudBar(490 - (font_height >> 2), font_height >> 2, 150, 12, pos, &dashBarColourSet);
+		else
+#endif
+			DoBar(490 - (font_height >> 2), font_height >> 2, 150, 12, pos, 0xFF000000, 0xFF00FF00);	//green
+	}
 }
 
 void S_InitLoadBar(long maxpos)
@@ -60,7 +434,7 @@ void S_LoadBar()
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 		loadbar_pos += 100 / loadbar_maxpos;
-		DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
+		DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);	//hmmm other bar funcs don't draw anything
 		SortPolyList(SortCount, SortList);
 		RestoreFPCW(FPCW);
 		DrawSortList();
@@ -211,7 +585,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 	char buffer[80];
 	bool changed;
 
-	num = 6;
+	num = 7;
 	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
 	PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 0x1 ? 1 : 2, "FootPrints", 0);
 	PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 0x2 ? 1 : 2, "Shadow mode", 0);
@@ -219,6 +593,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 	PrintString(phd_centerx >> 2, textY + 5 * font_height, selection & 0x8 ? 1 : 2, "Flexible crawling", 0);
 	PrintString(phd_centerx >> 2, textY + 6 * font_height, selection & 0x10 ? 1 : 2, "Fix climb up delay", 0);
 	PrintString(phd_centerx >> 2, textY + 7 * font_height, selection & 0x20 ? 1 : 2, "Gameover menu", 0);
+	PrintString(phd_centerx >> 2, textY + 8 * font_height, selection & 0x40 ? 1 : 2, "Bar mode", 0);
 
 	if (dbinput & IN_FORWARD)
 	{
@@ -264,6 +639,9 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 
 	strcpy(buffer, tomb4.gameover ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), textY + 7 * font_height, selection & 0x20 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.bar_mode == 1 ? "original" : tomb4.bar_mode == 2 ? "TR5" : "PSX");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 8 * font_height, selection & 0x40 ? 1 : 6, buffer, 0);
 
 	changed = 0;
 
@@ -345,6 +723,32 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			tomb4.gameover = !tomb4.gameover;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 6:
+
+		if (dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.bar_mode++;
+
+			if (tomb4.bar_mode > 3)
+				tomb4.bar_mode = 1;
+
+			changed = 1;
+		}
+
+		if (dbinput & IN_LEFT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.bar_mode--;
+
+			if (tomb4.bar_mode < 1)
+				tomb4.bar_mode = 3;
+
 			changed = 1;
 		}
 

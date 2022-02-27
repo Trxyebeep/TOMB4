@@ -1739,6 +1739,18 @@ struct SMOKE_SPARKS
 	uchar mirror;
 };
 
+#ifdef IMPROVED_BARS
+struct GouraudBarColourSet
+{
+	uchar abLeftRed[5];
+	uchar abLeftGreen[5];
+	uchar abLeftBlue[5];
+	uchar abRightRed[5];
+	uchar abRightGreen[5];
+	uchar abRightBlue[5];
+};
+#endif
+
 #ifdef GENERAL_FIXES
 struct tomb4_options	//keep this at the bottom of the file, please
 {
@@ -1748,6 +1760,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool flexible_crawling;
 	bool fix_climb_up_delay;
 	bool gameover;
+	ulong bar_mode;				//1-> original, 2-> TR5, 3-> PSX
 };
 #endif
 #pragma pack(pop)
