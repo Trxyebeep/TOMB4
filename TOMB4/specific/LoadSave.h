@@ -11,6 +11,9 @@ void S_LoadBar();
 void DoBar(long x, long y, long width, long height, long pos, long clr1, long clr2);
 void DoOptions();
 long S_LoadSave(long load_or_save, long mono);
+#ifdef IMPROVED_BARS
+void S_DrawEnemyBar(long pos);
+#endif
 
 #define S_PauseMenu	( (long(__cdecl*)()) 0x0047CC60 )
 #define DoSlider	( (void(__cdecl*)(long, long, long, long, long, long, long, long)) 0x0047AB80 )

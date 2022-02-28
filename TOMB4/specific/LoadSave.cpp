@@ -360,6 +360,38 @@ static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long c
 	v[3].color = 0xFFFFFFFF;
 	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//white border
 }
+
+void S_DrawEnemyBar(long pos)
+{
+	long x, y;
+
+	if (tomb4.bars_pos == 1)//original
+	{
+		x = font_height >> 2;
+		y = (font_height >> 2) + (font_height >> 1);
+	}
+	else if (tomb4.bars_pos == 2)//improved
+	{
+		x = font_height >> 2;
+		y = (font_height >> 2) + (font_height >> 1);
+	}
+	else//PSX
+	{
+		x = 470 - (font_height >> 2);
+
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			y = (font_height >> 1) + (font_height >> 2) + (5 * font_height / 9);
+		else
+			y = (font_height >> 2) + (font_height >> 1) + font_height;
+	}
+
+	if (tomb4.bar_mode == 3)
+		S_DrawGouraudBar(x, y, 150, 12, pos, &enemyBarColourSet);
+	else if (tomb4.bar_mode == 2)
+		S_DoTR5Bar(x, y, 150, 12, pos, 0xA00000, 0xA0A000);
+	else
+		DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFFFFA000);
+}
 #endif
 
 void S_DrawHealthBar(long pos)
@@ -658,7 +690,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 	char buffer[80];
 	bool changed;
 
-	num = 8;
+	num = 9;
 	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
 	PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 0x1 ? 1 : 2, "FootPrints", 0);
 	PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 0x2 ? 1 : 2, "Shadow mode", 0);
@@ -668,6 +700,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 	PrintString(phd_centerx >> 2, textY + 7 * font_height, selection & 0x20 ? 1 : 2, "Gameover menu", 0);
 	PrintString(phd_centerx >> 2, textY + 8 * font_height, selection & 0x40 ? 1 : 2, "Bar mode", 0);
 	PrintString(phd_centerx >> 2, textY + 9 * font_height, selection & 0x80 ? 1 : 2, "Bar positions", 0);
+	PrintString(phd_centerx >> 2, textY + 10 * font_height, selection & 0x100 ? 1 : 2, "Enemy bars", 0);
 
 	if (dbinput & IN_FORWARD)
 	{
@@ -719,6 +752,9 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 
 	strcpy(buffer, tomb4.bars_pos == 1 ? "original" : tomb4.bars_pos == 2 ? "improved" : "PSX");
 	PrintString(phd_centerx + (phd_centerx >> 1), textY + 9 * font_height, selection & 0x80 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.enemy_bars ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 10 * font_height, selection & 0x100 ? 1 : 6, buffer, 0);
 
 	changed = 0;
 
@@ -852,6 +888,17 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 			if (tomb4.bars_pos < 1)
 				tomb4.bars_pos = 3;
 
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 8:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.enemy_bars = !tomb4.enemy_bars;
 			changed = 1;
 		}
 
