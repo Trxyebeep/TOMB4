@@ -1761,6 +1761,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool fix_climb_up_delay;
 	bool gameover;
 	ulong bar_mode;				//1-> original, 2-> TR5, 3-> PSX
+	ulong bars_pos;				//1-> original, 2-> improved, 3-> PSX
 };
 #endif
 #pragma pack(pop)

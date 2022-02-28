@@ -42,6 +42,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "barMode");
 		tomb4.bar_mode = 3;								//PSX
 		REG_WriteLong(buf, tomb4.bar_mode);
+
+		sprintf(buf, "bar_pos");
+		tomb4.bars_pos = 1;								//improved
+		REG_WriteLong(buf, tomb4.bars_pos);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -65,6 +69,9 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "barMode");
 		REG_ReadLong(buf, tomb4.bar_mode, 3);
+
+		sprintf(buf, "bar_pos");
+		REG_ReadLong(buf, tomb4.bars_pos, 1);
 	}
 
 	CloseRegistry();
@@ -96,6 +103,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "barMode");
 	REG_WriteLong(buf, tomb4.bar_mode);
+
+	sprintf(buf, "bar_pos");
+	REG_WriteLong(buf, tomb4.bars_pos);
 
 	CloseRegistry();
 }

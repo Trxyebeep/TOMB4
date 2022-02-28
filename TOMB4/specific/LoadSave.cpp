@@ -364,57 +364,130 @@ static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long c
 
 void S_DrawHealthBar(long pos)
 {
-	if (gfCurrentLevel)
+	if (!gfCurrentLevel)
+		return;
+
+#ifdef GENERAL_FIXES
+	long x, y;
+
+	if (tomb4.bars_pos == 1 || tomb4.bars_pos == 2)//original or improved
 	{
-#ifdef IMPROVED_BARS
-		if (tomb4.bar_mode == 2)
-		{
-			if (lara.poisoned)
-				S_DoTR5Bar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xA00000, 0xA0A000);
-			else
-				S_DoTR5Bar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xA00000, 0x00A000);
-		}
-		else if (tomb4.bar_mode == 3)
-			S_DrawGouraudBar(font_height >> 2, font_height >> 2, 150, 12, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
-		else
-#endif
-		{
-			if (lara.poisoned)
-				DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFFFF00);	//yellow
-			else
-				DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFF0000);	//red
-		}
+		x = font_height >> 2;
+		y = font_height >> 2;
 	}
+	else//PSX
+	{
+		x = 470 - (font_height >> 2);
+		y = font_height >> 2;
+	}
+
+#ifdef IMPROVED_BARS
+	if (tomb4.bar_mode == 2)
+	{
+		if (lara.poisoned)
+			S_DoTR5Bar(x, y, 150, 12, pos, 0xA00000, 0xA0A000);
+		else
+			S_DoTR5Bar(x, y, 150, 12, pos, 0xA00000, 0x00A000);
+	}
+	else if (tomb4.bar_mode == 3)
+		S_DrawGouraudBar(x, y, 150, 12, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
+	else
+#endif
+	{
+		if (lara.poisoned)
+			DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFFFFFF00);	//yellow
+		else
+			DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFFFF0000);	//red
+	}
+#else
+
+	if (lara.poisoned)
+		DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFFFF00);	//yellow
+	else
+		DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFF0000);	//red
+#endif
 }
 
 void S_DrawAirBar(long pos)
 {
-	if (gfCurrentLevel)
+	if (!gfCurrentLevel)
+		return;
+
+#ifdef GENERAL_FIXES
+	long x, y;
+
+	if (tomb4.bars_pos == 1)//original
 	{
-#ifdef IMPROVED_BARS
-		if (tomb4.bar_mode == 2)
-			S_DoTR5Bar(490 - (font_height >> 2), (font_height >> 2) + (font_height >> 1), 150, 12, pos, 0x0000A0, 0x0050A0);
-		else if (tomb4.bar_mode == 3)
-			S_DrawGouraudBar(490 - (font_height >> 2), (font_height >> 2) + (font_height >> 1), 150, 12, pos, &airBarColourSet);
-		else
-#endif
-			DoBar(490 - (font_height >> 2), (font_height >> 2) + (font_height >> 1), 150, 12, pos, 0xFF000000, 0xFF0000FF);	//blue
+		x = 490 - (font_height >> 2);
+		y = (font_height >> 2) + (font_height >> 1);
 	}
+	else if (tomb4.bars_pos == 2)//improved
+	{
+		x = 490 - (font_height >> 2);
+		y = font_height >> 2;
+	}
+	else//PSX
+	{
+		x = 470 - (font_height >> 2);
+
+		if (tomb4.bar_mode == 1)
+			y = (font_height >> 1) + (font_height >> 2);
+		else
+			y = (font_height >> 2) + (font_height / 3);
+	}
+
+#ifdef IMPROVED_BARS
+	if (tomb4.bar_mode == 2)
+		S_DoTR5Bar(x, y, 150, 12, pos, 0x0000A0, 0x0050A0);
+	else if (tomb4.bar_mode == 3)
+		S_DrawGouraudBar(x, y, 150, 12, pos, &airBarColourSet);
+	else
+#endif
+		DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFF0000FF);	//blue
+#else
+	DoBar(490 - (font_height >> 2), (font_height >> 2) + (font_height >> 1), 150, 12, pos, 0xFF000000, 0xFF0000FF);	//blue
+#endif
 }
 
 void S_DrawDashBar(long pos)
 {
-	if (gfCurrentLevel)
+	if (!gfCurrentLevel)
+		return;
+
+#ifdef GENERAL_FIXES
+	long x, y;
+
+	if (tomb4.bars_pos == 1)//original
 	{
-#ifdef IMPROVED_BARS
-		if (tomb4.bar_mode == 2)
-			S_DoTR5Bar(490 - (font_height >> 2), font_height >> 2, 150, 12, pos, 0xA0A000, 0x00A000);
-		else if (tomb4.bar_mode == 3)
-			S_DrawGouraudBar(490 - (font_height >> 2), font_height >> 2, 150, 12, pos, &dashBarColourSet);
-		else
-#endif
-			DoBar(490 - (font_height >> 2), font_height >> 2, 150, 12, pos, 0xFF000000, 0xFF00FF00);	//green
+		x = 490 - (font_height >> 2);
+		y = font_height >> 2;
 	}
+	else if (tomb4.bars_pos == 2)//improved
+	{
+		x = 490 - (font_height >> 2);
+		y = (font_height >> 2) + (font_height >> 1);
+	}
+	else//PSX
+	{
+		x = 470 - (font_height >> 2);
+
+		if (tomb4.bar_mode == 1)
+			y = (font_height >> 2) + font_height;
+		else
+			y = (font_height >> 2) + (font_height / 3) + (font_height / 3);
+	}
+
+#ifdef IMPROVED_BARS
+	if (tomb4.bar_mode == 2)
+		S_DoTR5Bar(x, y, 150, 12, pos, 0xA0A000, 0x00A000);
+	else if (tomb4.bar_mode == 3)
+		S_DrawGouraudBar(x, y, 150, 12, pos, &dashBarColourSet);
+	else
+#endif
+		DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFF00FF00);	//green
+#else
+	DoBar(490 - (font_height >> 2), font_height >> 2, 150, 12, pos, 0xFF000000, 0xFF00FF00);
+#endif
 }
 
 void S_InitLoadBar(long maxpos)
@@ -585,7 +658,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 	char buffer[80];
 	bool changed;
 
-	num = 7;
+	num = 8;
 	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
 	PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 0x1 ? 1 : 2, "FootPrints", 0);
 	PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 0x2 ? 1 : 2, "Shadow mode", 0);
@@ -594,6 +667,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 	PrintString(phd_centerx >> 2, textY + 6 * font_height, selection & 0x10 ? 1 : 2, "Fix climb up delay", 0);
 	PrintString(phd_centerx >> 2, textY + 7 * font_height, selection & 0x20 ? 1 : 2, "Gameover menu", 0);
 	PrintString(phd_centerx >> 2, textY + 8 * font_height, selection & 0x40 ? 1 : 2, "Bar mode", 0);
+	PrintString(phd_centerx >> 2, textY + 9 * font_height, selection & 0x80 ? 1 : 2, "Bar positions", 0);
 
 	if (dbinput & IN_FORWARD)
 	{
@@ -642,6 +716,9 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 
 	strcpy(buffer, tomb4.bar_mode == 1 ? "original" : tomb4.bar_mode == 2 ? "TR5" : "PSX");
 	PrintString(phd_centerx + (phd_centerx >> 1), textY + 8 * font_height, selection & 0x40 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.bars_pos == 1 ? "original" : tomb4.bars_pos == 2 ? "improved" : "PSX");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 9 * font_height, selection & 0x80 ? 1 : 6, buffer, 0);
 
 	changed = 0;
 
@@ -748,6 +825,32 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 
 			if (tomb4.bar_mode < 1)
 				tomb4.bar_mode = 3;
+
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 7:
+
+		if (dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.bars_pos++;
+
+			if (tomb4.bars_pos > 3)
+				tomb4.bars_pos = 1;
+
+			changed = 1;
+		}
+
+		if (dbinput & IN_LEFT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.bars_pos--;
+
+			if (tomb4.bars_pos < 1)
+				tomb4.bars_pos = 3;
 
 			changed = 1;
 		}
