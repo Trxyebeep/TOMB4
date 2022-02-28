@@ -392,6 +392,19 @@ void S_DrawEnemyBar(long pos)
 	else
 		DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFFFFA000);
 }
+
+static void S_DrawHealthBar2(long pos)
+{
+	if (!gfCurrentLevel)
+		return;
+
+	if (tomb4.bar_mode == 3)
+		S_DrawGouraudBar(245, (font_height >> 1) + 32, 150, 12, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
+	else if (tomb4.bar_mode == 2)
+		S_DoTR5Bar(245, (font_height >> 1) + 32, 150, 12, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0xA000);
+	else
+		DoBar(245, font_height + 48, 150, 12, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000);
+}
 #endif
 
 void S_DrawHealthBar(long pos)
@@ -401,6 +414,9 @@ void S_DrawHealthBar(long pos)
 
 #ifdef GENERAL_FIXES
 	long x, y;
+
+	if (BinocularRange)
+		S_DrawHealthBar2(pos);
 
 	if (tomb4.bars_pos == 1 || tomb4.bars_pos == 2)//original or improved
 	{
