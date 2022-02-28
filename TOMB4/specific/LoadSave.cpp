@@ -33,12 +33,12 @@ static GouraudBarColourSet healthBarColourSet =
 
 static GouraudBarColourSet poisonBarColourSet =
 {
-	{ 96, 176, 240, 176, 96 },
-	{ 96, 176, 240, 176, 96 },
+	{ 64, 96, 128, 96, 64 },
 	{ 0, 0, 0, 0, 0 },
-	{ 96, 176, 240, 176, 96 },
-	{ 96, 176, 240, 176, 96 },
-	{ 0, 0, 0, 0, 0 }
+	{ 0, 0, 0, 0, 0 },
+	{ 64, 96, 128, 96, 64 },
+	{ 0, 0, 0, 0, 0 },
+	{ 128, 192, 255, 192, 128 }
 };
 
 static GouraudBarColourSet airBarColourSet =
