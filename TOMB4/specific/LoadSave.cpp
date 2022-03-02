@@ -81,7 +81,7 @@ static GouraudBarColourSet enemyBarColourSet =
 	{ 0, 0, 0, 0, 0 }
 };
 
-static void S_DrawGouraudBar(int x, int y, int width, int height, int value, GouraudBarColourSet* colour)
+static void S_DrawGouraudBar(long x, long y, long width, long height, long value, GouraudBarColourSet* colour)
 {
 	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
@@ -555,7 +555,16 @@ void S_LoadBar()
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 		loadbar_pos += 100 / loadbar_maxpos;
-		DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);	//hmmm other bar funcs don't draw anything
+
+#ifdef IMPROVED_BARS
+		if (tomb4.bar_mode == 3)
+			S_DrawGouraudBar(20, 480 - font_height, 600, 15, (long)loadbar_pos, &loadBarColourSet);
+		else if (tomb4.bar_mode == 2)
+			S_DoTR5Bar(20, 480 - font_height, 600, 15, (long)loadbar_pos, 0xFF7F007F, 0xFF007F7F);
+		else
+#endif
+			DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
+
 		SortPolyList(SortCount, SortList);
 		RestoreFPCW(FPCW);
 		DrawSortList();
