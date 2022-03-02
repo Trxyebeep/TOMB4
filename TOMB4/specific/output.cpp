@@ -12,6 +12,10 @@
 #include "../game/draw.h"
 #include "specificfx.h"
 #include "function_stubs.h"
+#ifdef GENERAL_FIXES
+#include "../game/text.h"
+#include "../game/gameflow.h"
+#endif
 
 void phd_PutPolygons(short* objptr, long clip)	//whore
 {
@@ -450,6 +454,11 @@ void RenderLoadPic(long unused)
 	phd_LookAt(camera.pos.x, camera.pos.y, camera.pos.z, camera.target.x, camera.target.y, camera.target.z, 0);
 	S_InitialisePolyList();
 	RenderIt(camera.pos.room_number);
+
+#ifdef GENERAL_FIXES
+	PrintString((ushort)phd_centerx, ushort(phd_winymax - (font_height << 1)), 5, SCRIPT_TEXT(TXT_LOADING2), 0x8000);
+#endif
+
 	S_OutputPolyList();
 	S_DumpScreen();
 	lara.poisoned = poisoned;
