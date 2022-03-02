@@ -1642,7 +1642,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00476A30		InitialiseFunctionTable
 0x00476AC0		HWBeginScene
 0x00476B10		HWEndScene
-0x00476B30		HWInitialise
+0x00476B30	+	HWInitialise
 0x00476E80	+	SetFogColor
 
 

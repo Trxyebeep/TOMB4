@@ -4,6 +4,7 @@
 void inject_functbl(bool replace);
 
 void SetFogColor(long r, long g, long b);
+void HWInitialise();
 
 #define AddQuadSorted	( *(void(__cdecl**)(D3DTLVERTEX*, short, short, short, short, TEXTURESTRUCT*, long)) 0x00533AD4 )
 #define AddQuadZBuffer	( *(void(__cdecl**)(D3DTLVERTEX*, short, short, short, short, TEXTURESTRUCT*, long)) 0x00533AD8 )
@@ -16,4 +17,3 @@ void SetFogColor(long r, long g, long b);
 #define _NVisible	( (bool(__cdecl*)(D3DTLVERTEX, D3DTLVERTEX, D3DTLVERTEX)) 0x00476990 )
 
 #define InitialiseFunctionTable	( (void(__cdecl*)()) 0x00476A30 )
-#define HWInitialise	( (void(__cdecl*)()) 0x00476B30 )
