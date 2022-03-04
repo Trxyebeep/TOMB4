@@ -1717,7 +1717,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0047D810		CalcVertsColorSplitMMX
 0x0047D900	+	PrelightVerts
 0x0047DA60	+	phd_PutPolygons
-0x0047E8B0		phd_PutPolygonsPickup
+0x0047E8B0	+	phd_PutPolygonsPickup
 0x0047F620		phd_PutPolygonSkyMesh
 0x0047F950	+	_InsertRoom
 0x0047F970		S_DrawPickup
