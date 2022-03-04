@@ -13,6 +13,7 @@ void TriggerFXFogBulb(long x, long y, long z, long FXRad, long density, long r, 
 long IsVolumetric();
 int DistCompare(const void* a, const void* b);
 void InitialiseFogBulbs();
+void OmniEffect(D3DTLVERTEX* v);
 
 #define CalcColorSplit	( (void(__cdecl*)(D3DCOLOR, D3DCOLOR*)) 0x00484A20 )
 #define InitialiseSortList	( (void(__cdecl*)()) 0x00481860 )

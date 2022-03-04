@@ -515,6 +515,80 @@ void InitialiseFogBulbs()
 	}
 }
 
+void OmniEffect(D3DTLVERTEX* v)
+{
+	FOGBULB_STRUCT* FogBulb;
+	FVECTOR pos;
+	FVECTOR dP;
+	FVECTOR dV;
+	float val, val2;
+	long r, g, b, lVal;
+
+	for (int i = 0; i < 5; i++)
+	{
+		FogBulb = &FXFogBulbs[i];
+
+		if (FogBulb->active && FogBulb->inRange)
+		{
+			pos.x = v->tu;
+			pos.y = v->tv;
+			pos.z = v->sz;
+
+			if (FogBulb->pos.z < pos.z)
+			{
+				pos.x *= FogBulb->dist * (1 / v->sz);
+				pos.y *= FogBulb->dist * (1 / v->sz);
+				pos.z *= FogBulb->dist * (1 / v->sz);
+			}
+
+			dP.x = pos.x - FogBulb->pos.x;
+			dP.y = pos.y - FogBulb->pos.y;
+			dP.z = pos.z - FogBulb->pos.z;
+			dV.x = FogBulb->vec.x - FogBulb->pos.x;
+			dV.y = FogBulb->vec.y - FogBulb->pos.y;
+			dV.z = FogBulb->vec.z - FogBulb->pos.z;
+			val = SQUARE(dV.x) + SQUARE(dV.y) + SQUARE(dV.z);
+
+			if (val)
+			{
+				val2 = (dP.x * dV.x + dP.y * dV.y + dP.z * dV.z) / val;
+
+				if (val2 >= -1)
+				{
+					if (val2 > 0)
+					{
+						dP.x -= val2 * dV.x;
+						dP.y -= val2 * dV.y;
+						dP.z -= val2 * dV.z;
+					}
+
+					val = SQUARE(dP.x) + SQUARE(dP.y) + SQUARE(dP.z);
+
+					if (val && val < FogBulb->sqrad)
+					{
+						val *= FogBulb->inv_sqrad * FogBulb->density;
+						lVal = (long)val;
+						r = CLRR(v->specular) + (((FogBulb->density - lVal) * FogBulb->r) >> 8);
+						g = CLRG(v->specular) + (((FogBulb->density - lVal) * FogBulb->g) >> 8);
+						b = CLRB(v->specular) + (((FogBulb->density - lVal) * FogBulb->b) >> 8);
+
+						if (r > 255)
+							r = 255;
+
+						if (g > 255)
+							g = 255;
+
+						if (b > 255)
+							b = 255;
+
+						v->specular = b | v->specular & 0xFF000000 | ((g | ((r | (r << 8)) << 8)) << 8);
+					}
+				}
+			}
+		}
+	}
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -527,4 +601,5 @@ void inject_polyinsert(bool replace)
 	INJECT(0x00481AD0, IsVolumetric, replace);
 	INJECT(0x00481D20, DistCompare, replace);
 	INJECT(0x00481DF0, InitialiseFogBulbs, replace);
+	INJECT(0x00481E60, OmniEffect, replace);
 }
