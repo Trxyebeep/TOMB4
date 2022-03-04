@@ -136,7 +136,6 @@
 #define ScreenFading	VAR_U_(0x004BF37C, short)
 #define bDoCredits	VAR_U_(0x004BF669, char)
 #define last_target	VAR_U_(0x007FE8A0, GAME_VECTOR)
-#define CurrentFog	VAR_U_(0x00533AEC, long)
 #define bLaraInWater	VAR_U_(0x0080ECD0, char)
 #define bLaraUnderWater	VAR_U_(0x00536F14, long)
 #define MusicVolume	VAR_U_(0x004B38AC, long)
@@ -214,7 +213,7 @@
 #define IM_rate	VAR_U_(0x007FE120, long)
 #define IM_frac	VAR_U_(0x007FDF54, long)
 #define IMptr	VAR_U_(0x007FE124, long*)
-#define NumLevelFogBulbs	VAR_U_(0x0052A348, long)
+
 #define StatueItem	VAR_U_(0x007F4FA8, ITEM_INFO*)
 #define compass_needle_rot	VAR_U_(0x007FEA50, long)
 #define examine_mode	VAR_U_(0x004BF3CC, short)
@@ -309,7 +308,6 @@
 #define SkyPos	VAR_U_(0x007FE128, short)
 #define SkyPos2	VAR_U_(0x007FDF5E, short)
 #define LaserSightActive	VAR_U_(0x004BF37E, char)
-#define GlobalFogOff	VAR_U_(0x004BF370, long)
 #define DoFade	VAR_U_(0x00672E60, long)
 #define f_a	VAR_U_(0x00753C34, float)
 #define f_b	VAR_U_(0x00753C38, float)
@@ -430,7 +428,6 @@
 #define IMstack	ARRAY_(0x007FD320, long, [768])
 #define vert_wibble_table	ARRAY_(0x00535520, float, [32])
 #define WaterTable	ARRAY_(0x00533B1C, WATERTAB, [22][64])
-#define FogBulbs	ARRAY_(0x0052A350, FOGBULB_STRUCT, [20])
 #define no_rotation	ARRAY_(0x004BF630, short, [12])
 #define rings	ARRAY_(0x007FEA20, RINGME*, [2])
 #define options_table	ARRAY_(0x004AE9BC, short, [120])
@@ -451,7 +448,6 @@
 #define Drips	ARRAY_(0x00800DC0, DRIP_STRUCT, [32])
 #define GlobalCollisionBounds	ARRAY_(0x007FE7F0, short, [6])
 #define Slist	ARRAY_(0x007F6EE0, SPHERE, [34])
-#define FogTableColor	ARRAY_(0x004ADE1C, long, [28])
 #define SenetPieceNumbers	ARRAY_(0x004BF400, short, [6])
 #define SenetBoard	ARRAY_(0x007FE340, char, [17])
 #define ActiveSenetPieces	ARRAY_(0x007FE158, char, [6])
@@ -476,6 +472,19 @@
 #define rooms_around_the_bike	ARRAY_(0x007F5020, short, [22])
 #define BikeCollideStaticBounds	ARRAY_(0x004BFC28, long, [6])		//bike bounds used to collide with statics
 #define CollidedStaticBikeBounds	ARRAY_(0x004BFC0C, long, [6])	//the bounds of the static the bike is trying to collide with
+
+/*Fog stuff*/
+#define NumFXFogBulbs	VAR_U_(0x00670CB8, long)
+#define NumActiveFogBulbs	VAR_U_(0x00670CAC, long)
+#define NumFogBulbsInRange	VAR_U_(0x00670CB4, long)
+#define NumLevelFogBulbs	VAR_U_(0x0052A348, long)
+#define GlobalFogOff	VAR_U_(0x004BF370, long)
+#define CurrentFog	VAR_U_(0x00533AEC, long)
+
+#define FogBulbs	ARRAY_(0x0052A350, FOGBULB_STRUCT, [20])
+#define FXFogBulbs	ARRAY_(0x00660AD0, FOGBULB_STRUCT, [5])
+#define ActiveFogBulbs	ARRAY_(0x00670C94, FOGBULB_STRUCT*, [5])
+#define FogTableColor	ARRAY_(0x004ADE1C, long, [28])
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1

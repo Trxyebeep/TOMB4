@@ -2,6 +2,10 @@
 #include "polyinsert.h"
 #include "dxshell.h"
 #include "drawroom.h"
+#include "output.h"
+#include "d3dmatrix.h"
+#include "function_stubs.h"
+#include "../game/tomb4fx.h"
 
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
 
@@ -304,8 +308,223 @@ void DrawSortList()
 	InitBuckets();
 }
 
+void CreateFogPos(FOGBULB_STRUCT* FogBulb)
+{
+	FVECTOR d;
+	long* mx;
+	float dist;
+	short bounds[6];
+
+	if (GlobalFogOff)
+		FogBulb->inRange = 0;
+	else
+	{
+		d.x = FogBulb->WorldPos.x - camera.pos.x;
+		d.y = FogBulb->WorldPos.y - camera.pos.y;
+		d.z = FogBulb->WorldPos.z - camera.pos.z;
+		dist = SQUARE(d.x) + SQUARE(d.y) + SQUARE(d.z);
+
+		if (dist > 0x19000000)
+			FogBulb->inRange = 0;
+		else
+		{
+			FogBulb->inRange = 1;
+			bounds[0] = short(FogBulb->WorldPos.x - camera.pos.x + FogBulb->rad);
+			bounds[1] = short(FogBulb->WorldPos.x - camera.pos.x - FogBulb->rad);
+			bounds[2] = short(FogBulb->WorldPos.y - camera.pos.y + FogBulb->rad);
+			bounds[3] = short(FogBulb->WorldPos.y - camera.pos.y - FogBulb->rad);
+			bounds[4] = short(FogBulb->WorldPos.z - camera.pos.z + FogBulb->rad);
+			bounds[5] = short(FogBulb->WorldPos.z - camera.pos.z - FogBulb->rad);
+			mx = phd_mxptr;
+			phd_mxptr = w2v_matrix;
+
+			if (S_GetObjectBounds(bounds))
+				NumFogBulbsInRange++;
+			else
+				FogBulb->inRange = 0;
+
+			phd_mxptr = mx;
+
+			if (FogBulb->inRange)
+			{
+				FogBulb->vec.x = FogBulb->WorldPos.x - camera.pos.x;
+				FogBulb->vec.y = FogBulb->WorldPos.y - camera.pos.y;
+				FogBulb->vec.z = FogBulb->WorldPos.z - camera.pos.z;
+				SetD3DMatrix(&D3DMView, w2v_matrix);
+				mD3DTransform(&FogBulb->vec, &D3DMView);
+				FogBulb->pos.x = FogBulb->vec.x;
+				FogBulb->pos.y = FogBulb->vec.y;
+				FogBulb->pos.z = FogBulb->vec.z;
+				D3DNormalise((D3DVECTOR*)&FogBulb->vec);
+				FogBulb->vec.x = FogBulb->rad * FogBulb->vec.x + FogBulb->pos.x;
+				FogBulb->vec.y = FogBulb->rad * FogBulb->vec.y + FogBulb->pos.y;
+				FogBulb->vec.z = FogBulb->rad * FogBulb->vec.z + FogBulb->pos.z;
+				FogBulb->dist = sqrt(SQUARE(FogBulb->pos.x) + SQUARE(FogBulb->pos.y) + SQUARE(FogBulb->pos.z));
+			}
+		}
+	}
+}
+
+void ControlFXBulb(FOGBULB_STRUCT* FogBulb)
+{
+	if (FogBulb->timer > 0)
+	{
+		FogBulb->timer--;
+
+		FogBulb->rad += (GetRandomDraw() - 0x100) & 0x1FF;
+
+		if (FogBulb->rad > FogBulb->FXRad)
+			FogBulb->rad = float(FogBulb->FXRad + (GetRandomDraw() & 0xFF));
+	}
+	else
+	{
+		FogBulb->timer--;
+
+		if (FogBulb->timer < -30)
+			FogBulb->timer = 0;
+
+		FogBulb->rad -= 255;
+
+		if (FogBulb->rad < 0)
+		{
+			FogBulb->rad = 0;
+			FogBulb->active = 0;
+		}
+	}
+
+	TriggerFlashSmoke((long)FogBulb->WorldPos.x, (long)FogBulb->WorldPos.y, (long)FogBulb->WorldPos.z, FogBulb->room_number);
+	TriggerFlashSmoke((long)FogBulb->WorldPos.x, (long)FogBulb->WorldPos.y, (long)FogBulb->WorldPos.z, FogBulb->room_number);
+	FogBulb->sqrad = SQUARE(FogBulb->rad);
+	FogBulb->inv_sqrad = 1.0F / FogBulb->sqrad;
+}
+
+void CreateFXBulbs()
+{
+	FOGBULB_STRUCT* FogBulb;
+
+	NumFXFogBulbs = 0;
+
+	for (int i = 0; i < 5; i++)
+	{
+		FogBulb = &FXFogBulbs[i];
+
+		if (FogBulb->active)
+		{
+			CreateFogPos(FogBulb);
+			ControlFXBulb(FogBulb);
+			NumFXFogBulbs++;
+		}
+	}
+}
+
+void ClearFXFogBulbs()
+{
+	for (int i = 0; i < 5; i++)
+		FXFogBulbs[i].active = 0;
+
+	NumFXFogBulbs = 0;
+}
+
+void TriggerFXFogBulb(long x, long y, long z, long FXRad, long density, long r, long g, long b, long room_number)
+{
+	FOGBULB_STRUCT* FogBulb;
+	long num;
+
+	num = 0;
+
+	while (FXFogBulbs[num].active)
+	{
+		num++;
+
+		if (num > 4)
+			return;
+	}
+
+	FogBulb = &FXFogBulbs[num];
+	FogBulb->inRange = 1;
+	FogBulb->density = density;
+	FogBulb->WorldPos.x = (float)x;
+	FogBulb->WorldPos.y = (float)y;
+	FogBulb->WorldPos.z = (float)z;
+	FogBulb->rad = 0;
+	FogBulb->sqrad = 0;
+	FogBulb->inv_sqrad = 1 / FogBulb->sqrad;	//how does this not crash
+	FogBulb->timer = 50;
+	FogBulb->active = 1;
+	FogBulb->FXRad = FXRad;
+	FogBulb->r = r;
+	FogBulb->g = g;
+	FogBulb->b = b;
+	FogBulb->room_number = room_number;
+	CreateFogPos(FogBulb);
+	NumFXFogBulbs++;
+}
+
+long IsVolumetric()
+{
+	return App.Volumetric;
+}
+
+int DistCompare(const void* a, const void* b)
+{
+	FOGBULB_STRUCT* bulbA;
+	FOGBULB_STRUCT* bulbB;
+	FVECTOR dA;
+	FVECTOR dB;
+
+	bulbA = (FOGBULB_STRUCT*)a;
+	bulbB = (FOGBULB_STRUCT*)b;
+	dA.x = bulbA->WorldPos.x - camera.pos.x;
+	dA.y = bulbA->WorldPos.y - camera.pos.y;
+	dA.z = bulbA->WorldPos.z - camera.pos.z;
+	dB.x = bulbB->WorldPos.x - camera.pos.x;
+	dB.y = bulbB->WorldPos.y - camera.pos.y;
+	dB.z = bulbB->WorldPos.z - camera.pos.z;
+	bulbA->dist = SQUARE(dA.x) + SQUARE(dA.y) + SQUARE(dA.z);
+	bulbB->dist = SQUARE(dB.x) + SQUARE(dB.y) + SQUARE(dB.z);
+
+	if (bulbA->dist > bulbB->dist)
+		return 1;
+
+	if (bulbA->dist < bulbB->dist)
+		return -1;
+
+	return 0;
+}
+
+void InitialiseFogBulbs()
+{
+	FOGBULB_STRUCT* FogBulb;
+
+	NumActiveFogBulbs = 0;
+	qsort(&FogBulbs, NumLevelFogBulbs, sizeof(FOGBULB_STRUCT), DistCompare);
+
+	for (int i = 0; i < NumLevelFogBulbs; i++)
+	{
+		FogBulb = &FogBulbs[i];
+		CreateFogPos(FogBulb);
+
+		if (FogBulb->inRange)
+		{
+			ActiveFogBulbs[NumActiveFogBulbs] = FogBulb;
+			NumActiveFogBulbs++;
+
+			if (NumActiveFogBulbs >= 5)
+				return;
+		}
+	}
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
 	INJECT(0x00480A50, DrawSortList, replace);
+	INJECT(0x00481B50, CreateFogPos, replace);
+	INJECT(0x004818C0, ControlFXBulb, replace);
+	INJECT(0x004819B0, CreateFXBulbs, replace);
+	INJECT(0x004818A0, ClearFXFogBulbs, replace);
+	INJECT(0x004819F0, TriggerFXFogBulb, replace);
+	INJECT(0x00481AD0, IsVolumetric, replace);
+	INJECT(0x00481D20, DistCompare, replace);
+	INJECT(0x00481DF0, InitialiseFogBulbs, replace);
 }
