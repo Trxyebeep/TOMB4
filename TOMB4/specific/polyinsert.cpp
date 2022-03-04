@@ -589,6 +589,93 @@ void OmniEffect(D3DTLVERTEX* v)
 	}
 }
 
+void OmniFog(D3DTLVERTEX* v)
+{
+	FOGBULB_STRUCT* FogBulb;
+	FVECTOR pos;
+	FVECTOR dP;
+	FVECTOR dV;
+	float val, val2;
+	long s, r, g, b, lVal;
+
+	if (InventoryActive || nPolyType == 6 || gfLevelFlags & GF_TRAIN)
+		return;
+
+	s = (v->specular & 0xFF000000) >> 24;
+
+	if (gfCurrentLevel != 5 && gfCurrentLevel != 6 && s != 255)
+	{
+		v->specular |= 0xFF000000;
+		r = (CLRR(v->color) * s) >> 8;
+		g = (CLRG(v->color) * s) >> 8;
+		b = (CLRB(v->color) * s) >> 8;
+		v->color = RGBA(r, g, b, 0xFF);
+
+		if (!(v->color & 0xFFFFFF))
+			return;
+	}
+
+	OmniEffect(v);
+
+	if (NumFogBulbsInRange && NumActiveFogBulbs)
+	{
+		for (int i = 0; i < NumActiveFogBulbs; i++)
+		{
+			FogBulb = ActiveFogBulbs[i];
+
+			if (FogBulb->inRange)
+			{
+				pos.x = v->tu;
+				pos.y = v->tv;
+				pos.z = v->sz;
+
+				if (FogBulb->pos.z < pos.z)
+				{
+					pos.x *= FogBulb->dist * (1 / v->sz);
+					pos.y *= FogBulb->dist * (1 / v->sz);
+					pos.z *= FogBulb->dist * (1 / v->sz);
+				}
+
+				dP.x = pos.x - FogBulb->pos.x;
+				dP.y = pos.y - FogBulb->pos.y;
+				dP.z = pos.z - FogBulb->pos.z;
+				dV.x = FogBulb->vec.x - FogBulb->pos.x;
+				dV.y = FogBulb->vec.y - FogBulb->pos.y;
+				dV.z = FogBulb->vec.z - FogBulb->pos.z;
+				val = SQUARE(dV.x) + SQUARE(dV.y) + SQUARE(dV.z);
+
+				if (val)
+				{
+					val2 = (dP.x * dV.x + dP.y * dV.y + dP.z * dV.z) / val;
+
+					if (val2 >= -1)
+					{
+						if (val2 > 0)
+						{
+							dP.x -= val2 * dV.x;
+							dP.y -= val2 * dV.y;
+							dP.z -= val2 * dV.z;
+						}
+
+						val = SQUARE(dP.x) + SQUARE(dP.y) + SQUARE(dP.z);
+
+						if (val && val < FogBulb->sqrad)
+						{
+							val *= FogBulb->inv_sqrad * FogBulb->density;
+							lVal = (long)val + (v->specular >> 24) - FogBulb->density;
+
+							if (lVal < 0)
+								lVal = 0;
+
+							v->specular = (lVal << 24) | v->specular & 0xFFFFFF;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -602,4 +689,5 @@ void inject_polyinsert(bool replace)
 	INJECT(0x00481D20, DistCompare, replace);
 	INJECT(0x00481DF0, InitialiseFogBulbs, replace);
 	INJECT(0x00481E60, OmniEffect, replace);
+	INJECT(0x004820C0, OmniFog, replace);
 }
