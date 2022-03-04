@@ -297,7 +297,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 	if (!shagflag)
 		phd_TranslateRel(frmptr[6], frmptr[7], frmptr[8]);
 
-	rotation1 = &frmptr[9];
+	rotation1 = frmptr + 9;
 	gar_RotYXZsuperpack(&rotation1, 0);
 
 	if (item->mesh_bits & 1)
@@ -409,7 +409,11 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 				else
 					shade <<= 1;
 
-				GlobalAlpha = shade << 24;
+#ifdef GENERAL_FIXES
+				GlobalAlpha = shade << 24;	//idiots
+#else
+				GlobalAlpha = shade << 25;
+#endif
 				phd_PutPolygonsPickup(*meshpp, (float)xoffset, (float)yoffset, pcbright);
 				GlobalAlpha = alpha;
 			}
