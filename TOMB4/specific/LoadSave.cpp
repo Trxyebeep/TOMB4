@@ -1442,6 +1442,43 @@ void DoOptions()
 		}
 	}
 }
+
+void DoStatScreen()
+{
+	long sec, days, hours, min;
+	ushort y;
+	char buf[40];
+
+	y = phd_centery - (font_height << 2);
+	PrintString(phd_centerx, y, 6, SCRIPT_TEXT(TXT_Statistics), 0x8000u);
+	PrintString(phd_centerx, y + 2 * font_height, 2, SCRIPT_TEXT(gfLevelNames[gfCurrentLevel]), 0x8000u);
+	PrintString(phd_centerx >> 2, y + 3 * font_height, 2, SCRIPT_TEXT(TXT_Time_Taken), 0);
+	PrintString(phd_centerx >> 2, y + 4 * font_height, 2, SCRIPT_TEXT(TXT_Distance_Travelled), 0);
+	PrintString(phd_centerx >> 2, y + 5 * font_height, 2, SCRIPT_TEXT(TXT_Ammo_Used), 0);
+	PrintString(phd_centerx >> 2, y + 6 * font_height, 2, SCRIPT_TEXT(TXT_Health_Packs_Used), 0);
+	PrintString(phd_centerx >> 2, y + 7 * font_height, 2, SCRIPT_TEXT(TXT_Secrets_Found), 0);
+
+	sec = GameTimer / 30;
+	days = sec / 86400;
+	hours = (sec % 86400) / 3600;
+	min = (sec / 60) % 60;
+	sec = (sec % 60);
+
+	sprintf(buf, "%02d:%02d:%02d", (days * 24) + hours, min, sec);
+	PrintString(phd_centerx + (phd_centerx >> 2), y + 3 * font_height, 6, buf, 0);
+
+	sprintf(buf, "%dm", savegame.Game.Distance / 419);
+	PrintString(phd_centerx + (phd_centerx >> 2), y + 4 * font_height, 6, buf, 0);
+
+	sprintf(buf, "%d", savegame.Game.AmmoUsed);
+	PrintString(phd_centerx + (phd_centerx >> 2), y + 5 * font_height, 6, buf, 0);
+
+	sprintf(buf, "%d", savegame.Game.HealthUsed);
+	PrintString(phd_centerx + (phd_centerx >> 2), y + 6 * font_height, 6, buf, 0);
+
+	sprintf(buf, "%d / 70", savegame.Game.Secrets);
+	PrintString(phd_centerx + (phd_centerx >> 2), y + 7 * font_height, 6, buf, 0);
+}
 #pragma warning(pop)
 
 long S_LoadSave(long load_or_save, long mono)
@@ -1529,4 +1566,5 @@ void inject_loadsave(bool replace)
 	INJECT(0x0047CE10, DoBar, replace);
 	INJECT(0x0047B170, DoOptions, replace);
 	INJECT(0x0047CD20, S_LoadSave, replace);
+	INJECT(0x0047C6B0, DoStatScreen, replace);
 }

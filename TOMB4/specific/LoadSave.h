@@ -14,6 +14,7 @@ long S_LoadSave(long load_or_save, long mono);
 #ifdef IMPROVED_BARS
 void S_DrawEnemyBar(long pos);
 #endif
+void DoStatScreen();
 
 #define S_PauseMenu	( (long(__cdecl*)()) 0x0047CC60 )
 #define DoSlider	( (void(__cdecl*)(long, long, long, long, long, long, long, long)) 0x0047AB80 )
