@@ -16,12 +16,12 @@ void S_DrawEnemyBar(long pos);
 #endif
 void DoStatScreen();
 void S_DrawTile(long x, long y, long w, long h, IDirect3DTexture2* t, long tU, long tV, long tW, long tH, long c0, long c1, long c2, long c3);
+void S_DisplayMonoScreen();
 
 #define S_PauseMenu	( (long(__cdecl*)()) 0x0047CC60 )
 #define DoSlider	( (void(__cdecl*)(long, long, long, long, long, long, long, long)) 0x0047AB80 )
 #define CheckKeyConflicts	( (void(__cdecl*)()) 0x0047B130 )
 #define CreateMonoScreen	( (void(__cdecl*)()) 0x00479F20 )
-#define S_DisplayMonoScreen	( (void(__cdecl*)()) 0x0047A500 )
 #define FreeMonoScreen	( (void(__cdecl*)()) 0x00479F40 )
 #define GetSaveLoadFiles	( (void(__cdecl*)()) 0x0047A6F0 )
 #define DoLoadSave	( (long(__cdecl*)(long)) 0x0047A880 )

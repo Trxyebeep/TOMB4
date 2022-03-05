@@ -21,6 +21,9 @@
 #include "../game/control.h"
 #endif
 
+static long MonoScreenX[4] = { 0, 256, 512, 640 };
+static long MonoScreenY[3] = { 0, 256, 480 };
+
 #ifdef IMPROVED_BARS
 static GouraudBarColourSet healthBarColourSet =
 {
@@ -1622,6 +1625,27 @@ void S_DrawTile(long x, long y, long w, long h, IDirect3DTexture2* t, long tU, l
 	}
 }
 
+void S_DisplayMonoScreen()
+{
+	long x[4];
+	long y[4];
+
+	for (int i = 0; i < 3; i++)
+	{
+		x[i] = phd_winxmin + phd_winwidth * MonoScreenX[i] / 640;
+		y[i] = phd_winymin + phd_winheight * MonoScreenY[i] / 480;
+	}
+
+	x[3] = phd_winxmin + phd_winwidth * MonoScreenX[3] / 640;
+	RestoreFPCW(FPCW);
+	S_DrawTile(x[0], y[0], x[1] - x[0], y[1] - y[0], MonoScreen[0].tex, 0, 0, 256, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+	S_DrawTile(x[1], y[0], x[2] - x[1], y[1] - y[0], MonoScreen[1].tex, 0, 0, 256, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+	S_DrawTile(x[2], y[0], x[3] - x[2], y[1] - y[0], MonoScreen[2].tex, 0, 0, 128, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+	S_DrawTile(x[0], y[1], x[1] - x[0], y[2] - y[1], MonoScreen[3].tex, 0, 0, 256, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+	S_DrawTile(x[1], y[1], x[2] - x[1], y[2] - y[1], MonoScreen[4].tex, 0, 0, 256, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+	S_DrawTile(x[2], y[1], x[3] - x[2], y[2] - y[1], MonoScreen[2].tex, 128, 0, 128, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+}
+
 void inject_loadsave(bool replace)
 {
 	INJECT(0x0047D460, S_DrawHealthBar, replace);
@@ -1634,4 +1658,5 @@ void inject_loadsave(bool replace)
 	INJECT(0x0047CD20, S_LoadSave, replace);
 	INJECT(0x0047C6B0, DoStatScreen, replace);
 	INJECT(0x0047A220, S_DrawTile, replace);
+	INJECT(0x0047A500, S_DisplayMonoScreen, replace);
 }

@@ -472,6 +472,7 @@
 #define rooms_around_the_bike	ARRAY_(0x007F5020, short, [22])
 #define BikeCollideStaticBounds	ARRAY_(0x004BFC28, long, [6])		//bike bounds used to collide with statics
 #define CollidedStaticBikeBounds	ARRAY_(0x004BFC0C, long, [6])	//the bounds of the static the bike is trying to collide with
+#define MonoScreen	ARRAY_(0x00577460, MONOSCREEN_STRUCT, [5])
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)
