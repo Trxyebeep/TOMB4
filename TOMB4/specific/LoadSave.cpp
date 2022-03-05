@@ -16,6 +16,7 @@
 #include "specificfx.h"
 #include "time.h"
 #include "dxshell.h"
+#include "function_stubs.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #include "../game/control.h"
@@ -1646,6 +1647,97 @@ void S_DisplayMonoScreen()
 	S_DrawTile(x[2], y[1], x[3] - x[2], y[2] - y[1], MonoScreen[2].tex, 128, 0, 128, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
 }
 
+void CreateMonoScreen()
+{
+	MonoScreenOn = 1;
+	ConvertSurfaceToTextures(App.dx.lpPrimaryBuffer);
+}
+
+void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever stupid fuck that wrote this
+{
+	if (MonoScreen[0].surface)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[0].surface, MonoScreen[0].surface->Release());
+		MonoScreen[0].surface = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
+
+	if (MonoScreen[1].surface)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[1].surface, MonoScreen[1].surface->Release());
+		MonoScreen[1].surface = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
+
+	if (MonoScreen[2].surface)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[2].surface, MonoScreen[2].surface->Release());
+		MonoScreen[2].surface = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
+
+	if (MonoScreen[3].surface)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[3].surface, MonoScreen[3].surface->Release());
+		MonoScreen[3].surface = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
+
+	if (MonoScreen[4].surface)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[4].surface, MonoScreen[4].surface->Release());
+		MonoScreen[4].surface = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
+
+	if (MonoScreen[0].tex)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[0].tex, MonoScreen[0].tex->Release());
+		MonoScreen[0].tex = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
+
+	if (MonoScreen[1].tex)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[1].tex, MonoScreen[1].tex->Release());
+		MonoScreen[1].tex = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
+
+	if (MonoScreen[2].tex)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[2].tex, MonoScreen[2].tex->Release());
+		MonoScreen[2].tex = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
+
+	if (MonoScreen[3].tex)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[3].tex, MonoScreen[3].tex->Release());
+		MonoScreen[3].tex = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
+
+	if (MonoScreen[4].tex)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[4].tex, MonoScreen[4].tex->Release());
+		MonoScreen[4].tex = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
+
+	MonoScreenOn = 0;
+}
+
 void inject_loadsave(bool replace)
 {
 	INJECT(0x0047D460, S_DrawHealthBar, replace);
@@ -1659,4 +1751,6 @@ void inject_loadsave(bool replace)
 	INJECT(0x0047C6B0, DoStatScreen, replace);
 	INJECT(0x0047A220, S_DrawTile, replace);
 	INJECT(0x0047A500, S_DisplayMonoScreen, replace);
+	INJECT(0x00479F20, CreateMonoScreen, replace);
+	INJECT(0x00479F40, FreeMonoScreen, replace);
 }

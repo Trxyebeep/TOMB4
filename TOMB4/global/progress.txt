@@ -1688,8 +1688,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x004797C0		MemBltSurf
 0x00479BE0		RGBM_Mono
 0x00479C10		ConvertSurfaceToTextures
-0x00479F20		CreateMonoScreen
-0x00479F40		FreeMonoScreen
+0x00479F20	+	CreateMonoScreen
+0x00479F40	+	FreeMonoScreen
 0x0047A220	+	S_DrawTile
 0x0047A500	+	S_DisplayMonoScreen
 0x0047A6F0		GetSaveLoadFiles
