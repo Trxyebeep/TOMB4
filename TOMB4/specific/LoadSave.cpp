@@ -15,6 +15,7 @@
 #include "gamemain.h"
 #include "specificfx.h"
 #include "time.h"
+#include "dxshell.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #include "../game/control.h"
@@ -1556,6 +1557,71 @@ long S_LoadSave(long load_or_save, long mono)
 	return ret;
 }
 
+void S_DrawTile(long x, long y, long w, long h, IDirect3DTexture2* t, long tU, long tV, long tW, long tH, long c0, long c1, long c2, long c3)
+{
+	D3DTLBUMPVERTEX v[4];
+	D3DTLBUMPVERTEX tri[3];
+	float u1, v1, u2, v2;
+
+	u1 = float(tU * (1.0F / 256.0F));
+	v1 = float(tV * (1.0F / 256.0F));
+	u2 = float((tW + tU) * (1.0F / 256.0F));
+	v2 = float((tH + tV) * (1.0F / 256.0F));
+
+	v[0].sx = (float)x;
+	v[0].sy = (float)y;
+	v[0].sz = 0.995F;
+	v[0].tu = u1;
+	v[0].tv = v1;
+	v[0].rhw = 1;
+	v[0].color = c0;
+	v[0].specular = 0xFF000000;
+
+	v[1].sx = float(w + x);
+	v[1].sy = (float)y;
+	v[1].sz = 0.995F;
+	v[1].tu = u2;
+	v[1].tv = v1;
+	v[1].rhw = 1;
+	v[1].color = c1;
+	v[1].specular = 0xFF000000;
+
+	v[2].sx = float(w + x);
+	v[2].sy = float(h + y);
+	v[2].sz = 0.995F;
+	v[2].tu = u2;
+	v[2].tv = v2;
+	v[2].rhw = 1;
+	v[2].color = c3;
+	v[2].specular = 0xFF000000;
+
+	v[3].sx = (float)x;
+	v[3].sy = float(h + y);
+	v[3].sz = 0.995F;
+	v[3].tu = u1;
+	v[3].tv = v2;
+	v[3].rhw = 1;
+	v[3].color = c2;
+	v[3].specular = 0xFF000000;
+
+	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTFG_POINT);
+	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFG_POINT);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 0);
+	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, t));
+	tri[0] = v[0];
+	tri[1] = v[2];
+	tri[2] = v[3];
+	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, v, 3, D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS);
+	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, tri, 3, D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 1);
+
+	if (App.Filtering)
+	{
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTFG_LINEAR);
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFG_LINEAR);
+	}
+}
+
 void inject_loadsave(bool replace)
 {
 	INJECT(0x0047D460, S_DrawHealthBar, replace);
@@ -1567,4 +1633,5 @@ void inject_loadsave(bool replace)
 	INJECT(0x0047B170, DoOptions, replace);
 	INJECT(0x0047CD20, S_LoadSave, replace);
 	INJECT(0x0047C6B0, DoStatScreen, replace);
+	INJECT(0x0047A220, S_DrawTile, replace);
 }

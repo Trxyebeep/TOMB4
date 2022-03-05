@@ -15,6 +15,7 @@ long S_LoadSave(long load_or_save, long mono);
 void S_DrawEnemyBar(long pos);
 #endif
 void DoStatScreen();
+void S_DrawTile(long x, long y, long w, long h, IDirect3DTexture2* t, long tU, long tV, long tW, long tH, long c0, long c1, long c2, long c3);
 
 #define S_PauseMenu	( (long(__cdecl*)()) 0x0047CC60 )
 #define DoSlider	( (void(__cdecl*)(long, long, long, long, long, long, long, long)) 0x0047AB80 )

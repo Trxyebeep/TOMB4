@@ -7,8 +7,6 @@
 #include "function_stubs.h"
 #include "../game/tomb4fx.h"
 
-#define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
-
 void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, short type)
 {
 	switch (type)
