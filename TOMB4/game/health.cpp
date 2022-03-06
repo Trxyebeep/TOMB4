@@ -3,6 +3,10 @@
 #include "../specific/LoadSave.h"
 #include "text.h"
 #include "newinv.h"
+#ifdef ENEMY_BARS
+#include "../tomb4/tomb4.h"
+#include "objects.h"
+#endif
 
 long FlashIt()
 {
@@ -34,6 +38,19 @@ void DrawGameInfo(long timed)
 
 		if (DashTimer < 120)
 			S_DrawDashBar(100 * DashTimer / 120);
+
+#ifdef ENEMY_BARS
+		if (lara.target)
+		{
+			if (tomb4.enemy_bars && lara.target->hit_points > 0)
+			{
+				if (lara.target->object_number == LARA_DOUBLE)
+					S_DrawEnemyBar(lara_item->hit_points / 10);
+				else
+					S_DrawEnemyBar(100 * lara.target->hit_points / objects[lara.target->object_number].hit_points);
+			}
+		}
+#endif
 
 		if (gfLevelFlags & GF_TIMER && savegame.Level.Timer && savegame.Level.Timer < 108000)
 		{

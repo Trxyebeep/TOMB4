@@ -38,6 +38,18 @@ void init_tomb4_stuff()
 		sprintf(buf, "gameover");
 		tomb4.gameover = 1;								//on
 		REG_WriteBool(buf, tomb4.gameover);
+
+		sprintf(buf, "barMode");
+		tomb4.bar_mode = 3;								//PSX
+		REG_WriteLong(buf, tomb4.bar_mode);
+
+		sprintf(buf, "bar_pos");
+		tomb4.bars_pos = 1;								//improved
+		REG_WriteLong(buf, tomb4.bars_pos);
+
+		sprintf(buf, "enemy_bar");
+		tomb4.enemy_bars = 0;							//off
+		REG_WriteBool(buf, tomb4.enemy_bars);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -58,6 +70,15 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "gameover");
 		REG_ReadBool(buf, tomb4.gameover, 1);
+
+		sprintf(buf, "barMode");
+		REG_ReadLong(buf, tomb4.bar_mode, 3);
+
+		sprintf(buf, "bar_pos");
+		REG_ReadLong(buf, tomb4.bars_pos, 1);
+
+		sprintf(buf, "enemy_bar");
+		REG_ReadBool(buf, tomb4.enemy_bars, 0);
 	}
 
 	CloseRegistry();
@@ -86,6 +107,15 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "gameover");
 	REG_WriteBool(buf, tomb4.gameover);
+
+	sprintf(buf, "barMode");
+	REG_WriteLong(buf, tomb4.bar_mode);
+
+	sprintf(buf, "bar_pos");
+	REG_WriteLong(buf, tomb4.bars_pos);
+
+	sprintf(buf, "enemy_bar");
+	REG_WriteBool(buf, tomb4.enemy_bars);
 
 	CloseRegistry();
 }

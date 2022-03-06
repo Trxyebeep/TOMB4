@@ -218,7 +218,11 @@ long ControlPhase(long nframes, long demo_mode)
 
 		if (!FadeScreenHeight)
 		{
+#ifdef GENERAL_FIXES
+			if (input & IN_SAVE && lara_item->hit_points > 0)
+#else
 			if (input & IN_SAVE)
+#endif
 				S_LoadSave(IN_SAVE, 0);
 			else if (input & IN_LOAD)
 			{
@@ -226,7 +230,11 @@ long ControlPhase(long nframes, long demo_mode)
 					return 2;
 			}
 
+#ifdef GENERAL_FIXES
+			if (input & IN_PAUSE && gfGameMode == 0 && lara_item->hit_points > 0)
+#else
 			if (input & IN_PAUSE && gfGameMode == 0)
+#endif
 			{
 				if (S_PauseMenu() == 8)
 					return 1;

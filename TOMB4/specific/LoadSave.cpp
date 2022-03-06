@@ -15,32 +15,533 @@
 #include "gamemain.h"
 #include "specificfx.h"
 #include "time.h"
+#include "dxshell.h"
+#include "function_stubs.h"
+#include "texture.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #include "../game/control.h"
 #endif
 
+static long MonoScreenX[4] = { 0, 256, 512, 640 };
+static long MonoScreenY[3] = { 0, 256, 480 };
+
+#ifdef IMPROVED_BARS
+static GouraudBarColourSet healthBarColourSet =
+{
+	{ 64, 96, 128, 96, 64 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 128, 192, 255, 192, 128 },
+	{ 0, 0, 0, 0, 0 }
+};
+
+static GouraudBarColourSet poisonBarColourSet =
+{
+	{ 64, 96, 128, 96, 64 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 64, 96, 128, 96, 64 },
+	{ 0, 0, 0, 0, 0 },
+	{ 128, 192, 255, 192, 128 }
+};
+
+static GouraudBarColourSet airBarColourSet =
+{
+	{ 0, 0, 0, 0, 0 },
+	{ 113, 146, 113, 93, 74 },
+	{ 123, 154, 123, 107, 91 },
+	{ 0, 0, 0, 0, 0 },
+	{ 113, 146, 113, 93, 74 },
+	{ 0, 0, 0, 0, 0 }
+};
+
+static GouraudBarColourSet dashBarColourSet =
+{
+	{ 144, 192, 240, 192, 144 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 144, 192, 240, 192, 144 },
+	{ 144, 192, 240, 192, 144 },
+	{ 0, 0, 0, 0, 0 }
+};
+
+static GouraudBarColourSet loadBarColourSet =
+{
+	{ 48, 96, 127, 80, 32 },
+	{ 0, 0, 0, 0, 0 },
+	{ 48, 96, 127, 80, 32 },
+	{ 0, 0, 0, 0, 0 },
+	{ 48, 96, 127, 80, 32 },
+	{ 48, 96, 127, 80, 32 }
+};
+
+static GouraudBarColourSet enemyBarColourSet =
+{
+	{ 128, 192, 255, 192, 128 },
+	{ 64, 96, 128, 96, 64 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 123, 154, 123, 107, 91 },
+	{ 0, 0, 0, 0, 0 }
+};
+
+static void S_DrawGouraudBar(long x, long y, long width, long height, long value, GouraudBarColourSet* colour)
+{
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	float fx, fx2, fy, fy2, fvalue;
+	long r, g, b;
+
+	clipflags[0] = 0;
+	clipflags[1] = 0;
+	clipflags[2] = 0;
+	clipflags[3] = 0;
+	nPolyType = 4;
+	tex.drawtype = 0;
+	tex.tpage = 0;
+	fx = phd_winxmax * 0.0015625F;
+	fy = phd_winymax * 0.0020833334F;
+	fvalue = 0.0099999998F * value;
+	fx2 = width * fvalue;
+	fy2 = height * 0.1666666716F;
+	v[0].specular = 0xFF000000;
+	v[1].specular = 0xFF000000;
+	v[2].specular = 0xFF000000;
+	v[3].specular = 0xFF000000;
+	v[0].sx = x * fx;
+	v[1].sx = x * fx + fx2 * fx;
+	v[2].sx = x * fx;
+	v[3].sx = x * fx + fx2 * fx;
+	v[0].sy = y * fy - fy2 * fy;
+	v[1].sy = y * fy - fy2 * fy;
+	v[2].sy = y * fy;
+	v[3].sy = y * fy;
+	v[0].sz = f_mznear;
+	v[1].sz = f_mznear;
+	v[2].sz = f_mznear;
+	v[3].sz = f_mznear;
+	v[0].rhw = f_mpersp / f_mznear * f_moneopersp;
+	v[1].rhw = f_mpersp / f_mznear * f_moneopersp;
+	v[2].rhw = f_mpersp / f_mznear * f_moneopersp;
+	v[3].rhw = f_mpersp / f_mznear * f_moneopersp;
+
+	v[0].sy += fy2 * fy;
+	v[1].sy += fy2 * fy;
+	v[2].sy += fy2 * fy;
+	v[3].sy += fy2 * fy;
+
+	v[0].color = 0xFF000000;
+	v[1].color = 0xFF000000;
+
+	r = colour->abLeftRed[0];
+	g = colour->abLeftGreen[0];
+	b = colour->abLeftBlue[0];
+	r -= r >> 2;
+	g -= g >> 2;
+	b -= b >> 2;
+	v[2].color = RGBONLY(r, g, b);
+
+	r = (long)((1 - fvalue) * colour->abLeftRed[0] + fvalue * colour->abRightRed[0]);
+	g = (long)((1 - fvalue) * colour->abLeftGreen[0] + fvalue * colour->abRightGreen[0]);
+	b = (long)((1 - fvalue) * colour->abLeftBlue[0] + fvalue * colour->abRightBlue[0]);
+	r -= r >> 2;
+	g -= g >> 2;
+	b -= b >> 2;
+	v[3].color = RGBONLY(r, g, b);
+
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);
+
+	for (int i = 0; i < 4; i++)
+	{
+		v[0].sy += fy2 * fy;
+		v[1].sy += fy2 * fy;
+		v[2].sy += fy2 * fy;
+		v[3].sy += fy2 * fy;
+		v[0].color = RGBONLY(colour->abLeftRed[i], colour->abLeftGreen[i], colour->abLeftBlue[i]);
+		r = (long)((1 - fvalue) * colour->abLeftRed[i] + fvalue * colour->abRightRed[i]);
+		g = (long)((1 - fvalue) * colour->abLeftGreen[i] + fvalue * colour->abRightGreen[i]);
+		b = (long)((1 - fvalue) * colour->abLeftBlue[i] + fvalue * colour->abRightBlue[i]);
+		v[1].color = RGBONLY(r, g, b);
+		v[2].color = RGBONLY(colour->abLeftRed[i + 1], colour->abLeftGreen[i + 1], colour->abLeftBlue[i + 1]);
+		r = (long)((1 - fvalue) * colour->abLeftRed[i + 1] + fvalue * colour->abRightRed[i + 1]);
+		g = (long)((1 - fvalue) * colour->abLeftGreen[i + 1] + fvalue * colour->abRightGreen[i + 1]);
+		b = (long)((1 - fvalue) * colour->abLeftBlue[i + 1] + fvalue * colour->abRightBlue[i + 1]);
+		v[3].color = RGBONLY(r, g, b);
+		AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);
+	}
+
+	v[0].sy += fy2 * fy;
+	v[1].sy += fy2 * fy;
+	v[2].sy += fy2 * fy;
+	v[3].sy += fy2 * fy;
+
+	r = colour->abLeftRed[4];
+	g = colour->abLeftGreen[4];
+	b = colour->abLeftBlue[4];
+	r -= r >> 2;
+	g -= g >> 2;
+	b -= b >> 2;
+	v[0].color = RGBONLY(r, g, b);
+
+	r = (long)((1 - fvalue) * colour->abLeftRed[4] + fvalue * colour->abRightRed[4]);
+	g = (long)((1 - fvalue) * colour->abLeftGreen[4] + fvalue * colour->abRightGreen[4]);
+	b = (long)((1 - fvalue) * colour->abLeftBlue[4] + fvalue * colour->abRightBlue[4]);
+	r -= r >> 2;
+	g -= g >> 2;
+	b -= b >> 2;
+	v[1].color = RGBONLY(r, g, b);
+
+	v[2].color = 0xFF000000;
+	v[3].color = 0xFF000000;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);
+
+	v[0].sx = x * fx - 2;
+	v[1].sx = x * fx + width * fx + 2;
+	v[2].sx = x * fx - 2;
+	v[3].sx = x * fx + width * fx + 2;
+	v[0].sy = y * fy;
+	v[1].sy = y * fy;
+	v[2].sy = y * fy + height * fy;
+	v[3].sy = y * fy + height * fy;
+	v[0].sz = f_mznear + 1;
+	v[1].sz = f_mznear + 1;
+	v[2].sz = f_mznear + 1;
+	v[3].sz = f_mznear + 1;
+	v[0].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[1].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[2].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[3].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[0].color = 0;
+	v[1].color = 0;
+	v[2].color = 0;
+	v[3].color = 0;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//black background
+
+	v[0].sx = x * fx - 3;
+	v[1].sx = x * fx + width * fx + 3;
+	v[2].sx = x * fx - 3;
+	v[3].sx = x * fx + width * fx + 3;
+	v[0].sy = y * fy - 1;
+	v[1].sy = y * fy - 1;
+	v[2].sy = y * fy + height * fy + 1;
+	v[3].sy = y * fy + height * fy + 1;
+	v[0].sz = f_mznear + 2;
+	v[1].sz = f_mznear + 2;
+	v[2].sz = f_mznear + 2;
+	v[3].sz = f_mznear + 2;
+	v[0].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[1].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[2].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[3].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[0].color = 0xFFFFFFFF;
+	v[1].color = 0xFFFFFFFF;
+	v[2].color = 0xFFFFFFFF;
+	v[3].color = 0xFFFFFFFF;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//white border
+}
+
+static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long clr1, long clr2)
+{
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	float fx, fx2, fy, fw, fh, r1, g1, b1, r2, g2, b2, r, g, b, mul;
+	long lr, lg, lb, clr_11, clr_12, clr_21, clr_22;
+
+	clipflags[0] = 0;
+	clipflags[1] = 0;
+	clipflags[2] = 0;
+	clipflags[3] = 0;
+	nPolyType = 4;
+	tex.drawtype = 0;
+	tex.tpage = 0;
+	fx = (float)phd_winxmax * 0.0015625F;
+	fy = (float)phd_winymax * 0.0020833334F;
+	fw = (float)width;
+	fh = (float)(height >> 1);
+	fx2 = (fw * fx) * 0.0099999998F * (float)pos;
+	v[0].specular = 0xFF000000;
+	v[1].specular = 0xFF000000;
+	v[2].specular = 0xFF000000;
+	v[3].specular = 0xFF000000;
+	v[0].sx = (float)x * fx;
+	v[1].sx = ((float)x * fx) + fx2;
+	v[2].sx = (float)x * fx;
+	v[3].sx = ((float)x * fx) + fx2;
+	v[0].sy = (float)y * fy;
+	v[1].sy = (float)y * fy;
+	v[2].sy = ((float)y * fy) + (fh * fy);
+	v[3].sy = ((float)y * fy) + (fh * fy);
+	v[0].sz = f_mznear;
+	v[1].sz = f_mznear;
+	v[2].sz = f_mznear;
+	v[3].sz = f_mznear;
+	v[0].rhw = f_mpersp / f_mznear * f_moneopersp;
+	v[1].rhw = f_mpersp / f_mznear * f_moneopersp;
+	v[2].rhw = f_mpersp / f_mznear * f_moneopersp;
+	v[3].rhw = f_mpersp / f_mznear * f_moneopersp;
+
+	r1 = (float)CLRR(clr1);		//get rgbs
+	g1 = (float)CLRG(clr1);
+	b1 = (float)CLRB(clr1);
+	r2 = (float)CLRR(clr2);
+	g2 = (float)CLRG(clr2);
+	b2 = (float)CLRB(clr2);
+
+	mul = fx2 / (fw * fx);		//mix
+	r = r1 + ((r2 - r1) * mul);
+	g = g1 + ((g2 - g1) * mul);
+	b = b1 + ((b2 - b1) * mul);
+
+	lr = (long)r1;
+	lg = (long)g1;
+	lb = (long)b1;
+	clr_11 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);	//clr1 is taken as is
+	clr_12 = RGBONLY(lr, lg, lb);
+
+	lr = (long)r;
+	lg = (long)g;
+	lb = (long)b;
+	clr_21 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);	//clr2 is the mix
+	clr_22 = RGBONLY(lr, lg, lb);
+
+	v[0].color = clr_11;
+	v[1].color = clr_21;
+	v[2].color = clr_12;
+	v[3].color = clr_22;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//top half
+
+	v[0].color = clr_12;
+	v[1].color = clr_22;
+	v[2].color = clr_11;
+	v[3].color = clr_21;
+	v[0].sy = ((float)y * fy) + (fh * fy);
+	v[1].sy = ((float)y * fy) + (fh * fy);
+	v[2].sy = (fh * fy) + (fh * fy) + ((float)y * fy);
+	v[3].sy = (fh * fy) + (fh * fy) + ((float)y * fy);
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);		//bottom half
+
+	v[0].sx = (float)x * fx;
+	v[1].sx = (fw * fx) + ((float)x * fx);
+	v[2].sx = (float)x * fx;
+	v[3].sx = (fw * fx) + ((float)x * fx);
+	v[0].sy = (float)y * fy;
+	v[1].sy = (float)y * fy;
+	v[2].sy = (fh * fy) + (fh * fy) + ((float)y * fy);
+	v[3].sy = (fh * fy) + (fh * fy) + ((float)y * fy);
+	v[0].sz = f_mznear + 1;
+	v[1].sz = f_mznear + 1;
+	v[2].sz = f_mznear + 1;
+	v[3].sz = f_mznear + 1;
+	v[0].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[1].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[2].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[3].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
+	v[0].color = 0;
+	v[1].color = 0;
+	v[2].color = 0;
+	v[3].color = 0;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//black background
+
+	v[0].sx = ((float)x * fx) - 1;
+	v[1].sx = (fw * fx) + ((float)x * fx) + 1;
+	v[2].sx = ((float)x * fx) - 1;
+	v[3].sx = (fw * fx) + ((float)x * fx) + 1;
+	v[0].sy = ((float)y * fy) - 1;
+	v[1].sy = ((float)y * fy) - 1;
+	v[2].sy = (fh * fy) + (fh * fy) + ((float)y * fy) + 1;
+	v[3].sy = (fh * fy) + (fh * fy) + ((float)y * fy) + 1;
+	v[0].sz = f_mznear + 2;
+	v[1].sz = f_mznear + 2;
+	v[2].sz = f_mznear + 2;
+	v[3].sz = f_mznear + 2;
+	v[0].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[1].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[2].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[3].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
+	v[0].color = 0xFFFFFFFF;
+	v[1].color = 0xFFFFFFFF;
+	v[2].color = 0xFFFFFFFF;
+	v[3].color = 0xFFFFFFFF;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//white border
+}
+
+void S_DrawEnemyBar(long pos)
+{
+	long x, y;
+
+	if (tomb4.bars_pos == 1)//original
+	{
+		x = font_height >> 2;
+		y = (font_height >> 2) + (font_height >> 1);
+	}
+	else if (tomb4.bars_pos == 2)//improved
+	{
+		x = font_height >> 2;
+		y = (font_height >> 2) + (font_height >> 1);
+	}
+	else//PSX
+	{
+		x = 470 - (font_height >> 2);
+
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			y = (font_height >> 1) + (font_height >> 2) + (5 * font_height / 9);
+		else
+			y = (font_height >> 2) + (font_height >> 1) + font_height;
+	}
+
+	if (tomb4.bar_mode == 3)
+		S_DrawGouraudBar(x, y, 150, 12, pos, &enemyBarColourSet);
+	else if (tomb4.bar_mode == 2)
+		S_DoTR5Bar(x, y, 150, 12, pos, 0xA00000, 0xA0A000);
+	else
+		DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFFFFA000);
+}
+
+static void S_DrawHealthBar2(long pos)
+{
+	if (!gfCurrentLevel)
+		return;
+
+	if (tomb4.bar_mode == 3)
+		S_DrawGouraudBar(245, (font_height >> 1) + 32, 150, 12, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
+	else if (tomb4.bar_mode == 2)
+		S_DoTR5Bar(245, (font_height >> 1) + 32, 150, 12, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0xA000);
+	else
+		DoBar(245, font_height + 48, 150, 12, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000);
+}
+#endif
+
 void S_DrawHealthBar(long pos)
 {
-	if (gfCurrentLevel)
+	if (!gfCurrentLevel)
+		return;
+
+#ifdef GENERAL_FIXES
+	long x, y;
+
+	if (BinocularRange)
+		S_DrawHealthBar2(pos);
+
+	if (tomb4.bars_pos == 1 || tomb4.bars_pos == 2)//original or improved
+	{
+		x = font_height >> 2;
+		y = font_height >> 2;
+	}
+	else//PSX
+	{
+		x = 470 - (font_height >> 2);
+		y = font_height >> 2;
+	}
+
+#ifdef IMPROVED_BARS
+	if (tomb4.bar_mode == 2)
 	{
 		if (lara.poisoned)
-			DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFFFF00);	//yellow
+			S_DoTR5Bar(x, y, 150, 12, pos, 0xA00000, 0xA0A000);
 		else
-			DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFF0000);	//red
+			S_DoTR5Bar(x, y, 150, 12, pos, 0xA00000, 0x00A000);
 	}
+	else if (tomb4.bar_mode == 3)
+		S_DrawGouraudBar(x, y, 150, 12, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
+	else
+#endif
+	{
+		if (lara.poisoned)
+			DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFFFFFF00);	//yellow
+		else
+			DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFFFF0000);	//red
+	}
+#else
+
+	if (lara.poisoned)
+		DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFFFF00);	//yellow
+	else
+		DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFF0000);	//red
+#endif
 }
 
 void S_DrawAirBar(long pos)
 {
-	if (gfCurrentLevel)
-		DoBar(490 - (font_height >> 2), (font_height >> 2) + (font_height >> 1), 150, 12, pos, 0xFF000000, 0xFF0000FF);	//blue
+	if (!gfCurrentLevel)
+		return;
+
+#ifdef GENERAL_FIXES
+	long x, y;
+
+	if (tomb4.bars_pos == 1)//original
+	{
+		x = 490 - (font_height >> 2);
+		y = (font_height >> 2) + (font_height >> 1);
+	}
+	else if (tomb4.bars_pos == 2)//improved
+	{
+		x = 490 - (font_height >> 2);
+		y = font_height >> 2;
+	}
+	else//PSX
+	{
+		x = 470 - (font_height >> 2);
+
+		if (tomb4.bar_mode == 1)
+			y = (font_height >> 1) + (font_height >> 2);
+		else
+			y = (font_height >> 2) + (font_height / 3);
+	}
+
+#ifdef IMPROVED_BARS
+	if (tomb4.bar_mode == 2)
+		S_DoTR5Bar(x, y, 150, 12, pos, 0x0000A0, 0x0050A0);
+	else if (tomb4.bar_mode == 3)
+		S_DrawGouraudBar(x, y, 150, 12, pos, &airBarColourSet);
+	else
+#endif
+		DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFF0000FF);	//blue
+#else
+	DoBar(490 - (font_height >> 2), (font_height >> 2) + (font_height >> 1), 150, 12, pos, 0xFF000000, 0xFF0000FF);	//blue
+#endif
 }
 
 void S_DrawDashBar(long pos)
 {
-	if (gfCurrentLevel)
-		DoBar(490 - (font_height >> 2), font_height >> 2, 150, 12, pos, 0xFF000000, 0xFF00FF00);	//green
+	if (!gfCurrentLevel)
+		return;
+
+#ifdef GENERAL_FIXES
+	long x, y;
+
+	if (tomb4.bars_pos == 1)//original
+	{
+		x = 490 - (font_height >> 2);
+		y = font_height >> 2;
+	}
+	else if (tomb4.bars_pos == 2)//improved
+	{
+		x = 490 - (font_height >> 2);
+		y = (font_height >> 2) + (font_height >> 1);
+	}
+	else//PSX
+	{
+		x = 470 - (font_height >> 2);
+
+		if (tomb4.bar_mode == 1)
+			y = (font_height >> 2) + font_height;
+		else
+			y = (font_height >> 2) + (font_height / 3) + (font_height / 3);
+	}
+
+#ifdef IMPROVED_BARS
+	if (tomb4.bar_mode == 2)
+		S_DoTR5Bar(x, y, 150, 12, pos, 0xA0A000, 0x00A000);
+	else if (tomb4.bar_mode == 3)
+		S_DrawGouraudBar(x, y, 150, 12, pos, &dashBarColourSet);
+	else
+#endif
+		DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFF00FF00);	//green
+#else
+	DoBar(490 - (font_height >> 2), font_height >> 2, 150, 12, pos, 0xFF000000, 0xFF00FF00);
+#endif
 }
 
 void S_InitLoadBar(long maxpos)
@@ -60,7 +561,16 @@ void S_LoadBar()
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 		loadbar_pos += 100 / loadbar_maxpos;
-		DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
+
+#ifdef IMPROVED_BARS
+		if (tomb4.bar_mode == 3)
+			S_DrawGouraudBar(20, 480 - font_height, 600, 15, (long)loadbar_pos, &loadBarColourSet);
+		else if (tomb4.bar_mode == 2)
+			S_DoTR5Bar(20, 480 - font_height, 600, 15, (long)loadbar_pos, 0xFF7F007F, 0xFF007F7F);
+		else
+#endif
+			DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
+
 		SortPolyList(SortCount, SortList);
 		RestoreFPCW(FPCW);
 		DrawSortList();
@@ -211,7 +721,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 	char buffer[80];
 	bool changed;
 
-	num = 6;
+	num = 9;
 	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
 	PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 0x1 ? 1 : 2, "FootPrints", 0);
 	PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 0x2 ? 1 : 2, "Shadow mode", 0);
@@ -219,6 +729,9 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 	PrintString(phd_centerx >> 2, textY + 5 * font_height, selection & 0x8 ? 1 : 2, "Flexible crawling", 0);
 	PrintString(phd_centerx >> 2, textY + 6 * font_height, selection & 0x10 ? 1 : 2, "Fix climb up delay", 0);
 	PrintString(phd_centerx >> 2, textY + 7 * font_height, selection & 0x20 ? 1 : 2, "Gameover menu", 0);
+	PrintString(phd_centerx >> 2, textY + 8 * font_height, selection & 0x40 ? 1 : 2, "Bar mode", 0);
+	PrintString(phd_centerx >> 2, textY + 9 * font_height, selection & 0x80 ? 1 : 2, "Bar positions", 0);
+	PrintString(phd_centerx >> 2, textY + 10 * font_height, selection & 0x100 ? 1 : 2, "Enemy bars", 0);
 
 	if (dbinput & IN_FORWARD)
 	{
@@ -264,6 +777,15 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 
 	strcpy(buffer, tomb4.gameover ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), textY + 7 * font_height, selection & 0x20 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.bar_mode == 1 ? "original" : tomb4.bar_mode == 2 ? "TR5" : "PSX");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 8 * font_height, selection & 0x40 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.bars_pos == 1 ? "original" : tomb4.bars_pos == 2 ? "improved" : "PSX");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 9 * font_height, selection & 0x80 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.enemy_bars ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 10 * font_height, selection & 0x100 ? 1 : 6, buffer, 0);
 
 	changed = 0;
 
@@ -345,6 +867,69 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			tomb4.gameover = !tomb4.gameover;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 6:
+
+		if (dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.bar_mode++;
+
+			if (tomb4.bar_mode > 3)
+				tomb4.bar_mode = 1;
+
+			changed = 1;
+		}
+
+		if (dbinput & IN_LEFT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.bar_mode--;
+
+			if (tomb4.bar_mode < 1)
+				tomb4.bar_mode = 3;
+
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 7:
+
+		if (dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.bars_pos++;
+
+			if (tomb4.bars_pos > 3)
+				tomb4.bars_pos = 1;
+
+			changed = 1;
+		}
+
+		if (dbinput & IN_LEFT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.bars_pos--;
+
+			if (tomb4.bars_pos < 1)
+				tomb4.bars_pos = 3;
+
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 8:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.enemy_bars = !tomb4.enemy_bars;
 			changed = 1;
 		}
 
@@ -863,6 +1448,43 @@ void DoOptions()
 		}
 	}
 }
+
+void DoStatScreen()
+{
+	long sec, days, hours, min;
+	ushort y;
+	char buf[40];
+
+	y = phd_centery - (font_height << 2);
+	PrintString(phd_centerx, y, 6, SCRIPT_TEXT(TXT_Statistics), FF_CENTER);
+	PrintString(phd_centerx, y + 2 * font_height, 2, SCRIPT_TEXT(gfLevelNames[gfCurrentLevel]), FF_CENTER);
+	PrintString(phd_centerx >> 2, y + 3 * font_height, 2, SCRIPT_TEXT(TXT_Time_Taken), 0);
+	PrintString(phd_centerx >> 2, y + 4 * font_height, 2, SCRIPT_TEXT(TXT_Distance_Travelled), 0);
+	PrintString(phd_centerx >> 2, y + 5 * font_height, 2, SCRIPT_TEXT(TXT_Ammo_Used), 0);
+	PrintString(phd_centerx >> 2, y + 6 * font_height, 2, SCRIPT_TEXT(TXT_Health_Packs_Used), 0);
+	PrintString(phd_centerx >> 2, y + 7 * font_height, 2, SCRIPT_TEXT(TXT_Secrets_Found), 0);
+
+	sec = GameTimer / 30;
+	days = sec / 86400;
+	hours = (sec % 86400) / 3600;
+	min = (sec / 60) % 60;
+	sec = (sec % 60);
+
+	sprintf(buf, "%02d:%02d:%02d", (days * 24) + hours, min, sec);
+	PrintString(phd_centerx + (phd_centerx >> 2), y + 3 * font_height, 6, buf, 0);
+
+	sprintf(buf, "%dm", savegame.Game.Distance / 419);
+	PrintString(phd_centerx + (phd_centerx >> 2), y + 4 * font_height, 6, buf, 0);
+
+	sprintf(buf, "%d", savegame.Game.AmmoUsed);
+	PrintString(phd_centerx + (phd_centerx >> 2), y + 5 * font_height, 6, buf, 0);
+
+	sprintf(buf, "%d", savegame.Game.HealthUsed);
+	PrintString(phd_centerx + (phd_centerx >> 2), y + 6 * font_height, 6, buf, 0);
+
+	sprintf(buf, "%d / 70", savegame.Game.Secrets);
+	PrintString(phd_centerx + (phd_centerx >> 2), y + 7 * font_height, 6, buf, 0);
+}
 #pragma warning(pop)
 
 long S_LoadSave(long load_or_save, long mono)
@@ -940,6 +1562,325 @@ long S_LoadSave(long load_or_save, long mono)
 	return ret;
 }
 
+void S_DrawTile(long x, long y, long w, long h, IDirect3DTexture2* t, long tU, long tV, long tW, long tH, long c0, long c1, long c2, long c3)
+{
+	D3DTLBUMPVERTEX v[4];
+	D3DTLBUMPVERTEX tri[3];
+	float u1, v1, u2, v2;
+
+	u1 = float(tU * (1.0F / 256.0F));
+	v1 = float(tV * (1.0F / 256.0F));
+	u2 = float((tW + tU) * (1.0F / 256.0F));
+	v2 = float((tH + tV) * (1.0F / 256.0F));
+
+	v[0].sx = (float)x;
+	v[0].sy = (float)y;
+	v[0].sz = 0.995F;
+	v[0].tu = u1;
+	v[0].tv = v1;
+	v[0].rhw = 1;
+	v[0].color = c0;
+	v[0].specular = 0xFF000000;
+
+	v[1].sx = float(w + x);
+	v[1].sy = (float)y;
+	v[1].sz = 0.995F;
+	v[1].tu = u2;
+	v[1].tv = v1;
+	v[1].rhw = 1;
+	v[1].color = c1;
+	v[1].specular = 0xFF000000;
+
+	v[2].sx = float(w + x);
+	v[2].sy = float(h + y);
+	v[2].sz = 0.995F;
+	v[2].tu = u2;
+	v[2].tv = v2;
+	v[2].rhw = 1;
+	v[2].color = c3;
+	v[2].specular = 0xFF000000;
+
+	v[3].sx = (float)x;
+	v[3].sy = float(h + y);
+	v[3].sz = 0.995F;
+	v[3].tu = u1;
+	v[3].tv = v2;
+	v[3].rhw = 1;
+	v[3].color = c2;
+	v[3].specular = 0xFF000000;
+
+	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTFG_POINT);
+	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFG_POINT);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 0);
+	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, t));
+	tri[0] = v[0];
+	tri[1] = v[2];
+	tri[2] = v[3];
+	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, v, 3, D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS);
+	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, tri, 3, D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 1);
+
+	if (App.Filtering)
+	{
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTFG_LINEAR);
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFG_LINEAR);
+	}
+}
+
+void S_DisplayMonoScreen()
+{
+	long x[4];
+	long y[4];
+
+	for (int i = 0; i < 3; i++)
+	{
+		x[i] = phd_winxmin + phd_winwidth * MonoScreenX[i] / 640;
+		y[i] = phd_winymin + phd_winheight * MonoScreenY[i] / 480;
+	}
+
+	x[3] = phd_winxmin + phd_winwidth * MonoScreenX[3] / 640;
+	RestoreFPCW(FPCW);
+	S_DrawTile(x[0], y[0], x[1] - x[0], y[1] - y[0], MonoScreen[0].tex, 0, 0, 256, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+	S_DrawTile(x[1], y[0], x[2] - x[1], y[1] - y[0], MonoScreen[1].tex, 0, 0, 256, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+	S_DrawTile(x[2], y[0], x[3] - x[2], y[1] - y[0], MonoScreen[2].tex, 0, 0, 128, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+	S_DrawTile(x[0], y[1], x[1] - x[0], y[2] - y[1], MonoScreen[3].tex, 0, 0, 256, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+	S_DrawTile(x[1], y[1], x[2] - x[1], y[2] - y[1], MonoScreen[4].tex, 0, 0, 256, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+	S_DrawTile(x[2], y[1], x[3] - x[2], y[2] - y[1], MonoScreen[2].tex, 128, 0, 128, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+}
+
+void CreateMonoScreen()
+{
+	MonoScreenOn = 1;
+	ConvertSurfaceToTextures(App.dx.lpPrimaryBuffer);
+}
+
+void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever stupid fuck that wrote this
+{
+	if (MonoScreen[0].surface)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[0].surface, MonoScreen[0].surface->Release());
+		MonoScreen[0].surface = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
+
+	if (MonoScreen[1].surface)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[1].surface, MonoScreen[1].surface->Release());
+		MonoScreen[1].surface = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
+
+	if (MonoScreen[2].surface)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[2].surface, MonoScreen[2].surface->Release());
+		MonoScreen[2].surface = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
+
+	if (MonoScreen[3].surface)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[3].surface, MonoScreen[3].surface->Release());
+		MonoScreen[3].surface = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
+
+	if (MonoScreen[4].surface)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[4].surface, MonoScreen[4].surface->Release());
+		MonoScreen[4].surface = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
+
+	if (MonoScreen[0].tex)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[0].tex, MonoScreen[0].tex->Release());
+		MonoScreen[0].tex = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
+
+	if (MonoScreen[1].tex)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[1].tex, MonoScreen[1].tex->Release());
+		MonoScreen[1].tex = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
+
+	if (MonoScreen[2].tex)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[2].tex, MonoScreen[2].tex->Release());
+		MonoScreen[2].tex = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
+
+	if (MonoScreen[3].tex)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[3].tex, MonoScreen[3].tex->Release());
+		MonoScreen[3].tex = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
+
+	if (MonoScreen[4].tex)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[4].tex, MonoScreen[4].tex->Release());
+		MonoScreen[4].tex = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
+
+	MonoScreenOn = 0;
+}
+
+void RGBM_Mono(uchar* r, uchar* g, uchar* b)
+{
+	uchar c;
+
+	c = (*r + *b) >> 1;
+	*r = c;
+	*g = c;
+	*b = c;
+}
+
+void MemBltSurf(void* dest, long x, long y, long w, long h, long dadd, void* source, long x2, long y2, DDSURFACEDESC2 surface, float xsize, float ysize)
+{
+	ulong* pDest;
+	short* psSrc;
+	char* pSrc;
+	long xadd, yadd, rx2, ry2, xoff, yoff, curY;
+	short andVal;
+	uchar r, g, b, rshift, gshift, bshift, rcount, gcount, bcount;
+
+	xadd = long(((float)App.dx.dwRenderWidth / 640.0F) * xsize * 65536.0);
+	yadd = long(((float)App.dx.dwRenderHeight / 480.0F) * ysize * 65536.0);
+	rx2 = long(x2 * ((float)App.dx.dwRenderWidth / 639.0F));
+	ry2 = long(y2 * ((float)App.dx.dwRenderHeight / 479.0F));
+
+	if (App.dx.Flags & 2)
+	{
+		rx2 += App.dx.rScreen.left;
+		ry2 += App.dx.rScreen.top;
+	}
+
+	DXBitMask2ShiftCnt(surface.ddpfPixelFormat.dwRBitMask, &rshift, &rcount);
+	DXBitMask2ShiftCnt(surface.ddpfPixelFormat.dwGBitMask, &gshift, &gcount);
+	DXBitMask2ShiftCnt(surface.ddpfPixelFormat.dwBBitMask, &bshift, &bcount);
+	pDest = (ulong*)dest + 4 * h * y + x;
+	pSrc = (char*)source + rx2 * (surface.ddpfPixelFormat.dwRGBBitCount >> 3) + (ry2 * surface.lPitch);
+	psSrc = (short*)pSrc;
+	curY = 0;
+	yoff = 0;
+
+	if (surface.ddpfPixelFormat.dwRGBBitCount == 16)
+	{
+		for (int i = 0; i < h; i++)
+		{
+			xoff = 0;
+
+			for (int j = 0; j < w; j++)
+			{
+				andVal = psSrc[curY + (xoff >> 16)];
+				r = uchar(((surface.ddpfPixelFormat.dwRBitMask & andVal) >> rshift) << (8 - rcount));
+				g = uchar(((surface.ddpfPixelFormat.dwGBitMask & andVal) >> gshift) << (8 - gcount));
+				b = uchar(((surface.ddpfPixelFormat.dwBBitMask & andVal) >> bshift) << (8 - bcount));
+				*pDest = RGBA(r, g, b, 0xFF);
+				pDest++;
+				xoff += xadd;
+			}
+
+			yoff += yadd;
+			curY = (surface.lPitch >> 1) * (yoff >> 16);
+			pDest += dadd - w;
+		}
+	}
+	else if (surface.ddpfPixelFormat.dwRGBBitCount == 24)
+	{
+		for (int i = 0; i < h; i++)
+		{
+			xoff = 0;
+
+			for (int j = 0; j < w; j++)
+			{
+				r = pSrc[curY + (xoff >> 16)];
+				g = pSrc[curY + 1 + (xoff >> 16)];
+				b = pSrc[curY + 2 + (xoff >> 16)];
+				*pDest = RGBA(r, g, b, 0xFF);
+				pDest++;
+				xoff += 3 * xadd;
+			}
+
+			yoff += yadd;
+			curY = surface.lPitch * (yoff >> 16);
+			pDest += dadd - w;
+		}
+	}
+	else if (surface.ddpfPixelFormat.dwRGBBitCount == 32)
+	{
+		for (int i = 0; i < h; i++)
+		{
+			xoff = 0;
+
+			for (int j = 0; j < w; j++)
+			{
+				r = pSrc[curY + (xoff >> 16)];
+				g = pSrc[curY + 1 + (xoff >> 16)];
+				b = pSrc[curY + 2 + (xoff >> 16)];
+				*pDest = RGBA(r, g, b, 0xFF);
+				pDest++;
+				xoff += xadd << 2;
+			}
+
+			yoff += yadd;
+			curY = surface.lPitch * (yoff >> 16);
+			pDest += dadd - w;
+		}
+	}
+}
+
+void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACE4 surface)
+{
+	DDSURFACEDESC2 tSurf;
+	ushort* pTexture;
+	ushort* pSrc;
+
+	memset(&tSurf, 0, sizeof(tSurf));
+	tSurf.dwSize = sizeof(DDSURFACEDESC2);
+	surface->Lock(0, &tSurf, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
+	pSrc = (ushort*)tSurf.lpSurface;
+	pTexture = (ushort*)malloc(0x40000);
+
+	MemBltSurf(pTexture, 0, 0, 256, 256, 256, pSrc, 0, 0, tSurf, 1.0F, 1.0F);
+	MonoScreen[0].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
+	DXAttempt(MonoScreen[0].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[0].tex));
+
+	MemBltSurf(pTexture, 0, 0, 256, 256, 256, pSrc, 256, 0, tSurf, 1.0F, 1.0F);
+	MonoScreen[1].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
+	DXAttempt(MonoScreen[1].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[1].tex));
+
+	MemBltSurf(pTexture, 0, 0, 128, 256, 256, pSrc, 512, 0, tSurf, 1.0F, 1.0F);
+	MemBltSurf(pTexture, 128, 0, 128, 224, 256, pSrc, 512, 256, tSurf, 1.0F, 1.0F);
+	MonoScreen[2].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
+	DXAttempt(MonoScreen[2].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[2].tex));
+
+	MemBltSurf(pTexture, 0, 0, 256, 224, 256, pSrc, 0, 256, tSurf, 1.0F, 1.0F);
+	MonoScreen[3].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
+	DXAttempt(MonoScreen[3].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[3].tex));
+
+	MemBltSurf(pTexture, 0, 0, 256, 224, 256, pSrc, 256, 256, tSurf, 1.0F, 1.0F);
+	MonoScreen[4].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
+	DXAttempt(MonoScreen[4].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[4].tex));
+
+	surface->Unlock(0);
+	free(pTexture);
+}
+
 void inject_loadsave(bool replace)
 {
 	INJECT(0x0047D460, S_DrawHealthBar, replace);
@@ -950,4 +1891,12 @@ void inject_loadsave(bool replace)
 	INJECT(0x0047CE10, DoBar, replace);
 	INJECT(0x0047B170, DoOptions, replace);
 	INJECT(0x0047CD20, S_LoadSave, replace);
+	INJECT(0x0047C6B0, DoStatScreen, replace);
+	INJECT(0x0047A220, S_DrawTile, replace);
+	INJECT(0x0047A500, S_DisplayMonoScreen, replace);
+	INJECT(0x00479F20, CreateMonoScreen, replace);
+	INJECT(0x00479F40, FreeMonoScreen, replace);
+	INJECT(0x00479BE0, RGBM_Mono, replace);
+	INJECT(0x004797C0, MemBltSurf, replace);
+	INJECT(0x00479C10, ConvertSurfaceToTextures, replace);
 }

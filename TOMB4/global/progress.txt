@@ -457,9 +457,9 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/elements.cpp
 
-0x00454B60		ElementPuzzleCollision
-0x00454EF0		InitialiseElementPuzzle
-0x00454F50		ControlElementPuzzle
+0x00454B60	+	ElementPuzzleCollision
+0x00454EF0	+	InitialiseElementPuzzle
+0x00454F50	+	ControlElementPuzzle
 
 
 		game/flmtorch.cpp
@@ -1545,7 +1545,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00491EA0		DXDDCreate
 0x00491F60		DXD3DCreate
 0x00491FC0		DXEnumDirectDraw
-0x00492240		DXBitMask2ShiftCnt
+0x00492240	+	DXBitMask2ShiftCnt
 0x00492280		DXEnumDisplayModes
 0x004923A0		BPPToDDBD
 0x00492430		DXEnumDirect3D
@@ -1642,7 +1642,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00476A30		InitialiseFunctionTable
 0x00476AC0		HWBeginScene
 0x00476B10		HWEndScene
-0x00476B30		HWInitialise
+0x00476B30	+	HWInitialise
 0x00476E80	+	SetFogColor
 
 
@@ -1685,19 +1685,19 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/LoadSave.cpp
 
-0x004797C0		MemBltSurf
-0x00479BE0		RGBM_Mono
-0x00479C10		ConvertSurfaceToTextures
-0x00479F20		CreateMonoScreen
-0x00479F40		FreeMonoScreen
-0x0047A220		S_DrawTile
-0x0047A500		S_DisplayMonoScreen
+0x004797C0	+	MemBltSurf
+0x00479BE0	+	RGBM_Mono
+0x00479C10	+	ConvertSurfaceToTextures
+0x00479F20	+	CreateMonoScreen
+0x00479F40	+	FreeMonoScreen
+0x0047A220	+	S_DrawTile
+0x0047A500	+	S_DisplayMonoScreen
 0x0047A6F0		GetSaveLoadFiles
 0x0047A880		DoLoadSave
 0x0047AB80		DoSlider
 0x0047B130		CheckKeyConflicts
 0x0047B170	+	DoOptions
-0x0047C6B0		DoStatScreen
+0x0047C6B0	+	DoStatScreen
 0x0047CA20		S_DisplayPauseMenu
 0x0047CC60		S_PauseMenu
 0x0047CD20	+	S_LoadSave
@@ -1717,7 +1717,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0047D810		CalcVertsColorSplitMMX
 0x0047D900	+	PrelightVerts
 0x0047DA60	+	phd_PutPolygons
-0x0047E8B0		phd_PutPolygonsPickup
+0x0047E8B0	+	phd_PutPolygonsPickup
 0x0047F620		phd_PutPolygonSkyMesh
 0x0047F950	+	_InsertRoom
 0x0047F970		S_DrawPickup
@@ -1740,17 +1740,17 @@ x for functions decompiled but not injected, for one reason or another.
 0x00481760		DoSort
 0x00481810		SortPolyList
 0x00481860		InitialiseSortList
-0x004818A0		ClearFXFogBulbs
-0x004818C0		ControlFXBulb
-0x004819B0		CreateFXBulbs
-0x004819F0		TriggerFXFogBulb
-0x00481AD0		IsVolumetric
+0x004818A0	+	ClearFXFogBulbs
+0x004818C0	+	ControlFXBulb
+0x004819B0	+	CreateFXBulbs
+0x004819F0	+	TriggerFXFogBulb
+0x00481AD0	+	IsVolumetric
 0x00481AE0		mD3DTransform
-0x00481B50		CreateFogPos
-0x00481D20		DistCompare
-0x00481DF0		InitialiseFogBulbs
-0x00481E60		OmniEffect
-0x004820C0		OmniFog
+0x00481B50	+	CreateFogPos
+0x00481D20	+	DistCompare
+0x00481DF0	+	InitialiseFogBulbs
+0x00481E60	+	OmniEffect
+0x004820C0	+	OmniFog
 0x00482390		AddQuadClippedZBuffer
 0x00482910		AddTriClippedZBuffer
 0x00482E40		AddClippedPoly
