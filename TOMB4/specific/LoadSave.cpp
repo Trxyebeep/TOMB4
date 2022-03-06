@@ -17,6 +17,7 @@
 #include "time.h"
 #include "dxshell.h"
 #include "function_stubs.h"
+#include "texture.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #include "../game/control.h"
@@ -1843,6 +1844,43 @@ void MemBltSurf(void* dest, long x, long y, long w, long h, long dadd, void* sou
 	}
 }
 
+void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACE4 surface)
+{
+	DDSURFACEDESC2 tSurf;
+	ushort* pTexture;
+	ushort* pSrc;
+
+	memset(&tSurf, 0, sizeof(tSurf));
+	tSurf.dwSize = sizeof(DDSURFACEDESC2);
+	surface->Lock(0, &tSurf, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
+	pSrc = (ushort*)tSurf.lpSurface;
+	pTexture = (ushort*)malloc(0x40000);
+
+	MemBltSurf(pTexture, 0, 0, 256, 256, 256, pSrc, 0, 0, tSurf, 1.0F, 1.0F);
+	MonoScreen[0].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
+	DXAttempt(MonoScreen[0].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[0].tex));
+
+	MemBltSurf(pTexture, 0, 0, 256, 256, 256, pSrc, 256, 0, tSurf, 1.0F, 1.0F);
+	MonoScreen[1].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
+	DXAttempt(MonoScreen[1].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[1].tex));
+
+	MemBltSurf(pTexture, 0, 0, 128, 256, 256, pSrc, 512, 0, tSurf, 1.0F, 1.0F);
+	MemBltSurf(pTexture, 128, 0, 128, 224, 256, pSrc, 512, 256, tSurf, 1.0F, 1.0F);
+	MonoScreen[2].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
+	DXAttempt(MonoScreen[2].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[2].tex));
+
+	MemBltSurf(pTexture, 0, 0, 256, 224, 256, pSrc, 0, 256, tSurf, 1.0F, 1.0F);
+	MonoScreen[3].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
+	DXAttempt(MonoScreen[3].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[3].tex));
+
+	MemBltSurf(pTexture, 0, 0, 256, 224, 256, pSrc, 256, 256, tSurf, 1.0F, 1.0F);
+	MonoScreen[4].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
+	DXAttempt(MonoScreen[4].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[4].tex));
+
+	surface->Unlock(0);
+	free(pTexture);
+}
+
 void inject_loadsave(bool replace)
 {
 	INJECT(0x0047D460, S_DrawHealthBar, replace);
@@ -1860,4 +1898,5 @@ void inject_loadsave(bool replace)
 	INJECT(0x00479F40, FreeMonoScreen, replace);
 	INJECT(0x00479BE0, RGBM_Mono, replace);
 	INJECT(0x004797C0, MemBltSurf, replace);
+	INJECT(0x00479C10, ConvertSurfaceToTextures, replace);
 }
