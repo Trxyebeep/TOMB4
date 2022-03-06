@@ -1686,7 +1686,7 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/LoadSave.cpp
 
 0x004797C0		MemBltSurf
-0x00479BE0		RGBM_Mono
+0x00479BE0	+	RGBM_Mono
 0x00479C10		ConvertSurfaceToTextures
 0x00479F20	+	CreateMonoScreen
 0x00479F40	+	FreeMonoScreen

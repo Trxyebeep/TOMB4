@@ -19,6 +19,7 @@ void S_DrawTile(long x, long y, long w, long h, IDirect3DTexture2* t, long tU, l
 void S_DisplayMonoScreen();
 void CreateMonoScreen();
 void FreeMonoScreen();
+void RGBM_Mono(uchar* r, uchar* g, uchar* b);
 
 #define S_PauseMenu	( (long(__cdecl*)()) 0x0047CC60 )
 #define DoSlider	( (void(__cdecl*)(long, long, long, long, long, long, long, long)) 0x0047AB80 )

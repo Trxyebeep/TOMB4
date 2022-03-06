@@ -1738,6 +1738,16 @@ void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever
 	MonoScreenOn = 0;
 }
 
+void RGBM_Mono(uchar* r, uchar* g, uchar* b)
+{
+	uchar c;
+
+	c = (*r + *b) >> 1;
+	*r = c;
+	*g = c;
+	*b = c;
+}
+
 void inject_loadsave(bool replace)
 {
 	INJECT(0x0047D460, S_DrawHealthBar, replace);
@@ -1753,4 +1763,5 @@ void inject_loadsave(bool replace)
 	INJECT(0x0047A500, S_DisplayMonoScreen, replace);
 	INJECT(0x00479F20, CreateMonoScreen, replace);
 	INJECT(0x00479F40, FreeMonoScreen, replace);
+	INJECT(0x00479BE0, RGBM_Mono, replace);
 }
