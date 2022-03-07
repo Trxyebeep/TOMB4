@@ -1564,7 +1564,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00494030		DXMove
 0x00494080		DXSaveScreen
 0x00494270		DXInitKeyboard
-0x004944D0		DXCloseInput
+0x004944D0		DXReadKeyboard
 
 
 		specific/dxsound.cpp
