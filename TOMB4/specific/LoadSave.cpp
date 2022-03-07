@@ -1881,6 +1881,164 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACE4 surface)
 	free(pTexture);
 }
 
+void DoSlider(long x, long y, long width, long height, long pos, long clr1, long clr2, long clr3)
+{
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	float x2, sx, sy;
+	static float V;
+
+	nPolyType = 4;
+	V += 0.0099999998F;
+
+	if (V > 0.99000001F)
+		V = 0;
+
+	clipflags[0] = 0;
+	clipflags[1] = 0;
+	clipflags[2] = 0;
+	clipflags[3] = 0;
+	x2 = (float)phd_winxmax / 640.0F;
+	sx = width * x2;
+	sy = ((float)phd_winymax / 480.0F) * (height >> 1);
+	x2 *= x;
+
+	v[0].sx = x2;
+	v[0].sy = (float)y;
+	v[0].sz = f_mznear;
+	v[0].rhw = f_moneoznear - 2.0F;
+	v[0].color = clr1;
+	v[0].specular = 0xFF000000;
+
+	v[1].sx = sx + x2;
+	v[1].sy = (float)y;
+	v[1].sz = f_mznear;
+	v[1].rhw = f_moneoznear - 2.0F;
+	v[1].color = clr1;
+	v[1].specular = 0xFF000000;
+
+	v[2].sx = sx + x2;
+	v[2].sy = (float)y + sy;
+	v[2].sz = f_mznear;
+	v[2].rhw = f_moneoznear - 2.0F;
+	v[2].color = clr2;
+	v[2].specular = 0xFF000000;
+
+	v[3].sx = x2;
+	v[3].sy = (float)y + sy;
+	v[3].sz = f_mznear;
+	v[3].rhw = f_moneoznear - 2.0F;
+	v[3].color = clr2;
+	v[3].specular = 0xFF000000;
+
+	tex.tpage = ushort(nTextures - 1);
+	tex.drawtype = 0;
+	tex.flag = 0;
+	tex.u1 = 0;
+	tex.v1 = V;
+	tex.u2 = 1;
+	tex.v2 = V;
+	tex.u3 = 1;
+	tex.v3 = V + 0.0099999998F;
+	tex.u4 = 0;
+	tex.v4 = V + 0.0099999998F;
+	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+
+	v[0].sx = x2;
+	v[0].sy = (float)y + sy;
+	v[0].sz = f_mznear;
+	v[0].rhw = f_moneoznear - 2.0F;
+	v[0].color = clr2;
+	v[0].specular = 0xFF000000;
+
+	v[1].sx = sx + x2;
+	v[1].sy = (float)y + sy;
+	v[1].sz = f_mznear;
+	v[1].rhw = f_moneoznear - 2.0F;
+	v[1].color = clr2;
+	v[1].specular = 0xFF000000;
+	
+
+	v[2].sx = sx + x2;
+	v[2].sy = (float)y + 2 * sy;
+	v[2].sz = f_mznear;
+	v[2].rhw = f_moneoznear - 2.0F;
+	v[2].color = clr1;
+	v[2].specular = 0xFF000000;
+
+	v[3].sx = x2;
+	v[3].sy = (float)y + 2 * sy;
+	v[3].sz = f_moneoznear - 2.0F;
+	v[3].rhw = v[0].rhw;
+	v[3].color = clr1;
+	v[3].specular = 0xFF000000;
+	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+
+	v[0].sx = x2 - 1;
+	v[0].sy = float(y - 1);
+	v[0].sz = f_mznear + 2.0F;
+	v[0].rhw = f_moneoznear - 3.0F;
+	v[0].color = 0xFFFFFFFF;
+	v[0].specular = 0xFF000000;
+
+	v[1].sx = sx + x2 + 1;
+	v[1].sy = float(y - 1);
+	v[1].sz = f_mznear + 2.0F;
+	v[1].rhw = f_moneoznear - 3.0F;
+	v[1].color = 0xFFFFFFFF;
+	v[1].specular = 0xFF000000;
+
+	v[2].sx = sx + x2 + 1;
+	v[2].sy = ((float)y + 2 * sy) + 1;
+	v[2].sz = f_mznear + 2.0F;
+	v[2].rhw = f_moneoznear - 3.0F;
+	v[2].color = 0xFFFFFFFF;
+	v[2].specular = 0xFF000000;
+
+	v[3].sx = x2 - 1;
+	v[3].sy = ((float)y + 2 * sy) + 1;
+	v[3].sz = f_mznear + 2.0F;
+	v[3].rhw = f_moneoznear - 3.0F;
+	v[3].color = 0xFFFFFFFF;
+	v[3].specular = 0xFF000000;
+	tex.tpage = 0;
+	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+
+	sx = pos * sx / 100 + x2;
+
+	v[0].sx = x2;
+	v[0].sy = (float)y;
+	v[0].sz = f_mznear - 1.0F;
+	v[0].rhw = f_moneoznear - 1.0F;
+	v[0].color = clr3;
+	v[0].specular = 0xFF000000;
+
+	v[1].sx = sx + 1;
+	v[1].sy = (float)y;
+	v[1].sz = f_mznear - 1.0F;
+	v[1].rhw = f_moneoznear - 1.0F;
+	v[1].color = clr3;
+	v[1].specular = 0xFF000000;
+	
+	v[2].sx = sx;
+	v[2].sy = (float)y + 2 * sy;
+	v[2].sz = f_mznear - 1.0F;
+	v[2].rhw = f_moneoznear - 1.0F;
+	v[2].color = clr3;
+	v[2].specular = 0xFF000000;
+
+	v[3].sx = x2 - 1;
+	v[3].sy = (float)y + 2 * sy;
+	v[3].sz = f_mznear - 1.0F;
+	v[3].rhw = f_moneoznear - 1.0F;
+	v[3].color = clr3;
+	v[3].specular = 0xFF000000;
+
+	tex.tpage = 0;
+	tex.drawtype = 2;
+	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+}
+
 void inject_loadsave(bool replace)
 {
 	INJECT(0x0047D460, S_DrawHealthBar, replace);
@@ -1899,4 +2057,5 @@ void inject_loadsave(bool replace)
 	INJECT(0x00479BE0, RGBM_Mono, replace);
 	INJECT(0x004797C0, MemBltSurf, replace);
 	INJECT(0x00479C10, ConvertSurfaceToTextures, replace);
+	INJECT(0x0047AB80, DoSlider, replace);
 }
