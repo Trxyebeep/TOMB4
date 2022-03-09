@@ -1745,6 +1745,14 @@ struct MONOSCREEN_STRUCT
 	LPDIRECTDRAWSURFACE4 surface;
 };
 
+struct VonCroyCutData
+{
+	PHD_VECTOR CameraPos;
+	PHD_VECTOR CameraTarget;
+	short FOV;
+	short flags;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

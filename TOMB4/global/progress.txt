@@ -1420,8 +1420,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/voncroy.cpp
 
-0x00418D00		SetCutSceneCamera
-0x00418F10		ClearCutSceneCamera
+0x00418D00	+	SetCutSceneCamera
+0x00418F10	+	ClearCutSceneCamera
 0x00418FA0		GetAIEnemy
 0x00419070		DoVonCroyCutscene
 0x00419560		InitialiseVoncroy

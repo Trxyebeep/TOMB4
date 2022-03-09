@@ -54,6 +54,7 @@
 #include "../specific/gamemain.h"
 #include "../game/elements.h"
 #include "../specific/dxshell.h"
+#include "../game/voncroy.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -127,6 +128,7 @@ void inject_all(bool replace)
 	inject_gamemain(replace);
 	inject_elements(replace);
 	inject_dxshell(replace);
+	inject_voncroy(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

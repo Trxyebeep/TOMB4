@@ -494,6 +494,9 @@
 #define actualFOV	VAR_U_(0x0080ECD8, long)
 #define actualRoomNumber	VAR_U_(0x0080ECD4, long)
 
+#define VonCroyCutIndices	ARRAY_(0x004AD4D4, uchar, [68])
+#define VonCroyCutscenes	ARRAY_(0x004AD518, VonCroyCutData, [15])
+
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
