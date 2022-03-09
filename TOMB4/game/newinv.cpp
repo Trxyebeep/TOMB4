@@ -71,7 +71,7 @@ long SaveGame()
 
 void init_new_inventry()
 {
-	compass_needle_rot = 4096;
+	compass_settle_thang = 4096;
 	examine_mode = 0;
 	stats_mode = 0;
 	AlterFOV(14560);
@@ -336,7 +336,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 
 		if (item->object_number == COMPASS_ITEM)
 		{
-			compass = (compass_needle_rot * phd_sin(1024 * (GnFrameCounter & 0x3F))) >> 14;
+			compass = (compass_settle_thang * phd_sin(1024 * (GnFrameCounter & 0x3F))) >> 14;
 			compass += lara_item->pos.y_rot;
 			phd_RotY((short)(compass - 0x8000));
 
@@ -2554,8 +2554,8 @@ long S_CallInventory2()
 	{
 		OBJLIST_SPACING = phd_centerx >> 1;
 
-		if (compass_needle_rot != 1024)
-			compass_needle_rot -= 32;
+		if (compass_settle_thang != 1024)
+			compass_settle_thang -= 32;
 
 		S_InitialisePolyList();
 		SetDebounce = 1;
