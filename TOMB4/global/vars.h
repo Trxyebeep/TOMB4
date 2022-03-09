@@ -386,6 +386,7 @@
 #define gfLanguageFile	VAR_U_(0x007FD26C, uchar*)
 #define MonoScreenOn	VAR_U_(0x00536F1C, char)
 #define nAIObjects	VAR_U_(0x007FD200, short)
+#define XATrack	VAR_U_(0x004B22F4, long)
 
 
 
@@ -495,8 +496,11 @@
 #define actualFOV	VAR_U_(0x0080ECD8, long)
 #define actualRoomNumber	VAR_U_(0x0080ECD4, long)
 
-#define VonCroyCutIndices	ARRAY_(0x004AD4D4, uchar, [68])
+#define VonCroyCutIndices	ARRAY_(0x004AD4D4, uchar, [68])				//indices for VonCroyCutscenes depending on lara.locationPad
 #define VonCroyCutscenes	ARRAY_(0x004AD518, VonCroyCutData, [15])
+#define VonCroyCutFlags	ARRAY_(0x007FE2A0, uchar, [64])					//flags cuts played
+#define VonCroyCutTracks	ARRAY_(0x004AD458, short, [62])
+
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1
