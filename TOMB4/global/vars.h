@@ -385,6 +385,7 @@
 #define gfScriptFile	VAR_U_(0x007FD2AC, uchar*)
 #define gfLanguageFile	VAR_U_(0x007FD26C, uchar*)
 #define MonoScreenOn	VAR_U_(0x00536F1C, char)
+#define nAIObjects	VAR_U_(0x007FD200, short)
 
 
 

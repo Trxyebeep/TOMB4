@@ -89,8 +89,39 @@ void ClearCutSceneCamera()
 	AlterFOV((short)actualFOV);
 }
 
+void GetAIEnemy(CREATURE_INFO* info, long tfl)
+{
+	AIOBJECT* ai;
+
+	for (int i = 0; i < nAIObjects; i++)
+	{
+		ai = &AIObjects[i];
+
+		if (ai->trigger_flags == tfl && ai->room_number != 255)
+		{
+			info->enemy = &info->ai_target;
+			info->ai_target.object_number = ai->object_number;
+			info->ai_target.room_number = ai->room_number;
+			info->ai_target.pos.x_pos = ai->x;
+			info->ai_target.pos.y_pos = ai->y;
+			info->ai_target.pos.z_pos = ai->z;
+			info->ai_target.pos.y_rot = ai->y_rot;
+			info->ai_target.flags = ai->flags;
+			info->ai_target.trigger_flags = ai->trigger_flags;
+			info->ai_target.box_number = ai->box_number;
+
+			if (!(info->ai_target.flags & IFL_TRIGGERED))
+			{
+				info->ai_target.pos.x_pos += (256 * phd_sin(info->ai_target.pos.y_rot)) >> 14;
+				info->ai_target.pos.z_pos += (256 * phd_cos(info->ai_target.pos.y_rot)) >> 14;
+			}
+		}
+	}
+}
+
 void inject_voncroy(bool replace)
 {
 	INJECT(0x00418D00, SetCutSceneCamera, replace);
 	INJECT(0x00418F10, ClearCutSceneCamera, replace);
+	INJECT(0x00418FA0, GetAIEnemy, replace);
 }
