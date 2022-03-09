@@ -411,7 +411,7 @@ long ControlPhase(long nframes, long demo_mode)
 
 			if (bUseSpotCam)
 				CalculateSpotCams();
-			else if (!VC_InCut)
+			else if (!bVoncroyCutScene)
 				CalculateCamera();
 		}
 

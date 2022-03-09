@@ -12,9 +12,9 @@ void DrawTrainObjects()
 	short* obj;
 	long x, x2;
 
-	TrainObjPos = (TrainObjPos + 32 * gfUVRotate) % 0x60000;
-	obj= &TrainObjTable[96 - ((TrainObjPos / 6144 - lara_item->pos.x_pos / 6144) & 0x1F)];
-	x = TrainObjPos % 6144 - 24576;
+	trainmappos = (trainmappos + 32 * gfUVRotate) % 0x60000;
+	obj= &dels_handy_train_map[96 - ((trainmappos / 6144 - lara_item->pos.x_pos / 6144) & 0x1F)];
+	x = trainmappos % 6144 - 24576;
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, 47168);
 
@@ -30,8 +30,8 @@ void DrawTrainObjects()
 	phd_TranslateAbs(x + lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, 47168);
 	phd_PutPolygons_train(meshes[static_objects[*obj].mesh_number], 0);
 	phd_PopMatrix();
-	obj = &TrainObjTable[32 - ((TrainObjPos / 6144 - lara_item->pos.x_pos / 6144 + 8) & 0x1F)];
-	x = TrainObjPos % 6144 - 24576;
+	obj = &dels_handy_train_map[32 - ((trainmappos / 6144 - lara_item->pos.x_pos / 6144 + 8) & 0x1F)];
+	x = trainmappos % 6144 - 24576;
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, 58304);
 	phd_RotY(32760);
@@ -50,8 +50,8 @@ void DrawTrainObjects()
 	phd_RotY(32760);
 	phd_PutPolygons_train(meshes[static_objects[*obj].mesh_number], 0);
 	phd_PopMatrix();
-	obj = &TrainObjTable[192 - 2 * ((TrainObjPos / 6144 - lara_item->pos.x_pos / 6144 + 8) & 0x1F)];
-	x = TrainObjPos % 6144 - 24576;
+	obj = &dels_handy_train_map[192 - 2 * ((trainmappos / 6144 - lara_item->pos.x_pos / 6144 + 8) & 0x1F)];
+	x = trainmappos % 6144 - 24576;
 	phd_PushMatrix();
 
 	for (int i = 0; i < 8; i++)

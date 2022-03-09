@@ -1140,42 +1140,42 @@ void twentyone_end()
 
 void twentythree_init()
 {
-	StatueItem = find_a_fucking_item(HORUS_STATUE);
+	horus_item_thing = find_a_fucking_item(HORUS_STATUE);
 }
 
 void twentythree_control()
 {
-	StatueItem->flags |= IFL_TRIGGERED;
+	horus_item_thing->flags |= IFL_TRIGGERED;
 
 	switch (GLOBAL_cutseq_frame)
 	{
 	case 194:
-		StatueItem->mesh_bits &= ~0x200;
-		StatueItem->mesh_bits |= 0x20;
+		horus_item_thing->mesh_bits &= ~0x200;
+		horus_item_thing->mesh_bits |= 0x20;
 		break;
 
 	case 251:
-		StatueItem->mesh_bits &= ~0x400;
-		StatueItem->mesh_bits |= 0x10;
+		horus_item_thing->mesh_bits &= ~0x400;
+		horus_item_thing->mesh_bits |= 0x10;
 		break;
 
 	case 350:
-		StatueItem->mesh_bits &= ~0x40;
-		StatueItem->mesh_bits |= 8;
+		horus_item_thing->mesh_bits &= ~0x40;
+		horus_item_thing->mesh_bits |= 8;
 		break;
 
 	case 440:
-		StatueItem->mesh_bits &= ~4;
-		StatueItem->mesh_bits |= 0x80;
+		horus_item_thing->mesh_bits &= ~4;
+		horus_item_thing->mesh_bits |= 0x80;
 		break;
 
 	case 514:
-		StatueItem->mesh_bits &= ~2;
-		StatueItem->mesh_bits |= 0x100;
+		horus_item_thing->mesh_bits &= ~2;
+		horus_item_thing->mesh_bits |= 0x100;
 		break;
 
 	case 556:
-		StatueItem->mesh_bits |= 0x800;
+		horus_item_thing->mesh_bits |= 0x800;
 		break;
 	}
 }

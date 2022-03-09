@@ -128,7 +128,7 @@
 #define LaraTorchYRot	VAR_U_(0x00536EEC, long)
 #define SetupLight_thing	VAR_U_(0x00536EF0, long)
 #define gfUVRotate	VAR_U_(0x007FD2E9, char)
-#define TrainObjPos	VAR_U_(0x007FD2F0, long)
+#define trainmappos	VAR_U_(0x007FD2F0, long)
 #define gfStringOffset	VAR_U_(0x007FD274, ushort*)
 #define gfStringWad	VAR_U_(0x007FD2B8, char*)
 #define gfMirrorRoom	VAR_U_(0x007FD250, uchar)
@@ -213,9 +213,8 @@
 #define IM_rate	VAR_U_(0x007FE120, long)
 #define IM_frac	VAR_U_(0x007FDF54, long)
 #define IMptr	VAR_U_(0x007FE124, long*)
-
-#define StatueItem	VAR_U_(0x007F4FA8, ITEM_INFO*)
-#define compass_needle_rot	VAR_U_(0x007FEA50, long)
+#define horus_item_thing	VAR_U_(0x007F4FA8, ITEM_INFO*)
+#define compass_settle_thang	VAR_U_(0x007FEA50, long)
 #define examine_mode	VAR_U_(0x004BF3CC, short)
 #define stats_mode	VAR_U_(0x007FEA18, short)
 #define left_debounce	VAR_U_(0x007FE9C9, char)
@@ -285,7 +284,6 @@
 #define inventry_ypos	VAR_U_(0x004BF3D2, short)
 #define InventoryActive	VAR_U_(0x004BF3C8, long)
 #define GnFrameCounter	VAR_U_(0x007E71DC, long)
-#define VC_InCut	VAR_U_(0x007FE288, char)
 #define FXType	VAR_U_(0x007FE7E0, short)
 #define OnObject	VAR_U_(0x007FE200, long)
 #define FootPrintNum	VAR_U_(0x008010C0, long)
@@ -387,6 +385,8 @@
 #define gfScriptFile	VAR_U_(0x007FD2AC, uchar*)
 #define gfLanguageFile	VAR_U_(0x007FD26C, uchar*)
 #define MonoScreenOn	VAR_U_(0x00536F1C, char)
+#define nAIObjects	VAR_U_(0x007FD200, short)
+#define XATrack	VAR_U_(0x004B22F4, long)
 
 
 
@@ -399,7 +399,7 @@
 #define Lightning	ARRAY_(0x007FFB20, LIGHTNING_STRUCT, [16])
 #define dynamics	ARRAY_(0x00804860, DYNAMIC, [32])
 #define w2v_matrix	ARRAY_(0x00753CC8, long, [12])
-#define TrainObjTable	ARRAY_(0x004AFF9C, short, [512])
+#define dels_handy_train_map	ARRAY_(0x004AFF9C, short, [512])
 #define LaraNodeAmbient	ARRAY_(0x0080E9F0, long, [2])
 #define sfx_frequencies	ARRAY_(0x004B38A0, long, [3])
 #define GermanKeyboard	ARRAY_(0x004B2BF4, char*, [272])
@@ -464,7 +464,7 @@
 #define camera_speed	ARRAY_(0x007F5A20, long, [18])
 #define SpotRemap	ARRAY_(0x007F58E8, uchar, [8])
 #define CameraCnt	ARRAY_(0x007F6EC8, uchar, [8])
-#define LibrarySerpents	ARRAY_(0x004BF2FC, char, [8])
+#define LibraryTab	ARRAY_(0x004BF2FC, char, [8])
 #define spark	ARRAY_(0x00801400, SPARKS, [256])
 #define smoke_spark	ARRAY_(0x007FF100, SMOKE_SPARKS, [32])
 #define objects	ARRAY_(0x0052B850, OBJECT_INFO, [465])
@@ -487,6 +487,20 @@
 #define FXFogBulbs	ARRAY_(0x00660AD0, FOGBULB_STRUCT, [5])
 #define ActiveFogBulbs	ARRAY_(0x00670C94, FOGBULB_STRUCT*, [5])
 #define FogTableColor	ARRAY_(0x004ADE1C, long, [28])
+
+
+/*VonCroy stuff*/
+#define bVoncroyCutScene	VAR_U_(0x007FE288, char)
+#define actualCameraPos	VAR_U_(0x0080ECF0, PHD_VECTOR)
+#define actualCameraTarget	VAR_U_(0x0080ECE0, PHD_VECTOR)
+#define actualFOV	VAR_U_(0x0080ECD8, long)
+#define actualRoomNumber	VAR_U_(0x0080ECD4, long)
+
+#define VonCroyCutIndices	ARRAY_(0x004AD4D4, uchar, [68])				//indices for VonCroyCutscenes depending on lara.locationPad
+#define VonCroyCutscenes	ARRAY_(0x004AD518, VonCroyCutData, [15])
+#define VonCroyCutFlags	ARRAY_(0x007FE2A0, uchar, [64])					//flags cuts played
+#define VonCroyCutTracks	ARRAY_(0x004AD458, short, [62])
+
 
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1
