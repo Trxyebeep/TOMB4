@@ -1356,7 +1356,18 @@ void VoncroyControl(short item_number)
 			}
 			else if (target)
 			{
-
+				if (VonCroyAI.distance < 0x900000 && item->meshswap_meshbits & 0x40080)
+					item->goal_anim_state = 6;
+				else if (VonCroyAI.distance < 0x100000)
+				{
+					if (VonCroyAI.bite)
+						item->goal_anim_state = 31;
+					else if (oEnemy->hit_points > 0)
+					{
+						if (VonCroyAI.ahead && ABS(oEnemy->pos.y_pos - item->pos.y_pos + 512) < 512)
+							item->goal_anim_state = 21;
+					}
+				}
 			}
 			else if ((VonCroyAI.distance > 0x64000 && VonCroyLaraAI.distance < 0x1900000) || lara.location < item->item_flags[3])
 				item->goal_anim_state = 2;
