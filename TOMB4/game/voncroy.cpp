@@ -439,11 +439,11 @@ void VoncroyRaceControl(short item_number)
 			break;
 		}
 
-		if (item->item_flags[2] != 6)
-			item->item_flags[2] = 0;
-
-		if (VonCroy->flags & 8)
+		if (VonCroy->reached_goal)
 		{
+			if (item->item_flags[2] != 6)
+				item->item_flags[2] = 0;
+
 			switch (oEnemy->flags)
 			{
 			case 0:
@@ -638,12 +638,7 @@ void VoncroyRaceControl(short item_number)
 
 			VonCroy->LOT.is_jumping = 1;
 		}
-		else if (!(VonCroy->flags & 128))
-		{
-			if (oEnemy == lara_item && info.distance <= 0x64000)
-				break;
-		}
-		else
+		else if (VonCroy->monkey_ahead)
 		{
 			floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 			h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
@@ -654,6 +649,8 @@ void VoncroyRaceControl(short item_number)
 			else
 				item->goal_anim_state = 2;
 		}
+		else if (oEnemy != lara_item || info.distance > 0x64000)
+				item->goal_anim_state = 2;
 
 		break;
 
@@ -674,9 +671,9 @@ void VoncroyRaceControl(short item_number)
 			item->goal_anim_state = 1;
 		else if (jump_ahead || long_jump_ahead)
 			VonCroy->maximum_turn = 0;
-		else if (VonCroy->flags & 128)
+		else if (VonCroy->monkey_ahead)
 			item->goal_anim_state = 1;
-		else if (!(VonCroy->flags & 8))
+		else if (!VonCroy->reached_goal)
 		{
 			if (info.distance < 0x64000 && oEnemy->flags != 32)
 				item->goal_anim_state = 1;
@@ -701,6 +698,8 @@ void VoncroyRaceControl(short item_number)
 			item->item_flags[3] += ifl3;
 			item->ai_bits = 16;
 		}
+		else
+			item->goal_anim_state = 1;
 
 		break;
 
@@ -729,9 +728,9 @@ void VoncroyRaceControl(short item_number)
 			VonCroy->maximum_turn = 0;
 			item->goal_anim_state = 16;
 		}
-		else if (VonCroy->flags & 128)
+		else if (VonCroy->monkey_ahead)
 			item->goal_anim_state = 1;
-		else if (VonCroy->flags & 8)
+		else if (VonCroy->reached_goal)
 		{
 			if (oEnemy->flags == 32)
 			{
@@ -775,7 +774,7 @@ void VoncroyRaceControl(short item_number)
 	case 4:
 		VonCroy->maximum_turn = 0;
 
-		if (item->box_number == VonCroy->LOT.target_box || VonCroy->monkey_ahead)
+		if (item->box_number == VonCroy->LOT.target_box || !VonCroy->monkey_ahead)
 		{
 			floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 			h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
@@ -794,7 +793,7 @@ void VoncroyRaceControl(short item_number)
 		VonCroy->LOT.is_monkeying = 1;
 		VonCroy->maximum_turn = 1092;
 
-		if (item->box_number == VonCroy->LOT.target_box || VonCroy->monkey_ahead)
+		if (item->box_number == VonCroy->LOT.target_box || !VonCroy->monkey_ahead)
 		{
 			floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 			h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
