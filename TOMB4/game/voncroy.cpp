@@ -1782,7 +1782,7 @@ void VoncroyControl(short item_number)
 		{
 			torso_y = VonCroyAI.angle >> 1;
 			head_y = VonCroyAI.angle >> 1;
-			torso_x = VonCroyAI.x_angle;
+			torso_x = VonCroyAI.x_angle >> 1;
 		}
 
 		VonCroy->maximum_turn = 0;
@@ -1850,7 +1850,7 @@ void VoncroyControl(short item_number)
 		{
 			torso_y = VonCroyAI.angle >> 1;
 			head_y = VonCroyAI.angle >> 1;
-			torso_x = VonCroyAI.x_angle;
+			torso_x = VonCroyAI.x_angle >> 1;
 		}
 
 		VonCroy->maximum_turn = 0;
