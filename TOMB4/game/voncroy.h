@@ -8,3 +8,4 @@ void ClearCutSceneCamera();
 void GetAIEnemy(CREATURE_INFO* info, long tfl);
 void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info);
 void InitialiseVoncroy(short item_number);
+void VoncroyRaceControl(short item_number);

@@ -1426,7 +1426,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00419070	+	DoVonCroyCutscene
 0x00419560	+	InitialiseVoncroy
 0x004195E0		VoncroyControl
-0x0041AF00		VoncroyRaceControl
+0x0041AF00	+	VoncroyRaceControl
 
 
 		game/wildboar.cpp
