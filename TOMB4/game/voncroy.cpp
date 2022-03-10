@@ -1071,6 +1071,7 @@ void VoncroyControl(short item_number)
 	ITEM_INFO* item;
 	ITEM_INFO* oEnemy;
 	ITEM_INFO* target;
+	ITEM_INFO* candidate;
 	CREATURE_INFO* VonCroy;
 	CREATURE_INFO* baddie;
 	FLOOR_INFO* floor;
@@ -1133,12 +1134,12 @@ void VoncroyControl(short item_number)
 
 			if (baddie->item_num != NO_ITEM && baddie->item_num != item_number)
 			{
-				target = &items[baddie->item_num];
+				candidate = &items[baddie->item_num];
 
-				if (target->object_number != VON_CROY)
+				if (candidate->object_number != VON_CROY)
 				{
-					dx = target->pos.x_pos - item->pos.x_pos;
-					dz = target->pos.z_pos - item->pos.z_pos;
+					dx = candidate->pos.x_pos - item->pos.x_pos;
+					dz = candidate->pos.z_pos - item->pos.z_pos;
 
 					if (ABS(dx) <= 5120 && ABS(dz) <= 5120)
 					{
@@ -1147,6 +1148,7 @@ void VoncroyControl(short item_number)
 						if (dist < max_dist)
 						{
 							VonCroy->reached_goal = 0;
+							target = candidate;
 							max_dist = dist;
 							item->item_flags[2] = 0;
 						}
@@ -1452,7 +1454,7 @@ void VoncroyControl(short item_number)
 
 				case 40:
 
-					if (item->item_flags[2]==6)
+					if (item->item_flags[2] == 6)
 						item->goal_anim_state = 3;
 					else
 					{
