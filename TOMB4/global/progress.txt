@@ -1425,7 +1425,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00418FA0	+	GetAIEnemy
 0x00419070	+	DoVonCroyCutscene
 0x00419560	+	InitialiseVoncroy
-0x004195E0		VoncroyControl
+0x004195E0	+	VoncroyControl
 0x0041AF00	+	VoncroyRaceControl
 
 

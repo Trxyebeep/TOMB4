@@ -12,6 +12,7 @@
 #include "box.h"
 #include "lot.h"
 #include "effects.h"
+#include "switch.h"
 
 static BITE_INFO VonCroyBite = { 0, 35, 130, 18 };
 
@@ -1065,6 +1066,958 @@ void VoncroyRaceControl(short item_number)
 	}
 }
 
+void VoncroyControl(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* oEnemy;
+	ITEM_INFO* target;
+	CREATURE_INFO* VonCroy;
+	CREATURE_INFO* baddie;
+	FLOOR_INFO* floor;
+	static AI_INFO VonCroyAI;
+	static AI_INFO VonCroyLaraAI;
+	long Xoffset, Zoffset, x, y, z, nearheight, midheight, farheight, dx, dz, dist, max_dist, h, c, goin;
+	short angle, torso_x, torso_y, head_x, head_y, room_number, jump_ahead, long_jump_ahead, ifl3;
+
+	if (!CreatureActive(item_number))
+		return;
+
+	item = &items[item_number];
+	VonCroy = (CREATURE_INFO*)item->data;
+	angle = 0;
+	head_x = 0;
+	head_y = 0;
+	torso_x = 0;
+	torso_y = 0;
+	ifl3 = 0;
+	room_number = item->room_number;
+	Xoffset = 808 * phd_sin(item->pos.y_rot) >> 14;
+	Zoffset = 808 * phd_cos(item->pos.y_rot) >> 14;
+	x = item->pos.x_pos + Xoffset;
+	y = item->pos.y_pos;
+	z = item->pos.z_pos + Zoffset;
+	floor = GetFloor(x, y, z, &room_number);
+	nearheight = GetHeight(floor, x, y, z);
+	room_number = item->room_number;
+	x += Xoffset;
+	z += Zoffset;
+	floor = GetFloor(x, y, z, &room_number);
+	midheight = GetHeight(floor, x, y, z);
+	room_number = item->room_number;
+	x += Xoffset;
+	z += Zoffset;
+	floor = GetFloor(x, y, z, &room_number);
+	farheight = GetHeight(floor, x, y, z);
+
+	if (y >= nearheight - 384 || y >= midheight + 256 || y <= midheight - 256)
+		jump_ahead = 0;
+	else
+		jump_ahead = 1;
+
+	if (y >= nearheight - 384 || y >= midheight - 384 || y >= farheight + 256 || y <= farheight - 256)
+		long_jump_ahead = 0;
+	else
+		long_jump_ahead = 1;
+
+	item->ai_bits = 16;
+	GetAITarget(VonCroy);
+	target = 0;
+
+	if (lara.location <= item->item_flags[3])
+	{
+		max_dist = 0x7FFFFFFF;
+
+		for (int i = 0; i < 5; i++)
+		{
+			baddie = &baddie_slots[i];
+
+			if (baddie->item_num != NO_ITEM && baddie->item_num != item_number)
+			{
+				target = &items[baddie->item_num];
+
+				if (target->object_number != VON_CROY)
+				{
+					dx = target->pos.x_pos - item->pos.x_pos;
+					dz = target->pos.z_pos - item->pos.z_pos;
+
+					if (ABS(dx) <= 5120 && ABS(dz) <= 5120)
+					{
+						dist = SQUARE(dx) + SQUARE(dz);
+
+						if (dist < max_dist)
+						{
+							VonCroy->reached_goal = 0;
+							max_dist = dist;
+							item->item_flags[2] = 0;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	oEnemy = VonCroy->enemy;
+
+	if (target)
+		VonCroy->enemy = target;
+
+	if (item->anim_number == objects[VON_CROY].anim_index + 36 || item->anim_number == objects[VON_CROY].anim_index + 52)
+	{
+		item->pos.x_pos += Xoffset;
+		item->pos.z_pos += Zoffset;
+		room_number = item->room_number;
+		GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &item->room_number);
+
+		if (item->frame_number == anims[item->anim_number].frame_base + 1)
+			CreateZone(item);
+
+		CreatureAIInfo(item, &VonCroyAI);
+		item->room_number = room_number;
+		item->pos.z_pos -= Zoffset;
+		item->pos.x_pos -= Xoffset;
+	}
+	else
+		CreatureAIInfo(item, &VonCroyAI);
+
+	GetCreatureMood(item, &VonCroyAI, 1);
+	CreatureMood(item, &VonCroyAI, 1);
+
+	if (VonCroy->enemy == lara_item)
+		VonCroyLaraAI = VonCroyAI;
+	else
+	{
+		dx = lara_item->pos.x_pos - item->pos.x_pos;
+		dz = lara_item->pos.z_pos - item->pos.z_pos;
+		VonCroyLaraAI.angle = short(phd_atan(dz, dx) - item->pos.y_rot);
+
+		if (VonCroyLaraAI.angle > -0x4000 && VonCroyLaraAI.angle < 0x4000)
+			VonCroyLaraAI.ahead = 1;
+		else
+			VonCroyLaraAI.ahead = 0;
+
+		VonCroyLaraAI.enemy_facing = VonCroyLaraAI.angle - lara_item->pos.y_rot + 0x8000;
+
+		if (dx > 32000 || dx < -32000 || dz > 32000 || dz < -32000)
+			VonCroyLaraAI.distance = 0x7FFFFFFF;
+		else
+			VonCroyLaraAI.distance = SQUARE(dx) + SQUARE(dz);
+
+		if (ABS(dx) > ABS(dz))
+			VonCroyLaraAI.x_angle = (short)phd_atan(ABS(dx) + (ABS(dz) >> 1), item->pos.y_pos - lara_item->pos.y_pos);
+		else
+			VonCroyLaraAI.x_angle = (short)phd_atan(ABS(dz) + (ABS(dx) >> 1), item->pos.y_pos - lara_item->pos.y_pos);
+	}
+
+	if (VonCroyAI.angle > -6144 && VonCroyLaraAI.angle < 6144 && VonCroyLaraAI.distance < 0x100000)
+		VonCroyLaraAI.bite = 1;
+	else
+		VonCroyLaraAI.bite = 0;
+
+	angle = CreatureTurn(item, VonCroy->maximum_turn);
+
+	if (target)
+	{
+		VonCroy->enemy = oEnemy;
+		oEnemy = target;
+	}
+
+	if (item->item_flags[3] == 43 && savegame.Game.Secrets > 7)
+	{
+		VonCroy->reached_goal = 0;
+		VonCroy->enemy = 0;
+		item->item_flags[3] = 53;
+		lara.location = 53;
+		item->ai_bits = 16;
+	}
+
+	if (!VonCroyCutFlags[item->item_flags[3]])
+	{
+		if (VonCroy->reached_goal && item->item_flags[3] == lara.locationPad && VonCroyCutTracks[item->item_flags[3]] != -1 ||
+			item->trigger_flags > 0 || lara.locationPad >= item->item_flags[3] &&
+			!VonCroyCutFlags[lara.locationPad] && VonCroyCutTracks[lara.locationPad] != -1)
+		{
+			CreatureJoint(item, 0, VonCroyLaraAI.angle >> 1);
+			CreatureJoint(item, 1, VonCroyLaraAI.x_angle >> 1);
+			CreatureJoint(item, 2, VonCroyLaraAI.angle >> 1);
+			CreatureJoint(item, 3, VonCroyLaraAI.x_angle >> 1);
+			DoVonCroyCutscene(item, VonCroy);
+			return;
+		}
+	}
+
+	if (lara.locationPad != 9 && lara.locationPad != 10)
+	{
+		if (lara.locationPad == 43 && (item->item_flags[3] == 43 || item->item_flags[3] == 53))
+		{
+			lara.locationPad = (char)item->item_flags[3];
+			lara.location = (char)item->item_flags[3];
+		}
+		else if (lara.location == 43 && (item->item_flags[3] == 44 || item->item_flags[3] == 54))
+			lara.location = (char)item->item_flags[3];
+	}
+	else if (item->item_flags[3] == 11)
+		lara.locationPad = 11;
+	else if (lara.locationPad == 10)
+	{
+		if (item->item_flags[3] == 12 && (item->item_flags[0] || lara_item->anim_number == objects[LARA].anim_index + 90
+				&& lara_item->frame_number == anims[lara_item->anim_number].frame_end))
+		{
+			lara.locationPad = (char)item->item_flags[3];
+			item->item_flags[0] = 1;
+		}
+		else if (lara.location == 43 && (item->item_flags[3] == 44 || item->item_flags[3] == 54))
+			lara.location = (char)item->item_flags[3];
+	}
+	else if (lara.locationPad == 43 && (item->item_flags[3] == 43 || item->item_flags[3] == 53))
+	{
+		lara.locationPad = (char)item->item_flags[3];
+		lara.location = (char)item->item_flags[3];
+	}
+	else if (lara.location == 43 && (item->item_flags[3] == 44 || item->item_flags[3] == 54))
+		lara.location = (char)item->item_flags[3];
+
+	switch (item->current_anim_state)
+	{
+	case 1:
+		VonCroy->LOT.is_jumping = 0;
+		VonCroy->LOT.is_monkeying = 0;
+		VonCroy->flags = 0;
+		VonCroy->maximum_turn = 0;
+		head_y = VonCroyAI.angle >> 1;
+
+		if (VonCroyAI.ahead)
+		{
+			torso_x = VonCroyAI.x_angle >> 1;
+			torso_y = VonCroyAI.angle >> 1;
+		}
+
+		goin = 0;
+
+		if (item->required_anim_state)
+			item->goal_anim_state = item->required_anim_state;
+		else if (item->item_flags[2] == 2)
+		{
+			if (oEnemy->pos.y_rot - item->pos.y_rot < -1024)
+				item->goal_anim_state = 35;
+			else if (oEnemy->pos.y_rot - item->pos.y_rot > 1024)
+				item->goal_anim_state = 22;
+			else
+			{
+				item->item_flags[2] = 0;
+
+				if (!oEnemy->flags)
+				{
+					ifl3 = 1;
+					VonCroy->reached_goal = 0;
+					VonCroy->enemy = 0;
+					item->item_flags[3] += ifl3;
+					item->ai_bits = 16;
+				}
+			}
+		}
+		else if (lara.location < item->item_flags[3] && VonCroy->reached_goal)
+			item->goal_anim_state = 1;
+		else if (target)
+		{
+			if (VonCroyAI.distance < 0x900000 && item->meshswap_meshbits & 0x40080)
+				item->goal_anim_state = 6;
+			else if (VonCroyAI.distance < 0x100000)
+			{
+				if (VonCroyAI.bite)
+					item->goal_anim_state = 31;
+				else if (oEnemy->hit_points > 0)
+				{
+					if (VonCroyAI.ahead && ABS(oEnemy->pos.y_pos - item->pos.y_pos + 512) < 512)
+						item->goal_anim_state = 21;
+				}
+			}
+			else if (oEnemy != lara_item && VonCroyAI.distance > 0x64000)
+				item->goal_anim_state = 2;
+		}
+		else if (!VonCroy->reached_goal)
+		{
+			if (VonCroyAI.bite)
+				item->goal_anim_state = 1;
+			else if (VonCroy->monkey_ahead)
+			{
+				floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+				h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+				c = GetCeiling(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+
+				if (c == h - 1536)
+				{
+					if (item->meshswap_meshbits & 0x40080)
+						item->goal_anim_state = 4;
+					else
+						item->goal_anim_state = 6;
+				}
+				else
+					item->goal_anim_state = 2;
+			}
+			else if (target)
+			{
+
+			}
+			else if ((VonCroyAI.distance > 0x64000 && VonCroyLaraAI.distance < 0x1900000) || lara.location < item->item_flags[3])
+				item->goal_anim_state = 2;
+		}
+		else if (VonCroyAI.distance > 0x4000 && oEnemy->flags && item->item_flags[2] != 6)
+		{
+			VonCroy->maximum_turn = 0;
+
+			if (VonCroyAI.ahead)
+				item->required_anim_state = 36;
+			else
+				item->required_anim_state = 37;
+		}
+		else if (lara.location > item->item_flags[3])
+			goin = 1;
+		else if (oEnemy)
+		{
+			if (oEnemy->flags)
+			{
+				if (lara.locationPad == item->item_flags[3] || VonCroyCutTracks[item->item_flags[3]] == -1 &&
+					lara.location == item->item_flags[3] && VonCroyLaraAI.distance < 0x900000)
+					goin = 1;
+				else if (VonCroyLaraAI.distance >= 0x900000)
+					item->goal_anim_state = 1;
+			}
+		}
+		else if (!item->item_flags[2])
+		{
+			if (VonCroyLaraAI.angle > 1024)
+				item->goal_anim_state = 35;
+			else if (VonCroyLaraAI.angle < -1024)
+				item->goal_anim_state = 22;
+			else
+				item->item_flags[2] = 1;
+		}
+		else if (item->item_flags[2] == 1)
+		{
+			ifl3 = 1;
+			VonCroy->reached_goal = 0;
+			VonCroy->enemy = 0;
+			item->item_flags[3] += ifl3;
+			item->ai_bits = 16;
+		}
+		else if (GetRandomControl() & 0xF)
+			item->item_flags[2] = 0;
+		else if (VonCroyLaraAI.distance >= 0x900000)
+			item->goal_anim_state = 13;
+		else
+			item->goal_anim_state = 14;
+
+		if (goin)
+		{
+			if (oEnemy->flags > 32)
+			{
+				switch (oEnemy->flags)
+				{
+				case 34:
+
+					if (lara.location > item->item_flags[3])
+					{
+						ifl3 = 2;
+						VonCroy->reached_goal = 0;
+						VonCroy->enemy = 0;
+						item->item_flags[3] += ifl3;
+						item->ai_bits = 16;
+					}
+
+					break;
+
+				case 36:
+
+					if (lara.location > item->item_flags[3])
+					{
+						ifl3 = 1;
+						VonCroy->reached_goal = 0;
+						VonCroy->enemy = 0;
+						item->item_flags[3] += ifl3;
+						item->ai_bits = 16;
+					}
+
+					break;
+
+				case 40:
+
+					if (item->item_flags[2]==6)
+						item->goal_anim_state = 3;
+					else
+					{
+						item->goal_anim_state = 34;
+						item->pos.x_pos = oEnemy->pos.x_pos;
+						item->pos.y_pos = oEnemy->pos.y_pos;
+						item->pos.z_pos = oEnemy->pos.z_pos;
+						item->pos.x_rot = oEnemy->pos.x_rot;
+						item->pos.y_rot = oEnemy->pos.y_rot;
+						item->pos.z_rot = oEnemy->pos.z_rot;
+					}
+
+					break;
+
+				case 48:
+					TestTriggersAtXYZ(VonCroy->ai_target.pos.x_pos, VonCroy->ai_target.pos.y_pos, VonCroy->ai_target.pos.z_pos,
+						VonCroy->ai_target.room_number, 1, 0);
+					ifl3 = 1;
+					VonCroy->reached_goal = 0;
+					VonCroy->enemy = 0;
+					item->item_flags[3] += ifl3;
+					item->ai_bits = 16;
+					break;
+
+				case 255:
+					ifl3 = 1;
+					VonCroy->reached_goal = 0;
+					VonCroy->enemy = 0;
+					item->item_flags[3] += ifl3;
+					item->ai_bits = 16;
+					break;
+				}
+			}
+			else if (oEnemy->flags != 32)
+			{
+				switch (oEnemy->flags)
+				{
+				case 0:
+
+					break;
+
+				case 2:
+					item->anim_number = objects[VON_CROY].anim_index + 37;
+					item->frame_number = anims[item->anim_number].frame_base;
+					item->current_anim_state = 29;
+					item->pos.x_pos = oEnemy->pos.x_pos;
+					item->pos.y_pos = oEnemy->pos.y_pos;
+					item->pos.z_pos = oEnemy->pos.z_pos;
+					item->pos.x_rot = oEnemy->pos.x_rot;
+					item->pos.y_rot = oEnemy->pos.y_rot;
+					item->pos.z_rot = oEnemy->pos.z_rot;
+					ifl3 = 1;
+					VonCroy->reached_goal = 0;
+					VonCroy->enemy = 0;
+					item->item_flags[3] += ifl3;
+					item->ai_bits = 16;
+					break;
+
+				case 4:
+					item->anim_number = objects[VON_CROY].anim_index + 36;
+					item->frame_number = anims[item->anim_number].frame_base;
+					item->current_anim_state = 26;
+					VonCroy->LOT.is_jumping = 1;
+					item->pos.x_pos = oEnemy->pos.x_pos;
+					item->pos.y_pos = oEnemy->pos.y_pos;
+					item->pos.z_pos = oEnemy->pos.z_pos;
+					item->pos.x_rot = oEnemy->pos.x_rot;
+					item->pos.y_rot = oEnemy->pos.y_rot;
+					item->pos.z_rot = oEnemy->pos.z_rot;
+					ifl3 = 1;
+					VonCroy->reached_goal = 0;
+					VonCroy->enemy = 0;
+					item->item_flags[3] += ifl3;
+					item->ai_bits = 16;
+					break;
+
+				case 8:
+					item->goal_anim_state = 20;
+					break;
+
+				case 10:
+					item->goal_anim_state = 7;
+					break;
+
+				case 12:
+					VonCroy->maximum_turn = 0;
+					item->anim_number = objects[VON_CROY].anim_index + 22;
+					item->frame_number = anims[item->anim_number].frame_base;
+					item->current_anim_state = 15;
+
+					if (long_jump_ahead)
+						item->goal_anim_state = 16;
+					else
+						item->goal_anim_state = 15;
+
+					VonCroy->LOT.is_jumping = 1;
+					item->pos.x_pos = oEnemy->pos.x_pos;
+					item->pos.y_pos = oEnemy->pos.y_pos;
+					item->pos.z_pos = oEnemy->pos.z_pos;
+					item->pos.x_rot = oEnemy->pos.x_rot;
+					item->pos.y_rot = oEnemy->pos.y_rot;
+					item->pos.z_rot = oEnemy->pos.z_rot;
+					ifl3 = 1;
+					VonCroy->reached_goal = 0;
+					VonCroy->enemy = 0;
+					item->item_flags[3] += ifl3;
+					item->ai_bits = 16;
+					break;
+				}
+			}
+			else
+			{
+				TestTriggersAtXYZ(VonCroy->ai_target.pos.x_pos, VonCroy->ai_target.pos.y_pos, VonCroy->ai_target.pos.z_pos,
+					VonCroy->ai_target.room_number, 1, 0);
+				ifl3 = 1;
+				VonCroy->reached_goal = 0;
+				VonCroy->enemy = 0;
+				item->item_flags[3] += ifl3;
+				item->ai_bits = 16;
+			}
+		}
+
+		break;
+
+	case 2:
+		VonCroy->LOT.is_jumping = 0;
+		VonCroy->LOT.is_monkeying = 0;
+		VonCroy->maximum_turn = 1092;
+
+		if (VonCroyLaraAI.ahead)
+			head_y = VonCroyLaraAI.angle;
+		else if (VonCroyAI.ahead)
+			head_y = VonCroyAI.angle;
+
+		if (item->required_anim_state)
+			item->goal_anim_state = item->required_anim_state;
+		else if (lara.location < item->item_flags[3] && VonCroyLaraAI.distance > 0x1900000 || VonCroyLaraAI.bite)
+			item->goal_anim_state = 1;
+		else if (VonCroy->monkey_ahead)
+			item->goal_anim_state = 1;
+		else if (VonCroy->reached_goal)
+		{
+			if (oEnemy->flags == 32)
+			{
+				TestTriggersAtXYZ(VonCroy->ai_target.pos.x_pos, VonCroy->ai_target.pos.y_pos, VonCroy->ai_target.pos.z_pos,
+					VonCroy->ai_target.room_number, 1, 0);
+				ifl3 = 1;
+				VonCroy->reached_goal = 0;
+				VonCroy->enemy = 0;
+				item->item_flags[3] += ifl3;
+				item->ai_bits = 16;
+			}
+			else
+				item->goal_anim_state = 1;
+		}
+		else if (!target || VonCroyAI.distance >= 0x200000 && (item->meshswap_meshbits & 0x40080 || VonCroyAI.distance >= 0x900000))
+		{
+			if (VonCroyAI.distance < 0x64000 && oEnemy->flags != 32)
+				item->goal_anim_state = 1;
+			else if (VonCroyAI.distance > 0x900000 && lara.location >= item->item_flags[3])
+				item->goal_anim_state = 3;
+		}
+		else
+			item->goal_anim_state = 1;
+
+		break;
+
+	case 3:
+
+		if (VonCroyAI.ahead)
+			head_y = VonCroyAI.angle;
+
+		if (item->frame_number == anims[item->anim_number].frame_base)
+		{
+			VonCroy->LOT.is_jumping = 0;
+			VonCroy->maximum_turn = 1456;
+		}
+
+		angle >>= 1;
+
+		if (item->item_flags[2] == 6)
+		{
+			VonCroy->maximum_turn = 0;
+			item->goal_anim_state = 16;
+		}
+		else if (lara.location < item->item_flags[3] || jump_ahead || VonCroyLaraAI.bite)
+			item->goal_anim_state = 1;
+		else if (VonCroy->monkey_ahead)
+			item->goal_anim_state = 1;
+		else if (VonCroy->reached_goal)
+		{
+			if (oEnemy->flags == 32)
+			{
+				TestTriggersAtXYZ(VonCroy->ai_target.pos.x_pos, VonCroy->ai_target.pos.y_pos, VonCroy->ai_target.pos.z_pos,
+					VonCroy->ai_target.room_number, 1, 0);
+				ifl3 = 1;
+				VonCroy->reached_goal = 0;
+				VonCroy->enemy = 0;
+				item->item_flags[3] += ifl3;
+				item->ai_bits = 16;
+			}
+			else  if (VonCroyAI.distance < 512)
+			{
+				if (oEnemy->flags == 40)
+				{
+					VonCroy->maximum_turn = 0;
+					item->pos.y_rot = oEnemy->pos.y_rot;
+					item->goal_anim_state = 16;
+					item->item_flags[2] = 6;
+				}
+			}
+			else
+				item->goal_anim_state = 1;
+		}
+		else if (VonCroyAI.distance < 0x64000)
+		{
+			if (oEnemy->flags != 32 && oEnemy->flags != 40)
+				item->goal_anim_state = 1;
+		}
+
+		break;
+
+	case 4:
+		VonCroy->maximum_turn = 0;
+
+		if (item->box_number == VonCroy->LOT.target_box || !VonCroy->monkey_ahead)
+		{
+			floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+			h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+			c = GetCeiling(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+
+			if (c == h - 1536)
+				item->goal_anim_state = 1;
+		}
+		else
+			item->goal_anim_state = 5;
+
+		break;
+
+	case 5:
+		VonCroy->LOT.is_jumping = 1;
+		VonCroy->LOT.is_monkeying = 1;
+		VonCroy->maximum_turn = 1092;
+
+		if (item->box_number == VonCroy->LOT.target_box || !VonCroy->monkey_ahead)
+		{
+			floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+			h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+			c = GetCeiling(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+
+			if (c == h - 1536)
+				item->goal_anim_state = 4;
+		}
+
+		break;
+
+	case 6:
+
+		if (item->frame_number == anims[item->anim_number].frame_base + 28)
+		{
+			if (item->meshswap_meshbits & 0x40080)
+				item->meshswap_meshbits &= ~0x40080;
+			else
+				item->meshswap_meshbits |= 0x40080;
+		}
+
+		break;
+
+	case 7:
+
+		if (item->frame_number == anims[item->anim_number].frame_base)
+		{
+			item->pos.x_pos = oEnemy->pos.x_pos;
+			item->pos.y_pos = oEnemy->pos.y_pos;
+			item->pos.z_pos = oEnemy->pos.z_pos;
+			item->pos.x_rot = oEnemy->pos.x_rot;
+			item->pos.y_rot = oEnemy->pos.y_rot;
+			item->pos.z_rot = oEnemy->pos.z_rot;
+
+			if (item->item_flags[3] == 6)
+			{
+				VonCroy->maximum_turn = 0;
+				item->anim_number = objects[VON_CROY].anim_index + 22;
+				item->frame_number= anims[item->anim_number].frame_base;
+				item->current_anim_state = 15;
+				item->goal_anim_state = 16;
+				VonCroy->LOT.is_jumping = 1;
+			}
+
+			ifl3 = 1;
+			VonCroy->reached_goal = 0;
+			VonCroy->enemy = 0;
+			item->item_flags[3] += ifl3;
+			item->ai_bits = 16;
+		}
+
+		break;
+
+	case 16:
+
+		if (item->anim_number == objects[VON_CROY].anim_index + 25 || item->frame_number > anims[item->anim_number].frame_base + 5)
+			VonCroy->LOT.is_jumping = 1;
+		else if (jump_ahead)
+			item->goal_anim_state = 15;
+
+		if (item->item_flags[2] == 6)
+			item->goal_anim_state = 33;
+
+		break;
+
+	case 20:
+
+		if (item->frame_number == anims[item->anim_number].frame_base)
+		{
+			item->pos.x_pos = oEnemy->pos.x_pos;
+			item->pos.y_pos = oEnemy->pos.y_pos;
+			item->pos.z_pos = oEnemy->pos.z_pos;
+			item->pos.x_rot = oEnemy->pos.x_rot;
+			item->pos.y_rot = oEnemy->pos.y_rot;
+			item->pos.z_rot = oEnemy->pos.z_rot;
+		}
+		else if (item->frame_number == anims[item->anim_number].frame_base + 120)
+		{
+			TestTriggersAtXYZ(VonCroy->ai_target.pos.x_pos, VonCroy->ai_target.pos.y_pos, VonCroy->ai_target.pos.z_pos,
+				VonCroy->ai_target.room_number, 1, 0);
+			ifl3 = 1;
+			VonCroy->reached_goal = 0;
+			VonCroy->enemy = 0;
+			item->item_flags[3] += ifl3;
+			item->ai_bits = 16;
+		}
+
+		break;
+
+	case 21:
+
+		if (VonCroyAI.ahead)
+		{
+			torso_y = VonCroyAI.angle >> 1;
+			head_y = VonCroyAI.angle >> 1;
+			torso_x = VonCroyAI.x_angle;
+		}
+
+		VonCroy->maximum_turn = 0;
+		CreatureYRot(&item->pos, VonCroyAI.angle, 1092);
+
+		if (!VonCroy->flags && oEnemy)
+		{
+			if (item->frame_number > anims[item->anim_number].frame_base + 20 && item->frame_number < anims[item->anim_number].frame_base + 45)
+			{
+				if (ABS(oEnemy->pos.x_pos - item->pos.x_pos) < 512 &&
+					ABS(oEnemy->pos.y_pos - item->pos.y_pos + 768) <= 512 &&
+					ABS(oEnemy->pos.z_pos - item->pos.z_pos) < 512)
+				{
+					oEnemy->hit_points -= 40;
+
+					if (oEnemy->hit_points <= 0)
+						item->ai_bits = 16;
+
+					oEnemy->hit_status = 1;
+					VonCroy->flags = 1;
+					CreatureEffectT(item, &VonCroyBite, 2, -1, DoBloodSplat);
+				}
+			}
+		}
+
+		break;
+
+	case 22:
+	case 35:
+		VonCroy->maximum_turn = 0;
+
+		if (item->item_flags[2])
+			CreatureYRot(&item->pos, oEnemy->pos.y_rot - item->pos.y_rot, 512);
+		else
+			CreatureYRot(&item->pos, VonCroyLaraAI.angle, 512);
+
+		break;
+
+	case 27:
+		VonCroy->LOT.is_jumping = 1;
+		VonCroy->maximum_turn = 0;
+
+		if (VonCroy->reached_goal)
+		{
+			item->goal_anim_state = 30;
+			ifl3 = 1;
+			VonCroy->reached_goal = 0;
+			VonCroy->enemy = 0;
+			item->item_flags[3] += ifl3;
+			item->ai_bits = 16;
+		}
+		else
+			item->goal_anim_state = 28;
+
+		break;
+
+	case 28:
+		VonCroy->LOT.is_jumping = 1;
+		VonCroy->maximum_turn = 0;
+		break;
+
+	case 31:
+
+		if (VonCroyAI.ahead)
+		{
+			torso_y = VonCroyAI.angle >> 1;
+			head_y = VonCroyAI.angle >> 1;
+			torso_x = VonCroyAI.x_angle;
+		}
+
+		VonCroy->maximum_turn = 0;
+		CreatureYRot(&item->pos, VonCroyAI.angle, 1092);
+
+		if (oEnemy && oEnemy->flags == 6 && item->frame_number > anims[item->anim_number].frame_base + 21)
+		{
+			VonCroy->flags = 1;
+			TestTriggersAtXYZ(VonCroy->ai_target.pos.x_pos, VonCroy->ai_target.pos.y_pos, VonCroy->ai_target.pos.z_pos,
+				VonCroy->ai_target.room_number, 1, 0);
+			ifl3 = 1;
+			VonCroy->reached_goal = 0;
+			VonCroy->enemy = 0;
+			item->item_flags[3] += ifl3;
+			item->ai_bits = 16;
+		}
+		else if (!VonCroy->flags && oEnemy)
+		{
+			if (item->frame_number > anims[item->anim_number].frame_base + 15 && item->frame_number < anims[item->anim_number].frame_base + 26)
+			{
+				if (ABS(oEnemy->pos.x_pos - item->pos.x_pos) < 512 &&
+					ABS(oEnemy->pos.y_pos - item->pos.y_pos) <= 512 &&
+					ABS(oEnemy->pos.z_pos - item->pos.z_pos) < 512)
+				{
+					oEnemy->hit_points -= 20;
+
+					if (oEnemy->hit_points <= 0)
+						item->ai_bits = 16;
+
+					oEnemy->hit_status = 1;
+					VonCroy->flags = 1;
+					CreatureEffectT(item, &VonCroyBite, 8, -1, DoBloodSplat);
+				}
+			}
+		}
+
+		break;
+
+	case 32:
+
+		if (VonCroyAI.ahead)
+		{
+			torso_y = VonCroyAI.angle >> 1;
+			head_y = VonCroyAI.angle >> 1;
+			torso_x = VonCroyAI.x_angle;
+		}
+
+		VonCroy->maximum_turn = 0;
+		CreatureYRot(&item->pos, VonCroyAI.angle, 1092);
+
+		if (item->anim_number == objects[VON_CROY].anim_index + 47)
+		{
+			if (item->frame_number == anims[item->anim_number].frame_base)
+				ifl3 = 1;
+		}
+		else if (!(GetRandomControl() & 0x1F))
+		{
+			ifl3 = 1;
+			item->goal_anim_state = 1;
+		}
+
+		VonCroy->reached_goal = 0;
+		VonCroy->enemy = 0;
+		item->item_flags[3] += ifl3;
+		item->ai_bits = 16;
+		break;
+
+	case 33:
+
+		if (item->anim_number != objects[VON_CROY].anim_index + 52 || item->frame_number != anims[item->anim_number].frame_base)
+			ifl3 = 0;
+		else
+			ifl3 = 1;
+
+		item->goal_anim_state = 2;
+		item->required_anim_state = 3;
+		item->item_flags[2] = 0;
+
+		if (ifl3 == -1)
+		{
+			TestTriggersAtXYZ(VonCroy->ai_target.pos.x_pos, VonCroy->ai_target.pos.y_pos, VonCroy->ai_target.pos.z_pos,
+				VonCroy->ai_target.room_number, 1, 0);
+			ifl3 = 1;
+			VonCroy->reached_goal = 0;
+			VonCroy->enemy = 0;
+			item->item_flags[3] += ifl3;
+			item->ai_bits = 16;
+		}
+		else if (ifl3)
+		{
+			VonCroy->reached_goal = 0;
+			VonCroy->enemy = 0;
+			item->item_flags[3] += ifl3;
+			item->ai_bits = 16;
+		}
+
+		break;
+
+	case 34:
+		item->item_flags[2] = 6;
+		break;
+
+	case 36:
+	case 37:
+		VonCroy->maximum_turn = 0;
+		MoveCreature3DPos(&item->pos, &oEnemy->pos, 15, oEnemy->pos.y_rot - item->pos.y_rot, 512);
+		break;
+	}
+
+	head_x = torso_x;
+	CreatureTilt(item, angle);
+	CreatureJoint(item, 0, torso_y);
+	CreatureJoint(item, 1, torso_x);
+	CreatureJoint(item, 2, head_y);
+	CreatureJoint(item, 3, head_x);
+
+	if (item->current_anim_state >= 15 || item->current_anim_state == 5)
+		CreatureAnimation(item_number, angle, 0);
+	else
+	{
+		switch (CreatureVault(item_number, angle, 2, 260))
+		{
+		case -4:
+			VonCroy->maximum_turn = 0;
+			item->anim_number = objects[VON_CROY].anim_index + 35;
+			item->frame_number = anims[item->anim_number].frame_base;
+			item->current_anim_state = 25;
+			break;
+
+		case -3:
+			VonCroy->maximum_turn = 0;
+			item->anim_number = objects[VON_CROY].anim_index + 41;
+			item->frame_number = anims[item->anim_number].frame_base;
+			item->current_anim_state = 24;
+			break;
+
+		case -2:
+			VonCroy->maximum_turn = 0;
+			item->anim_number = objects[VON_CROY].anim_index + 42;
+			item->frame_number = anims[item->anim_number].frame_base;
+			item->current_anim_state = 23;
+			break;
+
+		case 2:
+			VonCroy->maximum_turn = 0;
+			item->anim_number = objects[VON_CROY].anim_index + 29;
+			item->frame_number = anims[item->anim_number].frame_base;
+			item->current_anim_state = 19;
+			break;
+
+		case 3:
+			VonCroy->maximum_turn = 0;
+			item->anim_number = objects[VON_CROY].anim_index + 28;
+			item->frame_number = anims[item->anim_number].frame_base;
+			item->current_anim_state = 18;
+			break;
+
+		case 4:
+			VonCroy->maximum_turn = 0;
+			item->anim_number = objects[VON_CROY].anim_index + 27;
+			item->frame_number = anims[item->anim_number].frame_base;
+			item->current_anim_state = 17;
+			break;
+		}
+	}
+}
+
 void inject_voncroy(bool replace)
 {
 	INJECT(0x00418D00, SetCutSceneCamera, replace);
@@ -1073,4 +2026,5 @@ void inject_voncroy(bool replace)
 	INJECT(0x00419070, DoVonCroyCutscene, replace);
 	INJECT(0x00419560, InitialiseVoncroy, replace);
 	INJECT(0x0041AF00, VoncroyRaceControl, replace);
+	INJECT(0x004195E0, VoncroyControl, replace);
 }
