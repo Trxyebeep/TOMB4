@@ -1210,7 +1210,7 @@ void VoncroyControl(short item_number)
 			VonCroyLaraAI.x_angle = (short)phd_atan(ABS(dz) + (ABS(dx) >> 1), item->pos.y_pos - lara_item->pos.y_pos);
 	}
 
-	if (VonCroyAI.angle > -6144 && VonCroyLaraAI.angle < 6144 && VonCroyLaraAI.distance < 0x100000)
+	if (VonCroyLaraAI.angle > -6144 && VonCroyLaraAI.angle < 6144 && VonCroyLaraAI.distance < 0x100000)
 		VonCroyLaraAI.bite = 1;
 	else
 		VonCroyLaraAI.bite = 0;
@@ -1338,7 +1338,7 @@ void VoncroyControl(short item_number)
 		}
 		else if (!VonCroy->reached_goal)
 		{
-			if (VonCroyAI.bite)
+			if (VonCroyLaraAI.bite)
 				item->goal_anim_state = 1;
 			else if (VonCroy->monkey_ahead)
 			{
