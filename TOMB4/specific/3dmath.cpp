@@ -346,6 +346,20 @@ ulong mGetAngle(long x, long z, long x1, long z1)
 	return -angle & 0xFFFF;
 }
 
+void AlterFOV(short fov)
+{
+	CurrentFov = fov;
+	fov /= 2;
+	phd_persp = ((phd_winwidth / 2) * phd_cos(fov)) / phd_sin(fov);
+	f_persp = (float)phd_persp;
+	f_oneopersp = one / f_persp;
+	f_perspoznear = f_persp / f_znear;
+	LfAspectCorrection = (4.0F / 3.0F) / (float(phd_winwidth) / float(phd_winheight));
+	f_mpersp = f_persp;
+	f_moneopersp = mone / f_persp;
+	f_mperspoznear = f_persp / f_mznear;
+}
+
 void inject_3dmath(bool replace)
 {
 	INJECT(0x004902B0, phd_PushMatrix, replace);
@@ -359,4 +373,5 @@ void inject_3dmath(bool replace)
 	INJECT(0x00490A10, phd_TranslateAbs, replace);
 	INJECT(0x00490A90, phd_GetVectorAngles, replace);
 	INJECT(0x0048FD40, mGetAngle, replace);
+	INJECT(0x0048F9D0, AlterFOV, replace);
 }
