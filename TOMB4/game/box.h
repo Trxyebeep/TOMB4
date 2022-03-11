@@ -23,3 +23,6 @@ typedef short(__cdecl* generate)(long, long, long, short, short, short);
 #define CreatureEffect	( (short(__cdecl*)(ITEM_INFO*, BITE_INFO*, generate)) 0x00442110 )
 #define CreatureUnderwater	( (void(__cdecl*)(ITEM_INFO*, long)) 0x00442080 )
 #define CreatureFloat	( (void(__cdecl*)(short)) 0x00441F80 )
+#define CreatureVault	( (long(__cdecl*)(short, short, long, long)) 0x004421D0 )
+#define CreatureYRot	( (void(__cdecl*)(PHD_3DPOS*, short, short)) 0x00442D30 )
+#define MoveCreature3DPos	( (long(__cdecl*)(PHD_3DPOS*, PHD_3DPOS*, long, short, short)) 0x00442D70 )

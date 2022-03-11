@@ -387,6 +387,7 @@
 #define MonoScreenOn	VAR_U_(0x00536F1C, char)
 #define nAIObjects	VAR_U_(0x007FD200, short)
 #define XATrack	VAR_U_(0x004B22F4, long)
+#define XAFlag	VAR_U_(0x004B22F8, long)
 
 
 
