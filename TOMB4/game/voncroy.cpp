@@ -1493,7 +1493,13 @@ void VoncroyControl(short item_number)
 				switch (oEnemy->flags)
 				{
 				case 0:
-
+					TestTriggersAtXYZ(VonCroy->ai_target.pos.x_pos, VonCroy->ai_target.pos.y_pos, VonCroy->ai_target.pos.z_pos,
+						VonCroy->ai_target.room_number, 1, 0);
+					ifl3 = 1;
+					VonCroy->reached_goal = 0;
+					VonCroy->enemy = 0;
+					item->item_flags[3] += ifl3;
+					item->ai_bits = 16;
 					break;
 
 				case 2:
