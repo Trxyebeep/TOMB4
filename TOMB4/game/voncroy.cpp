@@ -1232,21 +1232,6 @@ void VoncroyControl(short item_number)
 		item->ai_bits = 16;
 	}
 
-	if (!VonCroyCutFlags[item->item_flags[3]])
-	{
-		if (VonCroy->reached_goal && item->item_flags[3] == lara.locationPad && VonCroyCutTracks[item->item_flags[3]] != -1 ||
-			item->trigger_flags > 0 || lara.locationPad >= item->item_flags[3] &&
-			!VonCroyCutFlags[lara.locationPad] && VonCroyCutTracks[lara.locationPad] != -1)
-		{
-			CreatureJoint(item, 0, VonCroyLaraAI.angle >> 1);
-			CreatureJoint(item, 1, VonCroyLaraAI.x_angle >> 1);
-			CreatureJoint(item, 2, VonCroyLaraAI.angle >> 1);
-			CreatureJoint(item, 3, VonCroyLaraAI.x_angle >> 1);
-			DoVonCroyCutscene(item, VonCroy);
-			return;
-		}
-	}
-
 	if (lara.locationPad != 9 && lara.locationPad != 10)
 	{
 		if (lara.locationPad == 43 && (item->item_flags[3] == 43 || item->item_flags[3] == 53))
@@ -1262,7 +1247,7 @@ void VoncroyControl(short item_number)
 	else if (lara.locationPad == 10)
 	{
 		if (item->item_flags[3] == 12 && (item->item_flags[0] || lara_item->anim_number == objects[LARA].anim_index + 90
-				&& lara_item->frame_number == anims[lara_item->anim_number].frame_end))
+			&& lara_item->frame_number == anims[lara_item->anim_number].frame_end))
 		{
 			lara.locationPad = (char)item->item_flags[3];
 			item->item_flags[0] = 1;
@@ -1277,6 +1262,21 @@ void VoncroyControl(short item_number)
 	}
 	else if (lara.location == 43 && (item->item_flags[3] == 44 || item->item_flags[3] == 54))
 		lara.location = (char)item->item_flags[3];
+
+	if (!VonCroyCutFlags[item->item_flags[3]])
+	{
+		if (VonCroy->reached_goal && item->item_flags[3] == lara.locationPad && VonCroyCutTracks[item->item_flags[3]] != -1 ||
+			item->trigger_flags > 0 || lara.locationPad >= item->item_flags[3] &&
+			!VonCroyCutFlags[lara.locationPad] && VonCroyCutTracks[lara.locationPad] != -1)
+		{
+			CreatureJoint(item, 0, VonCroyLaraAI.angle >> 1);
+			CreatureJoint(item, 1, VonCroyLaraAI.x_angle >> 1);
+			CreatureJoint(item, 2, VonCroyLaraAI.angle >> 1);
+			CreatureJoint(item, 3, VonCroyLaraAI.x_angle >> 1);
+			DoVonCroyCutscene(item, VonCroy);
+			return;
+		}
+	}
 
 	switch (item->current_anim_state)
 	{
