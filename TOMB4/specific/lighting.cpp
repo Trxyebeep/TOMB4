@@ -263,6 +263,11 @@ void SetupLight(D3DLIGHT_STRUCT* d3dlight, PCLIGHT* light, long* ambient)
 		if (val >= light->Inner)
 			val2 = (val - light->Outer) / ((light->Outer - light->Inner) / -val2);
 
+#ifdef GENERAL_FIXES
+		if (val2 < 0)
+			val2 = 0;
+#endif
+
 		r -= val2;
 		g -= val2;
 		b -= val2;
