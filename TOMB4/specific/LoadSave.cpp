@@ -374,12 +374,20 @@ void S_DrawEnemyBar(long pos)
 	if (tomb4.bars_pos == 1)//original
 	{
 		x = font_height >> 2;
-		y = (font_height >> 2) + (font_height >> 1);
+
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			y = (font_height >> 2) + (font_height / 3);
+		else
+			y = (font_height >> 2) + (font_height >> 1);
 	}
 	else if (tomb4.bars_pos == 2)//improved
 	{
 		x = font_height >> 2;
-		y = (font_height >> 2) + (font_height >> 1);
+
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			y = (font_height >> 2) + (font_height / 3);
+		else
+			y = (font_height >> 2) + (font_height >> 1);
 	}
 	else//PSX
 	{
@@ -473,7 +481,11 @@ void S_DrawAirBar(long pos)
 	if (tomb4.bars_pos == 1)//original
 	{
 		x = 490 - (font_height >> 2);
-		y = (font_height >> 2) + (font_height >> 1);
+
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			y = (font_height >> 2) + (font_height / 3);
+		else
+			y = (font_height >> 2) + (font_height >> 1);
 	}
 	else if (tomb4.bars_pos == 2)//improved
 	{
@@ -519,7 +531,11 @@ void S_DrawDashBar(long pos)
 	else if (tomb4.bars_pos == 2)//improved
 	{
 		x = 490 - (font_height >> 2);
-		y = (font_height >> 2) + (font_height >> 1);
+
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			y = (font_height >> 2) + (font_height / 3);
+		else
+			y = (font_height >> 2) + (font_height >> 1);
 	}
 	else//PSX
 	{
