@@ -5,6 +5,7 @@
 #include "lara_states.h"
 #ifdef GENERAL_FIXES
 #include "newinv.h"
+#include "../tomb4/tomb4.h"
 #endif
 
 void LaraCheatGetStuff()
@@ -28,6 +29,8 @@ void LaraCheatGetStuff()
 void LaraCheatyBits()
 {
 #ifdef GENERAL_FIXES
+	if (!tomb4.cheats)
+		return;
 
 #ifdef _DEBUG
 	if (keymap[DIK_F1])

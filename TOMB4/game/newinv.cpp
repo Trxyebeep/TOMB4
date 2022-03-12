@@ -15,6 +15,9 @@
 #include "../specific/input.h"
 #include "health.h"
 #include "gameflow.h"
+#ifdef GENERAL_FIXES
+#include "../tomb4/tomb4.h"
+#endif
 
 COMBINELIST dels_handy_combine_table[23] =
 {
@@ -340,7 +343,11 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 			compass += lara_item->pos.y_rot;
 			phd_RotY((short)(compass - 0x8000));
 
+#ifdef GENERAL_FIXES
+			if (lara_item->pos.y_rot > -48 && lara_item->pos.y_rot <= 48 && tomb4.cheats)
+#else
 			if (lara_item->pos.y_rot > -48 && lara_item->pos.y_rot <= 48)
+#endif
 			{
 				shade = 96;
 
