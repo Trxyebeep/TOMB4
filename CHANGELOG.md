@@ -49,3 +49,4 @@
 - Add proper FOV calculations from TR2Main (Thank you Arsunt!)
 - Add PSX "Loading" text to loading screens.
 - Add circle shadow, and PSX style shadow.
+- Move health bar to the center of the screen when aiming with the lasersight.
