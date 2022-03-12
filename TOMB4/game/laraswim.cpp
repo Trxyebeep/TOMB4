@@ -170,8 +170,8 @@ void LaraUnderWater(ITEM_INFO* item, COLL_INFO* coll)
 	if (lara.water_status == LW_FLYCHEAT)
 	{
 #ifdef GENERAL_FIXES
-		item->anim_number = 263;
-		item->frame_number = anims[263].frame_base;
+		item->anim_number = 138;
+		item->frame_number = anims[138].frame_base + 70;
 #else
 		item->anim_number = ANIM_FASTFALL;
 		item->frame_number = anims[ANIM_FASTFALL].frame_base + 5;
@@ -186,26 +186,7 @@ void lara_col_swim(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_col_glide(ITEM_INFO* item, COLL_INFO* coll)
 {
-#ifdef GENERAL_FIXES
-	if (lara.water_status == LW_FLYCHEAT)
-	{
-		coll->bad_pos = -NO_HEIGHT;
-		coll->bad_neg = -384;
-		coll->bad_ceiling = 0;
-		coll->radius = 200;
-		coll->enable_baddie_push = 0;
-		GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 384);
-		ShiftItem(item, coll);
-
-		if (coll->mid_floor < 0 && coll->mid_floor != NO_HEIGHT)
-		{
-			item->pos.x_rot += 728;
-			item->pos.y_pos += coll->mid_floor;
-		}
-	}
-	else
-#endif
-		LaraSwimCollision(item, coll);
+	LaraSwimCollision(item, coll);
 }
 
 void lara_col_tread(ITEM_INFO* item, COLL_INFO* coll)

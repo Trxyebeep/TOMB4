@@ -77,8 +77,7 @@ void LaraCheatyBits()
 			lara_item->current_anim_state = AS_SWIM;
 			lara_item->goal_anim_state = AS_SWIM;
 			lara_item->gravity_status = 0;
-			lara_item->pos.x_rot = 5460;
-			lara_item->fallspeed = 30;
+			lara_item->pos.x_rot = 0;
 			lara.air = 1800;
 			lara.death_count = 0;
 			lara.torso_y_rot = 0;
@@ -142,7 +141,7 @@ void LaraCheat(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (input & IN_WALK && !(input & IN_LOOK))
 	{
-		lara.water_status = 0;
+		lara.water_status = LW_ABOVE_WATER;
 		item->frame_number = anims[ANIM_STOP].frame_base;
 		item->anim_number = ANIM_STOP;
 		item->pos.z_rot = 0;
