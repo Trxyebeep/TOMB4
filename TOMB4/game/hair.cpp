@@ -40,7 +40,7 @@ void InitialiseHair()
 	}
 }
 
-#ifdef GENERAL_FIXES	//all the hair fixes	//still needs interpolation
+#ifdef GENERAL_FIXES	//all the hair fixes
 void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 {
 	OBJECT_INFO* obj;
