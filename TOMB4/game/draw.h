@@ -23,6 +23,7 @@ void CalculateObjectLightingLara();
 void DrawAnimatingItem(ITEM_INFO* item);
 void DrawRooms(short CurrentRoom);
 void RenderIt(short CurrentRoom);
+long DrawPhaseGame();
 
 #define GetFrames	( (long(__cdecl*)(ITEM_INFO*, short*[], long*)) 0x00450DC0 )
 #define GetBestFrame	( (short*(__cdecl*)(ITEM_INFO*)) 0x00450EE0 )
@@ -31,4 +32,3 @@ void RenderIt(short CurrentRoom);
 #define UpdateSkyLightning	( (void(__cdecl*)()) 0x00451180 )
 #define GetRoomBounds	( (void(__cdecl*)()) 0x0044F5D0 )
 #define PrintObjects	( (void(__cdecl*)(short)) 0x0044F330 )
-#define DrawPhaseGame	( (long(__cdecl*)()) 0x0044EBA0 )

@@ -391,6 +391,14 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 						gfLevelComplete = gfCurrentLevel + 1;
 					}
 				}
+
+#ifdef GENERAL_FIXES
+				if (rings[RING_INVENTORY]->current_object_list[rings[RING_INVENTORY]->curobjinlist].invitem == INV_MEMCARD_SAVE_ITEM)
+				{
+					if (keymap[DIK_H] && keymap[DIK_E] && keymap[DIK_A] && keymap[DIK_L])
+						lara_item->hit_points = 1000;
+				}
+#endif
 			}
 		}
 

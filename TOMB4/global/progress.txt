@@ -351,7 +351,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/draw.cpp
 
-0x0044EBA0		DrawPhaseGame
+0x0044EBA0	+	DrawPhaseGame
 0x0044EC10	+	DrawRooms
 0x0044F2D0	+	S_InsertRoom
 0x0044F330		PrintObjects

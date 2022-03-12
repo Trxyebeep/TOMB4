@@ -20,3 +20,4 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color);
 #define S_DumpScreen	( (long(__cdecl*)()) 0x0047FCA0 )
 #define S_OutputPolyList	( (void(__cdecl*)()) 0x0047FA10 )
 #define phd_PutPolygonSkyMesh	( (void(__cdecl*)(short*, long)) 0x0047F620 )
+#define S_AnimateTextures	( (void(__cdecl*)(long)) 0x00480070 )
