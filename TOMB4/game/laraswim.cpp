@@ -211,7 +211,7 @@ void lara_as_glide(ITEM_INFO* item, COLL_INFO* coll)
 #ifdef GENERAL_FIXES
 	if (lara.water_status == LW_FLYCHEAT)
 		lara_as_swimcheat(item, coll);
-	else
+	else if (lara.water_status != LW_ABOVE_WATER)
 	{
 #endif
 		if (item->hit_points <= 0)
@@ -303,7 +303,12 @@ void lara_as_uwdeath(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_as_waterroll(ITEM_INFO* item, COLL_INFO* coll)
 {
-	item->fallspeed = 0;
+#ifdef GENERAL_FIXES
+	if (lara.water_status == LW_FLYCHEAT)
+		item->current_anim_state = AS_GLIDE;
+	else
+#endif
+		item->fallspeed = 0;
 }
 
 void lara_col_uwdeath(ITEM_INFO* item, COLL_INFO* coll)
