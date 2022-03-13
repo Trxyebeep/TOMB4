@@ -374,12 +374,20 @@ void S_DrawEnemyBar(long pos)
 	if (tomb4.bars_pos == 1)//original
 	{
 		x = font_height >> 2;
-		y = (font_height >> 2) + (font_height >> 1);
+
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			y = (font_height >> 2) + (font_height / 3);
+		else
+			y = (font_height >> 2) + (font_height >> 1);
 	}
 	else if (tomb4.bars_pos == 2)//improved
 	{
 		x = font_height >> 2;
-		y = (font_height >> 2) + (font_height >> 1);
+
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			y = (font_height >> 2) + (font_height / 3);
+		else
+			y = (font_height >> 2) + (font_height >> 1);
 	}
 	else//PSX
 	{
@@ -473,7 +481,11 @@ void S_DrawAirBar(long pos)
 	if (tomb4.bars_pos == 1)//original
 	{
 		x = 490 - (font_height >> 2);
-		y = (font_height >> 2) + (font_height >> 1);
+
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			y = (font_height >> 2) + (font_height / 3);
+		else
+			y = (font_height >> 2) + (font_height >> 1);
 	}
 	else if (tomb4.bars_pos == 2)//improved
 	{
@@ -519,7 +531,11 @@ void S_DrawDashBar(long pos)
 	else if (tomb4.bars_pos == 2)//improved
 	{
 		x = 490 - (font_height >> 2);
-		y = (font_height >> 2) + (font_height >> 1);
+
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			y = (font_height >> 2) + (font_height / 3);
+		else
+			y = (font_height >> 2) + (font_height >> 1);
 	}
 	else//PSX
 	{
@@ -721,7 +737,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 	char buffer[80];
 	bool changed;
 
-	num = 9;
+	num = 11;
 	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
 	PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 0x1 ? 1 : 2, "FootPrints", 0);
 	PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 0x2 ? 1 : 2, "Shadow mode", 0);
@@ -732,6 +748,8 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 	PrintString(phd_centerx >> 2, textY + 8 * font_height, selection & 0x40 ? 1 : 2, "Bar mode", 0);
 	PrintString(phd_centerx >> 2, textY + 9 * font_height, selection & 0x80 ? 1 : 2, "Bar positions", 0);
 	PrintString(phd_centerx >> 2, textY + 10 * font_height, selection & 0x100 ? 1 : 2, "Enemy bars", 0);
+	PrintString(phd_centerx >> 2, textY + 11 * font_height, selection & 0x200 ? 1 : 2, "Cutscene skipper", 0);
+	PrintString(phd_centerx >> 2, textY + 12 * font_height, selection & 0x400 ? 1 : 2, "Cheats", 0);
 
 	if (dbinput & IN_FORWARD)
 	{
@@ -786,6 +804,12 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 
 	strcpy(buffer, tomb4.enemy_bars ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), textY + 10 * font_height, selection & 0x100 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.cutseq_skipper ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 11 * font_height, selection & 0x200 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.cheats ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 12 * font_height, selection & 0x400 ? 1 : 6, buffer, 0);
 
 	changed = 0;
 
@@ -930,6 +954,28 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			tomb4.enemy_bars = !tomb4.enemy_bars;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 9:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.cutseq_skipper = !tomb4.cutseq_skipper;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 10:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.cheats = !tomb4.cheats;
 			changed = 1;
 		}
 

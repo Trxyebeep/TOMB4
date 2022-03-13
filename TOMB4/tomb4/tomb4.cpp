@@ -50,6 +50,14 @@ void init_tomb4_stuff()
 		sprintf(buf, "enemy_bar");
 		tomb4.enemy_bars = 0;							//off
 		REG_WriteBool(buf, tomb4.enemy_bars);
+
+		sprintf(buf, "cutseq_skipper");
+		tomb4.cutseq_skipper = 0;						//off
+		REG_WriteBool(buf, tomb4.cutseq_skipper);
+
+		sprintf(buf, "cheats");
+		tomb4.cheats = 0;								//off
+		REG_WriteBool(buf, tomb4.cheats);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -79,6 +87,12 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "enemy_bar");
 		REG_ReadBool(buf, tomb4.enemy_bars, 0);
+
+		sprintf(buf, "cutseq_skipper");
+		REG_ReadBool(buf, tomb4.cutseq_skipper, 0);
+
+		sprintf(buf, "cheats");
+		REG_ReadBool(buf, tomb4.cheats, 0);
 	}
 
 	CloseRegistry();
@@ -116,6 +130,12 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "enemy_bar");
 	REG_WriteBool(buf, tomb4.enemy_bars);
+
+	sprintf(buf, "cutseq_skipper");
+	REG_WriteBool(buf, tomb4.cutseq_skipper);
+
+	sprintf(buf, "cheats");
+	REG_WriteBool(buf, tomb4.cheats);
 
 	CloseRegistry();
 }

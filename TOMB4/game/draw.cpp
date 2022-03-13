@@ -18,6 +18,7 @@
 #include "mirror.h"
 #include "scarab.h"
 #include "croc.h"
+#include "health.h"
 #ifdef FOOTPRINTS
 #include "footprnt.h"
 #endif
@@ -920,6 +921,25 @@ void RenderIt(short CurrentRoom)
 		PrintObjects(draw_rooms[i]);
 }
 
+long DrawPhaseGame()
+{
+	CalcLaraMatrices(0);
+	phd_PushUnitMatrix();
+	CalcLaraMatrices(1);
+	phd_PopMatrix();
+
+	if (GLOBAL_playing_cutseq)
+		frigup_lara();
+
+	SetLaraUnderwaterNodes();
+	DrawRooms(camera.pos.room_number);
+	DrawGameInfo(1);
+	S_OutputPolyList();
+	camera.number_frames = S_DumpScreen();
+	S_AnimateTextures(camera.number_frames);
+	return camera.number_frames;
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -942,4 +962,5 @@ void inject_draw(bool replace)
 	INJECT(0x0044FF60, DrawAnimatingItem, replace);
 	INJECT(0x0044EC10, DrawRooms, replace);
 	INJECT(0x00451240, RenderIt, replace);
+	INJECT(0x0044EBA0, DrawPhaseGame, replace);
 }

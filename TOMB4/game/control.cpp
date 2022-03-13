@@ -161,7 +161,7 @@ long ControlPhase(long nframes, long demo_mode)
 		if (cutseq_trig)
 		{
 #ifdef CUTSEQ_SKIPPER
-			if (keymap[DIK_ESCAPE] && !ScreenFading && !bDoCredits)
+			if (keymap[DIK_ESCAPE] && !ScreenFading && !bDoCredits && tomb4.cutseq_skipper)
 				cutseq_trig = 3;
 #endif
 

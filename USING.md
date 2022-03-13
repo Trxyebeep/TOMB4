@@ -1,0 +1,88 @@
+# tomb4 using guide
+
+## Installing:
+
+### *first time installs:*
+
+#### Steam/GoG version:
+1. Get the latest release package that says "exe + dll"
+2. unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
+3. Enjoy!
+
+#### CD version:
+1. Open your TR4 CD in file explorer to view its contents.
+2. Copy over the listed files into the folder you have TR4 installed:
+- Entire audio folder
+- Entire data folder
+- Entire fmv folder
+- SCRIPT.DAT
+- <language.dat> (whichever language your game version is in, typically English.dat or US/UK.dat
+3. Get the latest release package that says "exe + dll"
+4. unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
+5. Enjoy!
+
+
+### *Updating/Non-first time installing:*
+1. Get the latest release package that says "dll only"
+2. unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
+3. Enjoy!
+------------------------
+
+## New options menu:
+*accessible through the title options menu/pause options menu*
+
+
+### 1. FootPrints:
+- Toggles footprints on and off.
+
+### 2. Shadow Mode:
+Determines shadow shape
+- Original: Original octagon shape.
+- Circle: A flat semi-transparent circle.
+- PSX: A faded circle similar to the shadow present in the PSX version.
+
+### 3. Crawl Tilting:
+- Toggles Lara tilting while crawling on sloped surfaces.
+[video](https://user-images.githubusercontent.com/38836940/158032013-ac7a3a1c-4653-458f-9ba5-c73f5dd1207f.mp4)
+
+### 4. Flexible crawling:
+- Toggles more responsive crawling with less freezes in Lara's moveset.
+
+### 5. Fix climb up delay:
+- Fixes the 1 second delay for Lara's ledge climb up.
+
+### 6. Gameover menu:
+- Toggles a PSX-like gameover menu after Lara dies.
+
+### 7. Bar Mode:
+Determines the mode of the bars.
+- original: original TR4 bars.
+- TR5: TR5 bar colors.
+- PSX: PSX bar colors.
+
+### 8. Bar Positions:
+Changes the positions of the bars on the screen.
+- original: original PC TR4 positions.
+![original](https://user-images.githubusercontent.com/38836940/158032144-a037fc78-06ab-4a18-baca-fce08499aa59.png)
+- improved: same as original but flips the positions of the air and dash bar.
+![improved](https://user-images.githubusercontent.com/38836940/158032157-e4aaf9c1-f63f-4eaa-8bd6-2ded821a3d93.png)
+- PSX: PSX bar positions.
+![psx](https://user-images.githubusercontent.com/38836940/158032158-a0a5fe72-c933-437b-a7f1-c0031553b223.png)
+
+### 9. Enemy bars:
+- Toggles the enemy health bar on and off.
+
+### 10. Cutscene skipper:
+- Toggles the cutscene skipper. (Keep in mind, normal flybies are not cutscenes!)
+*Skip cutscenes using the ESC button.*
+
+### 11. Cheats:
+Toggles ingame cheats on and off.
+
+- DOZY: Flycheat. During DOZY, pressing Action emits a strong white light, and pressing Roll turns Lara around faster than directional buttons.
+- HEAL: Inventory cheat. Face north and select the savegame item. Fills Lara's healthbar.
+
+*The rest lists the original cheats*
+- HELP: Inventory cheat. Face north and select the loadgame item. Skips the level.
+- BITS: Inventory cheat. Face north and select the large-med item. gives all items/keys present in the level.
+- GUNS: Inventory cheat. Face north and select the small-med item. gives all weapons and unlimited ammo.

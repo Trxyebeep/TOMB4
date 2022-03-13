@@ -1426,7 +1426,7 @@ void BikeControl(short item_number)
 		input &= ~(IN_FORWARD | IN_BACK | IN_LEFT | IN_RIGHT);	//should be IN_ACTION instead?
 	}
 
-	if (bike->flags)
+	if (bike->flags & 0xFF)
 		hitWall = 0;
 	else
 	{
