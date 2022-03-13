@@ -98,7 +98,7 @@ static void S_DrawGouraudBar(long x, long y, long width, long height, long value
 	clipflags[1] = 0;
 	clipflags[2] = 0;
 	clipflags[3] = 0;
-	nPolyType = 4;
+	nPolyType = 6;
 	tex.drawtype = 0;
 	tex.tpage = 0;
 	fx = phd_winxmax * 0.0015625F;
@@ -253,7 +253,7 @@ static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long c
 	clipflags[1] = 0;
 	clipflags[2] = 0;
 	clipflags[3] = 0;
-	nPolyType = 4;
+	nPolyType = 6;
 	tex.drawtype = 0;
 	tex.tpage = 0;
 	fx = (float)phd_winxmax * 0.0015625F;
@@ -602,7 +602,11 @@ void DoBar(long x, long y, long width, long height, long pos, long clr1, long cl
 	static float wat = 0;
 	long x2, sx, sy;
 
+#ifdef GENERAL_FIXES
+	nPolyType = 6;
+#else
 	nPolyType = 4;
+#endif
 	wat += 0.0099999998F;
 
 	if (wat > 0.99000001F)
