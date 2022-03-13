@@ -2,6 +2,8 @@
 
 ## Installing:
 
+## [Releases page](https://github.com/Trxyebeep/TOMB4/releases)
+
 ### *first time installs:*
 
 #### Steam/GoG version:
