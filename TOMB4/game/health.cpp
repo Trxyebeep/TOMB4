@@ -46,6 +46,8 @@ void DrawGameInfo(long timed)
 			{
 				if (lara.target->object_number == LARA_DOUBLE)
 					S_DrawEnemyBar(lara_item->hit_points / 10);
+				else if (lara.target->object_number == SKELETON)
+					S_DrawEnemyBar(100);
 				else
 					S_DrawEnemyBar(100 * lara.target->hit_points / objects[lara.target->object_number].hit_points);
 			}
