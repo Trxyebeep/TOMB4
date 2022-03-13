@@ -30,6 +30,8 @@
 - Fix bike speed meter not showing when Fog is disabled.
 - Fix bike speed meter colors and make it more PSX like.
 - Fix Jeep speed meter colors and improve it.
+- Fix meshswap frames in Seth's armor cutscene.
+- Remove the amulet after Seth's armor cutscene.
 
 ### tomb4 additions
 

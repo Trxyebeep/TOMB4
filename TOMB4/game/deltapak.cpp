@@ -1149,7 +1149,11 @@ void twentythree_control()
 
 	switch (GLOBAL_cutseq_frame)
 	{
+#ifdef GENERAL_FIXES
+	case 210:
+#else
 	case 194:
+#endif
 		horus_item_thing->mesh_bits &= ~0x200;
 		horus_item_thing->mesh_bits |= 0x20;
 		break;
@@ -1169,7 +1173,11 @@ void twentythree_control()
 		horus_item_thing->mesh_bits |= 0x80;
 		break;
 
+#ifdef GENERAL_FIXES
+	case 500:
+#else
 	case 514:
+#endif
 		horus_item_thing->mesh_bits &= ~2;
 		horus_item_thing->mesh_bits |= 0x100;
 		break;
@@ -1183,7 +1191,11 @@ void twentythree_control()
 void twentythree_end()
 {
 	DelsHandyTeleportLara(17476, 29952, 15872, -16135);
-	lara.questitems &= 1;	//as del would say, nail amulet
+#ifdef GENERAL_FIXES
+	lara.questitems = 0;
+#else
+	lara.questitems &= 1;
+#endif
 }
 
 void twentyfour_init()
