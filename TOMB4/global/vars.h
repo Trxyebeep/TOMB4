@@ -444,8 +444,8 @@
 #define ammo_object_list	ARRAY_(0x007FEA00, AMMOLIST, [3])
 #define current_options	ARRAY_(0x007FE9E0, MENUTHANG, [3])
 #define FootPrint	ARRAY_(0x008010E0, FOOTPRINT, [32])
-#define CollidedItems	ARRAY_(0x00804F80, ITEM_INFO*, [256])
-#define CollidedStatics	ARRAY_(0x00805380, MESH_INFO*, [128])	//not sure about the size here
+#define tsv_buffer	ARRAY_(0x00804F80, char, [16384])
+#define scratchpad	ARRAY_(0x0080D7C0, char, [1024])
 #define RopeList	ARRAY_(0x007FB4C0, ROPE_STRUCT, [5])
 #define pickups	ARRAY_(0x007FD220, DISPLAYPU, [8])
 #define Gunshells	ARRAY_(0x007FF680, GUNSHELL_STRUCT, [24])

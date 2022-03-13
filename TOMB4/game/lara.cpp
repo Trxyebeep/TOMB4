@@ -1041,6 +1041,8 @@ void lara_as_all4s(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 {
+	ITEM_INFO** itemlist;
+	MESH_INFO** meshlist;
 	long slope, x, z, collided;
 	short height;
 
@@ -1114,7 +1116,9 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 							z = item->pos.z_pos;
 							item->pos.x_pos -= 100 * phd_sin(coll->facing) >> 14;
 							item->pos.z_pos -= 100 * phd_cos(coll->facing) >> 14;
-							collided = GetCollidedObjects(item, 100, 1, CollidedItems, CollidedStatics, 0);
+							itemlist = (ITEM_INFO**)&tsv_buffer[0];
+							meshlist = (MESH_INFO**)&tsv_buffer[1024];
+							collided = GetCollidedObjects(item, 100, 1, itemlist, meshlist, 0);
 							item->pos.x_pos = x;
 							item->pos.z_pos = z;
 
