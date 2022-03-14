@@ -396,6 +396,9 @@
 #define nAIObjects	VAR_U_(0x007FD200, short)
 #define XATrack	VAR_U_(0x004B22F4, long)
 #define XAFlag	VAR_U_(0x004B22F8, long)
+#define pSortBuffer	VAR_U_(0x00660C8C, char*)
+#define pSortList	VAR_U_(0x005C07A8, SORTLIST**)
+#define nPolys	VAR_U_(0x00753964, long)
 
 
 
@@ -483,6 +486,8 @@
 #define BikeCollideStaticBounds	ARRAY_(0x004BFC28, long, [6])		//bike bounds used to collide with statics
 #define CollidedStaticBikeBounds	ARRAY_(0x004BFC0C, long, [6])	//the bounds of the static the bike is trying to collide with
 #define MonoScreen	ARRAY_(0x00577460, MONOSCREEN_STRUCT, [5])
+#define XYUVClipperBuffer	ARRAY_(0x005C0488, D3DTLBUMPVERTEX, [20])
+#define zClipperBuffer	ARRAY_(0x005C0488, D3DTLBUMPVERTEX, [20])
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)
