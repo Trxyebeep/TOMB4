@@ -486,7 +486,7 @@
 #define BikeCollideStaticBounds	ARRAY_(0x004BFC28, long, [6])		//bike bounds used to collide with statics
 #define CollidedStaticBikeBounds	ARRAY_(0x004BFC0C, long, [6])	//the bounds of the static the bike is trying to collide with
 #define MonoScreen	ARRAY_(0x00577460, MONOSCREEN_STRUCT, [5])
-#define XYUVClipperBuffer	ARRAY_(0x005C0488, D3DTLBUMPVERTEX, [20])
+#define XYUVClipperBuffer	ARRAY_(0x006607B0, D3DTLBUMPVERTEX, [20])
 #define zClipperBuffer	ARRAY_(0x005C0488, D3DTLBUMPVERTEX, [20])
 
 /*Fog stuff*/
