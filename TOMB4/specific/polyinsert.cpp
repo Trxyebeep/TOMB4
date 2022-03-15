@@ -672,6 +672,8 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 	TEXTURESTRUCT tex2;
 	short* c;
 	float z;
+	long colBak[3];
+	long specBak[3];
 	long num;
 	short swap;
 	bool clip, clipZ;
@@ -753,6 +755,12 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 	}
 
 	z = 0;
+	colBak[0] = v[v0].color;
+	colBak[1] = v[v1].color;
+	colBak[2] = v[v2].color;
+	specBak[0] = v[v0].specular;
+	specBak[1] = v[v1].specular;
+	specBak[2] = v[v2].specular;
 
 	if (App.Volumetric && tex->drawtype != 2)
 	{
@@ -821,7 +829,15 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 			num = ZClipper(3, zClipperBuffer, XYUVClipperBuffer);
 
 			if (!num)
+			{
+				v[v0].color = colBak[0];
+				v[v1].color = colBak[1];
+				v[v2].color = colBak[2];
+				v[v0].specular = specBak[0];
+				v[v1].specular = specBak[1];
+				v[v2].specular = specBak[2];
 				return;
+			}
 		}
 		else
 		{
@@ -871,6 +887,13 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 		SortCount++;
 		nPolys++;
 	}
+
+	v[v0].color = colBak[0];
+	v[v1].color = colBak[1];
+	v[v2].color = colBak[2];
+	v[v0].specular = specBak[0];
+	v[v1].specular = specBak[1];
+	v[v2].specular = specBak[2];
 }
 
 void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
@@ -881,6 +904,8 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 	TEXTURESTRUCT tex2;
 	short* c;
 	float z;
+	long colBak[4];
+	long specBak[4];
 	short swap;
 
 	c = clipflags;
@@ -953,6 +978,14 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 	pSortList++;
 	SortCount++;
 	z = 0;
+	colBak[0] = v[v0].color;
+	colBak[1] = v[v1].color;
+	colBak[2] = v[v2].color;
+	colBak[3] = v[v3].color;
+	specBak[0] = v[v0].specular;
+	specBak[1] = v[v1].specular;
+	specBak[2] = v[v2].specular;
+	specBak[3] = v[v3].specular;
 
 	if (App.Volumetric && tex->drawtype != 2)
 	{
@@ -1045,6 +1078,14 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 
 	sl->zVal = z;
 	nPolys += 2;
+	v[v0].color = colBak[0];
+	v[v1].color = colBak[1];
+	v[v2].color = colBak[2];
+	v[v3].color = colBak[3];
+	v[v0].specular = specBak[0];
+	v[v1].specular = specBak[1];
+	v[v2].specular = specBak[2];
+	v[v3].specular = specBak[3];
 }
 
 void inject_polyinsert(bool replace)
