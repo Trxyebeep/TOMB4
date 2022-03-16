@@ -766,6 +766,133 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	AddLineSorted(v, &v[1], 6);
 }
 
+void DrawDebris()
+{
+	DEBRIS_STRUCT* dptr;
+	TEXTURESTRUCT* tex;
+	D3DTLVERTEX v[3];
+	long* Z;
+	short* XY;
+	short* offsets;
+	long r, g, b, c;
+	ushort drawbak;
+
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+
+	for (int i = 0; i < 256; i++)
+	{
+		dptr = &debris[i];
+
+		if (!dptr->On)
+			continue;
+
+		phd_PushMatrix();
+		phd_TranslateAbs(dptr->x, dptr->y, dptr->z);
+
+#ifdef GENERAL_FIXES				//PSX & TR5 have this
+		phd_RotY(dptr->YRot << 8);
+		phd_RotX(dptr->XRot << 8);
+#endif
+
+		offsets[0] = dptr->XYZOffsets1[0];
+		offsets[1] = dptr->XYZOffsets1[1];
+		offsets[2] = dptr->XYZOffsets1[2];
+		XY[0] = short((phd_mxptr[M03] + phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2]) >> 14);
+		XY[1] = short((phd_mxptr[M13] + phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2]) >> 14);
+		Z[0] = (phd_mxptr[M23] + phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2]) >> 14;
+
+		offsets[0] = dptr->XYZOffsets2[0];
+		offsets[1] = dptr->XYZOffsets2[1];
+		offsets[2] = dptr->XYZOffsets2[2];
+		XY[2] = short((phd_mxptr[M03] + phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2]) >> 14);
+		XY[3] = short((phd_mxptr[M13] + phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2]) >> 14);
+		Z[1] = (phd_mxptr[M23] + phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2]) >> 14;
+
+		offsets[0] = dptr->XYZOffsets3[0];
+		offsets[1] = dptr->XYZOffsets3[1];
+		offsets[2] = dptr->XYZOffsets3[2];
+		XY[4] = short((phd_mxptr[M03] + phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2]) >> 14);
+		XY[5] = short((phd_mxptr[M13] + phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2]) >> 14);
+		Z[2] = (phd_mxptr[M23] + phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2]) >> 14;
+
+		setXYZ3(v, XY[0], XY[1], Z[0], XY[2], XY[3], Z[1], XY[4], XY[5], Z[2], clipflags);
+		phd_PopMatrix();
+
+		c = dptr->color1 & 0xFF;
+		r = ((c * dptr->r) >> 8) + CLRR(dptr->ambient);
+		g = ((c * dptr->g) >> 8) + CLRG(dptr->ambient);
+		b = ((c * dptr->b) >> 8) + CLRB(dptr->ambient);
+
+		if (r > 255)
+			r = 255;
+
+		if (g > 255)
+			g = 255;
+
+		if (b > 255)
+			b = 255;
+
+		c = RGBONLY(r, g, b);
+		CalcColorSplit(c, &v[0].color);
+
+		c = dptr->color2 & 0xFF;
+		r = ((c * dptr->r) >> 8) + CLRR(dptr->ambient);
+		g = ((c * dptr->g) >> 8) + CLRG(dptr->ambient);
+		b = ((c * dptr->b) >> 8) + CLRB(dptr->ambient);
+
+		if (r > 255)
+			r = 255;
+
+		if (g > 255)
+			g = 255;
+
+		if (b > 255)
+			b = 255;
+
+		c = RGBONLY(r, g, b);
+		CalcColorSplit(c, &v[1].color);
+
+		c = dptr->color3 & 0xFF;
+		r = ((c * dptr->r) >> 8) + CLRR(dptr->ambient);
+		g = ((c * dptr->g) >> 8) + CLRG(dptr->ambient);
+		b = ((c * dptr->b) >> 8) + CLRB(dptr->ambient);
+
+		if (r > 255)
+			r = 255;
+
+		if (g > 255)
+			g = 255;
+
+		if (b > 255)
+			b = 255;
+
+		c = RGBONLY(r, g, b);
+		CalcColorSplit(c, &v[2].color);
+
+		v[0].color |= 0xFF000000;
+		v[1].color |= 0xFF000000;
+		v[2].color |= 0xFF000000;
+		v[0].specular |= 0xFF000000;
+		v[1].specular |= 0xFF000000;
+		v[2].specular |= 0xFF000000;
+
+		tex = &textinfo[(long)dptr->TextInfo & 0x7FFF];
+		drawbak = tex->drawtype;
+
+		if (dptr->flags & 1)
+			tex->drawtype = 2;
+
+		if (!tex->drawtype)
+			AddTriZBuffer(v, 0, 1, 2, tex, 1);
+		else if (tex->drawtype <= 2)
+			AddTriSorted(v, 0, 1, 2, tex, 1);
+
+		tex->drawtype = drawbak;
+	}
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -774,4 +901,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048C6C0, DrawBikeSpeedo, replace);
 	INJECT(0x0048D3D0, Draw2DSprite, replace);
 	INJECT(0x0048D580, DrawJeepSpeedo, replace);
+	INJECT(0x00489B90, DrawDebris, replace);
 }
