@@ -1912,42 +1912,30 @@ void MemBltSurf(void* dest, long x, long y, long w, long h, long dadd, void* sou
 }
 
 #ifdef GENERAL_FIXES
-typedef struct ColorBitMasks_t {
-	ulong dwRBitMask;
-	ulong dwGBitMask;
-	ulong dwBBitMask;
-	ulong dwRGBAlphaBitMask;
-	ulong dwRBitDepth;
-	ulong dwGBitDepth;
-	ulong dwBBitDepth;
-	ulong dwRGBAlphaBitDepth;
-	ulong dwRBitOffset;
-	ulong dwGBitOffset;
-	ulong dwBBitOffset;
-	ulong dwRGBAlphaBitOffset;
-} COLOR_BIT_MASKS;
+static void BitMaskGetNumberOfBits(ulong bitMask, ulong *bitDepth, ulong *bitOffset)
+{
+	long i;
 
-static void BitMaskGetNumberOfBits(DWORD bitMask, DWORD *bitDepth, DWORD *bitOffset) {
-	DWORD i;
-
-	if (!bitMask) {
+	if (!bitMask) 
+	{
 		*bitOffset = 0;
 		*bitDepth = 0;
 		return;
 	}
 
-	for (i = 0; (bitMask & 1) == 0; ++i) {
+	for (i = 0; !(bitMask & 1); i++)
 		bitMask >>= 1;
-	}
+
 	*bitOffset = i;
 
-	for (i = 0; bitMask != 0; ++i) {
+	for (i = 0; bitMask != 0; i++)
 		bitMask >>= 1;
-	}
+
 	*bitDepth = i;
 }
 
-static void WinVidGetColorBitMasks(COLOR_BIT_MASKS *bm, LPDDPIXELFORMAT pixelFormat) {
+static void WinVidGetColorBitMasks(COLOR_BIT_MASKS *bm, LPDDPIXELFORMAT pixelFormat)
+{
 	bm->dwRBitMask = pixelFormat->dwRBitMask;
 	bm->dwGBitMask = pixelFormat->dwGBitMask;
 	bm->dwBBitMask = pixelFormat->dwBBitMask;
@@ -1959,62 +1947,76 @@ static void WinVidGetColorBitMasks(COLOR_BIT_MASKS *bm, LPDDPIXELFORMAT pixelFor
 	BitMaskGetNumberOfBits(bm->dwRGBAlphaBitMask, &bm->dwRGBAlphaBitDepth, &bm->dwRGBAlphaBitOffset);
 }
 
-static void CustomBlt(LPDDSURFACEDESC2 dst, DWORD dstX, DWORD dstY, LPDDSURFACEDESC2 src, LPRECT srcRect) {
-	DWORD srcX = srcRect->left;
-	DWORD srcY = srcRect->top;
-	DWORD width = srcRect->right - srcRect->left;
-	DWORD height = srcRect->bottom - srcRect->top;
-
-	DWORD srcBpp = src->ddpfPixelFormat.dwRGBBitCount / 8;
-	DWORD dstBpp = dst->ddpfPixelFormat.dwRGBBitCount / 8;
+static void CustomBlt(DDSURFACEDESC2* dst, ulong dstX, ulong dstY, DDSURFACEDESC2* src, LPRECT srcRect)
+{
 	COLOR_BIT_MASKS srcMask, dstMask;
+	uchar* srcLine;
+	uchar* dstLine;
+	uchar* srcPtr;
+	uchar* dstPtr;
+	ulong srcX, srcY, width, height, srcBpp, dstBpp, color, high, low, r, g, b;
 
+	srcX = srcRect->left;
+	srcY = srcRect->top;
+	width = srcRect->right - srcRect->left;
+	height = srcRect->bottom - srcRect->top;
+	srcBpp = src->ddpfPixelFormat.dwRGBBitCount / 8;
+	dstBpp = dst->ddpfPixelFormat.dwRGBBitCount / 8;
 	WinVidGetColorBitMasks(&srcMask, &src->ddpfPixelFormat);
 	WinVidGetColorBitMasks(&dstMask, &dst->ddpfPixelFormat);
+	srcLine = (uchar*)src->lpSurface + srcY * src->lPitch + srcX * srcBpp;
+	dstLine = (uchar*)dst->lpSurface + dstY * dst->lPitch + dstX * dstBpp;
 
-	BYTE *srcLine = (BYTE *)src->lpSurface + srcY * src->lPitch + srcX * srcBpp;
-	BYTE *dstLine = (BYTE *)dst->lpSurface + dstY * dst->lPitch + dstX * dstBpp;
-	for (DWORD j = 0; j < height; ++j) {
-		BYTE *srcPtr = srcLine;
-		BYTE *dstPtr = dstLine;
-		for (DWORD i = 0; i < width; ++i) {
-			DWORD color = 0;
+	for (ulong j = 0; j < height; j++) 
+	{
+		srcPtr = srcLine;
+		dstPtr = dstLine;
+
+		for (ulong i = 0; i < width; i++)
+		{
+			color = 0;
 			memcpy(&color, srcPtr, srcBpp);
-			DWORD red = ((color & srcMask.dwRBitMask) >> srcMask.dwRBitOffset);
-			DWORD green = ((color & srcMask.dwGBitMask) >> srcMask.dwGBitOffset);
-			DWORD blue = ((color & srcMask.dwBBitMask) >> srcMask.dwBBitOffset);
-			if (srcMask.dwRBitDepth < dstMask.dwRBitDepth) {
-				DWORD high = dstMask.dwRBitDepth - srcMask.dwRBitDepth;
-				DWORD low = (srcMask.dwRBitDepth > high) ? srcMask.dwRBitDepth - high : 0;
-				red = (red << high) | (red >> low);
+			r = ((color & srcMask.dwRBitMask) >> srcMask.dwRBitOffset);
+			g = ((color & srcMask.dwGBitMask) >> srcMask.dwGBitOffset);
+			b = ((color & srcMask.dwBBitMask) >> srcMask.dwBBitOffset);
+
+			if (srcMask.dwRBitDepth < dstMask.dwRBitDepth) 
+			{
+				high = dstMask.dwRBitDepth - srcMask.dwRBitDepth;
+				low = (srcMask.dwRBitDepth > high) ? srcMask.dwRBitDepth - high : 0;
+				r = (r << high) | (r >> low);
 			}
-			else if (srcMask.dwRBitDepth > dstMask.dwRBitDepth) {
-				red >>= srcMask.dwRBitDepth - dstMask.dwRBitDepth;
+			else if (srcMask.dwRBitDepth > dstMask.dwRBitDepth)
+				r >>= srcMask.dwRBitDepth - dstMask.dwRBitDepth;
+
+			if (srcMask.dwGBitDepth < dstMask.dwGBitDepth)
+			{
+				high = dstMask.dwGBitDepth - srcMask.dwGBitDepth;
+				low = (srcMask.dwGBitDepth > high) ? srcMask.dwGBitDepth - high : 0;
+				g = (g << high) | (g >> low);
 			}
-			if (srcMask.dwGBitDepth < dstMask.dwGBitDepth) {
-				DWORD high = dstMask.dwGBitDepth - srcMask.dwGBitDepth;
-				DWORD low = (srcMask.dwGBitDepth > high) ? srcMask.dwGBitDepth - high : 0;
-				green = (green << high) | (green >> low);
+			else if (srcMask.dwGBitDepth > dstMask.dwGBitDepth)
+				g >>= srcMask.dwGBitDepth - dstMask.dwGBitDepth;
+
+
+			if (srcMask.dwBBitDepth < dstMask.dwBBitDepth) 
+			{
+				high = dstMask.dwBBitDepth - srcMask.dwBBitDepth;
+				low = (srcMask.dwBBitDepth > high) ? srcMask.dwBBitDepth - high : 0;
+				b = (b << high) | (b >> low);
 			}
-			else if (srcMask.dwGBitDepth > dstMask.dwGBitDepth) {
-				green >>= srcMask.dwGBitDepth - dstMask.dwGBitDepth;
-			}
-			if (srcMask.dwBBitDepth < dstMask.dwBBitDepth) {
-				DWORD high = dstMask.dwBBitDepth - srcMask.dwBBitDepth;
-				DWORD low = (srcMask.dwBBitDepth > high) ? srcMask.dwBBitDepth - high : 0;
-				blue = (blue << high) | (blue >> low);
-			}
-			else if (srcMask.dwBBitDepth > dstMask.dwBBitDepth) {
-				blue >>= srcMask.dwBBitDepth - dstMask.dwBBitDepth;
-			}
+			else if (srcMask.dwBBitDepth > dstMask.dwBBitDepth)
+				b >>= srcMask.dwBBitDepth - dstMask.dwBBitDepth;
+
 			color = dst->ddpfPixelFormat.dwRGBAlphaBitMask; // destination is opaque
-			color |= red << dstMask.dwRBitOffset;
-			color |= green << dstMask.dwGBitOffset;
-			color |= blue << dstMask.dwBBitOffset;
+			color |= r << dstMask.dwRBitOffset;
+			color |= g << dstMask.dwGBitOffset;
+			color |= b << dstMask.dwBBitOffset;
 			memcpy(dstPtr, &color, dstBpp);
 			srcPtr += srcBpp;
 			dstPtr += dstBpp;
 		}
+
 		srcLine += src->lPitch;
 		dstLine += dst->lPitch;
 	}

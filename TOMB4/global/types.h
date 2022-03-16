@@ -1794,6 +1794,22 @@ struct GouraudBarColourSet
 #endif
 
 #ifdef GENERAL_FIXES
+struct COLOR_BIT_MASKS
+{
+	ulong dwRBitMask;
+	ulong dwGBitMask;
+	ulong dwBBitMask;
+	ulong dwRGBAlphaBitMask;
+	ulong dwRBitDepth;
+	ulong dwGBitDepth;
+	ulong dwBBitDepth;
+	ulong dwRGBAlphaBitDepth;
+	ulong dwRBitOffset;
+	ulong dwGBitOffset;
+	ulong dwBBitOffset;
+	ulong dwRGBAlphaBitOffset;
+};
+
 struct tomb4_options	//keep this at the bottom of the file, please
 {
 	bool footprints;
