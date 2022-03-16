@@ -1682,6 +1682,12 @@ void S_DisplayMonoScreen()
 	long x[4];
 	long y[4];
 
+#ifdef GENERAL_FIXES
+	x[0] = phd_winxmin;
+	y[0] = phd_winymin;
+	x[1] = phd_winxmin + phd_winwidth;
+	y[1] = phd_winymin + phd_winheight;
+#else
 	for (int i = 0; i < 3; i++)
 	{
 		x[i] = phd_winxmin + phd_winwidth * MonoScreenX[i] / 640;
@@ -1689,19 +1695,26 @@ void S_DisplayMonoScreen()
 	}
 
 	x[3] = phd_winxmin + phd_winwidth * MonoScreenX[3] / 640;
+#endif
 	RestoreFPCW(FPCW);
 	S_DrawTile(x[0], y[0], x[1] - x[0], y[1] - y[0], MonoScreen[0].tex, 0, 0, 256, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+#ifndef GENERAL_FIXES
 	S_DrawTile(x[1], y[0], x[2] - x[1], y[1] - y[0], MonoScreen[1].tex, 0, 0, 256, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
 	S_DrawTile(x[2], y[0], x[3] - x[2], y[1] - y[0], MonoScreen[2].tex, 0, 0, 128, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
 	S_DrawTile(x[0], y[1], x[1] - x[0], y[2] - y[1], MonoScreen[3].tex, 0, 0, 256, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
 	S_DrawTile(x[1], y[1], x[2] - x[1], y[2] - y[1], MonoScreen[4].tex, 0, 0, 256, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
 	S_DrawTile(x[2], y[1], x[3] - x[2], y[2] - y[1], MonoScreen[2].tex, 128, 0, 128, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+#endif
 }
 
 void CreateMonoScreen()
 {
 	MonoScreenOn = 1;
+#ifdef GENERAL_FIXES
+	ConvertSurfaceToTextures(App.dx.lpBackBuffer);
+#else
 	ConvertSurfaceToTextures(App.dx.lpPrimaryBuffer);
+#endif
 }
 
 void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever stupid fuck that wrote this
@@ -1714,6 +1727,7 @@ void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
 
+#ifndef GENERAL_FIXES
 	if (MonoScreen[1].surface)
 	{
 		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[1].surface, MonoScreen[1].surface->Release());
@@ -1745,6 +1759,7 @@ void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever
 	}
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
+#endif
 
 	if (MonoScreen[0].tex)
 	{
@@ -1754,6 +1769,7 @@ void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
 
+#ifndef GENERAL_FIXES
 	if (MonoScreen[1].tex)
 	{
 		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[1].tex, MonoScreen[1].tex->Release());
@@ -1785,6 +1801,7 @@ void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever
 	}
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
+#endif
 
 	MonoScreenOn = 0;
 }
@@ -1894,9 +1911,123 @@ void MemBltSurf(void* dest, long x, long y, long w, long h, long dadd, void* sou
 	}
 }
 
+#ifdef GENERAL_FIXES
+typedef struct ColorBitMasks_t {
+	ulong dwRBitMask;
+	ulong dwGBitMask;
+	ulong dwBBitMask;
+	ulong dwRGBAlphaBitMask;
+	ulong dwRBitDepth;
+	ulong dwGBitDepth;
+	ulong dwBBitDepth;
+	ulong dwRGBAlphaBitDepth;
+	ulong dwRBitOffset;
+	ulong dwGBitOffset;
+	ulong dwBBitOffset;
+	ulong dwRGBAlphaBitOffset;
+} COLOR_BIT_MASKS;
+
+static void BitMaskGetNumberOfBits(DWORD bitMask, DWORD *bitDepth, DWORD *bitOffset) {
+	DWORD i;
+
+	if (!bitMask) {
+		*bitOffset = 0;
+		*bitDepth = 0;
+		return;
+	}
+
+	for (i = 0; (bitMask & 1) == 0; ++i) {
+		bitMask >>= 1;
+	}
+	*bitOffset = i;
+
+	for (i = 0; bitMask != 0; ++i) {
+		bitMask >>= 1;
+	}
+	*bitDepth = i;
+}
+
+static void WinVidGetColorBitMasks(COLOR_BIT_MASKS *bm, LPDDPIXELFORMAT pixelFormat) {
+	bm->dwRBitMask = pixelFormat->dwRBitMask;
+	bm->dwGBitMask = pixelFormat->dwGBitMask;
+	bm->dwBBitMask = pixelFormat->dwBBitMask;
+	bm->dwRGBAlphaBitMask = pixelFormat->dwRGBAlphaBitMask;
+
+	BitMaskGetNumberOfBits(bm->dwRBitMask, &bm->dwRBitDepth, &bm->dwRBitOffset);
+	BitMaskGetNumberOfBits(bm->dwGBitMask, &bm->dwGBitDepth, &bm->dwGBitOffset);
+	BitMaskGetNumberOfBits(bm->dwBBitMask, &bm->dwBBitDepth, &bm->dwBBitOffset);
+	BitMaskGetNumberOfBits(bm->dwRGBAlphaBitMask, &bm->dwRGBAlphaBitDepth, &bm->dwRGBAlphaBitOffset);
+}
+
+static void CustomBlt(LPDDSURFACEDESC2 dst, DWORD dstX, DWORD dstY, LPDDSURFACEDESC2 src, LPRECT srcRect) {
+	DWORD srcX = srcRect->left;
+	DWORD srcY = srcRect->top;
+	DWORD width = srcRect->right - srcRect->left;
+	DWORD height = srcRect->bottom - srcRect->top;
+
+	DWORD srcBpp = src->ddpfPixelFormat.dwRGBBitCount / 8;
+	DWORD dstBpp = dst->ddpfPixelFormat.dwRGBBitCount / 8;
+	COLOR_BIT_MASKS srcMask, dstMask;
+
+	WinVidGetColorBitMasks(&srcMask, &src->ddpfPixelFormat);
+	WinVidGetColorBitMasks(&dstMask, &dst->ddpfPixelFormat);
+
+	BYTE *srcLine = (BYTE *)src->lpSurface + srcY * src->lPitch + srcX * srcBpp;
+	BYTE *dstLine = (BYTE *)dst->lpSurface + dstY * dst->lPitch + dstX * dstBpp;
+	for (DWORD j = 0; j < height; ++j) {
+		BYTE *srcPtr = srcLine;
+		BYTE *dstPtr = dstLine;
+		for (DWORD i = 0; i < width; ++i) {
+			DWORD color = 0;
+			memcpy(&color, srcPtr, srcBpp);
+			DWORD red = ((color & srcMask.dwRBitMask) >> srcMask.dwRBitOffset);
+			DWORD green = ((color & srcMask.dwGBitMask) >> srcMask.dwGBitOffset);
+			DWORD blue = ((color & srcMask.dwBBitMask) >> srcMask.dwBBitOffset);
+			if (srcMask.dwRBitDepth < dstMask.dwRBitDepth) {
+				DWORD high = dstMask.dwRBitDepth - srcMask.dwRBitDepth;
+				DWORD low = (srcMask.dwRBitDepth > high) ? srcMask.dwRBitDepth - high : 0;
+				red = (red << high) | (red >> low);
+			}
+			else if (srcMask.dwRBitDepth > dstMask.dwRBitDepth) {
+				red >>= srcMask.dwRBitDepth - dstMask.dwRBitDepth;
+			}
+			if (srcMask.dwGBitDepth < dstMask.dwGBitDepth) {
+				DWORD high = dstMask.dwGBitDepth - srcMask.dwGBitDepth;
+				DWORD low = (srcMask.dwGBitDepth > high) ? srcMask.dwGBitDepth - high : 0;
+				green = (green << high) | (green >> low);
+			}
+			else if (srcMask.dwGBitDepth > dstMask.dwGBitDepth) {
+				green >>= srcMask.dwGBitDepth - dstMask.dwGBitDepth;
+			}
+			if (srcMask.dwBBitDepth < dstMask.dwBBitDepth) {
+				DWORD high = dstMask.dwBBitDepth - srcMask.dwBBitDepth;
+				DWORD low = (srcMask.dwBBitDepth > high) ? srcMask.dwBBitDepth - high : 0;
+				blue = (blue << high) | (blue >> low);
+			}
+			else if (srcMask.dwBBitDepth > dstMask.dwBBitDepth) {
+				blue >>= srcMask.dwBBitDepth - dstMask.dwBBitDepth;
+			}
+			color = dst->ddpfPixelFormat.dwRGBAlphaBitMask; // destination is opaque
+			color |= red << dstMask.dwRBitOffset;
+			color |= green << dstMask.dwGBitOffset;
+			color |= blue << dstMask.dwBBitOffset;
+			memcpy(dstPtr, &color, dstBpp);
+			srcPtr += srcBpp;
+			dstPtr += dstBpp;
+		}
+		srcLine += src->lPitch;
+		dstLine += dst->lPitch;
+	}
+}
+#endif
+
 void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACE4 surface)
 {
 	DDSURFACEDESC2 tSurf;
+#ifdef GENERAL_FIXES
+	DDSURFACEDESC2 uSurf;
+	RECT r;
+#endif
 	ushort* pTexture;
 	ushort* pSrc;
 
@@ -1904,6 +2035,24 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACE4 surface)
 	tSurf.dwSize = sizeof(DDSURFACEDESC2);
 	surface->Lock(0, &tSurf, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
 	pSrc = (ushort*)tSurf.lpSurface;
+#ifdef GENERAL_FIXES
+	MonoScreen[0].surface = CreateTexturePage(tSurf.dwWidth, tSurf.dwHeight, 0, NULL, RGBM_Mono, -1);
+
+	memset(&uSurf, 0, sizeof(uSurf));
+	uSurf.dwSize = sizeof(DDSURFACEDESC2);
+	MonoScreen[0].surface->Lock(0, &uSurf, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
+	pTexture = (ushort*)uSurf.lpSurface;
+
+	r.left = 0;
+	r.top = 0;
+	r.right = tSurf.dwWidth;
+	r.bottom = tSurf.dwHeight;
+	CustomBlt(&uSurf, 0, 0, &tSurf, &r);
+
+	MonoScreen[0].surface->Unlock(0);
+	DXAttempt(MonoScreen[0].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[0].tex));
+	surface->Unlock(0);
+#else
 	pTexture = (ushort*)malloc(0x40000);
 
 	MemBltSurf(pTexture, 0, 0, 256, 256, 256, pSrc, 0, 0, tSurf, 1.0F, 1.0F);
@@ -1929,6 +2078,7 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACE4 surface)
 
 	surface->Unlock(0);
 	free(pTexture);
+#endif
 }
 
 void DoSlider(long x, long y, long width, long height, long pos, long clr1, long clr2, long clr3)
