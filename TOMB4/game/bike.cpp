@@ -394,39 +394,36 @@ void AnimateBike(ITEM_INFO* item, long hitWall, long killed)
 		lara_item->current_anim_state = 8;
 		lara_item->frame_number = anims[lara_item->anim_number].frame_base;
 	}
-	else if (hitWall)
+	else if (hitWall && state != 12 && state != 11 && state != 13 && state != 14 && state != 20 && bike->velocity > 10922 && !killed)
 	{
-		if (state != 12 && state != 11 && state != 13 && state != 14 && state != 20 && bike->velocity > 10922 && !killed)
+		switch (hitWall)
 		{
-			switch (hitWall)
-			{
-			case 13:
-				lara_item->goal_anim_state = 12;
-				lara_item->current_anim_state = 12;
-				lara_item->anim_number = objects[VEHICLE_EXTRA].anim_index + 12;
-				break;
+		case 13:
+			lara_item->goal_anim_state = 12;
+			lara_item->current_anim_state = 12;
+			lara_item->anim_number = objects[VEHICLE_EXTRA].anim_index + 12;
+			break;
 
-			case 14:
-				lara_item->goal_anim_state = 11;
-				lara_item->current_anim_state = 11;
-				lara_item->anim_number = objects[VEHICLE_EXTRA].anim_index + 11;
-				break;
+		case 14:
+			lara_item->goal_anim_state = 11;
+			lara_item->current_anim_state = 11;
+			lara_item->anim_number = objects[VEHICLE_EXTRA].anim_index + 11;
+			break;
 
-			case 11:
-				lara_item->goal_anim_state = 13;
-				lara_item->current_anim_state = VEHICLE_EXTRA;
-				lara_item->anim_number = objects[33].anim_index + 14;
-				break;
+		case 11:
+			lara_item->goal_anim_state = 13;
+			lara_item->current_anim_state = VEHICLE_EXTRA;
+			lara_item->anim_number = objects[33].anim_index + 14;
+			break;
 
-			default:
-				lara_item->goal_anim_state = 14;
-				lara_item->current_anim_state = 14;
-				lara_item->anim_number = objects[VEHICLE_EXTRA].anim_index + 13;
-				break;
-			}
-
-			lara_item->frame_number = anims[lara_item->anim_number].frame_base;
+		default:
+			lara_item->goal_anim_state = 14;
+			lara_item->current_anim_state = 14;
+			lara_item->anim_number = objects[VEHICLE_EXTRA].anim_index + 13;
+			break;
 		}
+
+		lara_item->frame_number = anims[lara_item->anim_number].frame_base;
 	}
 	else
 	{
@@ -1565,7 +1562,7 @@ void inject_bike(bool replace)
 	INJECT(0x00465220, TriggerExhaustSmoke, replace);
 	INJECT(0x004668E0, CanGetOff, replace);
 	INJECT(0x004653D0, BikeExplode, replace);
-	INJECT(0x004664B0, AnimateBike, replace);	//has bug where laura sometimes doesn't die after falling with the bike????
+	INJECT(0x004664B0, AnimateBike, replace);
 	INJECT(0x00466E90, BikeStart, replace);
 	INJECT(0x00465660, TestHeight, replace);
 	INJECT(0x004654A0, BikeCheckGetOff, replace);
