@@ -2008,6 +2008,7 @@ static void CustomBlt(DDSURFACEDESC2* dst, ulong dstX, ulong dstY, DDSURFACEDESC
 			else if (srcMask.dwBBitDepth > dstMask.dwBBitDepth)
 				b >>= srcMask.dwBBitDepth - dstMask.dwBBitDepth;
 
+			RGBM_Mono((uchar*)&r, (uchar*)&g, (uchar*)&b);
 			color = dst->ddpfPixelFormat.dwRGBAlphaBitMask; // destination is opaque
 			color |= r << dstMask.dwRBitOffset;
 			color |= g << dstMask.dwGBitOffset;
