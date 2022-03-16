@@ -33,3 +33,4 @@ void DrawGunshells();
 #define GetFreeSmokeSpark	( (long(__cdecl*)()) 0x00438690 )
 #define TriggerShockwave	( (void(__cdecl*)(PHD_VECTOR*, long, long, long, long)) 0x0043AA90 )
 #define TriggerFlashSmoke	( (void(__cdecl*)(long, long, long, long)) 0x0043B420 )
+#define TriggerShatterSmoke	( (void(__cdecl*)(long, long, long)) 0x00438BA0 )

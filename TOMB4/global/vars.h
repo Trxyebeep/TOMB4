@@ -399,6 +399,14 @@
 #define pSortBuffer	VAR_U_(0x00660C8C, char*)
 #define pSortList	VAR_U_(0x005C07A8, SORTLIST**)
 #define nPolys	VAR_U_(0x00753964, long)
+#define DebrisFlags	VAR_U_(0x004BF354, short)
+#define DebrisMesh	VAR_U_(0x00808F84, MESH_DATA*)
+#define DebrisMeshC1	VAR_U_(0x0080D7A4, long)
+#define DebrisMeshC2	VAR_U_(0x0080D7A0, long)
+#define DebrisMeshC3	VAR_U_(0x0080D7A8, long)
+#define DebrisMeshAmbient	VAR_U_(0x00808F80, long)
+#define DebrisMeshFlags	VAR_U_(0x00808F88, long)
+#define next_debris	VAR_U_(0x004BF358, long)
 
 
 
@@ -488,6 +496,7 @@
 #define MonoScreen	ARRAY_(0x00577460, MONOSCREEN_STRUCT, [5])
 #define XYUVClipperBuffer	ARRAY_(0x006607B0, D3DTLBUMPVERTEX, [20])
 #define zClipperBuffer	ARRAY_(0x005C0488, D3DTLBUMPVERTEX, [20])
+#define debris	ARRAY_(0x00808FA0, DEBRIS_STRUCT, [256])
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)
