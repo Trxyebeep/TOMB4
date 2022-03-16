@@ -1368,7 +1368,7 @@ long BikeDynamics(ITEM_INFO* item)
 			bike->velocity = speed > 0 ? 0 : speed;
 
 		if (bike->velocity < -0x3000)
-			bike->velocity = 0x3000;
+			bike->velocity = -0x3000;
 	}
 
 	return anim;

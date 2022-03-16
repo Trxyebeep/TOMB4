@@ -48,6 +48,9 @@ static long S_Death()
 		lara.death_count++;
 		S_DisplayMonoScreen();
 
+		if (MainThread.ended)
+			return 4;
+
 		if (Gameflow->LoadSaveEnabled)
 		{
 			if (!menu)	//"main" menu
