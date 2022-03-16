@@ -412,8 +412,8 @@ void AnimateBike(ITEM_INFO* item, long hitWall, long killed)
 
 		case 11:
 			lara_item->goal_anim_state = 13;
-			lara_item->current_anim_state = VEHICLE_EXTRA;
-			lara_item->anim_number = objects[33].anim_index + 14;
+			lara_item->current_anim_state = 13;
+			lara_item->anim_number = objects[VEHICLE_EXTRA].anim_index + 14;
 			break;
 
 		default:
