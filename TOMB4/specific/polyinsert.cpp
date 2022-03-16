@@ -762,11 +762,22 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 	specBak[1] = v[v1].specular;
 	specBak[2] = v[v2].specular;
 
-	if (App.Volumetric && tex->drawtype != 2)
+	if (App.Volumetric)
 	{
-		OmniFog(&v[v0]);
-		OmniFog(&v[v1]);
-		OmniFog(&v[v2]);
+		if (tex->drawtype != 2)
+		{
+			OmniFog(&v[v0]);
+			OmniFog(&v[v1]);
+			OmniFog(&v[v2]);
+		}
+#ifdef GENERAL_FIXES
+		else
+		{
+			v[v0].specular |= 0xFF000000;
+			v[v1].specular |= 0xFF000000;
+			v[v2].specular |= 0xFF000000;
+		}
+#endif
 	}
 
 	pV = &v[v0];
@@ -987,12 +998,24 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 	specBak[2] = v[v2].specular;
 	specBak[3] = v[v3].specular;
 
-	if (App.Volumetric && tex->drawtype != 2)
+	if (App.Volumetric)
 	{
-		OmniFog(&v[v0]);
-		OmniFog(&v[v1]);
-		OmniFog(&v[v2]);
-		OmniFog(&v[v3]);
+		if (tex->drawtype != 2)
+		{
+			OmniFog(&v[v0]);
+			OmniFog(&v[v1]);
+			OmniFog(&v[v2]);
+			OmniFog(&v[v3]);
+		}
+#ifdef GENERAL_FIXES
+		else
+		{
+			v[v0].specular |= 0xFF000000;
+			v[v1].specular |= 0xFF000000;
+			v[v2].specular |= 0xFF000000;
+			v[v3].specular |= 0xFF000000;
+		}
+#endif
 	}
 
 	pV = &v[v0];
