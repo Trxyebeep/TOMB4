@@ -223,6 +223,29 @@ void InitialiseFlameEmitter2(short item_number)
 	}
 }
 
+void InitialiseFlameEmitter3(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+
+	item = &items[item_number];
+
+	if (item->trigger_flags < 3)
+		return;
+
+	for (int i = 0; i < level_items; i++)
+	{
+		item2 = &items[i];
+
+		if (item2->object_number == ANIMATING3)
+		{
+			if (item2->trigger_flags == item->trigger_flags)
+				item->item_flags[2] = i;
+			else if (!item2->trigger_flags)
+				item->item_flags[3] = i;
+		}
+	}
+}
 
 void inject_init(bool replace)
 {
@@ -233,4 +256,5 @@ void inject_init(bool replace)
 	INJECT(0x004530A0, InitialiseFallingBlock2, replace);
 	INJECT(0x004530D0, InitialiseFlameEmitter, replace);
 	INJECT(0x00453170, InitialiseFlameEmitter2, replace);
+	INJECT(0x00453230, InitialiseFlameEmitter3, replace);
 }
