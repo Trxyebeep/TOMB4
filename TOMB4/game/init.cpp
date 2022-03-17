@@ -158,6 +158,31 @@ void InitialiseFallingBlock2(short item_number)
 	items[item_number].mesh_bits = 1;
 }
 
+void InitialiseFlameEmitter(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (item->trigger_flags < 0)
+	{
+		item->item_flags[0] = (GetRandomControl() & 0x3F) + 90;
+		item->item_flags[2] = 256;
+
+		if ((-item->trigger_flags & 7) == 7)
+		{
+			if (!item->pos.y_rot)
+				item->pos.z_pos += 512;
+			else if (item->pos.y_rot == 0x4000)
+				item->pos.x_pos += 512;
+			else if (item->pos.y_rot == -0x8000)
+				item->pos.z_pos -= 512;
+			else if (item->pos.y_rot == -0x4000)
+				item->pos.x_pos -= 512;
+		}
+	}
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
@@ -165,4 +190,5 @@ void inject_init(bool replace)
 	INJECT(0x00453A30, InitialiseDoor, replace);
 	INJECT(0x00453070, InitialiseTrapDoor, replace);
 	INJECT(0x004530A0, InitialiseFallingBlock2, replace);
+	INJECT(0x004530D0, InitialiseFlameEmitter, replace);
 }
