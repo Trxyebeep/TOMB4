@@ -18,3 +18,6 @@ void InitialiseScaledSpike(short item_number);
 void InitialiseRaisingBlock(short item_number);
 void InitialiseBurningFloor(short item_number);
 void InitialiseSethBlade(short item_number);
+void InitialiseObelisk(short item_number);
+void InitialiseMineHelicopter(short item_number);
+void InitialiseSmashObject(short item_number);

@@ -549,9 +549,9 @@ x for functions decompiled but not injected, for one reason or another.
 0x004534E0	+	InitialiseRaisingBlock
 0x004535C0	+	InitialiseBurningFloor
 0x004535F0	+	InitialiseSethBlade
-0x00453650		InitialiseObelisk
-0x00453710		InitialiseMineHelicopter
-0x00453740		InitialiseSmashObject
+0x00453650	+	InitialiseObelisk
+0x00453710	+	InitialiseMineHelicopter
+0x00453740	+	InitialiseSmashObject
 0x004537D0	+	InitialiseMapper
 0x00453800	+	InitialiseLightningConductor
 0x00453870		InitialiseStatuePlinth

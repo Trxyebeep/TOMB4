@@ -367,6 +367,60 @@ void InitialiseSethBlade(short item_number)
 	item->item_flags[2] = ABS(item->trigger_flags);
 }
 
+void InitialiseObelisk(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+	short* ifl;
+
+	item = &items[item_number];
+	item->anim_number = objects[item->object_number].anim_index + 3;
+	item->frame_number = anims[item->anim_number].frame_base;
+	AddActiveItem(item_number);
+	item->status = ITEM_ACTIVE;
+
+	if (item->trigger_flags == 2)
+	{
+		for (int i = 0; i < level_items; i++)
+		{
+			item2 = &items[i];
+			ifl = item->item_flags;
+
+			if (item2->object_number == OBELISK && i != item_number)
+				*ifl++ = i;
+
+			if (item2->object_number == ANIMATING3)
+				item->item_flags[2] = i;
+		}
+	}
+}
+
+void InitialiseMineHelicopter(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (!item->trigger_flags)
+		item->mesh_bits = 0;
+}
+
+void InitialiseSmashObject(short item_number)
+{
+	ITEM_INFO* item;
+	ROOM_INFO* rinfo;
+	FLOOR_INFO* floor;
+
+	item = &items[item_number];
+	item->flags = 0;
+	item->mesh_bits = 1;
+	rinfo = &room[item->room_number];
+	floor = &rinfo->floor[((item->pos.z_pos - rinfo->z) >> 10) + ((item->pos.x_pos - rinfo->x) >> 10) * rinfo->x_size];
+
+	if (boxes[floor->box].overlap_index & 0x8000)
+		boxes[floor->box].overlap_index |= 0x4000;
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
@@ -384,4 +438,7 @@ void inject_init(bool replace)
 	INJECT(0x004534E0, InitialiseRaisingBlock, replace);
 	INJECT(0x004535C0, InitialiseBurningFloor, replace);
 	INJECT(0x004535F0, InitialiseSethBlade, replace);
+	INJECT(0x00453650, InitialiseObelisk, replace);
+	INJECT(0x00453710, InitialiseMineHelicopter, replace);
+	INJECT(0x00453740, InitialiseSmashObject, replace);
 }
