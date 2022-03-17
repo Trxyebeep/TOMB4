@@ -264,6 +264,15 @@ void InitialiseJobySpike(short item_number)
 	item->item_flags[3] = (4096 * (h - c)) / 3328;
 }
 
+void InitialiseTwoBlockPlatform(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->item_flags[0] = item->pos.y_pos;
+	item->item_flags[1] = 1;
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
@@ -275,4 +284,5 @@ void inject_init(bool replace)
 	INJECT(0x00453170, InitialiseFlameEmitter2, replace);
 	INJECT(0x00453230, InitialiseFlameEmitter3, replace);
 	INJECT(0x004532A0, InitialiseJobySpike, replace);
+	INJECT(0x00453340, InitialiseTwoBlockPlatform, replace);
 }

@@ -543,7 +543,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00453170	+	InitialiseFlameEmitter2
 0x00453230	+	InitialiseFlameEmitter3
 0x004532A0	+	InitialiseJobySpike
-0x00453340		InitialiseTwoBlockPlatform
+0x00453340	+	InitialiseTwoBlockPlatform
 0x00453370		InitialiseSlicerDicer
 0x00453400		InitialiseScaledSpike
 0x004534E0		InitialiseRaisingBlock
