@@ -16,3 +16,5 @@ void InitialiseTwoBlockPlatform(short item_number);
 void InitialiseSlicerDicer(short item_number);
 void InitialiseScaledSpike(short item_number);
 void InitialiseRaisingBlock(short item_number);
+void InitialiseBurningFloor(short item_number);
+void InitialiseSethBlade(short item_number);

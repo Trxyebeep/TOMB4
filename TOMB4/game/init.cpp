@@ -350,6 +350,23 @@ void InitialiseRaisingBlock(short item_number)
 	}
 }
 
+void InitialiseBurningFloor(short item_number)
+{
+	items[item_number].required_anim_state = 127;
+}
+
+void InitialiseSethBlade(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->anim_number = objects[SETH_BLADE].anim_index + 1;
+	item->frame_number = anims[item->anim_number].frame_base;
+	item->current_anim_state = 2;
+	item->goal_anim_state = 2;
+	item->item_flags[2] = ABS(item->trigger_flags);
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
@@ -365,4 +382,6 @@ void inject_init(bool replace)
 	INJECT(0x00453370, InitialiseSlicerDicer, replace);
 	INJECT(0x00453400, InitialiseScaledSpike, replace);
 	INJECT(0x004534E0, InitialiseRaisingBlock, replace);
+	INJECT(0x004535C0, InitialiseBurningFloor, replace);
+	INJECT(0x004535F0, InitialiseSethBlade, replace);
 }
