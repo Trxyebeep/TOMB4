@@ -247,6 +247,23 @@ void InitialiseFlameEmitter3(short item_number)
 	}
 }
 
+void InitialiseJobySpike(short item_number)
+{
+	ITEM_INFO* item;
+	FLOOR_INFO* floor;
+	long h, c;
+	short room_number;
+
+	item = &item[item_number];
+	item->pos.y_rot = GetRandomControl() << 10;
+	item->item_flags[2] = GetRandomControl() & 1;
+	room_number = item->room_number;
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+	h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	c = GetCeiling(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	item->item_flags[3] = (4096 * (h - c)) / 3328;
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
@@ -257,4 +274,5 @@ void inject_init(bool replace)
 	INJECT(0x004530D0, InitialiseFlameEmitter, replace);
 	INJECT(0x00453170, InitialiseFlameEmitter2, replace);
 	INJECT(0x00453230, InitialiseFlameEmitter3, replace);
+	INJECT(0x004532A0, InitialiseJobySpike, replace);
 }
