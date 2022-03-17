@@ -153,10 +153,16 @@ void InitialiseTrapDoor(short item_number)
 	CloseTrapDoor(&items[item_number]);
 }
 
+void InitialiseFallingBlock2(short item_number)
+{
+	items[item_number].mesh_bits = 1;
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
 	INJECT(0x00453800, InitialiseLightningConductor, replace);
 	INJECT(0x00453A30, InitialiseDoor, replace);
 	INJECT(0x00453070, InitialiseTrapDoor, replace);
+	INJECT(0x004530A0, InitialiseFallingBlock2, replace);
 }
