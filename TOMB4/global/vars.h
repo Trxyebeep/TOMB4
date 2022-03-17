@@ -407,6 +407,8 @@
 #define DebrisMeshAmbient	VAR_U_(0x00808F80, long)
 #define DebrisMeshFlags	VAR_U_(0x00808F88, long)
 #define next_debris	VAR_U_(0x004BF358, long)
+#define NumRPickups	VAR_U_(0x007FD1DC, uchar)
+
 
 
 
@@ -497,6 +499,7 @@
 #define XYUVClipperBuffer	ARRAY_(0x006607B0, D3DTLBUMPVERTEX, [20])
 #define zClipperBuffer	ARRAY_(0x005C0488, D3DTLBUMPVERTEX, [20])
 #define debris	ARRAY_(0x00808FA0, DEBRIS_STRUCT, [256])
+#define RPickups	ARRAY_(0x007FD1C0, uchar, [16])
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)

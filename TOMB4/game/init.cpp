@@ -6,6 +6,7 @@
 #include "door.h"
 #include "items.h"
 #include "traps.h"
+#include "draw.h"
 
 void InitialiseMapper(short item_number)
 {
@@ -421,6 +422,86 @@ void InitialiseSmashObject(short item_number)
 		boxes[floor->box].overlap_index |= 0x4000;
 }
 
+void InitialiseStatuePlinth(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (!item->trigger_flags)
+		item->mesh_bits = 1;
+}
+
+void InitialiseSmokeEmitter(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (item->object_number != STEAM_EMITTER)
+		return;
+
+	if (item->trigger_flags & 8)
+	{
+		item->item_flags[0] = item->trigger_flags >> 4;
+
+		if (!item->pos.y_rot)
+			item->pos.z_pos += 320;
+		else if (item->pos.y_rot == 0x4000)
+			item->pos.x_pos += 320;
+		else if (item->pos.y_rot == -0x4000)
+			item->pos.x_pos -= 320;
+		else if (item->pos.y_rot == -0x8000)
+			item->pos.z_pos -= 320;
+	}
+	else if (room[item->room_number].flags & ROOM_UNDERWATER && item->trigger_flags == 1)
+	{
+		item->item_flags[0] = 20;
+		item->item_flags[1] = 1;
+	}
+}
+
+void InitialisePulley(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->item_flags[3] = item->trigger_flags;
+	item->trigger_flags = ABS(item->trigger_flags);
+
+	if (item->status == ITEM_INVISIBLE)
+	{
+		item->item_flags[1] = 1;
+		item->status = ITEM_INACTIVE;
+	}
+}
+
+void InitialisePickUp(short item_number)
+{
+	ITEM_INFO* item;
+	short* bounds;
+	short ocb;
+
+	item = &items[item_number];
+	ocb = item->trigger_flags & 0x3F;
+	bounds = GetBoundsAccurate(item);
+
+	if (ocb == 0 || ocb == 3 || ocb == 4)
+		item->pos.y_pos -= bounds[3];
+
+	if (item->trigger_flags & 128)
+	{
+		RPickups[NumRPickups] = (uchar)item_number;
+		NumRPickups++;
+	}
+
+	if (item->trigger_flags & 256)
+		item->mesh_bits = 0;
+
+	if (item->status == ITEM_INVISIBLE)
+		item->flags |= IFL_TRIGGERED;
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
@@ -441,4 +522,8 @@ void inject_init(bool replace)
 	INJECT(0x00453650, InitialiseObelisk, replace);
 	INJECT(0x00453710, InitialiseMineHelicopter, replace);
 	INJECT(0x00453740, InitialiseSmashObject, replace);
+	INJECT(0x00453870, InitialiseStatuePlinth, replace);
+	INJECT(0x00453980, InitialiseSmokeEmitter, replace);
+	INJECT(0x00453E40, InitialisePulley, replace);
+	INJECT(0x00453E90, InitialisePickUp, replace);
 }

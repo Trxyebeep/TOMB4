@@ -21,3 +21,7 @@ void InitialiseSethBlade(short item_number);
 void InitialiseObelisk(short item_number);
 void InitialiseMineHelicopter(short item_number);
 void InitialiseSmashObject(short item_number);
+void InitialiseStatuePlinth(short item_number);
+void InitialiseSmokeEmitter(short item_number);
+void InitialisePulley(short item_number);
+void InitialisePickUp(short item_number);

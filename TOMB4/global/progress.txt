@@ -554,12 +554,12 @@ x for functions decompiled but not injected, for one reason or another.
 0x00453740	+	InitialiseSmashObject
 0x004537D0	+	InitialiseMapper
 0x00453800	+	InitialiseLightningConductor
-0x00453870		InitialiseStatuePlinth
+0x00453870	+	InitialiseStatuePlinth
 0x004538A0		InitialiseEffects
-0x00453980		InitialiseSmokeEmitter
+0x00453980	+	InitialiseSmokeEmitter
 0x00453A30	+	InitialiseDoor
-0x00453E40		InitialisePulley
-0x00453E90		InitialisePickUp
+0x00453E40	+	InitialisePulley
+0x00453E90	+	InitialisePickUp
 0x00453F30		init_all_ropes
 0x00453F60		CreateRope
 0x00454070		InitialiseRope
