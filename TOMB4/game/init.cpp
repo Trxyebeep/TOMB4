@@ -319,6 +319,37 @@ void InitialiseScaledSpike(short item_number)
 	item->pos.y_pos += SPyoffs[item->trigger_flags & 7];
 }
 
+void InitialiseRaisingBlock(short item_number)
+{
+	ITEM_INFO* item;
+	FLOOR_INFO* floor;
+	short room_num;
+
+	item = &items[item_number];
+	room_num = item->room_number;
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_num);
+	boxes[floor->box].overlap_index &= 0xBF;
+
+	if (item->object_number == EXPANDING_PLATFORM)
+	{
+		if (!item->pos.y_rot)
+			item->pos.z_pos += 511;
+		else if (item->pos.y_rot == 0x4000)
+			item->pos.x_pos += 511;
+		else if (item->pos.y_rot == -0x8000)
+			item->pos.z_pos -= 511;
+		else if (item->pos.y_rot == -0x4000)
+			item->pos.x_pos -= 511;
+	}
+
+	if (item->trigger_flags < 0)
+	{
+		item->flags |= IFL_CODEBITS;
+		AddActiveItem(item_number);
+		item->status = ITEM_ACTIVE;
+	}
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
@@ -333,4 +364,5 @@ void inject_init(bool replace)
 	INJECT(0x00453340, InitialiseTwoBlockPlatform, replace);
 	INJECT(0x00453370, InitialiseSlicerDicer, replace);
 	INJECT(0x00453400, InitialiseScaledSpike, replace);
+	INJECT(0x004534E0, InitialiseRaisingBlock, replace);
 }
