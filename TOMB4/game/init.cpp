@@ -286,6 +286,39 @@ void InitialiseSlicerDicer(short item_number)
 	item->item_flags[2] = short(item->pos.z_pos >> 8);
 }
 
+void InitialiseScaledSpike(short item_number)
+{
+	ITEM_INFO* item;
+	short xzrots[8];
+
+	item = &items[item_number];
+	xzrots[0] = -0x8000;
+	xzrots[1] = -0x6000;
+	xzrots[2] = -0x4000;
+	xzrots[3] = -0x2000;
+	xzrots[4] = 0;
+	xzrots[5] = 0x2000;
+	xzrots[6] = 0x4000;
+	xzrots[7] = 0x6000;
+	item->status = ITEM_INVISIBLE;
+
+	if (item->trigger_flags & 8)
+	{
+		item->pos.x_rot = xzrots[item->trigger_flags & 7];
+		item->pos.y_rot = 0x4000;
+		item->pos.z_pos -= SPxzoffs[item->trigger_flags & 7];
+	}
+	else
+	{
+		item->pos.z_rot = xzrots[item->trigger_flags & 7];
+		item->pos.x_pos += SPxzoffs[item->trigger_flags & 7];
+	}
+
+	item->item_flags[0] = 1024;
+	item->item_flags[2] = 0;
+	item->pos.y_pos += SPyoffs[item->trigger_flags & 7];
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
@@ -299,4 +332,5 @@ void inject_init(bool replace)
 	INJECT(0x004532A0, InitialiseJobySpike, replace);
 	INJECT(0x00453340, InitialiseTwoBlockPlatform, replace);
 	INJECT(0x00453370, InitialiseSlicerDicer, replace);
+	INJECT(0x00453400, InitialiseScaledSpike, replace);
 }
