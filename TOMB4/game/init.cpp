@@ -5,6 +5,7 @@
 #include "control.h"
 #include "door.h"
 #include "items.h"
+#include "traps.h"
 
 void InitialiseMapper(short item_number)
 {
@@ -147,9 +148,15 @@ void InitialiseDoor(short item_number)
 	}
 }
 
+void InitialiseTrapDoor(short item_number)
+{
+	CloseTrapDoor(&items[item_number]);
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
 	INJECT(0x00453800, InitialiseLightningConductor, replace);
 	INJECT(0x00453A30, InitialiseDoor, replace);
+	INJECT(0x00453070, InitialiseTrapDoor, replace);
 }

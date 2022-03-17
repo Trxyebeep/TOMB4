@@ -537,7 +537,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/init.cpp
 
-0x00453070		InitialiseTrapDoor
+0x00453070	+	InitialiseTrapDoor
 0x004530A0		InitialiseFallingBlock2
 0x004530D0		InitialiseFlameEmitter
 0x00453170		InitialiseFlameEmitter2
