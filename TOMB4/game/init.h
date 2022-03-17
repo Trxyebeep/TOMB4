@@ -13,3 +13,4 @@ void InitialiseFlameEmitter2(short item_number);
 void InitialiseFlameEmitter3(short item_number);
 void InitialiseJobySpike(short item_number);
 void InitialiseTwoBlockPlatform(short item_number);
+void InitialiseSlicerDicer(short item_number);

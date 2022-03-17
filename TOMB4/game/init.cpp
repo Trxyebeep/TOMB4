@@ -254,14 +254,14 @@ void InitialiseJobySpike(short item_number)
 	long h, c;
 	short room_number;
 
-	item = &item[item_number];
-	item->pos.y_rot = GetRandomControl() << 10;
+	item = &items[item_number];
+	item->pos.y_rot = short(GetRandomControl() << 10);
 	item->item_flags[2] = GetRandomControl() & 1;
 	room_number = item->room_number;
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 	h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	c = GetCeiling(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	item->item_flags[3] = (4096 * (h - c)) / 3328;
+	item->item_flags[3] = short((4096 * (h - c)) / 3328);
 }
 
 void InitialiseTwoBlockPlatform(short item_number)
@@ -269,8 +269,21 @@ void InitialiseTwoBlockPlatform(short item_number)
 	ITEM_INFO* item;
 
 	item = &items[item_number];
-	item->item_flags[0] = item->pos.y_pos;
+	item->item_flags[0] = (short)item->pos.y_pos;
 	item->item_flags[1] = 1;
+}
+
+void InitialiseSlicerDicer(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->pos.x_pos += 512 * phd_sin(item->pos.y_rot + 0x4000) >> 14;
+	item->pos.z_pos += 512 * phd_cos(item->pos.y_rot + 0x4000) >> 14;
+	item->item_flags[3] = 50;
+	item->item_flags[0] = short(item->pos.x_pos >> 8);
+	item->item_flags[1] = short((item->pos.y_pos - 4608) >> 8);
+	item->item_flags[2] = short(item->pos.z_pos >> 8);
 }
 
 void inject_init(bool replace)
@@ -285,4 +298,5 @@ void inject_init(bool replace)
 	INJECT(0x00453230, InitialiseFlameEmitter3, replace);
 	INJECT(0x004532A0, InitialiseJobySpike, replace);
 	INJECT(0x00453340, InitialiseTwoBlockPlatform, replace);
+	INJECT(0x00453370, InitialiseSlicerDicer, replace);
 }
