@@ -9,3 +9,4 @@ void InitialiseDoor(short item_number);
 void InitialiseTrapDoor(short item_number);
 void InitialiseFallingBlock2(short item_number);
 void InitialiseFlameEmitter(short item_number);
+void InitialiseFlameEmitter2(short item_number);
