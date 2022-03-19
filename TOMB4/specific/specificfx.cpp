@@ -1022,6 +1022,17 @@ void DrawPsxTile(long x_y, long height_width, long color, long u0, long u1)
 	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 }
 
+void DrawFlash()
+{
+	long r, g, b;
+
+	r = ((FlashFadeR * FlashFader) >> 5) & 0xFF;
+	g = ((FlashFadeG * FlashFader) >> 5) & 0xFF;
+	b = ((FlashFadeB * FlashFader) >> 5) & 0xFF;
+	DrawPsxTile(0, phd_winwidth | (phd_winheight << 16), RGBA(r, g, b, 0x62), 1, 0);
+	DrawPsxTile(0, phd_winwidth | (phd_winheight << 16), RGBA(r, g, b, 0xFF), 2, 0);
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -1033,4 +1044,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x00489B90, DrawDebris, replace);
 	INJECT(0x0048C280, DoScreenFade, replace);
 	INJECT(0x0048C400, DrawPsxTile, replace);
+	INJECT(0x0048C5F0, DrawFlash, replace);
 }

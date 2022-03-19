@@ -12,6 +12,7 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 void DrawDebris();
 void DoScreenFade();
 void DrawPsxTile(long x_y, long height_width, long color, long u0, long u1);
+void DrawFlash();
 
 #define setXY4	( (void(__cdecl*)(D3DTLVERTEX*, long, long, long, long, long, long, long, long, long, short*)) 0x00485600 )
 #define setXYZ3	( (void(__cdecl*)(D3DTLVERTEX*, long, long, long, long, long, long, long, long, long, short*)) 0x00485D90 )
