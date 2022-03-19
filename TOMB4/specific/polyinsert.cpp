@@ -6,6 +6,8 @@
 #include "d3dmatrix.h"
 #include "function_stubs.h"
 #include "../game/tomb4fx.h"
+#include "function_table.h"
+#include "clipping.h"
 
 void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, short type)
 {
@@ -662,6 +664,482 @@ void OmniFog(D3DTLVERTEX* v)
 	}
 }
 
+void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
+{
+	D3DTLBUMPVERTEX* p;
+	D3DTLVERTEX* pV;
+	SORTLIST* sl;
+	TEXTURESTRUCT tex2;
+	short* c;
+	float z;
+	long colBak[3];
+	long specBak[3];
+	long num;
+	short swap;
+	bool clip, clipZ;
+
+	c = clipflags;
+	clipZ = 0;
+	clip = 1;
+
+#ifdef GENERAL_FIXES	//uninitialized
+	sl = 0;
+#endif
+
+	if (c[v0] & c[v1] & c[v2])
+		return;
+
+	if ((c[v0] | c[v1] | c[v2]) & 0x8000)
+	{
+		if (!visible_zclip(&v[v0], &v[v1], &v[v2]))
+		{
+			if (!double_sided)
+				return;
+
+			swap = v1;
+			v1 = v2;
+			v2 = swap;
+
+			if (!visible_zclip(&v[v0], &v[v1], &v[v2]))
+				return;
+
+			tex2.drawtype = tex->drawtype;
+			tex2.flag = tex->flag;
+			tex2.tpage = tex->tpage;
+			tex2.u1 = tex->u1;
+			tex2.v1 = tex->v1;
+			tex2.u2 = tex->u3;
+			tex2.v2 = tex->v3;
+			tex2.u3 = tex->u2;
+			tex2.v3 = tex->v2;
+			tex = &tex2;
+		}
+
+		clipZ = 1;
+		p = zClipperBuffer;
+	}
+	else
+	{
+		if (IsVisible(&v[v0], &v[v1], &v[v2]))
+		{
+			if (!double_sided)
+				return;
+
+			tex2.drawtype = tex->drawtype;
+			tex2.flag = tex->flag;
+			tex2.tpage = tex->tpage;
+			tex2.u1 = tex->u1;
+			tex2.v1 = tex->v1;
+			tex2.u2 = tex->u3;
+			tex2.v2 = tex->v3;
+			tex2.u3 = tex->u2;
+			tex2.v3 = tex->v2;
+			tex = &tex2;
+		}
+
+		if (c[v0] | c[v1] | c[v2])
+			p = XYUVClipperBuffer;
+		else
+		{
+			clip = 0;
+			p = (D3DTLBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
+			sl = (SORTLIST*)pSortBuffer;
+			sl->tpage = tex->tpage;
+			sl->drawtype = tex->drawtype;
+			sl->nVtx = 3;
+			sl->polytype = (short)nPolyType;
+			pSortBuffer += sl->nVtx * sizeof(D3DTLBUMPVERTEX) + sizeof(SORTLIST);
+			*pSortList = sl;
+			pSortList++;
+		}
+	}
+
+	z = 0;
+	colBak[0] = v[v0].color;
+	colBak[1] = v[v1].color;
+	colBak[2] = v[v2].color;
+	specBak[0] = v[v0].specular;
+	specBak[1] = v[v1].specular;
+	specBak[2] = v[v2].specular;
+
+	if (App.Volumetric)
+	{
+		if (tex->drawtype != 2)
+		{
+			OmniFog(&v[v0]);
+			OmniFog(&v[v1]);
+			OmniFog(&v[v2]);
+		}
+#ifdef GENERAL_FIXES
+		else
+		{
+			v[v0].specular |= 0xFF000000;
+			v[v1].specular |= 0xFF000000;
+			v[v2].specular |= 0xFF000000;
+		}
+#endif
+	}
+
+	pV = &v[v0];
+	p->sx = pV->sx;
+	p->sy = pV->sy;
+	p->sz = pV->sz;
+	p->rhw = pV->rhw;
+	p->color = pV->color;
+	p->specular = pV->specular;
+	p->tu = tex->u1;
+	p->tv = tex->v1;
+	p->tx = pV->tu;
+	p->ty = pV->tv;
+
+	if (nPolyType)
+		z += pV->sz;
+	else if (pV->sz > z)
+		z = pV->sz;
+
+	pV = &v[v1];
+	p[1].sx = pV->sx;
+	p[1].sy = pV->sy;
+	p[1].sz = pV->sz;
+	p[1].rhw = pV->rhw;
+	p[1].color = pV->color;
+	p[1].specular = pV->specular;
+	p[1].tu = tex->u2;
+	p[1].tv = tex->v2;
+	p[1].tx = pV->tu;
+	p[1].ty = pV->tv;
+
+	if (nPolyType)
+		z += pV->sz;
+	else if (pV->sz > z)
+		z = pV->sz;
+
+	pV = &v[v2];
+	p[2].sx = pV->sx;
+	p[2].sy = pV->sy;
+	p[2].sz = pV->sz;
+	p[2].rhw = pV->rhw;
+	p[2].color = pV->color;
+	p[2].specular = pV->specular;
+	p[2].tu = tex->u3;
+	p[2].tv = tex->v3;
+	p[2].tx = pV->tu;
+	p[2].ty = pV->tv;
+
+	if (nPolyType)
+		z += pV->sz;
+	else if (pV->sz > z)
+		z = pV->sz;
+
+	if (clip)
+	{
+		num = 3;
+
+		if (clipZ)
+		{
+			num = ZClipper(3, zClipperBuffer, XYUVClipperBuffer);
+
+			if (!num)
+			{
+				v[v0].color = colBak[0];
+				v[v1].color = colBak[1];
+				v[v2].color = colBak[2];
+				v[v0].specular = specBak[0];
+				v[v1].specular = specBak[1];
+				v[v2].specular = specBak[2];
+				return;
+			}
+		}
+		else
+		{
+			p = XYUVClipperBuffer;
+
+			for (int i = 0; i < 3; i++, p++)
+			{
+				p->tu *= p->rhw;
+				p->tv *= p->rhw;
+			}
+		}
+
+		num = XYUVGClipper(num, XYUVClipperBuffer);
+
+		if (num)
+		{
+			p = (D3DTLBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
+			sl = (SORTLIST*)pSortBuffer;
+			sl->drawtype = tex->drawtype;
+			sl->nVtx = short(3 * num - 6);
+
+			if (nPolyType)
+				sl->zVal = z * 0.333333F;
+			else
+				sl->zVal = z;
+
+			sl->tpage = tex->tpage;
+			sl->polytype = (short)nPolyType;
+			pSortBuffer += sl->nVtx * sizeof(D3DTLBUMPVERTEX) + sizeof(SORTLIST);
+			*pSortList = sl;
+			pSortList++;
+			SortCount++;
+			AddClippedPoly(p, num, XYUVClipperBuffer, tex);
+		}
+	}
+	else
+	{
+		p->sz = f_a - f_boo * p->rhw;
+		p[1].sz = f_a - f_boo * p[1].rhw;
+		p[2].sz = f_a - f_boo * p[2].rhw;
+
+		if (nPolyType)
+			sl->zVal = z * 0.333333F;
+		else
+			sl->zVal = z;
+
+		SortCount++;
+		nPolys++;
+	}
+
+	v[v0].color = colBak[0];
+	v[v1].color = colBak[1];
+	v[v2].color = colBak[2];
+	v[v0].specular = specBak[0];
+	v[v1].specular = specBak[1];
+	v[v2].specular = specBak[2];
+}
+
+void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
+{
+	D3DTLBUMPVERTEX* p;
+	D3DTLVERTEX* pV;
+	SORTLIST* sl;
+	TEXTURESTRUCT tex2;
+	short* c;
+	float z;
+	long colBak[4];
+	long specBak[4];
+	short swap;
+
+	c = clipflags;
+
+	if (c[v0] & c[v1] & c[v2] & c[v3])
+		return;
+
+	if ((c[v0] | c[v1] | c[v2] | c[v3]) & 0x8000)
+	{
+		AddTriClippedSorted(v, v0, v1, v2, tex, double_sided);
+		tex2.drawtype = tex->drawtype;
+		tex2.flag = tex->flag;
+		tex2.tpage = tex->tpage;
+		tex2.u1 = tex->u1;
+		tex2.v1 = tex->v1;
+		tex2.u2 = tex->u3;
+		tex2.v2 = tex->v3;
+		tex2.u3 = tex->u4;
+		tex2.v3 = tex->v4;
+		AddTriClippedSorted(v, v0, v2, v3, &tex2, double_sided);
+		return;
+	}
+
+	if (IsVisible(&v[v0], &v[v1], &v[v2]))
+	{
+		if (!double_sided)
+			return;
+
+		swap = v0;
+		v0 = v2;
+		v2 = swap;
+		tex2.drawtype = tex->drawtype;
+		tex2.flag = tex->flag;
+		tex2.tpage = tex->tpage;
+		tex2.u1 = tex->u3;
+		tex2.v1 = tex->v3;
+		tex2.u2 = tex->u2;
+		tex2.v2 = tex->v2;
+		tex2.u3 = tex->u1;
+		tex2.v3 = tex->v1;
+		tex2.u4 = tex->u4;
+		tex2.v4 = tex->v4;
+		tex = &tex2;
+	}
+
+	if (c[v0] | c[v1] | c[v2] | c[v3])
+	{
+		AddTriClippedSorted(v, v0, v1, v2, tex, double_sided);
+		tex2.drawtype = tex->drawtype;
+		tex2.flag = tex->flag;
+		tex2.tpage = tex->tpage;
+		tex2.u1 = tex->u1;
+		tex2.v1 = tex->v1;
+		tex2.u2 = tex->u3;
+		tex2.v2 = tex->v3;
+		tex2.u3 = tex->u4;
+		tex2.v3 = tex->v4;
+		AddTriClippedSorted(v, v0, v2, v3, &tex2, double_sided);
+		return;
+	}
+
+	p = (D3DTLBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
+	sl = (SORTLIST*)pSortBuffer;
+	sl->drawtype = tex->drawtype;
+	sl->tpage = tex->tpage;
+	sl->nVtx = 6;
+	sl->polytype = (short)nPolyType;
+	pSortBuffer += sl->nVtx * sizeof(D3DTLBUMPVERTEX) + sizeof(SORTLIST);
+	*pSortList = sl;
+	pSortList++;
+	SortCount++;
+	z = 0;
+	colBak[0] = v[v0].color;
+	colBak[1] = v[v1].color;
+	colBak[2] = v[v2].color;
+	colBak[3] = v[v3].color;
+	specBak[0] = v[v0].specular;
+	specBak[1] = v[v1].specular;
+	specBak[2] = v[v2].specular;
+	specBak[3] = v[v3].specular;
+
+	if (App.Volumetric)
+	{
+		if (tex->drawtype != 2)
+		{
+			OmniFog(&v[v0]);
+			OmniFog(&v[v1]);
+			OmniFog(&v[v2]);
+			OmniFog(&v[v3]);
+		}
+#ifdef GENERAL_FIXES
+		else
+		{
+			v[v0].specular |= 0xFF000000;
+			v[v1].specular |= 0xFF000000;
+			v[v2].specular |= 0xFF000000;
+			v[v3].specular |= 0xFF000000;
+		}
+#endif
+	}
+
+	pV = &v[v0];
+	p->sx = pV->sx;
+	p->sy = pV->sy;
+	p->sz = f_a - f_boo * pV->rhw;
+	p->rhw = pV->rhw;
+	p->color = pV->color;
+	p->specular = pV->specular;
+	p->tu = tex->u1;
+	p->tv = tex->v1;
+
+	if (nPolyType)
+		z += pV->sz;
+	else if (pV->sz > z)
+		z = pV->sz;
+
+	p[3].sx = p->sx;
+	p[3].sy = p->sy;
+	p[3].sz = p->sz;
+	p[3].rhw = p->rhw;
+	p[3].color = p->color;
+	p[3].specular = p->specular;
+	p[3].tu = p->tu;
+	p[3].tv = p->tv;
+
+	pV = &v[v1];
+	p[1].sx = pV->sx;
+	p[1].sy = pV->sy;
+	p[1].sz = f_a - f_boo * pV->rhw;
+	p[1].rhw = pV->rhw;
+	p[1].color = pV->color;
+	p[1].specular = pV->specular;
+	p[1].tu = tex->u2;
+	p[1].tv = tex->v2;
+
+	if (nPolyType)
+		z += pV->sz;
+	else if (pV->sz > z)
+		z = pV->sz;
+
+	pV = &v[v2];
+	p[2].sx = pV->sx;
+	p[2].sy = pV->sy;
+	p[2].sz = f_a - f_boo * pV->rhw;
+	p[2].rhw = pV->rhw;
+	p[2].color = pV->color;
+	p[2].specular = pV->specular;
+	p[2].tu = tex->u3;
+	p[2].tv = tex->v3;
+
+	if (nPolyType)
+		z += pV->sz;
+	else if (pV->sz > z)
+		z = pV->sz;
+
+	p[4].sx = p[2].sx;
+	p[4].sy = p[2].sy;
+	p[4].sz = p[2].sz;
+	p[4].rhw = p[2].rhw;
+	p[4].color = p[2].color;
+	p[4].specular = p[2].specular;
+	p[4].tu = p[2].tu;
+	p[4].tv = p[2].tv;
+
+	pV = &v[v3];
+	p[5].sx = pV->sx;
+	p[5].sy = pV->sy;
+	p[5].sz = f_a - f_boo * pV->rhw;
+	p[5].rhw = pV->rhw;
+	p[5].color = pV->color;
+	p[5].specular = pV->specular;
+	p[5].tu = tex->u4;
+	p[5].tv = tex->v4;
+
+	if (nPolyType)
+		z += pV->sz;
+	else if (pV->sz > z)
+		z = pV->sz;
+
+	if (nPolyType)
+		z *= 0.25F;
+
+	sl->zVal = z;
+	nPolys += 2;
+	v[v0].color = colBak[0];
+	v[v1].color = colBak[1];
+	v[v2].color = colBak[2];
+	v[v3].color = colBak[3];
+	v[v0].specular = specBak[0];
+	v[v1].specular = specBak[1];
+	v[v2].specular = specBak[2];
+	v[v3].specular = specBak[3];
+}
+
+void AddLineClippedSorted(D3DTLVERTEX* v0, D3DTLVERTEX* v1, short drawtype)
+{
+	D3DTLBUMPVERTEX* v;
+	SORTLIST* sl;
+
+	v = (D3DTLBUMPVERTEX*)(sizeof(SORTLIST) + pSortBuffer);
+	sl = (SORTLIST*)pSortBuffer;
+	sl->tpage = 0;
+	sl->drawtype = drawtype;
+	sl->nVtx = 2;
+	pSortBuffer += sl->nVtx * sizeof(D3DTLBUMPVERTEX) + sizeof(SORTLIST);
+	*pSortList = sl;
+	pSortList++;
+	sl->zVal = v0->sz;
+	SortCount++;
+	v->sx = v0->sx;
+	v->sy = v0->sy;
+	v->sz = f_a - f_boo * v0->rhw;
+	v->rhw = v0->rhw;
+	v->color = v0->color;
+	v->specular = v0->specular;
+	v[1].sx = v1->sx;
+	v[1].sy = v1->sy;
+	v[1].sz = f_a - f_boo * v1->rhw;
+	v[1].rhw = v1->rhw;
+	v[1].color = v1->color;
+	v[1].specular = v1->specular;
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -676,4 +1154,7 @@ void inject_polyinsert(bool replace)
 	INJECT(0x00481DF0, InitialiseFogBulbs, replace);
 	INJECT(0x00481E60, OmniEffect, replace);
 	INJECT(0x004820C0, OmniFog, replace);
+	INJECT(0x00483C80, AddTriClippedSorted, replace);
+	INJECT(0x004842A0, AddQuadClippedSorted, replace);
+	INJECT(0x00484850, AddLineClippedSorted, 0);
 }

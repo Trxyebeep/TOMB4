@@ -206,9 +206,9 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/debris.cpp
 
-0x00433020		GetFreeDebris
-0x004330A0		TriggerDebris
-0x004332C0		UpdateDebris
+0x00433020	+	GetFreeDebris
+0x004330A0	+	TriggerDebris
+0x004332C0	+	UpdateDebris
 0x00433410		ShatterObject
 
 
@@ -537,29 +537,29 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/init.cpp
 
-0x00453070		InitialiseTrapDoor
-0x004530A0		InitialiseFallingBlock2
-0x004530D0		InitialiseFlameEmitter
-0x00453170		InitialiseFlameEmitter2
-0x00453230		InitialiseFlameEmitter3
-0x004532A0		InitialiseJobySpike
-0x00453340		InitialiseTwoBlockPlatform
-0x00453370		InitialiseSlicerDicer
-0x00453400		InitialiseScaledSpike
-0x004534E0		InitialiseRaisingBlock
-0x004535C0		InitialiseBurningFloor
-0x004535F0		InitialiseSethBlade
-0x00453650		InitialiseObelisk
-0x00453710		InitialiseMineHelicopter
-0x00453740		InitialiseSmashObject
+0x00453070	+	InitialiseTrapDoor
+0x004530A0	+	InitialiseFallingBlock2
+0x004530D0	+	InitialiseFlameEmitter
+0x00453170	+	InitialiseFlameEmitter2
+0x00453230	+	InitialiseFlameEmitter3
+0x004532A0	+	InitialiseJobySpike
+0x00453340	+	InitialiseTwoBlockPlatform
+0x00453370	+	InitialiseSlicerDicer
+0x00453400	+	InitialiseScaledSpike
+0x004534E0	+	InitialiseRaisingBlock
+0x004535C0	+	InitialiseBurningFloor
+0x004535F0	+	InitialiseSethBlade
+0x00453650	+	InitialiseObelisk
+0x00453710	+	InitialiseMineHelicopter
+0x00453740	+	InitialiseSmashObject
 0x004537D0	+	InitialiseMapper
 0x00453800	+	InitialiseLightningConductor
-0x00453870		InitialiseStatuePlinth
+0x00453870	+	InitialiseStatuePlinth
 0x004538A0		InitialiseEffects
-0x00453980		InitialiseSmokeEmitter
+0x00453980	+	InitialiseSmokeEmitter
 0x00453A30	+	InitialiseDoor
-0x00453E40		InitialisePulley
-0x00453E90		InitialisePickUp
+0x00453E40	+	InitialisePulley
+0x00453E90	+	InitialisePickUp
 0x00453F30		init_all_ropes
 0x00453F60		CreateRope
 0x00454070		InitialiseRope
@@ -1073,8 +1073,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x0040AEB0		TargetVisible
 0x0040AF80		Targetable
-0x0040B050		GunShot
-0x0040B060		GunHit
+0x0040B050	+	GunShot
+0x0040B060	+	GunHit
 0x0040B120		GunMiss
 0x0040B1D0		ShotLara
 
@@ -1759,9 +1759,9 @@ x for functions decompiled but not injected, for one reason or another.
 0x00483520		SubdivideQuad
 0x00483A40		AddTriSubdivide
 0x00483B50		AddQuadSubdivide
-0x00483C80		AddTriClippedSorted
-0x004842A0		AddQuadClippedSorted
-0x00484850		AddLineClippedSorted
+0x00483C80	+	AddTriClippedSorted
+0x004842A0	+	AddQuadClippedSorted
+0x00484850	+	AddLineClippedSorted
 0x00484920		CalcColorSplitMMX
 0x004849A0		AddPrelitMMX
 0x00484A20		CalcColorSplit
@@ -1803,7 +1803,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00489480		OutputSky
 0x00489540		DrawRope
 0x00489950		DrawLaserSightSprite
-0x00489B90		DrawDebris
+0x00489B90	+	DrawDebris
 0x0048A0C0		DrawBlood
 0x0048A430		DrawDrips
 0x0048A840		DoUwEffect
@@ -1814,7 +1814,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0048BAB0		DrawSprite
 0x0048BC30		SetUpLensFlare
 0x0048C240		SetFade
-0x0048C280		DoScreenFade
+0x0048C280	+	DoScreenFade
 0x0048C400		DrawPsxTile
 0x0048C5F0		DrawFlash
 0x0048C6C0	+	DrawBikeSpeedo

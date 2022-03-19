@@ -15,6 +15,7 @@
 #ifdef GENERAL_FIXES
 #include "../game/text.h"
 #include "../game/gameflow.h"
+#include "../tomb4/tomb4.h"
 #endif
 
 void phd_PutPolygons(short* objptr, long clip)	//whore
@@ -448,7 +449,10 @@ void RenderLoadPic(long unused)
 		RenderIt(camera.pos.room_number);
 
 #ifdef GENERAL_FIXES
-		PrintString((ushort)phd_centerx, ushort(phd_winymax - (font_height << 1)), 5, SCRIPT_TEXT(TXT_LOADING2), 0x8000);
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			PrintString((ushort)phd_centerx, ushort((phd_winymax * 0.8F) + float((480.0F / phd_winymax) * 50)), 5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+		else
+			PrintString((ushort)phd_centerx, ushort(phd_winymax - (font_height << 1)), 5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
 #endif
 
 		S_OutputPolyList();
@@ -461,7 +465,10 @@ void RenderLoadPic(long unused)
 	RenderIt(camera.pos.room_number);
 
 #ifdef GENERAL_FIXES
-	PrintString((ushort)phd_centerx, ushort(phd_winymax - (font_height << 1)), 5, SCRIPT_TEXT(TXT_LOADING2), 0x8000);
+	if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+		PrintString((ushort)phd_centerx, ushort((phd_winymax * 0.8F) + float((480.0F / phd_winymax) * 50)), 5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+	else
+		PrintString((ushort)phd_centerx, ushort(phd_winymax - (font_height << 1)), 5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
 #endif
 
 	S_OutputPolyList();

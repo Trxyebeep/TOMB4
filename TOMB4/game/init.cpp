@@ -5,6 +5,8 @@
 #include "control.h"
 #include "door.h"
 #include "items.h"
+#include "traps.h"
+#include "draw.h"
 
 void InitialiseMapper(short item_number)
 {
@@ -147,9 +149,381 @@ void InitialiseDoor(short item_number)
 	}
 }
 
+void InitialiseTrapDoor(short item_number)
+{
+	CloseTrapDoor(&items[item_number]);
+}
+
+void InitialiseFallingBlock2(short item_number)
+{
+	items[item_number].mesh_bits = 1;
+}
+
+void InitialiseFlameEmitter(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (item->trigger_flags < 0)
+	{
+		item->item_flags[0] = (GetRandomControl() & 0x3F) + 90;
+		item->item_flags[2] = 256;
+
+		if ((-item->trigger_flags & 7) == 7)
+		{
+			if (!item->pos.y_rot)
+				item->pos.z_pos += 512;
+			else if (item->pos.y_rot == 0x4000)
+				item->pos.x_pos += 512;
+			else if (item->pos.y_rot == -0x8000)
+				item->pos.z_pos -= 512;
+			else if (item->pos.y_rot == -0x4000)
+				item->pos.x_pos -= 512;
+		}
+	}
+}
+
+void InitialiseFlameEmitter2(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->pos.y_pos -= 64;
+
+	if (item->trigger_flags != 123)
+	{
+		if (!item->pos.y_rot)
+		{
+			if (item->trigger_flags == 2)
+				item->pos.z_pos += 80;
+			else
+				item->pos.z_pos += 256;
+		}
+		else if (item->pos.y_rot == 0x4000)
+		{
+			if (item->trigger_flags == 2)
+				item->pos.x_pos += 80;
+			else
+				item->pos.x_pos += 256;
+		}
+		else if (item->pos.y_rot == -0x8000)
+		{
+			if (item->trigger_flags == 2)
+				item->pos.z_pos -= 80;
+			else
+				item->pos.z_pos -= 256;
+		}
+		else if (item->pos.y_rot == -0x4000)
+		{
+			if (item->trigger_flags == 2)
+				item->pos.x_pos -= 80;
+			else
+				item->pos.x_pos -= 256;
+		}
+	}
+}
+
+void InitialiseFlameEmitter3(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+
+	item = &items[item_number];
+
+	if (item->trigger_flags < 3)
+		return;
+
+	for (int i = 0; i < level_items; i++)
+	{
+		item2 = &items[i];
+
+		if (item2->object_number == ANIMATING3)
+		{
+			if (item2->trigger_flags == item->trigger_flags)
+				item->item_flags[2] = i;
+			else if (!item2->trigger_flags)
+				item->item_flags[3] = i;
+		}
+	}
+}
+
+void InitialiseJobySpike(short item_number)
+{
+	ITEM_INFO* item;
+	FLOOR_INFO* floor;
+	long h, c;
+	short room_number;
+
+	item = &items[item_number];
+	item->pos.y_rot = short(GetRandomControl() << 10);
+	item->item_flags[2] = GetRandomControl() & 1;
+	room_number = item->room_number;
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+	h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	c = GetCeiling(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	item->item_flags[3] = short((4096 * (h - c)) / 3328);
+}
+
+void InitialiseTwoBlockPlatform(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->item_flags[0] = (short)item->pos.y_pos;
+	item->item_flags[1] = 1;
+}
+
+void InitialiseSlicerDicer(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->pos.x_pos += 512 * phd_sin(item->pos.y_rot + 0x4000) >> 14;
+	item->pos.z_pos += 512 * phd_cos(item->pos.y_rot + 0x4000) >> 14;
+	item->item_flags[3] = 50;
+	item->item_flags[0] = short(item->pos.x_pos >> 8);
+	item->item_flags[1] = short((item->pos.y_pos - 4608) >> 8);
+	item->item_flags[2] = short(item->pos.z_pos >> 8);
+}
+
+void InitialiseScaledSpike(short item_number)
+{
+	ITEM_INFO* item;
+	short xzrots[8];
+
+	item = &items[item_number];
+	xzrots[0] = -0x8000;
+	xzrots[1] = -0x6000;
+	xzrots[2] = -0x4000;
+	xzrots[3] = -0x2000;
+	xzrots[4] = 0;
+	xzrots[5] = 0x2000;
+	xzrots[6] = 0x4000;
+	xzrots[7] = 0x6000;
+	item->status = ITEM_INVISIBLE;
+
+	if (item->trigger_flags & 8)
+	{
+		item->pos.x_rot = xzrots[item->trigger_flags & 7];
+		item->pos.y_rot = 0x4000;
+		item->pos.z_pos -= SPxzoffs[item->trigger_flags & 7];
+	}
+	else
+	{
+		item->pos.z_rot = xzrots[item->trigger_flags & 7];
+		item->pos.x_pos += SPxzoffs[item->trigger_flags & 7];
+	}
+
+	item->item_flags[0] = 1024;
+	item->item_flags[2] = 0;
+	item->pos.y_pos += SPyoffs[item->trigger_flags & 7];
+}
+
+void InitialiseRaisingBlock(short item_number)
+{
+	ITEM_INFO* item;
+	FLOOR_INFO* floor;
+	short room_num;
+
+	item = &items[item_number];
+	room_num = item->room_number;
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_num);
+	boxes[floor->box].overlap_index &= 0xBF;
+
+	if (item->object_number == EXPANDING_PLATFORM)
+	{
+		if (!item->pos.y_rot)
+			item->pos.z_pos += 511;
+		else if (item->pos.y_rot == 0x4000)
+			item->pos.x_pos += 511;
+		else if (item->pos.y_rot == -0x8000)
+			item->pos.z_pos -= 511;
+		else if (item->pos.y_rot == -0x4000)
+			item->pos.x_pos -= 511;
+	}
+
+	if (item->trigger_flags < 0)
+	{
+		item->flags |= IFL_CODEBITS;
+		AddActiveItem(item_number);
+		item->status = ITEM_ACTIVE;
+	}
+}
+
+void InitialiseBurningFloor(short item_number)
+{
+	items[item_number].required_anim_state = 127;
+}
+
+void InitialiseSethBlade(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->anim_number = objects[SETH_BLADE].anim_index + 1;
+	item->frame_number = anims[item->anim_number].frame_base;
+	item->current_anim_state = 2;
+	item->goal_anim_state = 2;
+	item->item_flags[2] = ABS(item->trigger_flags);
+}
+
+void InitialiseObelisk(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+	short* ifl;
+
+	item = &items[item_number];
+	item->anim_number = objects[item->object_number].anim_index + 3;
+	item->frame_number = anims[item->anim_number].frame_base;
+	AddActiveItem(item_number);
+	item->status = ITEM_ACTIVE;
+
+	if (item->trigger_flags == 2)
+	{
+		for (int i = 0; i < level_items; i++)
+		{
+			item2 = &items[i];
+			ifl = item->item_flags;
+
+			if (item2->object_number == OBELISK && i != item_number)
+				*ifl++ = i;
+
+			if (item2->object_number == ANIMATING3)
+				item->item_flags[2] = i;
+		}
+	}
+}
+
+void InitialiseMineHelicopter(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (!item->trigger_flags)
+		item->mesh_bits = 0;
+}
+
+void InitialiseSmashObject(short item_number)
+{
+	ITEM_INFO* item;
+	ROOM_INFO* rinfo;
+	FLOOR_INFO* floor;
+
+	item = &items[item_number];
+	item->flags = 0;
+	item->mesh_bits = 1;
+	rinfo = &room[item->room_number];
+	floor = &rinfo->floor[((item->pos.z_pos - rinfo->z) >> 10) + ((item->pos.x_pos - rinfo->x) >> 10) * rinfo->x_size];
+
+	if (boxes[floor->box].overlap_index & 0x8000)
+		boxes[floor->box].overlap_index |= 0x4000;
+}
+
+void InitialiseStatuePlinth(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (!item->trigger_flags)
+		item->mesh_bits = 1;
+}
+
+void InitialiseSmokeEmitter(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (item->object_number != STEAM_EMITTER)
+		return;
+
+	if (item->trigger_flags & 8)
+	{
+		item->item_flags[0] = item->trigger_flags >> 4;
+
+		if (!item->pos.y_rot)
+			item->pos.z_pos += 320;
+		else if (item->pos.y_rot == 0x4000)
+			item->pos.x_pos += 320;
+		else if (item->pos.y_rot == -0x4000)
+			item->pos.x_pos -= 320;
+		else if (item->pos.y_rot == -0x8000)
+			item->pos.z_pos -= 320;
+	}
+	else if (room[item->room_number].flags & ROOM_UNDERWATER && item->trigger_flags == 1)
+	{
+		item->item_flags[0] = 20;
+		item->item_flags[1] = 1;
+	}
+}
+
+void InitialisePulley(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->item_flags[3] = item->trigger_flags;
+	item->trigger_flags = ABS(item->trigger_flags);
+
+	if (item->status == ITEM_INVISIBLE)
+	{
+		item->item_flags[1] = 1;
+		item->status = ITEM_INACTIVE;
+	}
+}
+
+void InitialisePickUp(short item_number)
+{
+	ITEM_INFO* item;
+	short* bounds;
+	short ocb;
+
+	item = &items[item_number];
+	ocb = item->trigger_flags & 0x3F;
+	bounds = GetBoundsAccurate(item);
+
+	if (ocb == 0 || ocb == 3 || ocb == 4)
+		item->pos.y_pos -= bounds[3];
+
+	if (item->trigger_flags & 128)
+	{
+		RPickups[NumRPickups] = (uchar)item_number;
+		NumRPickups++;
+	}
+
+	if (item->trigger_flags & 256)
+		item->mesh_bits = 0;
+
+	if (item->status == ITEM_INVISIBLE)
+		item->flags |= IFL_TRIGGERED;
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
 	INJECT(0x00453800, InitialiseLightningConductor, replace);
 	INJECT(0x00453A30, InitialiseDoor, replace);
+	INJECT(0x00453070, InitialiseTrapDoor, replace);
+	INJECT(0x004530A0, InitialiseFallingBlock2, replace);
+	INJECT(0x004530D0, InitialiseFlameEmitter, replace);
+	INJECT(0x00453170, InitialiseFlameEmitter2, replace);
+	INJECT(0x00453230, InitialiseFlameEmitter3, replace);
+	INJECT(0x004532A0, InitialiseJobySpike, replace);
+	INJECT(0x00453340, InitialiseTwoBlockPlatform, replace);
+	INJECT(0x00453370, InitialiseSlicerDicer, replace);
+	INJECT(0x00453400, InitialiseScaledSpike, replace);
+	INJECT(0x004534E0, InitialiseRaisingBlock, replace);
+	INJECT(0x004535C0, InitialiseBurningFloor, replace);
+	INJECT(0x004535F0, InitialiseSethBlade, replace);
+	INJECT(0x00453650, InitialiseObelisk, replace);
+	INJECT(0x00453710, InitialiseMineHelicopter, replace);
+	INJECT(0x00453740, InitialiseSmashObject, replace);
+	INJECT(0x00453870, InitialiseStatuePlinth, replace);
+	INJECT(0x00453980, InitialiseSmokeEmitter, replace);
+	INJECT(0x00453E40, InitialisePulley, replace);
+	INJECT(0x00453E90, InitialisePickUp, replace);
 }

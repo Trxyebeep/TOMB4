@@ -7,6 +7,10 @@
 #include "tomb4fx.h"
 #include "effects.h"
 
+short SPxzoffs[8] = { 0, 0, 0x200, 0, 0, 0, -0x200, 0 };
+short SPyoffs[8] = { -0x400, 0, -0x200, 0, 0, 0, -0x200, 0 };
+short SPDETyoffs[8] = { 0x400, 0x200, 0x200, 0x200, 0, 0x200, 0x200, 0x200 };
+
 void FlameEmitterControl(short item_number)
 {
 	ITEM_INFO* item;
@@ -25,7 +29,7 @@ void FlameEmitterControl(short item_number)
 
 	if (item->trigger_flags < 0)
 	{
-		if ((-item->trigger_flags & 7) != 2 && (-item->trigger_flags & 7) != 7)
+		if ((-item->trigger_flags & 7) == 2 || (-item->trigger_flags & 7) == 7)
 		{
 			SoundEffect(SFX_FLAME_EMITTER, &item->pos, 0);
 			TriggerSuperJetFlame(item, -256 - (3072 * GlobalCounter & 0x1C00), GlobalCounter & 1);

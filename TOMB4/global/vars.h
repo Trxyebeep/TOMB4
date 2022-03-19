@@ -315,6 +315,10 @@
 #define SkyPos2	VAR_U_(0x007FDF5E, short)
 #define LaserSightActive	VAR_U_(0x004BF37E, char)
 #define DoFade	VAR_U_(0x00672E60, long)
+#define FadeVal	VAR_U_(0x00672E58, long)
+#define FadeStep	VAR_U_(0x00670E48, long)
+#define FadeCnt	VAR_U_(0x00670E4C, long)
+#define FadeEnd	VAR_U_(0x00670E50, long)
 #define f_a	VAR_U_(0x00753C34, float)
 #define f_b	VAR_U_(0x00753C38, float)
 #define f_boo	VAR_U_(0x00753C8C, float)
@@ -396,6 +400,19 @@
 #define nAIObjects	VAR_U_(0x007FD200, short)
 #define XATrack	VAR_U_(0x004B22F4, long)
 #define XAFlag	VAR_U_(0x004B22F8, long)
+#define pSortBuffer	VAR_U_(0x00660C8C, char*)
+#define pSortList	VAR_U_(0x005C07A8, SORTLIST**)
+#define nPolys	VAR_U_(0x00753964, long)
+#define DebrisFlags	VAR_U_(0x004BF354, short)
+#define DebrisMesh	VAR_U_(0x00808F84, MESH_DATA*)
+#define DebrisMeshC1	VAR_U_(0x0080D7A4, long)
+#define DebrisMeshC2	VAR_U_(0x0080D7A0, long)
+#define DebrisMeshC3	VAR_U_(0x0080D7A8, long)
+#define DebrisMeshAmbient	VAR_U_(0x00808F80, long)
+#define DebrisMeshFlags	VAR_U_(0x00808F88, long)
+#define next_debris	VAR_U_(0x004BF358, long)
+#define NumRPickups	VAR_U_(0x007FD1DC, uchar)
+
 
 
 
@@ -444,8 +461,8 @@
 #define ammo_object_list	ARRAY_(0x007FEA00, AMMOLIST, [3])
 #define current_options	ARRAY_(0x007FE9E0, MENUTHANG, [3])
 #define FootPrint	ARRAY_(0x008010E0, FOOTPRINT, [32])
-#define CollidedItems	ARRAY_(0x00804F80, ITEM_INFO*, [256])
-#define CollidedStatics	ARRAY_(0x00805380, MESH_INFO*, [128])	//not sure about the size here
+#define tsv_buffer	ARRAY_(0x00804F80, char, [16384])
+#define scratchpad	ARRAY_(0x0080D7C0, char, [1024])
 #define RopeList	ARRAY_(0x007FB4C0, ROPE_STRUCT, [5])
 #define pickups	ARRAY_(0x007FD220, DISPLAYPU, [8])
 #define Gunshells	ARRAY_(0x007FF680, GUNSHELL_STRUCT, [24])
@@ -483,6 +500,10 @@
 #define BikeCollideStaticBounds	ARRAY_(0x004BFC28, long, [6])		//bike bounds used to collide with statics
 #define CollidedStaticBikeBounds	ARRAY_(0x004BFC0C, long, [6])	//the bounds of the static the bike is trying to collide with
 #define MonoScreen	ARRAY_(0x00577460, MONOSCREEN_STRUCT, [5])
+#define XYUVClipperBuffer	ARRAY_(0x006607B0, D3DTLBUMPVERTEX, [20])
+#define zClipperBuffer	ARRAY_(0x005C0488, D3DTLBUMPVERTEX, [20])
+#define debris	ARRAY_(0x00808FA0, DEBRIS_STRUCT, [256])
+#define RPickups	ARRAY_(0x007FD1C0, uchar, [16])
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)

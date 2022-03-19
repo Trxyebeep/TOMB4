@@ -25,7 +25,7 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 	short switch_bounds[6];
 	short room_count, statics_count, items_count, item_number, next_item;
 
-	rooms[0] = camera.pos.room_number;
+	rooms[0] = item->room_number;
 	r = &room[rooms[0]];
 	doors = r->door;
 	room_count = 1;

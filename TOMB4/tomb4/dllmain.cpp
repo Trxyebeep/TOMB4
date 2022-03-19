@@ -55,6 +55,8 @@
 #include "../game/elements.h"
 #include "../specific/dxshell.h"
 #include "../game/voncroy.h"
+#include "../game/debris.h"
+#include "../game/people.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -129,6 +131,8 @@ void inject_all(bool replace)
 	inject_elements(replace);
 	inject_dxshell(replace);
 	inject_voncroy(replace);
+	inject_debris(replace);
+	inject_people(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

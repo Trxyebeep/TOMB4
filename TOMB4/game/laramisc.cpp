@@ -70,6 +70,9 @@ void LaraCheatyBits()
 	if (keymap[DIK_D] && keymap[DIK_O] && keymap[DIK_Z] && keymap[DIK_Y])
 #endif
 	{
+		if (lara.vehicle != NO_ITEM)
+			return;
+
 		lara_item->pos.y_pos -= 128;
 
 		if (lara.water_status != LW_FLYCHEAT)

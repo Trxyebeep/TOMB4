@@ -9,6 +9,8 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr
 void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long unk);
 void Draw2DSprite(long x, long y, long slot, long unused, long unused2);
 void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long spriteSlot);
+void DrawDebris();
+void DoScreenFade();
 
 #define setXY4	( (void(__cdecl*)(D3DTLVERTEX*, long, long, long, long, long, long, long, long, long, short*)) 0x00485600 )
 #define setXYZ3	( (void(__cdecl*)(D3DTLVERTEX*, long, long, long, long, long, long, long, long, long, short*)) 0x00485D90 )
@@ -24,7 +26,6 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 #define S_DrawSmokeSparks	( (void(__cdecl*)()) 0x00487260 )
 #define S_DrawSplashes	( (void(__cdecl*)()) 0x00486430 )
 #define DrawBubbles	( (void(__cdecl*)()) 0x004860D0 )
-#define DrawDebris	( (void(__cdecl*)()) 0x00489B90 )
 #define DrawBlood	( (void(__cdecl*)()) 0x0048A0C0 )
 #define DrawDrips	( (void(__cdecl*)()) 0x0048A430 )
 #define DrawShockwaves	( (void(__cdecl*)()) 0x0048CAA0 )

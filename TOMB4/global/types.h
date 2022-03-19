@@ -1753,6 +1753,34 @@ struct VonCroyCutData
 	short flags;
 };
 
+struct DEBRIS_STRUCT
+{
+	void* TextInfo;
+	long x;
+	long y;
+	long z;
+	short XYZOffsets1[3];
+	short Dir;
+	short XYZOffsets2[3];
+	short Speed;
+	short XYZOffsets3[3];
+	short Yvel;
+	short Gravity;
+	short RoomNumber;
+	uchar On;
+	uchar XRot;
+	uchar YRot;
+	uchar r;
+	uchar g;
+	uchar b;
+	uchar Pad[2];
+	long color1;
+	long color2;
+	long color3;
+	long ambient;
+	long flags;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {
@@ -1766,6 +1794,22 @@ struct GouraudBarColourSet
 #endif
 
 #ifdef GENERAL_FIXES
+struct COLOR_BIT_MASKS
+{
+	ulong dwRBitMask;
+	ulong dwGBitMask;
+	ulong dwBBitMask;
+	ulong dwRGBAlphaBitMask;
+	ulong dwRBitDepth;
+	ulong dwGBitDepth;
+	ulong dwBBitDepth;
+	ulong dwRGBAlphaBitDepth;
+	ulong dwRBitOffset;
+	ulong dwGBitOffset;
+	ulong dwBBitOffset;
+	ulong dwRGBAlphaBitOffset;
+};
+
 struct tomb4_options	//keep this at the bottom of the file, please
 {
 	bool footprints;
