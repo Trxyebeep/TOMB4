@@ -1078,6 +1078,143 @@ void S_DrawDarts(ITEM_INFO* item)
 	phd_PopMatrix();
 }
 
+void ClipCheckPoint(D3DTLVERTEX* v, float x, float y, float z, short* clip)
+{
+	float perspz;
+	short clipdistance;
+
+	v->tu = x;
+	v->tv = y;
+	v->sz = z;
+	clipdistance = 0;
+
+	if (v->sz < f_mznear)
+		clipdistance = -128;
+	else
+	{
+		perspz = f_mpersp / v->sz;
+
+		if (v->sz > FogEnd)
+		{
+			v->sz = f_zfar;
+			clipdistance = 256;
+		}
+
+		v->sx = perspz * v->tu + f_centerx;
+		v->sy = perspz * v->tv + f_centery;
+		v->rhw = perspz * f_moneopersp;
+
+		if (v->sx < phd_winxmin)
+			clipdistance++;
+		else if (phd_winxmax < v->sx)
+			clipdistance += 2;
+
+		if (v->sy < phd_winymin)
+			clipdistance += 4;
+		else if (v->sy > phd_winymax)
+			clipdistance += 8;
+	}
+
+	clip[0] = clipdistance;
+}
+
+void DrawFlatSky(ulong color, long zpos, long ypos, long drawtype)
+{
+	PHD_VECTOR vec[4];
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT Tex;
+	short* clip;
+	long x, y, z;
+
+	phd_PushMatrix();
+	phd_TranslateRel(zpos, ypos, 0);
+
+	vec[0].x = -5632;
+	vec[0].y = 0;
+	vec[0].z = 4864;
+	vec[1].x = 5632;
+	vec[1].y = 0;
+	vec[1].z = 4864;
+	vec[2].x = 5632;
+	vec[2].y = 0;
+	vec[2].z = -4864;
+	vec[3].x = -5632;
+	vec[3].y = 0;
+	vec[3].z = -4864;
+
+	for (int i = 0; i < 4; i++)
+	{
+		x = vec[i].x;
+		y = vec[i].y;
+		z = vec[i].z;
+		vec[i].x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> 14;
+		vec[i].y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> 14;
+		vec[i].z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> 14;
+		v[i].color = color | 0xFF000000;
+		v[i].specular = 0xFF000000;
+		CalcColorSplit(color, &v[i].color);
+	}
+
+	clip = clipflags;
+	ClipCheckPoint(&v[0], (float)vec[0].x, (float)vec[0].y, (float)vec[0].z, clip);	//originally inlined
+	clip++;
+	ClipCheckPoint(&v[1], (float)vec[1].x, (float)vec[1].y, (float)vec[1].z, clip);	//originally inlined
+	clip++;
+	ClipCheckPoint(&v[2], (float)vec[2].x, (float)vec[2].y, (float)vec[2].z, clip);	//originally inlined
+	clip++;
+	ClipCheckPoint(&v[3], (float)vec[3].x, (float)vec[3].y, (float)vec[3].z, clip);	//the only one that survived
+	Tex.drawtype = (ushort)drawtype;
+	Tex.flag = 0;
+	Tex.tpage = ushort(nTextures - 1);
+	Tex.u1 = 0;
+	Tex.v1 = 0;
+	Tex.u2 = 1;
+	Tex.v2 = 0;
+	Tex.u3 = 1;
+	Tex.v3 = 1;
+	Tex.u4 = 0;
+	Tex.v4 = 1;
+	AddQuadSorted(v, 3, 2, 1, 0, &Tex, 1);
+
+	phd_TranslateRel(-11264, 0, 0);
+	vec[0].x = -5632;
+	vec[0].y = 0;
+	vec[0].z = 4864;
+	vec[1].x = 5632;
+	vec[1].y = 0;
+	vec[1].z = 4864;
+	vec[2].x = 5632;
+	vec[2].y = 0;
+	vec[2].z = -4864;
+	vec[3].x = -5632;
+	vec[3].y = 0;
+	vec[3].z = -4864;
+
+	for (int i = 0; i < 4; i++)
+	{
+		x = vec[i].x;
+		y = vec[i].y;
+		z = vec[i].z;
+		vec[i].x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> 14;
+		vec[i].y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> 14;
+		vec[i].z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> 14;
+		v[i].color |= 0xFF000000;
+		v[i].specular = 0xFF000000;
+		CalcColorSplit(color, &v[i].color);
+	}
+
+	clip = clipflags;
+	ClipCheckPoint(&v[0], (float)vec[0].x, (float)vec[0].y, (float)vec[0].z, clip);	//originally inlined
+	clip++;
+	ClipCheckPoint(&v[1], (float)vec[1].x, (float)vec[1].y, (float)vec[1].z, clip);	//originally inlined
+	clip++;
+	ClipCheckPoint(&v[2], (float)vec[2].x, (float)vec[2].y, (float)vec[2].z, clip);	//originally inlined
+	clip++;
+	ClipCheckPoint(&v[3], (float)vec[3].x, (float)vec[3].y, (float)vec[3].z, clip);	//the only one that survived
+	AddQuadSorted(v, 3, 2, 1, 0, &Tex, 1);
+	phd_PopMatrix();
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -1091,4 +1228,6 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048C400, DrawPsxTile, replace);
 	INJECT(0x0048C5F0, DrawFlash, replace);
 	INJECT(0x0048D160, S_DrawDarts, replace);
+	INJECT(0x00489360, ClipCheckPoint, replace);
+	INJECT(0x00488950, DrawFlatSky, replace);
 }
