@@ -1033,6 +1033,51 @@ void DrawFlash()
 	DrawPsxTile(0, phd_winwidth | (phd_winheight << 16), RGBA(r, g, b, 0xFF), 2, 0);
 }
 
+void S_DrawDarts(ITEM_INFO* item)
+{
+	D3DTLVERTEX v[2];
+	long x1, y1, z1, x2, y2, z2, num, mxx, mxy, mxz, xx, yy, zz;
+	float zv;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	zv = f_persp / (float)phd_mxptr[M23];
+	x1 = short(float(phd_mxptr[M03] * zv + f_centerx));
+	y1 = short(float(phd_mxptr[M13] * zv + f_centery));
+	z1 = phd_mxptr[M23] >> 14;
+	num = (-96 * phd_cos(item->pos.x_rot)) >> 14;
+	mxx = (num * phd_sin(item->pos.y_rot)) >> 14;
+	mxy = (96 * phd_sin(item->pos.x_rot)) >> 14;
+	mxz = (num * phd_cos(item->pos.y_rot)) >> 14;
+	xx = phd_mxptr[M00] * mxx + phd_mxptr[M01] * mxy + phd_mxptr[M02] * mxz + phd_mxptr[M03];
+	yy = phd_mxptr[M10] * mxx + phd_mxptr[M11] * mxy + phd_mxptr[M12] * mxz + phd_mxptr[M13];
+	zz = phd_mxptr[M20] * mxx + phd_mxptr[M21] * mxy + phd_mxptr[M22] * mxz + phd_mxptr[M23];
+	zv = f_persp / (float)zz;
+	x2 = short(float(xx * zv + f_centerx));
+	y2 = short(float(yy * zv + f_centery));
+	z2 = zz >> 14;
+
+	if (ClipLine(x1, y1, z1, x2, y2, z2, phd_winxmin, phd_winymin, phd_winxmax, phd_winymax))
+	{
+		zv = f_mpersp / (float)z1 * f_moneopersp;
+		v[0].sx = (float)x1;
+		v[0].sy = (float)y1;
+		v[0].sz = f_a - zv * f_boo;
+		v[0].rhw = zv;
+		v[0].color = 0xFF000000;
+		v[0].specular = 0xFF000000;
+		v[1].sx = (float)x2;
+		v[1].sy = (float)y2;
+		v[1].sz = f_a - zv * f_boo;
+		v[1].rhw = zv;
+		v[1].color = 0xFF783C14;
+		v[1].specular = 0xFF000000;
+		AddLineSorted(v, &v[1], 6);
+	}
+
+	phd_PopMatrix();
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -1045,4 +1090,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048C280, DoScreenFade, replace);
 	INJECT(0x0048C400, DrawPsxTile, replace);
 	INJECT(0x0048C5F0, DrawFlash, replace);
+	INJECT(0x0048D160, S_DrawDarts, replace);
 }
