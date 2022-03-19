@@ -1815,7 +1815,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0048BC30		SetUpLensFlare
 0x0048C240		SetFade
 0x0048C280	+	DoScreenFade
-0x0048C400		DrawPsxTile
+0x0048C400	+	DrawPsxTile
 0x0048C5F0		DrawFlash
 0x0048C6C0	+	DrawBikeSpeedo
 0x0048CAA0		DrawShockwaves

@@ -947,6 +947,81 @@ void DoScreenFade()
 	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 }
 
+void DrawPsxTile(long x_y, long height_width, long color, long u0, long u1)
+{
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	float x, y, z, rhw, w, h;
+	long col;
+	ushort drawtype;
+
+	nPolyType = 6;
+
+	if ((color & 0xFF000000) == 0x62000000)
+	{
+		drawtype = 3;
+		col = color << 24;
+	}
+	else
+	{
+		drawtype = 2;
+		col = color | 0xFF000000;
+	}
+
+	if (!gfCurrentLevel)
+	{
+		z = f_znear + 10;
+		rhw = f_moneoznear + 50;
+	}
+	else
+	{
+		z = f_znear;
+		rhw = f_moneoznear;
+	}
+
+	x = float(x_y >> 16);
+	y = float(x_y & 0xFFFF);
+	w = float(height_width & 0xFFFF);
+	h = float(height_width >> 16);
+
+	v[0].sx = x;
+	v[0].sy = y;
+	v[0].sz = z;
+	v[0].rhw = rhw;
+	v[0].color = col;
+	v[0].specular = 0xFF000000;
+
+	v[1].sx = x + w + 1;
+	v[1].sy = y;
+	v[1].sz = z;
+	v[1].rhw = rhw;
+	v[1].color = col;
+	v[1].specular = 0xFF000000;
+
+	v[2].sx = x + w + 1;
+	v[2].sy = y + h + 1;
+	v[2].sz = z;
+	v[2].rhw = rhw;
+	v[2].color = col;
+	v[2].specular = 0xFF000000;
+
+	v[3].sx = x;
+	v[3].sy = y + h + 1;
+	v[3].sz = z;
+	v[3].rhw = rhw;
+	v[3].color = col;
+	v[3].specular = 0xFF000000;
+
+	tex.drawtype = drawtype;
+	tex.flag = 0;
+	tex.tpage = 0;
+	clipflags[0] = 0;
+	clipflags[1] = 0;
+	clipflags[2] = 0;
+	clipflags[3] = 0;
+	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -957,4 +1032,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048D580, DrawJeepSpeedo, replace);
 	INJECT(0x00489B90, DrawDebris, replace);
 	INJECT(0x0048C280, DoScreenFade, replace);
+	INJECT(0x0048C400, DrawPsxTile, replace);
 }
