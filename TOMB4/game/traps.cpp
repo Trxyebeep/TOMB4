@@ -29,7 +29,7 @@ void FlameEmitterControl(short item_number)
 
 	if (item->trigger_flags < 0)
 	{
-		if ((-item->trigger_flags & 7) != 2 && (-item->trigger_flags & 7) != 7)
+		if ((-item->trigger_flags & 7) == 2 || (-item->trigger_flags & 7) == 7)
 		{
 			SoundEffect(SFX_FLAME_EMITTER, &item->pos, 0);
 			TriggerSuperJetFlame(item, -256 - (3072 * GlobalCounter & 0x1C00), GlobalCounter & 1);
