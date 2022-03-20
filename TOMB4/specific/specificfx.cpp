@@ -7,6 +7,9 @@
 #include "../game/objects.h"
 #include "polyinsert.h"
 #include "function_stubs.h"
+#include "drawroom.h"
+#include "winmain.h"
+#include "mmx.h"
 
 #ifdef SMOOTH_SHADOWS
 #include "../tomb4/tomb4.h"
@@ -1215,6 +1218,26 @@ void DrawFlatSky(ulong color, long zpos, long ypos, long drawtype)
 	phd_PopMatrix();
 }
 
+void OutputSky()
+{
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, 0);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
+	DrawBuckets();
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
+	SortPolyList(SortCount, SortList);
+	RestoreFPCW(FPCW);
+	MMXSetPerspecLimit(0);
+	DrawSortList();
+	MMXSetPerspecLimit(0.6F);
+	MungeFPCW(&FPCW);
+	InitBuckets();
+	InitialiseSortList();
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -1230,4 +1253,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048D160, S_DrawDarts, replace);
 	INJECT(0x00489360, ClipCheckPoint, replace);
 	INJECT(0x00488950, DrawFlatSky, replace);
+	INJECT(0x00489480, OutputSky, replace);
 }

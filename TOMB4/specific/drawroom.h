@@ -14,3 +14,4 @@ void CalcTriFaceNormal(D3DVECTOR* p1, D3DVECTOR* p2, D3DVECTOR* p3, D3DVECTOR* N
 #define InitBuckets	( (void(__cdecl*)()) 0x004728B0 )
 #define CreateVertexNormals	( (void(__cdecl*)(ROOM_INFO*)) 0x00472F50 )
 #define PrelightVertsMMX	( (void(__cdecl*)(long, D3DTLVERTEX*, ROOM_INFO*)) 0x00472400 )
+#define DrawBuckets	( (void(__cdecl*)()) 0x00472C10 )

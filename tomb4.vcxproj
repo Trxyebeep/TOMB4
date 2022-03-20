@@ -263,6 +263,7 @@
     <ClInclude Include="TOMB4\specific\input.h" />
     <ClInclude Include="TOMB4\specific\lighting.h" />
     <ClInclude Include="TOMB4\specific\LoadSave.h" />
+    <ClInclude Include="TOMB4\specific\mmx.h" />
     <ClInclude Include="TOMB4\specific\output.h" />
     <ClInclude Include="TOMB4\specific\polyinsert.h" />
     <ClInclude Include="TOMB4\specific\registry.h" />
@@ -372,6 +373,7 @@
     <ClCompile Include="TOMB4\specific\input.cpp" />
     <ClCompile Include="TOMB4\specific\lighting.cpp" />
     <ClCompile Include="TOMB4\specific\LoadSave.cpp" />
+    <ClCompile Include="TOMB4\specific\mmx.cpp" />
     <ClCompile Include="TOMB4\specific\output.cpp" />
     <ClCompile Include="TOMB4\specific\polyinsert.cpp" />
     <ClCompile Include="TOMB4\specific\registry.cpp" />

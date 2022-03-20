@@ -1800,7 +1800,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00488690		ClipLine
 0x00488950	+	DrawFlatSky
 0x00489360	+	ClipCheckPoint
-0x00489480		OutputSky
+0x00489480	+	OutputSky
 0x00489540		DrawRope
 0x00489950		DrawLaserSightSprite
 0x00489B90	+	DrawDebris

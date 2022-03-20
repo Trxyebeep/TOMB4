@@ -359,6 +359,9 @@
     <ClInclude Include="TOMB4\tomb4\libs\discordRPC\discord_rpc.h">
       <Filter>TOMB4\tomb4\libs\discordRPC</Filter>
     </ClInclude>
+    <ClInclude Include="TOMB4\specific\mmx.h">
+      <Filter>TOMB4\specific</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TOMB4\game\lara.cpp">
@@ -675,6 +678,9 @@
     </ClCompile>
     <ClCompile Include="TOMB4\game\missile.cpp">
       <Filter>TOMB4\game</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\specific\mmx.cpp">
+      <Filter>TOMB4\specific</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
