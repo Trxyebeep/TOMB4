@@ -21,6 +21,7 @@ void setXY4(D3DTLVERTEX* v, long x1, long y1, long x2, long y2, long x3, long y3
 void setXY3(D3DTLVERTEX* v, long x1, long y1, long x2, long y2, long x3, long y3, long z, short* clip);
 void setXYZ4(D3DTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z2, long x3, long y3, long z3, long x4, long y4, long z4, short* clip);
 void setXYZ3(D3DTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z2, long x3, long y3, long z3, short* clip);
+void SetFade(long start, long end);
 
 #define DrawTrainFloorStrip	( (void(__cdecl*)(long, long, TEXTURESTRUCT*, long)) 0x0048B480 )
 #define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )
@@ -35,6 +36,5 @@ void setXYZ3(D3DTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z
 #define DrawDrips	( (void(__cdecl*)()) 0x0048A430 )
 #define DrawShockwaves	( (void(__cdecl*)()) 0x0048CAA0 )
 #define DrawLightning	( (void(__cdecl*)()) 0x0048D9B0 )
-#define SetFade	( (void(__cdecl*)(long, long)) 0x0048C240 )
 #define ClipLine	( (long(__cdecl*)(long&, long&, long, long&, long&, long, long, long, long, long)) 0x00488690 )
 #define ShowTitle	( (void(__cdecl*)()) 0x0048B130 )

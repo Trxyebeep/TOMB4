@@ -1628,6 +1628,15 @@ void setXYZ3(D3DTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z
 	clip[2] = clip_distance;
 }
 
+void SetFade(long start, long end)
+{
+	DoFade = 1;
+	FadeVal = start;
+	FadeStep = (end - start) >> 3;
+	FadeCnt = 0;
+	FadeEnd = end;
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -1648,4 +1657,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x004857E0, setXY3, replace);
 	INJECT(0x00485950, setXYZ4, replace);
 	INJECT(0x00485D90, setXYZ3, replace);
+	INJECT(0x0048C240, SetFade, replace);
 }
