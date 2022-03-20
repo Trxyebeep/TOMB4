@@ -24,6 +24,7 @@ void setXYZ3(D3DTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z
 void SetFade(long start, long end);
 void DrawLaserSightSprite();
 void DrawSprite(long x, long y, long slot, long col, long size, long z);
+void ShowTitle();
 
 #define DrawTrainFloorStrip	( (void(__cdecl*)(long, long, TEXTURESTRUCT*, long)) 0x0048B480 )
 #define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )
@@ -38,4 +39,3 @@ void DrawSprite(long x, long y, long slot, long col, long size, long z);
 #define DrawShockwaves	( (void(__cdecl*)()) 0x0048CAA0 )
 #define DrawLightning	( (void(__cdecl*)()) 0x0048D9B0 )
 #define ClipLine	( (long(__cdecl*)(long&, long&, long, long&, long&, long, long, long, long, long)) 0x00488690 )
-#define ShowTitle	( (void(__cdecl*)()) 0x0048B130 )

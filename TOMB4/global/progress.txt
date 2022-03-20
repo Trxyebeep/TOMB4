@@ -1808,7 +1808,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0048A430		DrawDrips
 0x0048A840		DoUwEffect
 0x0048AD60		DrawWraithTrail
-0x0048B130		ShowTitle
+0x0048B130	+	ShowTitle
 0x0048B480		DrawTrainFloorStrip
 0x0048B990	+	DrawTrainStrips
 0x0048BAB0	+	DrawSprite
