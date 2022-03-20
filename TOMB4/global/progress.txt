@@ -1811,7 +1811,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0048B130		ShowTitle
 0x0048B480		DrawTrainFloorStrip
 0x0048B990	+	DrawTrainStrips
-0x0048BAB0		DrawSprite
+0x0048BAB0	+	DrawSprite
 0x0048BC30		SetUpLensFlare
 0x0048C240	+	SetFade
 0x0048C280	+	DoScreenFade

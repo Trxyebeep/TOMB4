@@ -23,6 +23,7 @@ void setXYZ4(D3DTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z
 void setXYZ3(D3DTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z2, long x3, long y3, long z3, short* clip);
 void SetFade(long start, long end);
 void DrawLaserSightSprite();
+void DrawSprite(long x, long y, long slot, long col, long size, long z);
 
 #define DrawTrainFloorStrip	( (void(__cdecl*)(long, long, TEXTURESTRUCT*, long)) 0x0048B480 )
 #define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )
