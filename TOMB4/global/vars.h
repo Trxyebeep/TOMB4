@@ -412,6 +412,9 @@
 #define DebrisMeshFlags	VAR_U_(0x00808F88, long)
 #define next_debris	VAR_U_(0x004BF358, long)
 #define NumRPickups	VAR_U_(0x007FD1DC, uchar)
+#define LaserSightX	VAR_U_(0x00800168, long)
+#define LaserSightY	VAR_U_(0x00800160, long)
+#define LaserSightZ	VAR_U_(0x00800164, long)
 
 
 

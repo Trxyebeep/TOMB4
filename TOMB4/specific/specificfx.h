@@ -22,11 +22,11 @@ void setXY3(D3DTLVERTEX* v, long x1, long y1, long x2, long y2, long x3, long y3
 void setXYZ4(D3DTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z2, long x3, long y3, long z3, long x4, long y4, long z4, short* clip);
 void setXYZ3(D3DTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z2, long x3, long y3, long z3, short* clip);
 void SetFade(long start, long end);
+void DrawLaserSightSprite();
 
 #define DrawTrainFloorStrip	( (void(__cdecl*)(long, long, TEXTURESTRUCT*, long)) 0x0048B480 )
 #define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )
 #define SetUpLensFlare	( (void(__cdecl*)(long, long, long, GAME_VECTOR*)) 0x0048BC30 )
-#define DrawLaserSightSprite	( (void(__cdecl*)()) 0x00489950 )
 #define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )
 #define DoUwEffect	( (void(__cdecl*)()) 0x0048A840 )
 #define S_DrawSmokeSparks	( (void(__cdecl*)()) 0x00487260 )

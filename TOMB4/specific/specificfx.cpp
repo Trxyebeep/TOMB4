@@ -1637,6 +1637,59 @@ void SetFade(long start, long end)
 	FadeEnd = end;
 }
 
+void DrawLaserSightSprite()
+{
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR vec;
+	long* Z;
+	short* XY;
+	short* pos;
+	float perspz;
+
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	pos = (short*)&scratchpad[512];
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	pos[0] = short(LaserSightX - lara_item->pos.x_pos);
+	pos[1] = short(LaserSightY - lara_item->pos.y_pos);
+	pos[2] = short(LaserSightZ - lara_item->pos.z_pos);
+	vec.x = phd_mxptr[M00] * pos[0] + phd_mxptr[M01] * pos[1] + phd_mxptr[M02] * pos[2] + phd_mxptr[M03];
+	vec.y = phd_mxptr[M10] * pos[0] + phd_mxptr[M11] * pos[1] + phd_mxptr[M12] * pos[2] + phd_mxptr[M13];
+	vec.z = phd_mxptr[M20] * pos[0] + phd_mxptr[M21] * pos[1] + phd_mxptr[M22] * pos[2] + phd_mxptr[M23];
+	perspz = f_persp / (float)vec.z;
+	XY[0] = short(float(vec.x * perspz + f_centerx));
+	XY[1] = short(float(vec.y * perspz + f_centery));
+	Z[0] = vec.z >> 14;
+	phd_PopMatrix();
+
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 14];
+	setXY4(v, XY[0] - 2, XY[1] - 2, XY[0] + 2, XY[1] - 2, XY[0] - 2, XY[1] + 2, XY[0] + 2, XY[1] + 2, (long)f_mznear, clipflags);
+	v[0].color = 0xFFFF0000;
+	v[1].color = 0xFFFF0000;
+	v[2].color = 0xFFFF0000;
+	v[3].color = 0xFFFF0000;
+	v[0].specular = 0xFF000000;
+	v[1].specular = 0xFF000000;
+	v[2].specular = 0xFF000000;
+	v[3].specular = 0xFF000000;
+	tex.drawtype = 2;
+	tex.flag = 0;
+	tex.tpage = sprite->tpage;
+	tex.u1 = sprite->x1;
+	tex.v1 = sprite->y1;
+	tex.u2 = sprite->x2;
+	tex.v2 = sprite->y1;
+	tex.u3 = sprite->x2;
+	tex.v3 = sprite->y2;
+	tex.u4 = sprite->x1;
+	tex.v4 = sprite->y2;
+	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+	LaserSightActive = 0;
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -1658,4 +1711,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x00485950, setXYZ4, replace);
 	INJECT(0x00485D90, setXYZ3, replace);
 	INJECT(0x0048C240, SetFade, replace);
+	INJECT(0x00489950, DrawLaserSightSprite, replace);
 }

@@ -49,6 +49,9 @@ void LaraCheatyBits()
 		lara.num_shotgun_ammo1 = -1;
 		lara.num_shotgun_ammo2 = -1;
 
+		if (objects[LASERSIGHT_ITEM].loaded)
+			lara.lasersight = 1;
+
 		if (!(gfLevelFlags & GF_YOUNGLARA))
 		{
 			lara.pistols_type_carried |= 1;
