@@ -23,6 +23,7 @@ void AddRoomFlipItems(ROOM_INFO* r);
 #define GetTargetOnLOS	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*, long, long)) 0x0044D890 )
 #define GetDoor	( (short(__cdecl*)(FLOOR_INFO*)) 0x0044BB20 )
 #define AlterFloorHeight	( (void(__cdecl*)(ITEM_INFO*, long)) 0x0044A0D0 )
+#define LOS	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*)) 0x0044BBE0 )
 
 #ifdef GENERAL_FIXES
 extern char DeathMenuActive;

@@ -25,10 +25,10 @@ void SetFade(long start, long end);
 void DrawLaserSightSprite();
 void DrawSprite(long x, long y, long slot, long col, long size, long z);
 void ShowTitle();
+void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj);
 
 #define DrawTrainFloorStrip	( (void(__cdecl*)(long, long, TEXTURESTRUCT*, long)) 0x0048B480 )
 #define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )
-#define SetUpLensFlare	( (void(__cdecl*)(long, long, long, GAME_VECTOR*)) 0x0048BC30 )
 #define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )
 #define DoUwEffect	( (void(__cdecl*)()) 0x0048A840 )
 #define S_DrawSmokeSparks	( (void(__cdecl*)()) 0x00487260 )

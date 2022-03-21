@@ -42,6 +42,32 @@ long ShadowTable[NUM_TRIS * 3] =	//num of triangles * 3 points
 14, 10, 11
 };
 
+char flare_table[121] =
+{
+//	r, g, b, size, XY?, sprite
+	96, 80, 0, 6, 0, 31,
+	48, 32, 32, 10, -6, 31,
+	32, 24, 24, 18, -1, 31,
+	80, 104, 64, 5, -3, 30,
+	64, 64, 64, 20, 0, 32,
+	96, 56, 56, 14, 0, 11,
+	80, 40, 32, 9, 0, 29,
+	16, 24, 40, 2, 5, 31,
+	8, 8, 24, 7, 8, 31,
+	8, 16, 32, 4, 10, 31,
+	48, 24, 0, 2, 13, 31,
+	40, 96, 72, 1, 16, 11,
+	40, 96, 72, 3, 20, 11,
+	32, 16, 0, 6, 22, 31,
+	32, 16, 0, 9, 23, 30,
+	32, 16, 0, 3, 24, 31,
+	32, 48, 24, 4, 26, 31,
+	8, 40, 112, 3, 27, 11,
+	8, 16, 0, 10, 29, 30,
+	16, 16, 24, 17, 31, 29,
+	-1
+};
+
 #ifdef SMOOTH_SHADOWS
 static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 {
@@ -1825,6 +1851,209 @@ void ShowTitle()
 	AddQuadSorted(v, 0, 1, 2, 3, &tex, 1);
 }
 
+void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj)
+{
+	PHD_VECTOR pos;
+	GAME_VECTOR start;
+	GAME_VECTOR target;
+	long* Z;
+	short* vec;
+	short* XY;
+	float perspz;
+	long dx, dy, dz, r, g, b, r2, g2, b2, los, num, flash;
+	short rn;
+
+	los = 0;
+
+	if (lfobj)
+	{
+		pos.x = lfobj->x;
+		pos.y = lfobj->y;
+		pos.z = lfobj->z;
+		dx = ABS(pos.x - lara_item->pos.x_pos);
+		dy = ABS(pos.y - lara_item->pos.y_pos);
+		dz = ABS(pos.z - lara_item->pos.z_pos);
+
+		if (dx > 0x8000 || dy > 0x8000 || dz > 0x8000)
+			return;
+
+		r = 255;
+		g = 255;
+		b = 255;
+		rn = lfobj->room_number;
+	}
+	else
+	{
+		if (room[camera.pos.room_number].flags & ROOM_NO_LENSFLARE)
+			return;
+
+		r = (uchar)gfLensFlareColour.r;
+		g = (uchar)gfLensFlareColour.g;
+		b = (uchar)gfLensFlareColour.b;
+		pos.x = x;
+		pos.y = y;
+		pos.z = z;
+
+		while (ABS(pos.x) > 0x36000 || ABS(pos.y) > 0x36000 || ABS(pos.z) > 0x36000)
+		{
+			pos.x -= (x - camera.pos.x) >> 4;
+			pos.y -= (y - camera.pos.y) >> 4;
+			pos.z -= (z - camera.pos.z) >> 4;
+		}
+
+		dx = (pos.x - camera.pos.x) >> 4;
+		dy = (pos.y - camera.pos.y) >> 4;
+		dz = (pos.z - camera.pos.z) >> 4;
+
+		while (ABS(pos.x - camera.pos.x) > 0x8000 || ABS(pos.y - camera.pos.y) > 0x8000 || ABS(pos.z - camera.pos.z) > 0x8000)
+		{
+			pos.x -= dx;
+			pos.y -= dy;
+			pos.z -= dz;
+		}
+
+		dx = (pos.x - camera.pos.x) >> 4;
+		dy = (pos.y - camera.pos.y) >> 4;
+		dz = (pos.z - camera.pos.z) >> 4;
+
+		for (int i = 0; i < 16; i++)
+		{
+			IsRoomOutsideNo = 255;
+			IsRoomOutside(pos.x, pos.y, pos.z);
+			rn = IsRoomOutsideNo;
+
+			if (rn != 255)
+				break;
+
+			pos.x -= dx;
+			pos.y -= dy;
+			pos.z -= dz;
+		}
+	}
+
+	if (rn != 255)
+	{
+		if (room[rn].flags & ROOM_NOT_INSIDE || lfobj)
+		{
+			start.y = camera.pos.y;
+			start.z = camera.pos.z;
+			start.x = camera.pos.x;
+			start.room_number = camera.pos.room_number;
+			target.x = pos.x;
+			target.y = pos.y;
+			target.z = pos.z;
+			los = LOS(&start, &target);
+		}
+	}
+
+	if (!los && lfobj)	//can't see object, don't bother
+		return;
+
+	vec = (short*)&scratchpad[0];
+	XY = (short*)&scratchpad[16];
+	Z = (long*)&scratchpad[32];
+
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+
+	if (lfobj)
+	{
+		vec[0] = short(pos.x - lara_item->pos.x_pos);
+		vec[1] = short(pos.y - lara_item->pos.y_pos);
+		vec[2] = short(pos.z - lara_item->pos.z_pos);
+	}
+	else
+	{
+		pos.x = x - lara_item->pos.x_pos;
+		pos.y = y - lara_item->pos.y_pos;
+		pos.z = z - lara_item->pos.z_pos;
+		
+		while (pos.x > 0x7F00 || pos.x < -0x7F00 || pos.y > 0x7F00 || pos.y < -0x7F00 || pos.z > 0x7F00 || pos.z < -0x7F00)
+		{
+			pos.x >>= 1;
+			pos.y >>= 1;
+			pos.z >>= 1;
+		}
+
+		vec[0] = (short)pos.x;
+		vec[1] = (short)pos.y;
+		vec[2] = (short)pos.z;
+	}
+
+	pos.x = phd_mxptr[M00] * vec[0] + phd_mxptr[M01] * vec[1] + phd_mxptr[M02] * vec[2] + phd_mxptr[M03];
+	pos.y = phd_mxptr[M10] * vec[0] + phd_mxptr[M11] * vec[1] + phd_mxptr[M12] * vec[2] + phd_mxptr[M13];
+	pos.z = phd_mxptr[M20] * vec[0] + phd_mxptr[M21] * vec[1] + phd_mxptr[M22] * vec[2] + phd_mxptr[M23];
+	perspz = f_persp / (float)pos.z;
+	XY[0] = short(float(pos.x * perspz + f_centerx));
+	XY[1] = short(float(pos.y * perspz + f_centery));
+	Z[0] = pos.z >> 14;
+	phd_PopMatrix();
+	num = 0;
+
+	if (lfobj)
+		num += 6;
+
+	if (Z[0] > 0)
+	{
+		dx = XY[0] - phd_centerx;
+		dy = XY[1] - phd_centery;
+		dz = phd_sqrt(SQUARE(dx) + SQUARE(dy));
+
+		if (dz < 640)
+		{
+			dz = 640 - dz;
+
+			if (los)
+			{
+				flash = dz - 544;
+
+				if (flash > 0)
+				{
+					FlashFader = 32;
+					FlashFadeR = short((r * flash) / 640);
+					FlashFadeG = short((g * flash) / 640);
+					FlashFadeB = short((b * flash) / 640);
+				}
+			}
+
+			while (flare_table[num] != -1)
+			{
+				if (num)
+				{
+					r2 = dz * flare_table[num] / 640;
+					g2 = dz * flare_table[num + 1] / 640;
+					b2 = dz * flare_table[num + 2] / 640;
+				}
+				else
+				{
+					if (lfobj)
+						continue;
+
+					r2 = flare_table[0] + (GetRandomDraw() & 8);
+					g2 = flare_table[1];
+					b2 = flare_table[2] + (GetRandomDraw() & 8);
+				}
+
+				r2 = (r * r2) >> 8;
+				g2 = (g * g2) >> 8;
+				b2 = (b * b2) >> 8;
+
+				if (r2 | g2 | b2)
+				{
+					pos.x = XY[0] - ((dx * flare_table[num + 4]) >> 4);
+					pos.y = XY[1] - ((dy * flare_table[num + 4]) >> 4);
+					DrawSprite(pos.x, pos.y, flare_table[num + 5], RGBONLY(r2, g2, b2), flare_table[num + 3] << 1, num);
+				}
+
+				if (!los)
+					return;
+
+				num += 6;
+			}
+		}
+	}
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -1849,4 +2078,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x00489950, DrawLaserSightSprite, replace);
 	INJECT(0x0048BAB0, DrawSprite, replace);
 	INJECT(0x0048B130, ShowTitle, replace);
+	INJECT(0x0048BC30, SetUpLensFlare, replace);
 }
