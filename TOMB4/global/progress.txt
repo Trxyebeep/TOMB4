@@ -1383,10 +1383,10 @@ x for functions decompiled but not injected, for one reason or another.
 0x00415680		RollingBallCollision
 0x00415750		ControlJobySpike
 0x004158E0		DrawScaledSpike
-0x00415AD0		TwoBlockPlatformFloor
-0x00415B20		TwoBlockPlatformCeiling
-0x00415B60		OnTwoBlockPlatform
-0x00415C30		ControlTwoBlockPlatform
+0x00415AD0	+	TwoBlockPlatformFloor
+0x00415B20	+	TwoBlockPlatformCeiling
+0x00415B60	+	OnTwoBlockPlatform
+0x00415C30	+	ControlTwoBlockPlatform
 0x00415DB0		ControlSlicerDicer
 0x00415EC0		TestBoundsCollideTeethSpikes
 0x00415FD0		ControlScaledSpike
@@ -1718,7 +1718,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0047D900	+	PrelightVerts
 0x0047DA60	+	phd_PutPolygons
 0x0047E8B0	+	phd_PutPolygonsPickup
-0x0047F620		phd_PutPolygonSkyMesh
+0x0047F620	+	phd_PutPolygonSkyMesh
 0x0047F950	+	_InsertRoom
 0x0047F970		S_DrawPickup
 0x0047FA10		S_OutputPolyList
@@ -1784,10 +1784,10 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/specificfx.cpp
 
-0x00485600		setXY4
-0x004857E0		setXY3
-0x00485950		setXYZ4
-0x00485D90		setXYZ3
+0x00485600	+	setXY4
+0x004857E0	+	setXY3
+0x00485950	+	setXYZ4
+0x00485D90	+	setXYZ3
 0x004860D0		DrawBubbles
 0x00486430		S_DrawSplashes
 0x00486DD0		S_DrawFireSparks
@@ -1798,28 +1798,28 @@ x for functions decompiled but not injected, for one reason or another.
 0x00487D00		DrawBinoculars
 0x00488140	+	S_DrawDrawSparks
 0x00488690		ClipLine
-0x00488950		DrawFlatSky
-0x00489360		ClipCheckPoint
-0x00489480		OutputSky
+0x00488950	+	DrawFlatSky
+0x00489360	+	ClipCheckPoint
+0x00489480	+	OutputSky
 0x00489540		DrawRope
-0x00489950		DrawLaserSightSprite
+0x00489950	+	DrawLaserSightSprite
 0x00489B90	+	DrawDebris
 0x0048A0C0		DrawBlood
 0x0048A430		DrawDrips
 0x0048A840		DoUwEffect
 0x0048AD60		DrawWraithTrail
-0x0048B130		ShowTitle
+0x0048B130	+	ShowTitle
 0x0048B480		DrawTrainFloorStrip
 0x0048B990	+	DrawTrainStrips
-0x0048BAB0		DrawSprite
-0x0048BC30		SetUpLensFlare
-0x0048C240		SetFade
+0x0048BAB0	+	DrawSprite
+0x0048BC30	+	SetUpLensFlare
+0x0048C240	+	SetFade
 0x0048C280	+	DoScreenFade
-0x0048C400		DrawPsxTile
-0x0048C5F0		DrawFlash
+0x0048C400	+	DrawPsxTile
+0x0048C5F0	+	DrawFlash
 0x0048C6C0	+	DrawBikeSpeedo
 0x0048CAA0		DrawShockwaves
-0x0048D160		S_DrawDarts
+0x0048D160	+	S_DrawDarts
 0x0048D3D0	+	Draw2DSprite
 0x0048D580	+	DrawJeepSpeedo
 0x0048D9B0		DrawLightning

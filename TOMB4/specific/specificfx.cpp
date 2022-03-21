@@ -7,6 +7,9 @@
 #include "../game/objects.h"
 #include "polyinsert.h"
 #include "function_stubs.h"
+#include "drawroom.h"
+#include "winmain.h"
+#include "mmx.h"
 
 #ifdef SMOOTH_SHADOWS
 #include "../tomb4/tomb4.h"
@@ -37,6 +40,32 @@ long ShadowTable[NUM_TRIS * 3] =	//num of triangles * 3 points
 13, 9, 14,	//bottom part
 14, 9, 10,
 14, 10, 11
+};
+
+char flare_table[121] =
+{
+//	r, g, b, size, XY?, sprite
+	96, 80, 0, 6, 0, 31,
+	48, 32, 32, 10, -6, 31,
+	32, 24, 24, 18, -1, 31,
+	80, 104, 64, 5, -3, 30,
+	64, 64, 64, 20, 0, 32,
+	96, 56, 56, 14, 0, 11,
+	80, 40, 32, 9, 0, 29,
+	16, 24, 40, 2, 5, 31,
+	8, 8, 24, 7, 8, 31,
+	8, 16, 32, 4, 10, 31,
+	48, 24, 0, 2, 13, 31,
+	40, 96, 72, 1, 16, 11,
+	40, 96, 72, 3, 20, 11,
+	32, 16, 0, 6, 22, 31,
+	32, 16, 0, 9, 23, 30,
+	32, 16, 0, 3, 24, 31,
+	32, 48, 24, 4, 26, 31,
+	8, 40, 112, 3, 27, 11,
+	8, 16, 0, 10, 29, 30,
+	16, 16, 24, 17, 31, 29,
+	-1
 };
 
 #ifdef SMOOTH_SHADOWS
@@ -947,6 +976,1084 @@ void DoScreenFade()
 	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 }
 
+void DrawPsxTile(long x_y, long height_width, long color, long u0, long u1)
+{
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	float x, y, z, rhw, w, h;
+	long col;
+	ushort drawtype;
+
+	nPolyType = 6;
+
+	if ((color & 0xFF000000) == 0x62000000)
+	{
+		drawtype = 3;
+		col = color << 24;
+	}
+	else
+	{
+		drawtype = 2;
+		col = color | 0xFF000000;
+	}
+
+	if (!gfCurrentLevel)
+	{
+		z = f_znear + 10;
+		rhw = f_moneoznear + 50;
+	}
+	else
+	{
+		z = f_znear;
+		rhw = f_moneoznear;
+	}
+
+	x = float(x_y >> 16);
+	y = float(x_y & 0xFFFF);
+	w = float(height_width & 0xFFFF);
+	h = float(height_width >> 16);
+
+	v[0].sx = x;
+	v[0].sy = y;
+	v[0].sz = z;
+	v[0].rhw = rhw;
+	v[0].color = col;
+	v[0].specular = 0xFF000000;
+
+	v[1].sx = x + w + 1;
+	v[1].sy = y;
+	v[1].sz = z;
+	v[1].rhw = rhw;
+	v[1].color = col;
+	v[1].specular = 0xFF000000;
+
+	v[2].sx = x + w + 1;
+	v[2].sy = y + h + 1;
+	v[2].sz = z;
+	v[2].rhw = rhw;
+	v[2].color = col;
+	v[2].specular = 0xFF000000;
+
+	v[3].sx = x;
+	v[3].sy = y + h + 1;
+	v[3].sz = z;
+	v[3].rhw = rhw;
+	v[3].color = col;
+	v[3].specular = 0xFF000000;
+
+	tex.drawtype = drawtype;
+	tex.flag = 0;
+	tex.tpage = 0;
+	clipflags[0] = 0;
+	clipflags[1] = 0;
+	clipflags[2] = 0;
+	clipflags[3] = 0;
+	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+}
+
+void DrawFlash()
+{
+	long r, g, b;
+
+	r = ((FlashFadeR * FlashFader) >> 5) & 0xFF;
+	g = ((FlashFadeG * FlashFader) >> 5) & 0xFF;
+	b = ((FlashFadeB * FlashFader) >> 5) & 0xFF;
+	DrawPsxTile(0, phd_winwidth | (phd_winheight << 16), RGBA(r, g, b, 0x62), 1, 0);
+	DrawPsxTile(0, phd_winwidth | (phd_winheight << 16), RGBA(r, g, b, 0xFF), 2, 0);
+}
+
+void S_DrawDarts(ITEM_INFO* item)
+{
+	D3DTLVERTEX v[2];
+	long x1, y1, z1, x2, y2, z2, num, mxx, mxy, mxz, xx, yy, zz;
+	float zv;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	zv = f_persp / (float)phd_mxptr[M23];
+	x1 = short(float(phd_mxptr[M03] * zv + f_centerx));
+	y1 = short(float(phd_mxptr[M13] * zv + f_centery));
+	z1 = phd_mxptr[M23] >> 14;
+	num = (-96 * phd_cos(item->pos.x_rot)) >> 14;
+	mxx = (num * phd_sin(item->pos.y_rot)) >> 14;
+	mxy = (96 * phd_sin(item->pos.x_rot)) >> 14;
+	mxz = (num * phd_cos(item->pos.y_rot)) >> 14;
+	xx = phd_mxptr[M00] * mxx + phd_mxptr[M01] * mxy + phd_mxptr[M02] * mxz + phd_mxptr[M03];
+	yy = phd_mxptr[M10] * mxx + phd_mxptr[M11] * mxy + phd_mxptr[M12] * mxz + phd_mxptr[M13];
+	zz = phd_mxptr[M20] * mxx + phd_mxptr[M21] * mxy + phd_mxptr[M22] * mxz + phd_mxptr[M23];
+	zv = f_persp / (float)zz;
+	x2 = short(float(xx * zv + f_centerx));
+	y2 = short(float(yy * zv + f_centery));
+	z2 = zz >> 14;
+
+	if (ClipLine(x1, y1, z1, x2, y2, z2, phd_winxmin, phd_winymin, phd_winxmax, phd_winymax))
+	{
+		zv = f_mpersp / (float)z1 * f_moneopersp;
+		v[0].sx = (float)x1;
+		v[0].sy = (float)y1;
+		v[0].sz = f_a - zv * f_boo;
+		v[0].rhw = zv;
+		v[0].color = 0xFF000000;
+		v[0].specular = 0xFF000000;
+		v[1].sx = (float)x2;
+		v[1].sy = (float)y2;
+		v[1].sz = f_a - zv * f_boo;
+		v[1].rhw = zv;
+		v[1].color = 0xFF783C14;
+		v[1].specular = 0xFF000000;
+		AddLineSorted(v, &v[1], 6);
+	}
+
+	phd_PopMatrix();
+}
+
+void ClipCheckPoint(D3DTLVERTEX* v, float x, float y, float z, short* clip)
+{
+	float perspz;
+	short clipdistance;
+
+	v->tu = x;
+	v->tv = y;
+	v->sz = z;
+	clipdistance = 0;
+
+	if (v->sz < f_mznear)
+		clipdistance = -128;
+	else
+	{
+		perspz = f_mpersp / v->sz;
+
+		if (v->sz > FogEnd)
+		{
+			v->sz = f_zfar;
+			clipdistance = 256;
+		}
+
+		v->sx = perspz * v->tu + f_centerx;
+		v->sy = perspz * v->tv + f_centery;
+		v->rhw = perspz * f_moneopersp;
+
+		if (v->sx < phd_winxmin)
+			clipdistance++;
+		else if (phd_winxmax < v->sx)
+			clipdistance += 2;
+
+		if (v->sy < phd_winymin)
+			clipdistance += 4;
+		else if (v->sy > phd_winymax)
+			clipdistance += 8;
+	}
+
+	clip[0] = clipdistance;
+}
+
+void DrawFlatSky(ulong color, long zpos, long ypos, long drawtype)
+{
+	PHD_VECTOR vec[4];
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT Tex;
+	short* clip;
+	long x, y, z;
+
+	phd_PushMatrix();
+	phd_TranslateRel(zpos, ypos, 0);
+
+	vec[0].x = -5632;
+	vec[0].y = 0;
+	vec[0].z = 4864;
+	vec[1].x = 5632;
+	vec[1].y = 0;
+	vec[1].z = 4864;
+	vec[2].x = 5632;
+	vec[2].y = 0;
+	vec[2].z = -4864;
+	vec[3].x = -5632;
+	vec[3].y = 0;
+	vec[3].z = -4864;
+
+	for (int i = 0; i < 4; i++)
+	{
+		x = vec[i].x;
+		y = vec[i].y;
+		z = vec[i].z;
+		vec[i].x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> 14;
+		vec[i].y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> 14;
+		vec[i].z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> 14;
+		v[i].color = color | 0xFF000000;
+		v[i].specular = 0xFF000000;
+		CalcColorSplit(color, &v[i].color);
+	}
+
+	clip = clipflags;
+	ClipCheckPoint(&v[0], (float)vec[0].x, (float)vec[0].y, (float)vec[0].z, clip);	//originally inlined
+	clip++;
+	ClipCheckPoint(&v[1], (float)vec[1].x, (float)vec[1].y, (float)vec[1].z, clip);	//originally inlined
+	clip++;
+	ClipCheckPoint(&v[2], (float)vec[2].x, (float)vec[2].y, (float)vec[2].z, clip);	//originally inlined
+	clip++;
+	ClipCheckPoint(&v[3], (float)vec[3].x, (float)vec[3].y, (float)vec[3].z, clip);	//the only one that survived
+	Tex.drawtype = (ushort)drawtype;
+	Tex.flag = 0;
+	Tex.tpage = ushort(nTextures - 1);
+	Tex.u1 = 0;
+	Tex.v1 = 0;
+	Tex.u2 = 1;
+	Tex.v2 = 0;
+	Tex.u3 = 1;
+	Tex.v3 = 1;
+	Tex.u4 = 0;
+	Tex.v4 = 1;
+	AddQuadSorted(v, 3, 2, 1, 0, &Tex, 1);
+
+	phd_TranslateRel(-11264, 0, 0);
+	vec[0].x = -5632;
+	vec[0].y = 0;
+	vec[0].z = 4864;
+	vec[1].x = 5632;
+	vec[1].y = 0;
+	vec[1].z = 4864;
+	vec[2].x = 5632;
+	vec[2].y = 0;
+	vec[2].z = -4864;
+	vec[3].x = -5632;
+	vec[3].y = 0;
+	vec[3].z = -4864;
+
+	for (int i = 0; i < 4; i++)
+	{
+		x = vec[i].x;
+		y = vec[i].y;
+		z = vec[i].z;
+		vec[i].x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> 14;
+		vec[i].y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> 14;
+		vec[i].z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> 14;
+		v[i].color |= 0xFF000000;
+		v[i].specular = 0xFF000000;
+		CalcColorSplit(color, &v[i].color);
+	}
+
+	clip = clipflags;
+	ClipCheckPoint(&v[0], (float)vec[0].x, (float)vec[0].y, (float)vec[0].z, clip);	//originally inlined
+	clip++;
+	ClipCheckPoint(&v[1], (float)vec[1].x, (float)vec[1].y, (float)vec[1].z, clip);	//originally inlined
+	clip++;
+	ClipCheckPoint(&v[2], (float)vec[2].x, (float)vec[2].y, (float)vec[2].z, clip);	//originally inlined
+	clip++;
+	ClipCheckPoint(&v[3], (float)vec[3].x, (float)vec[3].y, (float)vec[3].z, clip);	//the only one that survived
+	AddQuadSorted(v, 3, 2, 1, 0, &Tex, 1);
+	phd_PopMatrix();
+}
+
+void OutputSky()
+{
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, 0);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
+	DrawBuckets();
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
+	SortPolyList(SortCount, SortList);
+	RestoreFPCW(FPCW);
+	MMXSetPerspecLimit(0);
+	DrawSortList();
+	MMXSetPerspecLimit(0.6F);
+	MungeFPCW(&FPCW);
+	InitBuckets();
+	InitialiseSortList();
+}
+
+void setXY4(D3DTLVERTEX* v, long x1, long y1, long x2, long y2, long x3, long y3, long x4, long y4, long z, short* clip)
+{
+	float zv;
+	short clip_distance;
+
+	clip_distance = 0;
+	zv = f_mpersp / (float)z;
+	v->sx = (float)x1;
+	v->sy = (float)y1;
+	v->sz = (float)z;
+	v->rhw = f_moneopersp * zv;
+
+	if (phd_winxmin > v->sx)
+		clip_distance = 1;
+	else if (phd_winxmax < v->sx)
+		clip_distance = 2;
+
+	if (phd_winymin > v->sy)
+		clip_distance += 4;
+	else if (phd_winymax < v->sy)
+		clip_distance += 8;
+
+	clip[0] = clip_distance;
+	v++;
+	clip_distance = 0;
+	v->sx = (float)x2;
+	v->sy = (float)y2;
+	v->sz = (float)z;
+	v->rhw = f_moneopersp * zv;
+
+	if (phd_winxmin > v->sx)
+		clip_distance = 1;
+	else if (phd_winxmax < v->sx)
+		clip_distance = 2;
+
+	if (phd_winymin > v->sy)
+		clip_distance += 4;
+	else if (phd_winymax < v->sy)
+		clip_distance += 8;
+
+	clip[1] = clip_distance;
+	v++;
+	clip_distance = 0;
+	v->sx = (float)x3;
+	v->sy = (float)y3;
+	v->sz = (float)z;
+	v->rhw = f_moneopersp * zv;
+
+	if (phd_winxmin > v->sx)
+		clip_distance = 1;
+	else if (phd_winxmax < v->sx)
+		clip_distance = 2;
+
+	if (phd_winymin > v->sy)
+		clip_distance += 4;
+	else if (phd_winymax < v->sy)
+		clip_distance += 8;
+
+	clip[2] = clip_distance;
+	v++;
+	clip_distance = 0;
+	v->sx = (float)x4;
+	v->sy = (float)y4;
+	v->sz = (float)z;
+	v->rhw = f_moneopersp * zv;
+
+	if (phd_winxmin > v->sx)
+		clip_distance = 1;
+	else if (phd_winxmax < v->sx)
+		clip_distance = 2;
+
+	if (phd_winymin > v->sy)
+		clip_distance += 4;
+	else if (phd_winymax < v->sy)
+		clip_distance += 8;
+
+	clip[3] = clip_distance;
+}
+
+void setXY3(D3DTLVERTEX* v, long x1, long y1, long x2, long y2, long x3, long y3, long z, short* clip)
+{
+	float zv;
+	short clip_distance;
+
+	clip_distance = 0;
+	zv = f_mpersp / (float)z;
+	v->sx = (float)x1;
+	v->sy = (float)y1;
+	v->sz = (float)z;
+	v->rhw = f_moneopersp * zv;
+
+	if (phd_winxmin > v->sx)
+		clip_distance = 1;
+	else if (phd_winxmax < v->sx)
+		clip_distance = 2;
+
+	if (phd_winymin > v->sy)
+		clip_distance += 4;
+	else if (phd_winymax < v->sy)
+		clip_distance += 8;
+
+	clip[0] = clip_distance;
+	v++;
+	clip_distance = 0;
+	v->sx = (float)x2;
+	v->sy = (float)y2;
+	v->sz = (float)z;
+	v->rhw = f_moneopersp * zv;
+
+	if (phd_winxmin > v->sx)
+		clip_distance = 1;
+	else if (phd_winxmax < v->sx)
+		clip_distance = 2;
+
+	if (phd_winymin > v->sy)
+		clip_distance += 4;
+	else if (phd_winymax < v->sy)
+		clip_distance += 8;
+
+	clip[1] = clip_distance;
+	v++;
+	clip_distance = 0;
+	v->sx = (float)x3;
+	v->sy = (float)y3;
+	v->sz = (float)z;
+	v->rhw = f_moneopersp * zv;
+
+	if (phd_winxmin > v->sx)
+		clip_distance = 1;
+	else if (phd_winxmax < v->sx)
+		clip_distance = 2;
+
+	if (phd_winymin > v->sy)
+		clip_distance += 4;
+	else if (phd_winymax < v->sy)
+		clip_distance += 8;
+
+	clip[2] = clip_distance;
+}
+
+void setXYZ4(D3DTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z2, long x3, long y3, long z3, long x4, long y4, long z4, short* clip)
+{
+	float zv;
+	short clip_distance;
+
+	clip_distance = 0;
+	v->tu = (float)x1;
+	v->tv = (float)y1;
+	v->sz = (float)z1;
+
+	if (v->sz < f_mznear)
+		clip_distance = -128;
+	else
+	{
+		zv = f_mpersp / v->sz;
+
+		if (v->sz > FogEnd)
+		{
+			clip_distance = 256;
+			v->sz = f_zfar;
+		}
+
+		v->sx = zv * v->tu + f_centerx;
+		v->sy = zv * v->tv + f_centery;
+		v->rhw = f_moneopersp * zv;
+
+		if (phd_winxmin > v->sx)
+			clip_distance++;
+		else if (phd_winxmax < v->sx)
+			clip_distance += 2;
+
+		if (phd_winymin > v->sy)
+			clip_distance += 4;
+		else if (phd_winymax < v->sy)
+			clip_distance += 8;
+	}
+
+	v++;
+	clip[0] = clip_distance;
+	clip_distance = 0;
+	v->tu = (float)x2;
+	v->tv = (float)y2;
+	v->sz = (float)z2;
+
+	if (v->sz < f_mznear)
+		clip_distance = -128;
+	else
+	{
+		zv = f_mpersp / v->sz;
+
+		if (v->sz > FogEnd)
+		{
+			clip_distance = 256;
+			v->sz = f_zfar;
+		}
+
+		v->sx = zv * v->tu + f_centerx;
+		v->sy = zv * v->tv + f_centery;
+		v->rhw = f_moneopersp * zv;
+
+		if (phd_winxmin > v->sx)
+			clip_distance++;
+		else if (phd_winxmax < v->sx)
+			clip_distance += 2;
+
+		if (phd_winymin > v->sy)
+			clip_distance += 4;
+		else if (phd_winymax < v->sy)
+			clip_distance += 8;
+	}
+
+	v++;
+	clip[1] = clip_distance;
+	clip_distance = 0;
+	v->tu = (float)x3;
+	v->tv = (float)y3;
+	v->sz = (float)z3;
+
+	if (v->sz < f_mznear)
+		clip_distance = -128;
+	else
+	{
+		zv = f_mpersp / v->sz;
+
+		if (v->sz > FogEnd)
+		{
+			clip_distance = 256;
+			v->sz = f_zfar;
+		}
+
+		v->sx = zv * v->tu + f_centerx;
+		v->sy = zv * v->tv + f_centery;
+		v->rhw = f_moneopersp * zv;
+
+		if (phd_winxmin > v->sx)
+			clip_distance++;
+		else if (phd_winxmax < v->sx)
+			clip_distance += 2;
+
+		if (phd_winymin > v->sy)
+			clip_distance += 4;
+		else if (phd_winymax < v->sy)
+			clip_distance += 8;
+	}
+
+	v++;
+	clip[2] = clip_distance;
+	clip_distance = 0;
+	v->tu = (float)x4;
+	v->tv = (float)y4;
+	v->sz = (float)z4;
+
+	if (v->sz < f_mznear)
+		clip_distance = -128;
+	else
+	{
+		zv = f_mpersp / v->sz;
+
+		if (v->sz > FogEnd)
+		{
+			clip_distance = 256;
+			v->sz = f_zfar;
+		}
+
+		v->sx = zv * v->tu + f_centerx;
+		v->sy = zv * v->tv + f_centery;
+		v->rhw = f_moneopersp * zv;
+
+		if (phd_winxmin > v->sx)
+			clip_distance++;
+		else if (phd_winxmax < v->sx)
+			clip_distance += 2;
+
+		if (phd_winymin > v->sy)
+			clip_distance += 4;
+		else if (phd_winymax < v->sy)
+			clip_distance += 8;
+	}
+
+	clip[3] = clip_distance;
+}
+
+void setXYZ3(D3DTLVERTEX* v, long x1, long y1, long z1, long x2, long y2, long z2, long x3, long y3, long z3, short* clip)
+{
+	float zv;
+	short clip_distance;
+
+	clip_distance = 0;
+	v->tu = (float)x1;
+	v->tv = (float)y1;
+	v->sz = (float)z1;
+
+	if (v->sz < f_mznear)
+		clip_distance = -128;
+	else
+	{
+		zv = f_mpersp / v->sz;
+
+		if (v->sz > FogEnd)
+		{
+			clip_distance = 256;
+			v->sz = f_zfar;
+		}
+
+		v->sx = zv * v->tu + f_centerx;
+		v->sy = zv * v->tv + f_centery;
+		v->rhw = f_moneopersp * zv;
+
+		if (phd_winxmin > v->sx)
+			clip_distance++;
+		else if (phd_winxmax < v->sx)
+			clip_distance += 2;
+
+		if (phd_winymin > v->sy)
+			clip_distance += 4;
+		else if (phd_winymax < v->sy)
+			clip_distance += 8;
+	}
+
+	v++;
+	clip[0] = clip_distance;
+	clip_distance = 0;
+	v->tu = (float)x2;
+	v->tv = (float)y2;
+	v->sz = (float)z2;
+
+	if (v->sz < f_mznear)
+		clip_distance = -128;
+	else
+	{
+		zv = f_mpersp / v->sz;
+
+		if (v->sz > FogEnd)
+		{
+			clip_distance = 256;
+			v->sz = f_zfar;
+		}
+
+		v->sx = zv * v->tu + f_centerx;
+		v->sy = zv * v->tv + f_centery;
+		v->rhw = f_moneopersp * zv;
+
+		if (phd_winxmin > v->sx)
+			clip_distance++;
+		else if (phd_winxmax < v->sx)
+			clip_distance += 2;
+
+		if (phd_winymin > v->sy)
+			clip_distance += 4;
+		else if (phd_winymax < v->sy)
+			clip_distance += 8;
+	}
+
+	v++;
+	clip[1] = clip_distance;
+	clip_distance = 0;
+	v->tu = (float)x3;
+	v->tv = (float)y3;
+	v->sz = (float)z3;
+
+	if (v->sz < f_mznear)
+		clip_distance = -128;
+	else
+	{
+		zv = f_mpersp / v->sz;
+
+		if (v->sz > FogEnd)
+		{
+			clip_distance = 256;
+			v->sz = f_zfar;
+		}
+
+		v->sx = zv * v->tu + f_centerx;
+		v->sy = zv * v->tv + f_centery;
+		v->rhw = f_moneopersp * zv;
+
+		if (phd_winxmin > v->sx)
+			clip_distance++;
+		else if (phd_winxmax < v->sx)
+			clip_distance += 2;
+
+		if (phd_winymin > v->sy)
+			clip_distance += 4;
+		else if (phd_winymax < v->sy)
+			clip_distance += 8;
+	}
+
+	clip[2] = clip_distance;
+}
+
+void SetFade(long start, long end)
+{
+	DoFade = 1;
+	FadeVal = start;
+	FadeStep = (end - start) >> 3;
+	FadeCnt = 0;
+	FadeEnd = end;
+}
+
+void DrawLaserSightSprite()
+{
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR vec;
+	long* Z;
+	short* XY;
+	short* pos;
+	float perspz;
+
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	pos = (short*)&scratchpad[512];
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	pos[0] = short(LaserSightX - lara_item->pos.x_pos);
+	pos[1] = short(LaserSightY - lara_item->pos.y_pos);
+	pos[2] = short(LaserSightZ - lara_item->pos.z_pos);
+	vec.x = phd_mxptr[M00] * pos[0] + phd_mxptr[M01] * pos[1] + phd_mxptr[M02] * pos[2] + phd_mxptr[M03];
+	vec.y = phd_mxptr[M10] * pos[0] + phd_mxptr[M11] * pos[1] + phd_mxptr[M12] * pos[2] + phd_mxptr[M13];
+	vec.z = phd_mxptr[M20] * pos[0] + phd_mxptr[M21] * pos[1] + phd_mxptr[M22] * pos[2] + phd_mxptr[M23];
+	perspz = f_persp / (float)vec.z;
+	XY[0] = short(float(vec.x * perspz + f_centerx));
+	XY[1] = short(float(vec.y * perspz + f_centery));
+	Z[0] = vec.z >> 14;
+	phd_PopMatrix();
+
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 14];
+	setXY4(v, XY[0] - 2, XY[1] - 2, XY[0] + 2, XY[1] - 2, XY[0] - 2, XY[1] + 2, XY[0] + 2, XY[1] + 2, (long)f_mznear, clipflags);
+	v[0].color = 0xFFFF0000;
+	v[1].color = 0xFFFF0000;
+	v[2].color = 0xFFFF0000;
+	v[3].color = 0xFFFF0000;
+	v[0].specular = 0xFF000000;
+	v[1].specular = 0xFF000000;
+	v[2].specular = 0xFF000000;
+	v[3].specular = 0xFF000000;
+	tex.drawtype = 2;
+	tex.flag = 0;
+	tex.tpage = sprite->tpage;
+	tex.u1 = sprite->x1;
+	tex.v1 = sprite->y1;
+	tex.u2 = sprite->x2;
+	tex.v2 = sprite->y1;
+	tex.u3 = sprite->x2;
+	tex.v3 = sprite->y2;
+	tex.u4 = sprite->x1;
+	tex.v4 = sprite->y2;
+	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+	LaserSightActive = 0;
+}
+
+void DrawSprite(long x, long y, long slot, long col, long size, long z)
+{
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	long s;
+
+	s = long(float(phd_winwidth / 640.0F) * (size << 1));
+
+	if (z)
+		setXY4(v, x - s, y - s, x + s, y - s, x - s, y + s, x + s, y + s, long(z + f_mznear), clipflags);
+	else
+		setXY4(v, x - s, y - s, x + s, y - s, x - s, y + s, x + s, y + s, (long)f_mzfar, clipflags);
+
+	sprite = &spriteinfo[slot + objects[DEFAULT_SPRITES].mesh_index];
+	v[0].specular = 0xFF000000;
+	v[1].specular = 0xFF000000;
+	v[2].specular = 0xFF000000;
+	v[3].specular = 0xFF000000;
+	CalcColorSplit(col, &v[0].color);
+	v[1].color = v[0].color | 0xFF000000;
+	v[2].color = v[0].color | 0xFF000000;
+	v[3].color = v[0].color | 0xFF000000;
+	tex.drawtype = 2;
+	tex.flag = 0;
+	tex.tpage = sprite->tpage;
+	tex.u1 = sprite->x1;
+	tex.v1 = sprite->y1;
+	tex.u2 = sprite->x2;
+	tex.v2 = sprite->y1;
+	tex.u3 = sprite->x2;
+	tex.v3 = sprite->y2;
+	tex.u4 = sprite->x1;
+	tex.v4 = sprite->y2;
+	AddQuadSorted(v, 0, 1, 3, 2, &tex, 0);
+}
+
+void ShowTitle()
+{
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	long x, y, w;
+
+	clipflags[0] = 0;
+	clipflags[1] = 0;
+	clipflags[2] = 0;
+	clipflags[3] = 0;
+	nPolyType = 4;
+	x = long(phd_winxmin - float((phd_winxmax / 640.0F) * -64));
+	w = long(float((phd_winxmax / 640.0F) * 256));
+	y = long(phd_winymin + float((phd_winymax / 480.0F) * 256));
+
+	v[0].sx = (float)x;
+	v[0].sy = (float)phd_winymin;
+	v[0].sz = 0;
+	v[0].rhw = f_moneoznear;
+	v[0].color = 0xFFFFFFFF;
+	v[0].specular = 0xFF000000;
+
+	v[1].sx = (float)(w + x);
+	v[1].sy = (float)phd_winymin;
+	v[1].sz = 0;
+	v[1].rhw = f_moneoznear;
+	v[1].color = 0xFFFFFFFF;
+	v[1].specular = 0xFF000000;
+
+	v[2].sx = (float)(w + x);
+	v[2].sy = (float)y;
+	v[2].sz = 0;
+	v[2].rhw = f_moneoznear;
+	v[2].color = 0xFFFFFFFF;
+	v[2].specular = 0xFF000000;
+
+	v[3].sx = (float)x;
+	v[3].sy = (float)y;
+	v[3].sz = 0;
+	v[3].rhw = f_moneoznear;
+	v[3].color = 0xFFFFFFFF;
+	v[3].specular = 0xFF000000;
+
+	tex.drawtype = 1;
+	tex.flag = 0;
+	tex.tpage = ushort(nTextures - 4);
+	tex.u1 = 0.00390625F;
+	tex.v1 = 0.00390625F;
+	tex.u2 = 0.99609375F;
+	tex.v2 = 0.00390625F;
+	tex.u3 = 0.99609375F;
+	tex.v3 = 0.99609375F;
+	tex.u4 = 0.00390625F;
+	tex.v4 = 0.99609375F;
+	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+
+	v[0].sx = (float)(w + x);
+	v[0].sy = (float)phd_winymin;
+	v[0].sz = 0;
+	v[0].rhw = f_moneoznear;
+	v[0].color = 0xFFFFFFFF;
+	v[0].specular = 0xFF000000;
+
+	v[1].sx = (float)(2 * w + x);
+	v[1].sy = (float)phd_winymin;
+	v[1].sz = 0;
+	v[1].rhw = f_moneoznear;
+	v[1].color = 0xFFFFFFFF;
+	v[1].specular = 0xFF000000;
+
+	v[2].sx = (float)(2 * w + x);
+	v[2].sy = (float)y;
+	v[2].sz = 0;
+	v[2].rhw = f_moneoznear;
+	v[2].color = 0xFFFFFFFF;
+	v[2].specular = 0xFF000000;
+
+	v[3].sx = (float)(w + x);
+	v[3].sy = (float)y;
+	v[3].sz = 0;
+	v[3].rhw = f_moneoznear;
+	v[3].color = 0xFFFFFFFF;
+	v[3].specular = 0xFF000000;
+
+	tex.drawtype = 1;
+	tex.flag = 0;
+	tex.tpage = ushort(nTextures - 3);
+	tex.u1 = 0.00390625F;
+	tex.v1 = 0.00390625F;
+	tex.u2 = 0.99609375F;
+	tex.v2 = 0.00390625F;
+	tex.u3 = 0.99609375F;
+	tex.v3 = 0.99609375F;
+	tex.u4 = 0.00390625F;
+	tex.v4 = 0.99609375F;
+	AddQuadSorted(v, 0, 1, 2, 3, &tex, 1);
+}
+
+void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj)
+{
+	PHD_VECTOR pos;
+	GAME_VECTOR start;
+	GAME_VECTOR target;
+	long* Z;
+	short* vec;
+	short* XY;
+	float perspz;
+	long dx, dy, dz, r, g, b, r2, g2, b2, los, num, flash;
+	short rn;
+
+	los = 0;
+
+	if (lfobj)
+	{
+		pos.x = lfobj->x;
+		pos.y = lfobj->y;
+		pos.z = lfobj->z;
+		dx = ABS(pos.x - lara_item->pos.x_pos);
+		dy = ABS(pos.y - lara_item->pos.y_pos);
+		dz = ABS(pos.z - lara_item->pos.z_pos);
+
+		if (dx > 0x8000 || dy > 0x8000 || dz > 0x8000)
+			return;
+
+		r = 255;
+		g = 255;
+		b = 255;
+		rn = lfobj->room_number;
+	}
+	else
+	{
+		if (room[camera.pos.room_number].flags & ROOM_NO_LENSFLARE)
+			return;
+
+		r = (uchar)gfLensFlareColour.r;
+		g = (uchar)gfLensFlareColour.g;
+		b = (uchar)gfLensFlareColour.b;
+		pos.x = x;
+		pos.y = y;
+		pos.z = z;
+
+		while (ABS(pos.x) > 0x36000 || ABS(pos.y) > 0x36000 || ABS(pos.z) > 0x36000)
+		{
+			pos.x -= (x - camera.pos.x) >> 4;
+			pos.y -= (y - camera.pos.y) >> 4;
+			pos.z -= (z - camera.pos.z) >> 4;
+		}
+
+		dx = (pos.x - camera.pos.x) >> 4;
+		dy = (pos.y - camera.pos.y) >> 4;
+		dz = (pos.z - camera.pos.z) >> 4;
+
+		while (ABS(pos.x - camera.pos.x) > 0x8000 || ABS(pos.y - camera.pos.y) > 0x8000 || ABS(pos.z - camera.pos.z) > 0x8000)
+		{
+			pos.x -= dx;
+			pos.y -= dy;
+			pos.z -= dz;
+		}
+
+		dx = (pos.x - camera.pos.x) >> 4;
+		dy = (pos.y - camera.pos.y) >> 4;
+		dz = (pos.z - camera.pos.z) >> 4;
+
+		for (int i = 0; i < 16; i++)
+		{
+			IsRoomOutsideNo = 255;
+			IsRoomOutside(pos.x, pos.y, pos.z);
+			rn = IsRoomOutsideNo;
+
+			if (rn != 255)
+				break;
+
+			pos.x -= dx;
+			pos.y -= dy;
+			pos.z -= dz;
+		}
+	}
+
+	if (rn != 255)
+	{
+		if (room[rn].flags & ROOM_NOT_INSIDE || lfobj)
+		{
+			start.y = camera.pos.y;
+			start.z = camera.pos.z;
+			start.x = camera.pos.x;
+			start.room_number = camera.pos.room_number;
+			target.x = pos.x;
+			target.y = pos.y;
+			target.z = pos.z;
+			los = LOS(&start, &target);
+		}
+	}
+
+	if (!los && lfobj)	//can't see object, don't bother
+		return;
+
+	vec = (short*)&scratchpad[0];
+	XY = (short*)&scratchpad[16];
+	Z = (long*)&scratchpad[32];
+
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+
+	if (lfobj)
+	{
+		vec[0] = short(pos.x - lara_item->pos.x_pos);
+		vec[1] = short(pos.y - lara_item->pos.y_pos);
+		vec[2] = short(pos.z - lara_item->pos.z_pos);
+	}
+	else
+	{
+		pos.x = x - lara_item->pos.x_pos;
+		pos.y = y - lara_item->pos.y_pos;
+		pos.z = z - lara_item->pos.z_pos;
+		
+		while (pos.x > 0x7F00 || pos.x < -0x7F00 || pos.y > 0x7F00 || pos.y < -0x7F00 || pos.z > 0x7F00 || pos.z < -0x7F00)
+		{
+			pos.x >>= 1;
+			pos.y >>= 1;
+			pos.z >>= 1;
+		}
+
+		vec[0] = (short)pos.x;
+		vec[1] = (short)pos.y;
+		vec[2] = (short)pos.z;
+	}
+
+	pos.x = phd_mxptr[M00] * vec[0] + phd_mxptr[M01] * vec[1] + phd_mxptr[M02] * vec[2] + phd_mxptr[M03];
+	pos.y = phd_mxptr[M10] * vec[0] + phd_mxptr[M11] * vec[1] + phd_mxptr[M12] * vec[2] + phd_mxptr[M13];
+	pos.z = phd_mxptr[M20] * vec[0] + phd_mxptr[M21] * vec[1] + phd_mxptr[M22] * vec[2] + phd_mxptr[M23];
+	perspz = f_persp / (float)pos.z;
+	XY[0] = short(float(pos.x * perspz + f_centerx));
+	XY[1] = short(float(pos.y * perspz + f_centery));
+	Z[0] = pos.z >> 14;
+	phd_PopMatrix();
+	num = 0;
+
+	if (lfobj)
+		num += 6;
+
+	if (Z[0] > 0)
+	{
+		dx = XY[0] - phd_centerx;
+		dy = XY[1] - phd_centery;
+		dz = phd_sqrt(SQUARE(dx) + SQUARE(dy));
+
+		if (dz < 640)
+		{
+			dz = 640 - dz;
+
+			if (los)
+			{
+				flash = dz - 544;
+
+				if (flash > 0)
+				{
+					FlashFader = 32;
+					FlashFadeR = short((r * flash) / 640);
+					FlashFadeG = short((g * flash) / 640);
+					FlashFadeB = short((b * flash) / 640);
+				}
+			}
+
+			while (flare_table[num] != -1)
+			{
+				if (num)
+				{
+					r2 = dz * flare_table[num] / 640;
+					g2 = dz * flare_table[num + 1] / 640;
+					b2 = dz * flare_table[num + 2] / 640;
+				}
+				else
+				{
+					if (lfobj)
+						continue;
+
+					r2 = flare_table[0] + (GetRandomDraw() & 8);
+					g2 = flare_table[1];
+					b2 = flare_table[2] + (GetRandomDraw() & 8);
+				}
+
+				r2 = (r * r2) >> 8;
+				g2 = (g * g2) >> 8;
+				b2 = (b * b2) >> 8;
+
+				if (r2 | g2 | b2)
+				{
+					pos.x = XY[0] - ((dx * flare_table[num + 4]) >> 4);
+					pos.y = XY[1] - ((dy * flare_table[num + 4]) >> 4);
+					DrawSprite(pos.x, pos.y, flare_table[num + 5], RGBONLY(r2, g2, b2), flare_table[num + 3] << 1, num);
+				}
+
+				if (!los)
+					return;
+
+				num += 6;
+			}
+		}
+	}
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -957,4 +2064,19 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048D580, DrawJeepSpeedo, replace);
 	INJECT(0x00489B90, DrawDebris, replace);
 	INJECT(0x0048C280, DoScreenFade, replace);
+	INJECT(0x0048C400, DrawPsxTile, replace);
+	INJECT(0x0048C5F0, DrawFlash, replace);
+	INJECT(0x0048D160, S_DrawDarts, replace);
+	INJECT(0x00489360, ClipCheckPoint, replace);
+	INJECT(0x00488950, DrawFlatSky, replace);
+	INJECT(0x00489480, OutputSky, replace);
+	INJECT(0x00485600, setXY4, replace);
+	INJECT(0x004857E0, setXY3, replace);
+	INJECT(0x00485950, setXYZ4, replace);
+	INJECT(0x00485D90, setXYZ3, replace);
+	INJECT(0x0048C240, SetFade, replace);
+	INJECT(0x00489950, DrawLaserSightSprite, replace);
+	INJECT(0x0048BAB0, DrawSprite, replace);
+	INJECT(0x0048B130, ShowTitle, replace);
+	INJECT(0x0048BC30, SetUpLensFlare, replace);
 }

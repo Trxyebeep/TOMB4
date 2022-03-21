@@ -106,6 +106,7 @@
 #define FlashFader	VAR_U_(0x004BF38C, short)
 #define aranges	VAR_U_(0x00753BDC, short*)
 #define f_mznear	VAR_U_(0x00753C3C, float)
+#define f_mzfar	VAR_U_(0x007540CC, float)
 #define f_mpersp	VAR_U_(0x00753C40, float)
 #define f_zfar	VAR_U_(0x00753C90, float)
 #define f_centerx	VAR_U_(0x00753C94, float)
@@ -412,6 +413,9 @@
 #define DebrisMeshFlags	VAR_U_(0x00808F88, long)
 #define next_debris	VAR_U_(0x004BF358, long)
 #define NumRPickups	VAR_U_(0x007FD1DC, uchar)
+#define LaserSightX	VAR_U_(0x00800168, long)
+#define LaserSightY	VAR_U_(0x00800160, long)
+#define LaserSightZ	VAR_U_(0x00800164, long)
 
 
 
