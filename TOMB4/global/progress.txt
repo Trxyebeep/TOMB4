@@ -1383,10 +1383,10 @@ x for functions decompiled but not injected, for one reason or another.
 0x00415680		RollingBallCollision
 0x00415750		ControlJobySpike
 0x004158E0		DrawScaledSpike
-0x00415AD0		TwoBlockPlatformFloor
-0x00415B20		TwoBlockPlatformCeiling
-0x00415B60		OnTwoBlockPlatform
-0x00415C30		ControlTwoBlockPlatform
+0x00415AD0	+	TwoBlockPlatformFloor
+0x00415B20	+	TwoBlockPlatformCeiling
+0x00415B60	+	OnTwoBlockPlatform
+0x00415C30	+	ControlTwoBlockPlatform
 0x00415DB0		ControlSlicerDicer
 0x00415EC0		TestBoundsCollideTeethSpikes
 0x00415FD0		ControlScaledSpike
