@@ -8,6 +8,7 @@
 #include "../specific/3dmath.h"
 #include "newinv.h"
 #include "../specific/specificfx.h"
+#include "effect2.h"
 
 void InitialiseJeep(short item_number)
 {
@@ -108,9 +109,71 @@ void DrawJeepExtras(ITEM_INFO* item)
 	DrawJeepSpeedo(phd_winwidth - 64, phd_winheight - 16, jeep->velocity, 0x6000, 0x8000, 32, jeep->gear);
 }
 
+static void TriggerExhaustSmoke(long x, long y, long z, short angle, long velocity, long thing)
+{
+	SPARKS* sptr;
+
+	sptr = &spark[GetFreeSpark()];
+	sptr->On = 1;
+	sptr->dR = 16;
+	sptr->dG = 16;
+	sptr->dB = 32;
+	sptr->sR = 0;
+	sptr->sG = 0;
+	sptr->sB = 0;
+
+	if (thing)
+	{
+		sptr->dR = uchar((16 * velocity) >> 5);
+		sptr->dG = uchar((16 * velocity) >> 5);
+		sptr->dB = uchar((32 * velocity) >> 5);
+	}
+
+	sptr->ColFadeSpeed = 4;
+	sptr->FadeToBlack = 4;
+	sptr->Life = uchar((GetRandomControl() & 3) - (velocity >> 12) + 20);
+	sptr->sLife = sptr->Life;
+
+	if (sptr->Life < 9)
+	{
+		sptr->Life = 9;
+		sptr->sLife = 9;
+	}
+
+	sptr->TransType = 2;
+	sptr->x = (GetRandomControl() & 0xF) + x - 8;
+	sptr->y = (GetRandomControl() & 0xF) + y - 8;
+	sptr->z = (GetRandomControl() & 0xF) + z - 8;
+	sptr->Xvel = velocity * phd_sin(angle) >> 16;
+	sptr->Yvel = -8 - (GetRandomControl() & 7);
+	sptr->Zvel = velocity * phd_cos(angle) >> 16;
+	sptr->Friction = 4;
+
+	if (GetRandomControl() & 1)
+	{
+		sptr->Flags = 538;
+		sptr->RotAng = GetRandomControl() & 0xFFF;
+
+		if (GetRandomControl() & 1)
+			sptr->RotAdd = -24 - (GetRandomControl() & 7);
+		else
+			sptr->RotAdd = (GetRandomControl() & 7) + 24;
+	}
+	else
+		sptr->Flags = 522;
+
+	sptr->Scalar = 1;
+	sptr->Gravity = -4 - (GetRandomControl() & 3);
+	sptr->MaxYvel = -8 - (GetRandomControl() & 7);
+	sptr->dSize = uchar((GetRandomControl() & 7) + (velocity >> 7) + 32);
+	sptr->sSize = sptr->dSize >> 1;
+	sptr->Size = sptr->dSize >> 1;
+}
+
 void inject_jeep(bool replace)
 {
 	INJECT(0x00466F40, InitialiseJeep, replace);
 	INJECT(0x004671B0, GetOnJeep, replace);
 	INJECT(0x00467330, DrawJeepExtras, replace);
+	INJECT(0x00467920, TriggerExhaustSmoke, replace);
 }

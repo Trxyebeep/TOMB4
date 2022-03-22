@@ -260,14 +260,14 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 
 	if (thing)
 	{
-		sptr->dR = (uchar)((96 * velocity) >> 5);
-		sptr->dG = (uchar)((96 * velocity) >> 5);
-		sptr->dB = (uchar)((128 * velocity) >> 5);
+		sptr->dR = uchar((96 * velocity) >> 5);
+		sptr->dG = uchar((96 * velocity) >> 5);
+		sptr->dB = uchar((128 * velocity) >> 5);
 	}
 
 	sptr->ColFadeSpeed = 4;
 	sptr->FadeToBlack = 4;
-	sptr->Life = (uchar)((GetRandomControl() & 3) - (velocity >> 12) + 20);
+	sptr->Life = uchar((GetRandomControl() & 3) - (velocity >> 12) + 20);
 	sptr->sLife = sptr->Life;
 
 	if (sptr->Life < 9)
@@ -280,7 +280,6 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 	sptr->x = (GetRandomControl() & 0xF) + x - 8;
 	sptr->y = (GetRandomControl() & 0xF) + y - 8;
 	sptr->z = (GetRandomControl() & 0xF) + z - 8;
-	phd_sin(angle);
 	sptr->Xvel = velocity * phd_sin(angle) >> 16;
 	sptr->Yvel = -8 - (GetRandomControl() & 7);
 	sptr->Zvel = velocity * phd_cos(angle) >> 16;
@@ -303,7 +302,7 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Gravity = -4 - (GetRandomControl() & 3);
 	sptr->MaxYvel = -8 - (GetRandomControl() & 7);
-	sptr->dSize = (uchar)((GetRandomControl() & 7) + (velocity >> 7) + 32);
+	sptr->dSize = uchar((GetRandomControl() & 7) + (velocity >> 7) + 32);
 	sptr->sSize = sptr->dSize >> 1;
 	sptr->Size = sptr->dSize >> 1;
 }
