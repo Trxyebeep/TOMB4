@@ -9,6 +9,10 @@
 #include "newinv.h"
 #include "../specific/specificfx.h"
 #include "effect2.h"
+#include "lara1gun.h"
+#include "tomb4fx.h"
+#include "items.h"
+#include "sound.h"
 
 void InitialiseJeep(short item_number)
 {
@@ -170,10 +174,31 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 	sptr->Size = sptr->dSize >> 1;
 }
 
+void JeepExplode(ITEM_INFO* item)
+{
+	if (room[item->room_number].flags & ROOM_UNDERWATER)
+		TriggerUnderwaterExplosion(item, 1);
+	else
+	{
+		TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -2, 0, item->room_number);
+
+		for (int i = 0; i < 3; i++)
+			TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -1, 0, item->room_number);
+	}
+
+	ExplodingDeath2(lara.vehicle, -1, 256);
+	KillItem(lara.vehicle);
+	item->status = ITEM_DEACTIVATED;
+	SoundEffect(SFX_EXPLOSION1, 0, SFX_DEFAULT);
+	SoundEffect(SFX_EXPLOSION2, 0, SFX_DEFAULT);
+	lara.vehicle = NO_ITEM;
+}
+
 void inject_jeep(bool replace)
 {
 	INJECT(0x00466F40, InitialiseJeep, replace);
 	INJECT(0x004671B0, GetOnJeep, replace);
 	INJECT(0x00467330, DrawJeepExtras, replace);
 	INJECT(0x00467920, TriggerExhaustSmoke, replace);
+	INJECT(0x00467AC0, JeepExplode, replace);
 }
