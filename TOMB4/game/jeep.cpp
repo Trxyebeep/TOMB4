@@ -264,6 +264,36 @@ static long DoDynamics(long height, long fallspeed, long* ypos, long zero)
 	return fallspeed;
 }
 
+static long CanGetOff(short num)
+{
+	ITEM_INFO* item;
+	FLOOR_INFO* floor;
+	long x, y, z, h, c;
+	short yrot, room_number;
+
+	item = &items[lara.vehicle];
+	yrot = item->pos.y_rot + 0x4000;
+	x = item->pos.x_pos - (512 * phd_sin(yrot) >> 14);
+	y = item->pos.y_pos;
+	z = item->pos.z_pos - (512 * phd_cos(yrot) >> 14);
+	room_number = item->room_number;
+	floor = GetFloor(x, y, z, &room_number);
+	h = GetHeight(floor, x, y, z);
+
+	if (height_type != BIG_SLOPE && height_type != DIAGONAL && h != NO_HEIGHT)
+	{
+		if (ABS(h - item->pos.y_pos) <= 512)
+		{
+			c = GetCeiling(floor, x, y, z);
+
+			if (c - item->pos.y_pos <= -762 && h - c >= 762)
+				return 1;
+		}
+	}
+
+	return 0;
+}
+
 void inject_jeep(bool replace)
 {
 	INJECT(0x00466F40, InitialiseJeep, replace);
@@ -273,4 +303,5 @@ void inject_jeep(bool replace)
 	INJECT(0x00467AC0, JeepExplode, replace);
 	INJECT(0x00467B90, JeepCheckGetOut, replace);
 	INJECT(0x00467C60, DoDynamics, replace);
+	INJECT(0x00469770, CanGetOff, replace);
 }
