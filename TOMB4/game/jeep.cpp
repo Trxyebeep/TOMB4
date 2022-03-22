@@ -13,6 +13,7 @@
 #include "tomb4fx.h"
 #include "items.h"
 #include "sound.h"
+#include "../specific/audio.h"
 
 void InitialiseJeep(short item_number)
 {
@@ -194,6 +195,75 @@ void JeepExplode(ITEM_INFO* item)
 	lara.vehicle = NO_ITEM;
 }
 
+static long JeepCheckGetOut()
+{
+	if (lara_item->current_anim_state == 10 && lara_item->frame_number == anims[lara_item->anim_number].frame_end)
+	{
+		lara_item->pos.y_rot += 0x4000;
+		lara_item->anim_number = ANIM_STOP;
+		lara_item->frame_number = anims[ANIM_STOP].frame_base;
+		lara_item->current_anim_state = AS_STOP;
+		lara_item->goal_anim_state = AS_STOP;
+		lara_item->pos.x_pos -= 512 * phd_sin(lara_item->pos.y_rot) >> 14;
+		lara_item->pos.z_pos -= 512 * phd_cos(lara_item->pos.y_rot) >> 14;
+		lara_item->pos.x_rot = 0;
+		lara_item->pos.z_rot = 0;
+		lara.vehicle = NO_ITEM;
+		lara.gun_status = LG_NO_ARMS;
+		CurrentAtmosphere = 110;
+		IsAtmospherePlaying = 1;
+		S_CDPlay(110, 1);
+	}
+
+	return 1;
+}
+
+static long DoDynamics(long height, long fallspeed, long* ypos, long zero)
+{
+	long bounce;
+
+	if (height <= *ypos)
+	{
+		if (zero)
+			return fallspeed;
+		else
+		{
+			bounce = height - *ypos;
+
+			if (height - *ypos < -80)
+				bounce = -80;
+
+			fallspeed += ((bounce - fallspeed) >> 4);
+
+			if (*ypos > height)
+				*ypos = height;
+		}
+	}
+	else
+	{
+		*ypos += fallspeed;
+
+		if (*ypos <= height - 32)
+		{
+			if (zero)
+				fallspeed += zero + (zero >> 1);
+			else
+				fallspeed += 9;
+		}
+		else
+		{
+			*ypos = height;
+
+			if (fallspeed > 150)
+				lara_item->hit_points += short(150 - fallspeed);
+
+			fallspeed = 0;
+		}
+	}
+
+	return fallspeed;
+}
+
 void inject_jeep(bool replace)
 {
 	INJECT(0x00466F40, InitialiseJeep, replace);
@@ -201,4 +271,6 @@ void inject_jeep(bool replace)
 	INJECT(0x00467330, DrawJeepExtras, replace);
 	INJECT(0x00467920, TriggerExhaustSmoke, replace);
 	INJECT(0x00467AC0, JeepExplode, replace);
+	INJECT(0x00467B90, JeepCheckGetOut, replace);
+	INJECT(0x00467C60, DoDynamics, replace);
 }

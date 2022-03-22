@@ -596,8 +596,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00467380		JeepControl
 0x00467920	+	TriggerExhaustSmoke
 0x00467AC0	+	JeepExplode
-0x00467B90		JeepCheckGetOut
-0x00467C60		DoDynamics
+0x00467B90	+	JeepCheckGetOut
+0x00467C60	+	DoDynamics
 0x00467CF0		JeepDynamics
 0x004684D0		JeepCollideStaticObjects
 0x004687E0		JeepBaddieCollision
