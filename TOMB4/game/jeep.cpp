@@ -7,6 +7,7 @@
 #include "control.h"
 #include "../specific/3dmath.h"
 #include "newinv.h"
+#include "../specific/specificfx.h"
 
 void InitialiseJeep(short item_number)
 {
@@ -96,8 +97,20 @@ static long GetOnJeep(short item_number, COLL_INFO* coll)
 	return 0;
 }
 
+void DrawJeepExtras(ITEM_INFO* item)
+{
+	JEEPINFO* jeep;
+
+	if (lara.vehicle == NO_ITEM)
+		return;
+
+	jeep = (JEEPINFO*)item->data;
+	DrawJeepSpeedo(phd_winwidth - 64, phd_winheight - 16, jeep->velocity, 0x6000, 0x8000, 32, jeep->gear);
+}
+
 void inject_jeep(bool replace)
 {
 	INJECT(0x00466F40, InitialiseJeep, replace);
 	INJECT(0x004671B0, GetOnJeep, replace);
+	INJECT(0x00467330, DrawJeepExtras, replace);
 }
