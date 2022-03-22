@@ -585,7 +585,7 @@ void BikeStart(ITEM_INFO* item, ITEM_INFO* l)
 	bike->unused1 = 0;
 }
 
-static long TestHeight(ITEM_INFO* item, long z, long x, PHD_VECTOR* pos)
+long TestHeight(ITEM_INFO* item, long z, long x, PHD_VECTOR* pos)
 {
 	FLOOR_INFO* floor;
 	long sx, sz, sy, cy, c, h;
@@ -613,7 +613,7 @@ static long TestHeight(ITEM_INFO* item, long z, long x, PHD_VECTOR* pos)
 	return h;
 }
 
-long BikeCheckGetOff()
+static long BikeCheckGetOff()
 {
 	ITEM_INFO* item;
 	BIKEINFO* bike;
