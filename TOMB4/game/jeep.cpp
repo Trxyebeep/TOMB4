@@ -14,6 +14,8 @@
 #include "items.h"
 #include "sound.h"
 #include "../specific/audio.h"
+#include "laraflar.h"
+#include "lot.h"
 
 void InitialiseJeep(short item_number)
 {
@@ -294,6 +296,79 @@ static long CanGetOff(short num)
 	return 0;
 }
 
+void JeepCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+	JEEPINFO* jeep;
+	short ang;
+
+	if (l->hit_points <= 0 || lara.vehicle != NO_ITEM)
+		return;
+
+	item = &items[item_number];
+
+	if (GetOnJeep(item_number, coll))
+	{
+		lara.vehicle = item_number;
+
+		if (lara.gun_type == WEAPON_FLARE)
+		{
+			CreateFlare(FLARE_ITEM, 0);
+			undraw_flare_meshes();
+			lara.flare_control_left = 0;
+			lara.gun_type = WEAPON_NONE;
+			lara.request_gun_type = WEAPON_NONE;
+			lara.flare_age = 0;
+		}
+
+		lara.gun_status = LG_HANDS_BUSY;
+
+		for (short item_num = room[item->room_number].item_number; item_num != NO_ITEM; item_num = item2->next_item)
+		{
+			item2 = &items[item_num];
+
+			if (item2->object_number == ENEMY_JEEP)
+			{
+				EnableBaddieAI(item_num, 1);
+				item2->status = ITEM_ACTIVE;
+				AddActiveItem(item_num);
+			}
+		}
+
+		ang = short(phd_atan(item->pos.z_pos - l->pos.z_pos, item->pos.x_pos - l->pos.x_pos) - item->pos.y_rot);
+
+		if (ang <= -8190 || ang >= 24570)
+			l->anim_number = objects[VEHICLE_EXTRA].anim_index + 9;
+		else
+			l->anim_number = objects[VEHICLE_EXTRA].anim_index + 18;
+
+		l->current_anim_state = 9;
+		l->goal_anim_state = 9;
+		l->frame_number = anims[l->anim_number].frame_base;
+		item->hit_points = 1;
+		l->pos.x_pos = item->pos.x_pos;
+		l->pos.y_pos = item->pos.y_pos;
+		l->pos.z_pos = item->pos.z_pos;
+		l->pos.y_rot = item->pos.y_rot;
+		lara.head_x_rot = 0;
+		lara.head_y_rot = 0;
+		lara.torso_x_rot = 0;
+		lara.torso_y_rot = 0;
+		lara.hit_direction = -1;
+		AnimateItem(l);
+		jeep = (JEEPINFO*)item->data;
+		jeep->unused1 = 0;
+		jeep->gear = 0;
+		item->flags |= IFL_TRIGGERED;
+		CurrentAtmosphere = 98;
+		IsAtmospherePlaying = 1;
+		S_CDPlay(98, 1);
+	}
+	else
+		ObjectCollision(item_number, l, coll);
+}
+
 void inject_jeep(bool replace)
 {
 	INJECT(0x00466F40, InitialiseJeep, replace);
@@ -304,4 +379,5 @@ void inject_jeep(bool replace)
 	INJECT(0x00467B90, JeepCheckGetOut, replace);
 	INJECT(0x00467C60, DoDynamics, replace);
 	INJECT(0x00469770, CanGetOff, replace);
+	INJECT(0x00466FA0, JeepCollision, replace);
 }

@@ -6,6 +6,7 @@ void inject_jeep(bool replace);
 void InitialiseJeep(short item_number);
 void DrawJeepExtras(ITEM_INFO* item);
 void JeepExplode(ITEM_INFO* item);
+void JeepCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 
 #define JeepControl	( (void(__cdecl*)(short)) 0x00467380 )
 #define JeepStart	( (void(__cdecl*)(ITEM_INFO*, ITEM_INFO*)) 0x0046A620 )
