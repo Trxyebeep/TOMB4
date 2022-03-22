@@ -369,6 +369,36 @@ void JeepCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		ObjectCollision(item_number, l, coll);
 }
 
+long GetCollisionAnim(ITEM_INFO* item, PHD_VECTOR* pos, BIKEINFO* vehicle)
+{
+	long sin, cos, fb, lr;
+	pos->x = item->pos.x_pos - pos->x;
+	pos->z = item->pos.z_pos - pos->z;
+
+	if (!pos->x && !pos->z)
+		return 0;
+
+	sin = phd_sin(item->pos.y_rot);
+	cos = phd_cos(item->pos.y_rot);
+	fb = (sin * pos->x + cos * pos->z) >> 14;
+	lr = (cos * pos->x - sin * pos->z) >> 14;
+
+	if (ABS(fb) <= ABS(lr))
+	{
+		if (lr > 0)
+			return 11;
+		else
+			return 12;
+	}
+	else
+	{
+		if (fb > 0)
+			return 14;
+		else
+			return 13;
+	}
+}
+
 void inject_jeep(bool replace)
 {
 	INJECT(0x00466F40, InitialiseJeep, replace);
@@ -380,4 +410,5 @@ void inject_jeep(bool replace)
 	INJECT(0x00467C60, DoDynamics, replace);
 	INJECT(0x00469770, CanGetOff, replace);
 	INJECT(0x00466FA0, JeepCollision, replace);
+	INJECT(0x00468AE0, GetCollisionAnim, replace);
 }
