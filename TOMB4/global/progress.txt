@@ -591,7 +591,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x00466F40	+	InitialiseJeep
 0x00466FA0		JeepCollision
-0x004671B0		GetOnJeep
+0x004671B0	+	GetOnJeep
 0x00467330		DrawJeepExtras
 0x00467380		JeepControl
 0x00467920		TriggerExhaustSmoke
