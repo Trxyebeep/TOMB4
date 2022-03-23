@@ -16,6 +16,8 @@
 #include "../specific/audio.h"
 #include "laraflar.h"
 #include "lot.h"
+#include "lara.h"
+#include "sphere.h"
 
 void InitialiseJeep(short item_number)
 {
@@ -889,6 +891,160 @@ static void AnimateJeep(ITEM_INFO* item, long hitWall, long killed)
 	}
 }
 
+static long UserControl(ITEM_INFO* item, long height, long* pitch)
+{
+	JEEPINFO* jeep;
+	PHD_VECTOR pos;
+	long turn, maxTurn, vel;
+
+	if (lara_item->current_anim_state == 10 || lara_item->goal_anim_state == 10)
+		input = 0;
+
+	jeep = (JEEPINFO*)item->data;
+
+	if (jeep->unused1 > 16)
+	{
+		jeep->velocity += jeep->unused1 >> 4;
+		jeep->unused1 = jeep->unused1 - (jeep->unused1 >> 3);
+	}
+	else
+		jeep->unused1 = 0;
+
+	if (item->pos.y_pos >= height - 256)
+	{
+		if (!jeep->velocity && input & IN_LOOK)
+			LookUpDown();
+
+		vel = ABS(jeep->velocity);
+
+		if (vel > 0x4000)
+		{
+			maxTurn = 910;
+			turn = 242;
+		}
+		else
+		{
+			maxTurn = (910 * vel) >> 14;
+			turn = ((60 * vel) >> 14) + 182;
+		}
+
+		if (jeep->velocity > 0)
+		{
+			if (input & (IN_LSTEP | IN_LEFT))
+			{
+				jeep->turn_rate -= turn;
+
+				if (jeep->turn_rate < -maxTurn)
+					jeep->turn_rate = -maxTurn;
+			}
+			else if (input & (IN_RSTEP | IN_RIGHT))
+			{
+				jeep->turn_rate += turn;
+
+				if (jeep->turn_rate > maxTurn)
+					jeep->turn_rate = maxTurn;
+			}
+		}
+		else if (jeep->velocity < 0)
+		{
+			if (input & (IN_LSTEP | IN_LEFT))
+			{
+				jeep->turn_rate += turn;
+
+				if (jeep->turn_rate > maxTurn)
+					jeep->turn_rate = maxTurn;
+			}
+			else if (input & (IN_RSTEP | IN_RIGHT))
+			{
+				jeep->turn_rate -= turn;
+
+				if (jeep->turn_rate < -maxTurn)
+					jeep->turn_rate = -maxTurn;
+			}
+		}
+
+		if (input & IN_JUMP)
+		{
+			if (jeep->velocity > 0)
+			{
+				jeep->velocity -= 768;
+
+				if (jeep->velocity < 0)
+					jeep->velocity = 0;
+			}
+			else if (jeep->velocity < 0)
+			{
+				jeep->velocity += 768;
+
+				if (jeep->velocity > 0)
+					jeep->velocity = 0;
+			}
+		}
+		else if (input & IN_ACTION)
+		{
+			if (!jeep->gear)
+			{
+				if (jeep->velocity >= 0x8000)
+					jeep->velocity = 0x8000;
+				else if (jeep->velocity < 0x4000)
+					jeep->velocity += ((0x4800 - jeep->velocity) >> 3) + 8;
+				else if (jeep->velocity >= 0x7000)
+					jeep->velocity += ((0x8000 - jeep->velocity) >> 3) + 2;
+				else
+					jeep->velocity += ((0x7800 - jeep->velocity) >> 4) + 4;
+			}
+			else if (jeep->gear == 1)
+			{
+				if (jeep->velocity <= -0x4000)
+					jeep->velocity = -0x4000;
+				else
+					jeep->velocity -= (ABS(-0x4000 - jeep->velocity) >> 3) - 2;
+			}
+
+			jeep->velocity -= ABS(item->pos.y_rot - jeep->move_angle) >> 6;
+		}
+
+		if (!(input & IN_ACTION))
+		{
+			if (jeep->velocity > 256)
+				jeep->velocity -= 256;
+			else if (jeep->velocity < -256)
+				jeep->velocity += 256;
+			else
+				jeep->velocity = 0;
+		}
+
+		item->speed = short(jeep->velocity >> 8);
+
+		if (jeep->pitch1 > 0xC000)
+			jeep->pitch1 = (GetRandomControl() & 0x1FF) + 0xBF00;
+
+		vel = jeep->velocity;
+
+		if (vel < 0)
+			vel >>= 1;
+
+		jeep->pitch1 += (ABS(vel) - jeep->pitch1) >> 3;
+	}
+	else if (jeep->pitch1 < 0xFFFF)
+		jeep->pitch1 += (0xFFFF - jeep->pitch1) >> 3;
+
+	if (input & IN_JUMP)
+	{
+		pos.x = 0;
+		pos.y = -144;
+		pos.z = -1024;
+		GetJointAbsPosition(item, &pos, 11);
+		TriggerDynamic(pos.x, pos.y, pos.z, 10, 64, 0, 0);
+		item->mesh_bits = 0x27FFF;
+	}
+	else
+		item->mesh_bits = 0x1BFFF;
+
+	*pitch = jeep->pitch1;
+	return 0;
+}
+
 void inject_jeep(bool replace)
 {
 	INJECT(0x00466F40, InitialiseJeep, replace);
@@ -903,4 +1059,5 @@ void inject_jeep(bool replace)
 	INJECT(0x00468AE0, GetCollisionAnim, replace);
 	INJECT(0x00468B80, DoShift, replace);
 	INJECT(0x00468E00, AnimateJeep, replace);
+	INJECT(0x00469870, UserControl, replace);
 }
