@@ -4,6 +4,7 @@
 #include "dxshell.h"
 #include "polyinsert.h"
 #include "function_table.h"
+#include "d3dmatrix.h"
 
 void ProjectVerts(long nVerts, D3DTLVERTEX* v, short* clip)
 {
@@ -598,6 +599,142 @@ void CalcTriFaceNormal(D3DVECTOR* p1, D3DVECTOR* p2, D3DVECTOR* p3, D3DVECTOR* N
 	N->z = v.y * u.x - v.x * u.y;
 }
 
+void ProcessMeshData(long num_meshes)
+{
+	MESH_DATA* mesh;
+	D3DVERTEX* vtx;
+	D3DVERTEXBUFFERDESC buf;
+	short* mesh_ptr;
+	short* last_mesh_ptr;
+	long lp;
+	short c;
+
+	Log(2, "ProcessMeshData %d", num_meshes);
+	num_level_meshes = num_meshes;
+	mesh_vtxbuf = (MESH_DATA**)game_malloc(4 * num_meshes);
+	mesh_base = (short*)malloc_ptr;
+	last_mesh_ptr = NULL;
+	mesh = (MESH_DATA*)num_meshes;
+
+	for (int i = 0; i < num_meshes; i++)
+	{
+		mesh_ptr = meshes[i];
+
+		if (mesh_ptr == last_mesh_ptr)
+		{
+			meshes[i] = (short*)mesh;
+			mesh_vtxbuf[i] = mesh;
+		}
+		else
+		{
+			last_mesh_ptr = mesh_ptr;
+			mesh = (MESH_DATA*)game_malloc(sizeof(MESH_DATA));
+			memset(mesh, 0, sizeof(MESH_DATA));
+			meshes[i] = (short*)mesh;
+			mesh_vtxbuf[i] = mesh;
+			mesh->x = mesh_ptr[0];
+			mesh->y = mesh_ptr[1];
+			mesh->z = mesh_ptr[2];
+			mesh->r = mesh_ptr[3];
+			mesh->flags = mesh_ptr[4];
+			mesh->nVerts = mesh_ptr[5] & 0xFF;
+			lp = 0;
+
+			if (!mesh->nVerts)
+				lp = mesh_ptr[5] >> 8;
+
+			mesh_ptr += 6;
+
+			if (mesh->nVerts)
+			{
+				buf.dwNumVertices = mesh->nVerts;
+				buf.dwSize = sizeof(D3DVERTEXBUFFERDESC);
+				buf.dwCaps = 0;
+				buf.dwFVF = D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ;
+				DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&buf, &mesh->SourceVB, 0, NULL));
+				mesh->SourceVB->Lock(DDLOCK_WRITEONLY, (LPVOID*)&vtx, NULL);
+
+				for (int j = 0; j < mesh->nVerts; j++)
+				{
+					vtx[j].x = mesh_ptr[0];
+					vtx[j].y = mesh_ptr[1];
+					vtx[j].z = mesh_ptr[2];
+					mesh_ptr += 3;
+				}
+
+				mesh->nNorms = mesh_ptr[0];
+				mesh_ptr++;
+
+				if (!mesh->nNorms)
+					mesh->nNorms = mesh->nVerts;
+
+				if (mesh->nNorms > 0)
+				{
+					mesh->Normals = (D3DVECTOR*)game_malloc(mesh->nNorms * sizeof(D3DVECTOR));
+
+					for (int j = 0; j < mesh->nVerts; j++)
+					{
+						vtx[j].nx = mesh_ptr[0];
+						vtx[j].ny = mesh_ptr[1];
+						vtx[j].nz = mesh_ptr[2];
+						mesh_ptr += 3;
+						D3DNormalise((D3DVECTOR*)&vtx[j].nx);
+						mesh->Normals[j].x = vtx[j].nx;
+						mesh->Normals[j].y = vtx[j].ny;
+						mesh->Normals[j].z = vtx[j].nz;
+					}
+
+					mesh->prelight = NULL;
+				}
+				else
+				{
+					mesh->Normals = NULL;
+					mesh->prelight = (long*)game_malloc(4 * mesh->nVerts);
+
+					for (int j = 0; j < mesh->nVerts; j++)
+					{
+						c = 255 - (mesh_ptr[0] >> 5);
+						mesh->prelight[j] = RGBONLY(c, c, c);
+						mesh_ptr++;
+					}
+				}
+
+				mesh->SourceVB->Unlock();
+			}
+			else
+				mesh_ptr += 6 * lp + 1;
+
+			mesh->ngt4 = mesh_ptr[0];
+			mesh_ptr++;
+
+			if (mesh->ngt4)
+			{
+				mesh->gt4 = (short*)game_malloc(12 * mesh->ngt4);
+				lp = 6 * mesh->ngt4;
+
+				for (int j = 0; j < lp; j++)
+					mesh->gt4[j] = mesh_ptr[j];
+
+				mesh_ptr += lp;
+			}
+
+			mesh->ngt3 = mesh_ptr[0];
+			mesh_ptr++;
+
+			if (mesh->ngt3)
+			{
+				mesh->gt3 = (short*)game_malloc(10 * mesh->ngt3);
+				lp = 5 * mesh->ngt3;
+
+				for (int j = 0; j < lp; j++)
+					mesh->gt3[j] = mesh_ptr[j];
+			}
+		}
+	}
+
+	Log(2, "End ProcessMeshData");
+}
+
 void inject_drawroom(bool replace)
 {
 	INJECT(0x00471E00, ProjectVerts, replace);
@@ -607,4 +744,5 @@ void inject_drawroom(bool replace)
 	INJECT(0x004724C0, PrelightVertsNonMMX, replace);
 	INJECT(0x00472650, InsertRoom, replace);
 	INJECT(0x00472EE0, CalcTriFaceNormal, replace);
+	INJECT(0x00471040, ProcessMeshData, replace);
 }

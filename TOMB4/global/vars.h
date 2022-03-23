@@ -416,8 +416,8 @@
 #define LaserSightX	VAR_U_(0x00800168, long)
 #define LaserSightY	VAR_U_(0x00800160, long)
 #define LaserSightZ	VAR_U_(0x00800164, long)
-
-
+#define num_level_meshes VAR_U_(0x0052A344, long)
+#define mesh_vtxbuf VAR_U_(0x0052A340, MESH_DATA**)
 
 
 #define lpClass	ARRAY_(0x004BFE78, CHAR, [4])
