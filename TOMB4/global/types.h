@@ -1833,7 +1833,7 @@ struct COLOR_BIT_MASKS
 struct tomb4_options	//keep this at the bottom of the file, please
 {
 	bool footprints;
-	ulong shadow_mode;			//1-> original, 2-> circle, 3-> PSX color like circle
+	ulong shadow_mode;			//1-> original, 2-> circle, 3-> PSX like circle, 4-> PSX sprite
 	bool crawltilt;
 	bool flexible_crawling;
 	bool fix_climb_up_delay;
