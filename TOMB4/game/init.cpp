@@ -343,7 +343,7 @@ void InitialiseRaisingBlock(short item_number)
 			item->pos.x_pos -= 511;
 	}
 
-	if (item->trigger_flags < 0)
+	if (item->trigger_flags == 2)
 	{
 		item->flags |= IFL_CODEBITS;
 		AddActiveItem(item_number);
