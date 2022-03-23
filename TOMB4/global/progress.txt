@@ -603,7 +603,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004687E0		JeepBaddieCollision
 0x00468AE0	+	GetCollisionAnim
 0x00468B80	+	DoShift
-0x00468E00		AnimateJeep
+0x00468E00	+	AnimateJeep
 0x00469770	+	CanGetOff
 0x00469870		UserControl
 0x00469B90		InitialiseEnemyJeep

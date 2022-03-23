@@ -416,6 +416,7 @@
 #define LaserSightX	VAR_U_(0x00800168, long)
 #define LaserSightY	VAR_U_(0x00800160, long)
 #define LaserSightZ	VAR_U_(0x00800164, long)
+#define dont_exit_jeep	VAR_U_(0x004BFC68, char)
 
 
 
