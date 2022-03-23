@@ -225,138 +225,70 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 	TEXTURESTRUCT Tex;
 	D3DTLVERTEX v[4];
 	PHD_VECTOR pos;
-	long* sXYZ;
-	long* hXZ;
-	long* hY;
-	long* xyz;
-	float uadd, vadd;
-	long sxyz[GRID_POINTS * 3];
-	long hxz[GRID_POINTS * 2];
-	long hy[GRID_POINTS];
-	long x, y, z, xSize, zSize, xDist, zDist;
-	short room_number;
+	long xSize, zSize, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, opt;
 
-	xSize = size * (box[1] - box[0]) / 160;	//x size of grid
-	zSize = size * (box[5] - box[4]) / 160;	//z size of grid
-	xDist = xSize / LINE_POINTS;			//distance between each point of the grid on X
-	zDist = zSize / LINE_POINTS;			//distance between each point of the grid on Z
-	x = -xDist - (xDist >> 1);				//idfk
-	z = zDist + (zDist >> 1);
-	sXYZ = sxyz;
-	hXZ = hxz;
-
-	for (int i = 0; i < LINE_POINTS; i++, z -= zDist)
-	{
-		for (int j = 0; j < LINE_POINTS; j++, sXYZ += 3, hXZ += 2, x += xDist)
-		{
-			sXYZ[0] = x;		//fill shadow XYZ array with the points of the grid
-			sXYZ[2] = z;
-			hXZ[0] = x;			//fill height XZ array with the points of the grid
-			hXZ[1] = z;
-		}
-
-		x = -xDist - (xDist >> 1);
-	}
-
-	phd_PushUnitMatrix();
-
-	if (item == lara_item)	//position the grid
-	{
-		pos.x = 0;
-		pos.y = 0;
-		pos.z = 0;
-		GetLaraJointPos(&pos, LM_TORSO);
-		room_number = lara_item->room_number;
-		y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
-
-		if (y == NO_HEIGHT)
-			y = item->floor;
-	}
-	else
-	{
-		pos.x = item->pos.x_pos;
-		y = item->floor;
-		pos.z = item->pos.z_pos;
-	}
-
-	y -= 16;
-	phd_TranslateRel(pos.x, y, pos.z);
-	phd_RotY(item->pos.y_rot);	//rot the grid to correct Y
-	hXZ = hxz;
-
-	for (int i = 0; i < GRID_POINTS; i++, hXZ += 2)
-	{
-		x = hXZ[0];
-		z = hXZ[1];
-		hXZ[0] = (x * phd_mxptr[M00] + z * phd_mxptr[M02] + phd_mxptr[M03]) >> 14;
-		hXZ[1] = (x * phd_mxptr[M20] + z * phd_mxptr[M22] + phd_mxptr[M23]) >> 14;
-	}
-
-	phd_PopMatrix();
-
-	hXZ = hxz;
-	hY = hy;
-
-	for (int i = 0; i < GRID_POINTS; i++, hXZ += 2, hY++)	//Get height on each grid point and store it in hy array
-	{
-		room_number = item->room_number;
-		*hY = GetHeight(GetFloor(hXZ[0], item->floor, hXZ[1], &room_number), hXZ[0], item->floor, hXZ[1]);
-
-		if (ABS(*hY - item->floor) > POINT_HEIGHT_CORRECTION)
-			*hY = item->floor;
-	}
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 11];
+	xSize = size * (box[1] - box[0]) / 160;
+	zSize = size * (box[5] - box[4]) / 160;
+	xSize >>= 1;
+	zSize >>= 1;
 
 	phd_PushMatrix();
-	phd_TranslateAbs(pos.x, y, pos.z);
+	phd_TranslateAbs(item->pos.x_pos, item->floor, item->pos.z_pos);
 	phd_RotY(item->pos.y_rot);
-	sXYZ = sxyz;
-	hY = hy;
 
-	for (int i = 0; i < GRID_POINTS; i++, sXYZ += 3, hY++)
-	{
-		x = sXYZ[0];
-		y = *hY - item->floor;
-		z = sXYZ[2];
-		sXYZ[0] = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> 14;
-		sXYZ[1] = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> 14;
-		sXYZ[2] = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> 14;
-	}
+	pos.x = -xSize;
+	pos.y = -16;
+	pos.z = zSize;
+	x1 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
+	y1 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
+	z1 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
 
+	pos.x = xSize;
+	pos.y = -16;
+	pos.z = zSize;
+	x2 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
+	y2 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
+	z2 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+
+	pos.x = xSize;
+	pos.y = -16;
+	pos.z = -zSize;
+	x3 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
+	y3 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
+	z3 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+
+	pos.x = -xSize;
+	pos.y = -16;
+	pos.z = -zSize;
+	x4 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
+	y4 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
+	z4 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
 	phd_PopMatrix();
-	sXYZ = sxyz;
-	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 11];
-	uadd = (sprite->x2 - sprite->x1) / 3;
-	vadd = (sprite->y2 - sprite->y1) / 3;
 
-	for (int i = 0; i < 3; i++, sXYZ += 12)
+	setXYZ4(v, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, clipflags);
+	
+	for (int i = 0; i < 4; i++)
 	{
-		xyz = sXYZ;
-
-		for (int j = 0; j < 3; j++, xyz += 3)
-		{
-			setXYZ4(v, xyz[0], xyz[1], xyz[2], xyz[3], xyz[4], xyz[5], xyz[15], xyz[16], xyz[17], xyz[12], xyz[13], xyz[14], clipflags);
-			v[0].color = 0xFF3C3C3C;
-			v[1].color = 0xFF3C3C3C;
-			v[2].color = 0xFF3C3C3C;
-			v[3].color = 0xFF3C3C3C;
-			v[0].specular = 0xFF000000;
-			v[1].specular = 0xFF000000;
-			v[2].specular = 0xFF000000;
-			v[3].specular = 0xFF000000;
-			Tex.drawtype = 5;
-			Tex.flag = 0;
-			Tex.tpage = sprite->tpage;
-			Tex.u1 = j * uadd + sprite->x1;
-			Tex.v1 = i * vadd + sprite->y1;
-			Tex.u2 = Tex.u1 + uadd;
-			Tex.v2 = Tex.v1;
-			Tex.u3 = Tex.u2;
-			Tex.v3 = Tex.v1 + vadd;
-			Tex.u4 = Tex.u1;
-			Tex.v4 = Tex.v3;
-			AddQuadSorted(v, 0, 1, 2, 3, &Tex, 0);
-		}
+		v[i].color = 0xFF3C3C3C;
+		v[i].specular = 0xFF000000;
 	}
+
+	Tex.drawtype = 5;
+	Tex.flag = 0;
+	Tex.tpage = sprite->tpage;
+	Tex.u1 = sprite->x2;
+	Tex.v1 = sprite->y2;
+	Tex.u2 = sprite->x1;
+	Tex.v2 = sprite->y2;
+	Tex.u3 = sprite->x1;
+	Tex.v3 = sprite->y1;
+	Tex.u4 = sprite->x2;
+	Tex.v4 = sprite->y1;
+	opt = nPolyType;
+	nPolyType = 6;
+	AddQuadSorted(v, 0, 1, 2, 3, &Tex, 0);
+	nPolyType = opt;
 }
 #endif
 
