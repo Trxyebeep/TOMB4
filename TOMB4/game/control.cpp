@@ -194,7 +194,7 @@ long ControlPhase(long nframes, long demo_mode)
 				return 1;
 			}
 
-			if (lara.death_count > 90)
+			if (lara.death_count > 300 || lara.death_count > 90 && input)
 			{
 				reset_flag = 0;
 				return S_Death();

@@ -260,14 +260,14 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 
 	if (thing)
 	{
-		sptr->dR = (uchar)((96 * velocity) >> 5);
-		sptr->dG = (uchar)((96 * velocity) >> 5);
-		sptr->dB = (uchar)((128 * velocity) >> 5);
+		sptr->dR = uchar((96 * velocity) >> 5);
+		sptr->dG = uchar((96 * velocity) >> 5);
+		sptr->dB = uchar((128 * velocity) >> 5);
 	}
 
 	sptr->ColFadeSpeed = 4;
 	sptr->FadeToBlack = 4;
-	sptr->Life = (uchar)((GetRandomControl() & 3) - (velocity >> 12) + 20);
+	sptr->Life = uchar((GetRandomControl() & 3) - (velocity >> 12) + 20);
 	sptr->sLife = sptr->Life;
 
 	if (sptr->Life < 9)
@@ -280,7 +280,6 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 	sptr->x = (GetRandomControl() & 0xF) + x - 8;
 	sptr->y = (GetRandomControl() & 0xF) + y - 8;
 	sptr->z = (GetRandomControl() & 0xF) + z - 8;
-	phd_sin(angle);
 	sptr->Xvel = velocity * phd_sin(angle) >> 16;
 	sptr->Yvel = -8 - (GetRandomControl() & 7);
 	sptr->Zvel = velocity * phd_cos(angle) >> 16;
@@ -303,7 +302,7 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Gravity = -4 - (GetRandomControl() & 3);
 	sptr->MaxYvel = -8 - (GetRandomControl() & 7);
-	sptr->dSize = (uchar)((GetRandomControl() & 7) + (velocity >> 7) + 32);
+	sptr->dSize = uchar((GetRandomControl() & 7) + (velocity >> 7) + 32);
 	sptr->sSize = sptr->dSize >> 1;
 	sptr->Size = sptr->dSize >> 1;
 }
@@ -371,7 +370,7 @@ void BikeExplode(ITEM_INFO* item)
 	KillItem(lara.vehicle);
 	item->status = ITEM_DEACTIVATED;
 	SoundEffect(SFX_EXPLOSION1, 0, SFX_DEFAULT);
-	SoundEffect(SFX_EXPLOSION1, 0, SFX_DEFAULT);
+	SoundEffect(SFX_EXPLOSION2, 0, SFX_DEFAULT);
 	lara.vehicle = NO_ITEM;
 }
 
@@ -586,7 +585,7 @@ void BikeStart(ITEM_INFO* item, ITEM_INFO* l)
 	bike->unused1 = 0;
 }
 
-static long TestHeight(ITEM_INFO* item, long z, long x, PHD_VECTOR* pos)
+long TestHeight(ITEM_INFO* item, long z, long x, PHD_VECTOR* pos)
 {
 	FLOOR_INFO* floor;
 	long sx, sz, sy, cy, c, h;
@@ -614,7 +613,7 @@ static long TestHeight(ITEM_INFO* item, long z, long x, PHD_VECTOR* pos)
 	return h;
 }
 
-long BikeCheckGetOff()
+static long BikeCheckGetOff()
 {
 	ITEM_INFO* item;
 	BIKEINFO* bike;
@@ -862,17 +861,19 @@ void BikeCollideStaticObjects(long x, long y, long z, short room_number, long he
 	PHD_VECTOR pos;
 	short* doors;
 	long j;
+	static long BikeBounds[6] = { 0, 0, 0, 0, 0, 0 };
+	static long CollidedStaticBounds[6] = { 0, 0, 0, 0, 0, 0 };
 	short room_count, rn;
 
 	pos.x = x;
 	pos.y = y;
 	pos.z = z;
-	BikeCollideStaticBounds[0] = x + 256;
-	BikeCollideStaticBounds[1] = x - 256;
-	BikeCollideStaticBounds[2] = y;
-	BikeCollideStaticBounds[3] = y - height;
-	BikeCollideStaticBounds[4] = z + 256;
-	BikeCollideStaticBounds[5] = z - 256;
+	BikeBounds[0] = x + 256;
+	BikeBounds[1] = x - 256;
+	BikeBounds[2] = y;
+	BikeBounds[3] = y - height;
+	BikeBounds[4] = z + 256;
+	BikeBounds[5] = z - 256;
 	room_count = 1;
 	rooms_around_the_bike[0] = room_number;
 	doors = room[room_number].door;
@@ -906,44 +907,44 @@ void BikeCollideStaticObjects(long x, long y, long z, short room_number, long he
 			{
 				if (mesh->static_number >= SHATTER0 && mesh->static_number <= SHATTER9)
 				{
-					CollidedStaticBikeBounds[2] = mesh->y + sinfo->y_maxc;
-					CollidedStaticBikeBounds[3] = mesh->y + sinfo->y_minc;
+					CollidedStaticBounds[2] = mesh->y + sinfo->y_maxc;
+					CollidedStaticBounds[3] = mesh->y + sinfo->y_minc;
 
 					if (mesh->y_rot == -0x8000)
 					{
-						CollidedStaticBikeBounds[0] = mesh->x - sinfo->x_minc;
-						CollidedStaticBikeBounds[1] = mesh->x - sinfo->x_maxc;
-						CollidedStaticBikeBounds[4] = mesh->z - sinfo->z_minc;
-						CollidedStaticBikeBounds[5] = mesh->z - sinfo->z_maxc;
+						CollidedStaticBounds[0] = mesh->x - sinfo->x_minc;
+						CollidedStaticBounds[1] = mesh->x - sinfo->x_maxc;
+						CollidedStaticBounds[4] = mesh->z - sinfo->z_minc;
+						CollidedStaticBounds[5] = mesh->z - sinfo->z_maxc;
 					}
 					else if (mesh->y_rot == -0x4000)
 					{
-						CollidedStaticBikeBounds[0] = mesh->x - sinfo->z_minc;
-						CollidedStaticBikeBounds[1] = mesh->x - sinfo->z_maxc;
-						CollidedStaticBikeBounds[4] = mesh->z + sinfo->x_maxc;
-						CollidedStaticBikeBounds[5] = mesh->z + sinfo->x_minc;
+						CollidedStaticBounds[0] = mesh->x - sinfo->z_minc;
+						CollidedStaticBounds[1] = mesh->x - sinfo->z_maxc;
+						CollidedStaticBounds[4] = mesh->z + sinfo->x_maxc;
+						CollidedStaticBounds[5] = mesh->z + sinfo->x_minc;
 					}
 					else if (mesh->y_rot == 0x4000)
 					{
-						CollidedStaticBikeBounds[0] = mesh->x + sinfo->z_maxc;
-						CollidedStaticBikeBounds[1] = mesh->x + sinfo->z_minc;
-						CollidedStaticBikeBounds[4] = mesh->z - sinfo->x_minc;
-						CollidedStaticBikeBounds[5] = mesh->z - sinfo->x_maxc;
+						CollidedStaticBounds[0] = mesh->x + sinfo->z_maxc;
+						CollidedStaticBounds[1] = mesh->x + sinfo->z_minc;
+						CollidedStaticBounds[4] = mesh->z - sinfo->x_minc;
+						CollidedStaticBounds[5] = mesh->z - sinfo->x_maxc;
 					}
 					else
 					{
-						CollidedStaticBikeBounds[0] = mesh->x + sinfo->x_maxc;
-						CollidedStaticBikeBounds[1] = mesh->x + sinfo->x_minc;
-						CollidedStaticBikeBounds[4] = mesh->z + sinfo->z_maxc;
-						CollidedStaticBikeBounds[5] = mesh->z + sinfo->z_minc;
+						CollidedStaticBounds[0] = mesh->x + sinfo->x_maxc;
+						CollidedStaticBounds[1] = mesh->x + sinfo->x_minc;
+						CollidedStaticBounds[4] = mesh->z + sinfo->z_maxc;
+						CollidedStaticBounds[5] = mesh->z + sinfo->z_minc;
 					}
 
-					if (BikeCollideStaticBounds[0] > CollidedStaticBikeBounds[1] &&
-						BikeCollideStaticBounds[1] < CollidedStaticBikeBounds[0] &&
-						BikeCollideStaticBounds[2] > CollidedStaticBikeBounds[3] &&
-						BikeCollideStaticBounds[3] < CollidedStaticBikeBounds[2] &&
-						BikeCollideStaticBounds[4] > CollidedStaticBikeBounds[5] &&
-						BikeCollideStaticBounds[5] < CollidedStaticBikeBounds[4])
+					if (BikeBounds[0] > CollidedStaticBounds[1] &&
+						BikeBounds[1] < CollidedStaticBounds[0] &&
+						BikeBounds[2] > CollidedStaticBounds[3] &&
+						BikeBounds[3] < CollidedStaticBounds[2] &&
+						BikeBounds[4] > CollidedStaticBounds[5] &&
+						BikeBounds[5] < CollidedStaticBounds[4])
 					{
 						ShatterObject(0, mesh, -128, rn, 0);
 						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)&pos, SFX_DEFAULT);

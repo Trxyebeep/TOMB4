@@ -7,6 +7,8 @@
 
 #define lara	VAR_U_(0x0080DFE0, LARA_INFO)
 #define lara_item	VAR_U_(0x0080E13C, ITEM_INFO*)
+#define mycoll	VAR_U_(0x0080DEC0, COLL_INFO)
+#define lara_coll	VAR_U_(0x004AD9C4, COLL_INFO*)
 #define input	VAR_U_(0x00535704, long)
 #define linput	VAR_U_(0x005358A8, long)
 #define inputBusy	VAR_U_(0x00535600, long)
@@ -418,6 +420,8 @@
 #define LaserSightZ	VAR_U_(0x00800164, long)
 #define num_level_meshes VAR_U_(0x0052A344, long)
 #define mesh_vtxbuf VAR_U_(0x0052A340, MESH_DATA**)
+#define dont_exit_jeep	VAR_U_(0x004BFC68, char)
+
 
 
 #define lpClass	ARRAY_(0x004BFE78, CHAR, [4])
@@ -501,13 +505,12 @@
 #define Locusts	ARRAY_(0x0080FA00, LOCUST_STRUCT, [64])
 #define ground_zone	ARRAY_(0x007FE980, short*, [5][2])
 #define rooms_around_the_bike	ARRAY_(0x007F5020, short, [22])
-#define BikeCollideStaticBounds	ARRAY_(0x004BFC28, long, [6])		//bike bounds used to collide with statics
-#define CollidedStaticBikeBounds	ARRAY_(0x004BFC0C, long, [6])	//the bounds of the static the bike is trying to collide with
 #define MonoScreen	ARRAY_(0x00577460, MONOSCREEN_STRUCT, [5])
 #define XYUVClipperBuffer	ARRAY_(0x006607B0, D3DTLBUMPVERTEX, [20])
 #define zClipperBuffer	ARRAY_(0x005C0488, D3DTLBUMPVERTEX, [20])
 #define debris	ARRAY_(0x00808FA0, DEBRIS_STRUCT, [256])
 #define RPickups	ARRAY_(0x007FD1C0, uchar, [16])
+#define rooms_around_the_jeep	ARRAY_(0x007F4FE0, short, [22])
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)
