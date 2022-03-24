@@ -785,7 +785,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 	strcpy(buffer, tomb4.footprints ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), textY + 2 * font_height, selection & 0x1 ? 1 : 6, buffer, 0);
 
-	strcpy(buffer, tomb4.shadow_mode == 1 ? "original" : tomb4.shadow_mode == 2 ? "circle" : "PSX");
+	strcpy(buffer, tomb4.shadow_mode == 1 ? "original" : tomb4.shadow_mode == 2 ? "circle" : tomb4.shadow_mode == 3 ? "improved PSX" : "PSX");
 	PrintString(phd_centerx + (phd_centerx >> 1), textY + 3 * font_height, selection & 0x2 ? 1 : 6, buffer, 0);
 
 	strcpy(buffer, tomb4.crawltilt ? "on" : "off");
@@ -837,7 +837,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			tomb4.shadow_mode++;
 
-			if (tomb4.shadow_mode > 3)
+			if (tomb4.shadow_mode > 4)
 				tomb4.shadow_mode = 1;
 
 			changed = 1;
@@ -849,7 +849,7 @@ static void TroyeMenu(long textY, long& menu, ulong& selection)
 			tomb4.shadow_mode--;
 
 			if (tomb4.shadow_mode < 1)
-				tomb4.shadow_mode = 3;
+				tomb4.shadow_mode = 4;
 
 			changed = 1;
 		}

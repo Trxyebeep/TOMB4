@@ -1781,6 +1781,26 @@ struct DEBRIS_STRUCT
 	long flags;
 };
 
+struct JEEPINFO
+{
+	short right_front_wheelrot;
+	short left_front_wheelrot;
+	short left_back_wheelrot;
+	short right_back_wheelrot;
+	long velocity;
+	long unused1;
+	long pitch1;
+	long turn_rate;
+	long camera_angle;
+	short move_angle;
+	short extra_rotation;
+	short rot_thing;
+	long pitch2;
+	short flags;
+	short unused2;
+	short gear;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {
@@ -1813,7 +1833,7 @@ struct COLOR_BIT_MASKS
 struct tomb4_options	//keep this at the bottom of the file, please
 {
 	bool footprints;
-	ulong shadow_mode;			//1-> original, 2-> circle, 3-> PSX color like circle
+	ulong shadow_mode;			//1-> original, 2-> circle, 3-> PSX like circle, 4-> PSX sprite
 	bool crawltilt;
 	bool flexible_crawling;
 	bool fix_climb_up_delay;

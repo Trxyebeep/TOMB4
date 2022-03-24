@@ -218,6 +218,78 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 		AddTriSorted(v, 0, 1, 2, &Tex, 1);
 	}
 }
+
+static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
+{
+	SPRITESTRUCT* sprite;
+	TEXTURESTRUCT Tex;
+	D3DTLVERTEX v[4];
+	PHD_VECTOR pos;
+	long xSize, zSize, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, opt;
+
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 11];
+	xSize = size * (box[1] - box[0]) / 160;
+	zSize = size * (box[5] - box[4]) / 160;
+	xSize >>= 1;
+	zSize >>= 1;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(item->pos.x_pos, item->floor, item->pos.z_pos);
+	phd_RotY(item->pos.y_rot);
+
+	pos.x = -xSize;
+	pos.y = -16;
+	pos.z = zSize;
+	x1 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
+	y1 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
+	z1 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+
+	pos.x = xSize;
+	pos.y = -16;
+	pos.z = zSize;
+	x2 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
+	y2 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
+	z2 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+
+	pos.x = xSize;
+	pos.y = -16;
+	pos.z = -zSize;
+	x3 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
+	y3 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
+	z3 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+
+	pos.x = -xSize;
+	pos.y = -16;
+	pos.z = -zSize;
+	x4 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
+	y4 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
+	z4 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+	phd_PopMatrix();
+
+	setXYZ4(v, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, clipflags);
+	
+	for (int i = 0; i < 4; i++)
+	{
+		v[i].color = 0xFF3C3C3C;
+		v[i].specular = 0xFF000000;
+	}
+
+	Tex.drawtype = 5;
+	Tex.flag = 0;
+	Tex.tpage = sprite->tpage;
+	Tex.u1 = sprite->x2;
+	Tex.v1 = sprite->y2;
+	Tex.u2 = sprite->x1;
+	Tex.v2 = sprite->y2;
+	Tex.u3 = sprite->x1;
+	Tex.v3 = sprite->y1;
+	Tex.u4 = sprite->x2;
+	Tex.v4 = sprite->y1;
+	opt = nPolyType;
+	nPolyType = 6;
+	AddQuadSorted(v, 0, 1, 2, 3, &Tex, 0);
+	nPolyType = opt;
+}
 #endif
 
 void S_PrintShadow(short size, short* box, ITEM_INFO* item)
@@ -238,7 +310,11 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 #ifdef SMOOTH_SHADOWS
 	if (tomb4.shadow_mode != 1)
 	{
-		S_PrintCircleShadow(size, box, item);
+		if (tomb4.shadow_mode == 4)
+			S_PrintSpriteShadow(size, box, item);
+		else
+			S_PrintCircleShadow(size, box, item);
+
 		return;
 	}
 #endif
