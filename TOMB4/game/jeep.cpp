@@ -18,6 +18,9 @@
 #include "lot.h"
 #include "lara.h"
 #include "sphere.h"
+#include "effects.h"
+#include "traps.h"
+#include "debris.h"
 
 void InitialiseJeep(short item_number)
 {
@@ -1045,6 +1048,194 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 	return 0;
 }
 
+void JeepBaddieCollision(ITEM_INFO* item)
+{
+	JEEPINFO* jeep;
+	ITEM_INFO* collided;
+	OBJECT_INFO* obj;
+	short* doors;
+	long j, dx, dy, dz;
+	short room_count, item_number;
+
+	jeep = (JEEPINFO*)item->data;
+	room_count = 1;
+	rooms_around_the_jeep[0] = item->room_number;
+	doors = room[item->room_number].door;
+
+	for (int i = *doors++; i > 0; i--, doors += 16)
+	{
+		for (j = 0; j < room_count; j++)
+		{
+			if (rooms_around_the_jeep[j] == *doors)
+				break;
+		}
+
+		if (j == room_count)
+		{
+			rooms_around_the_jeep[room_count] = *doors;
+			room_count++;
+		}
+	}
+
+	for (int i = 0; i < room_count; i++)
+	{
+		for (item_number = room[rooms_around_the_jeep[i]].item_number; item_number != NO_ITEM; item_number = collided->next_item)
+		{
+			collided = &items[item_number];
+			obj = &objects[collided->object_number];
+
+			if (collided->collidable && collided->status != ITEM_INVISIBLE && collided != lara_item && collided != item)
+			{
+				if (collided->object_number == ENEMY_JEEP)
+				{
+					mycoll.coll_type = 0;
+					mycoll.radius = 400;
+					mycoll.enable_baddie_push = 1;
+					mycoll.enable_spaz = 0;
+					ObjectCollision(item_number, item, &mycoll);
+				}
+				else if (obj->collision && obj->intelligent || collided->object_number == ROLLINGBALL || collided->object_number == TEETH_SPIKES)
+				{
+					dx = item->pos.x_pos - collided->pos.x_pos;
+					dy = item->pos.y_pos - collided->pos.y_pos;
+					dz = item->pos.z_pos - collided->pos.z_pos;
+
+					if (dx > -2048 && dx < 2048 && dz > -2048 && dz < 2048 && dy > -2048 && dy < 2048)
+					{
+						if (collided->object_number == ROLLINGBALL)
+						{
+							if (TestBoundsCollide(collided, lara_item, 100) && lara_item->hit_points > 0)
+							{
+								DoLotsOfBlood(lara_item->pos.x_pos, lara_item->pos.y_pos - 512, lara_item->pos.z_pos,
+									(GetRandomControl() & 3) + 8, lara_item->pos.y_rot, lara_item->room_number, 5);
+								lara_item->hit_points -= 8;
+								lara_item->hit_status = 1;
+							}
+						}
+						else if (collided->object_number == TEETH_SPIKES)
+						{
+							if (TestBoundsCollideTeethSpikes(collided) && collided->object_number == TEETH_SPIKES)
+								jeep->flags |= 0x40;
+						}
+						else if (TestBoundsCollide(collided, item, 550))
+						{
+							DoLotsOfBlood(collided->pos.x_pos, item->pos.y_pos - 256, collided->pos.z_pos,
+								(GetRandomControl() & 3) + 8, item->pos.y_rot, collided->room_number, 3);
+							collided->hit_points = 0;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void JeepCollideStaticObjects(long x, long y, long z, short room_number, long height)
+{
+	MESH_INFO* mesh;
+	STATIC_INFO* sinfo;
+	ROOM_INFO* r;
+	PHD_VECTOR pos;
+	short* doors;
+	long j;
+	static long JeepBounds[6] = { 0, 0, 0, 0, 0, 0 };
+	static long CollidedStaticBounds[6] = { 0, 0, 0, 0, 0, 0 };
+	short room_count, rn;
+
+	pos.x = x;
+	pos.y = y;
+	pos.z = z;
+	JeepBounds[0] = x + 256;
+	JeepBounds[1] = x - 256;
+	JeepBounds[2] = y;
+	JeepBounds[3] = y - height;
+	JeepBounds[4] = z + 256;
+	JeepBounds[5] = z - 256;
+	room_count = 1;
+	rooms_around_the_jeep[0] = room_number;
+	doors = room[room_number].door;
+
+	for (int i = *doors++; i > 0; i--, doors += 16)
+	{
+		for (j = 0; j < room_count; j++)
+		{
+			if (rooms_around_the_jeep[j] == *doors)
+				break;
+		}
+
+		if (j == room_count)
+		{
+			rooms_around_the_jeep[room_count] = *doors;
+			room_count++;
+		}
+	}
+
+	for (int i = 0; i < room_count; i++)
+	{
+		rn = rooms_around_the_jeep[i];
+		r = &room[rn];
+		mesh = r->mesh;
+
+		for (j = r->num_meshes; j > 0; j--, mesh++)
+		{
+			sinfo = &static_objects[mesh->static_number];
+
+			if (mesh->Flags & 1)
+			{
+				if (mesh->static_number >= SHATTER0 && mesh->static_number <= SHATTER9)
+				{
+					CollidedStaticBounds[2] = mesh->y + sinfo->y_maxc;
+					CollidedStaticBounds[3] = mesh->y + sinfo->y_minc;
+
+					if (mesh->y_rot == -0x8000)
+					{
+						CollidedStaticBounds[0] = mesh->x - sinfo->x_minc;
+						CollidedStaticBounds[1] = mesh->x - sinfo->x_maxc;
+						CollidedStaticBounds[4] = mesh->z - sinfo->z_minc;
+						CollidedStaticBounds[5] = mesh->z - sinfo->z_maxc;
+					}
+					else if (mesh->y_rot == -0x4000)
+					{
+						CollidedStaticBounds[0] = mesh->x - sinfo->z_minc;
+						CollidedStaticBounds[1] = mesh->x - sinfo->z_maxc;
+						CollidedStaticBounds[4] = mesh->z + sinfo->x_maxc;
+						CollidedStaticBounds[5] = mesh->z + sinfo->x_minc;
+					}
+					else if (mesh->y_rot == 0x4000)
+					{
+						CollidedStaticBounds[0] = mesh->x + sinfo->z_maxc;
+						CollidedStaticBounds[1] = mesh->x + sinfo->z_minc;
+						CollidedStaticBounds[4] = mesh->z - sinfo->x_minc;
+						CollidedStaticBounds[5] = mesh->z - sinfo->x_maxc;
+					}
+					else
+					{
+						CollidedStaticBounds[0] = mesh->x + sinfo->x_maxc;
+						CollidedStaticBounds[1] = mesh->x + sinfo->x_minc;
+						CollidedStaticBounds[4] = mesh->z + sinfo->z_maxc;
+						CollidedStaticBounds[5] = mesh->z + sinfo->z_minc;
+					}
+
+					if (JeepBounds[0] > CollidedStaticBounds[1] &&
+						JeepBounds[1] < CollidedStaticBounds[0] &&
+						JeepBounds[2] > CollidedStaticBounds[3] &&
+						JeepBounds[3] < CollidedStaticBounds[2] &&
+						JeepBounds[4] > CollidedStaticBounds[5] &&
+						JeepBounds[5] < CollidedStaticBounds[4])
+					{
+						ShatterObject(0, mesh, -128, rn, 0);
+						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)&pos, SFX_DEFAULT);
+						SmashedMeshRoom[SmashedMeshCount] = rn;
+						SmashedMesh[SmashedMeshCount] = mesh;
+						SmashedMeshCount++;
+						mesh->Flags &= ~1;
+					}
+				}
+			}
+		}
+	}
+}
+
 void inject_jeep(bool replace)
 {
 	INJECT(0x00466F40, InitialiseJeep, replace);
@@ -1060,4 +1251,6 @@ void inject_jeep(bool replace)
 	INJECT(0x00468B80, DoShift, replace);
 	INJECT(0x00468E00, AnimateJeep, replace);
 	INJECT(0x00469870, UserControl, replace);
+	INJECT(0x004687E0, JeepBaddieCollision, replace);
+	INJECT(0x004684D0, JeepCollideStaticObjects, replace);
 }

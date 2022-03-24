@@ -861,17 +861,19 @@ void BikeCollideStaticObjects(long x, long y, long z, short room_number, long he
 	PHD_VECTOR pos;
 	short* doors;
 	long j;
+	static long BikeBounds[6] = { 0, 0, 0, 0, 0, 0 };
+	static long CollidedStaticBounds[6] = { 0, 0, 0, 0, 0, 0 };
 	short room_count, rn;
 
 	pos.x = x;
 	pos.y = y;
 	pos.z = z;
-	BikeCollideStaticBounds[0] = x + 256;
-	BikeCollideStaticBounds[1] = x - 256;
-	BikeCollideStaticBounds[2] = y;
-	BikeCollideStaticBounds[3] = y - height;
-	BikeCollideStaticBounds[4] = z + 256;
-	BikeCollideStaticBounds[5] = z - 256;
+	BikeBounds[0] = x + 256;
+	BikeBounds[1] = x - 256;
+	BikeBounds[2] = y;
+	BikeBounds[3] = y - height;
+	BikeBounds[4] = z + 256;
+	BikeBounds[5] = z - 256;
 	room_count = 1;
 	rooms_around_the_bike[0] = room_number;
 	doors = room[room_number].door;
@@ -905,44 +907,44 @@ void BikeCollideStaticObjects(long x, long y, long z, short room_number, long he
 			{
 				if (mesh->static_number >= SHATTER0 && mesh->static_number <= SHATTER9)
 				{
-					CollidedStaticBikeBounds[2] = mesh->y + sinfo->y_maxc;
-					CollidedStaticBikeBounds[3] = mesh->y + sinfo->y_minc;
+					CollidedStaticBounds[2] = mesh->y + sinfo->y_maxc;
+					CollidedStaticBounds[3] = mesh->y + sinfo->y_minc;
 
 					if (mesh->y_rot == -0x8000)
 					{
-						CollidedStaticBikeBounds[0] = mesh->x - sinfo->x_minc;
-						CollidedStaticBikeBounds[1] = mesh->x - sinfo->x_maxc;
-						CollidedStaticBikeBounds[4] = mesh->z - sinfo->z_minc;
-						CollidedStaticBikeBounds[5] = mesh->z - sinfo->z_maxc;
+						CollidedStaticBounds[0] = mesh->x - sinfo->x_minc;
+						CollidedStaticBounds[1] = mesh->x - sinfo->x_maxc;
+						CollidedStaticBounds[4] = mesh->z - sinfo->z_minc;
+						CollidedStaticBounds[5] = mesh->z - sinfo->z_maxc;
 					}
 					else if (mesh->y_rot == -0x4000)
 					{
-						CollidedStaticBikeBounds[0] = mesh->x - sinfo->z_minc;
-						CollidedStaticBikeBounds[1] = mesh->x - sinfo->z_maxc;
-						CollidedStaticBikeBounds[4] = mesh->z + sinfo->x_maxc;
-						CollidedStaticBikeBounds[5] = mesh->z + sinfo->x_minc;
+						CollidedStaticBounds[0] = mesh->x - sinfo->z_minc;
+						CollidedStaticBounds[1] = mesh->x - sinfo->z_maxc;
+						CollidedStaticBounds[4] = mesh->z + sinfo->x_maxc;
+						CollidedStaticBounds[5] = mesh->z + sinfo->x_minc;
 					}
 					else if (mesh->y_rot == 0x4000)
 					{
-						CollidedStaticBikeBounds[0] = mesh->x + sinfo->z_maxc;
-						CollidedStaticBikeBounds[1] = mesh->x + sinfo->z_minc;
-						CollidedStaticBikeBounds[4] = mesh->z - sinfo->x_minc;
-						CollidedStaticBikeBounds[5] = mesh->z - sinfo->x_maxc;
+						CollidedStaticBounds[0] = mesh->x + sinfo->z_maxc;
+						CollidedStaticBounds[1] = mesh->x + sinfo->z_minc;
+						CollidedStaticBounds[4] = mesh->z - sinfo->x_minc;
+						CollidedStaticBounds[5] = mesh->z - sinfo->x_maxc;
 					}
 					else
 					{
-						CollidedStaticBikeBounds[0] = mesh->x + sinfo->x_maxc;
-						CollidedStaticBikeBounds[1] = mesh->x + sinfo->x_minc;
-						CollidedStaticBikeBounds[4] = mesh->z + sinfo->z_maxc;
-						CollidedStaticBikeBounds[5] = mesh->z + sinfo->z_minc;
+						CollidedStaticBounds[0] = mesh->x + sinfo->x_maxc;
+						CollidedStaticBounds[1] = mesh->x + sinfo->x_minc;
+						CollidedStaticBounds[4] = mesh->z + sinfo->z_maxc;
+						CollidedStaticBounds[5] = mesh->z + sinfo->z_minc;
 					}
 
-					if (BikeCollideStaticBounds[0] > CollidedStaticBikeBounds[1] &&
-						BikeCollideStaticBounds[1] < CollidedStaticBikeBounds[0] &&
-						BikeCollideStaticBounds[2] > CollidedStaticBikeBounds[3] &&
-						BikeCollideStaticBounds[3] < CollidedStaticBikeBounds[2] &&
-						BikeCollideStaticBounds[4] > CollidedStaticBikeBounds[5] &&
-						BikeCollideStaticBounds[5] < CollidedStaticBikeBounds[4])
+					if (BikeBounds[0] > CollidedStaticBounds[1] &&
+						BikeBounds[1] < CollidedStaticBounds[0] &&
+						BikeBounds[2] > CollidedStaticBounds[3] &&
+						BikeBounds[3] < CollidedStaticBounds[2] &&
+						BikeBounds[4] > CollidedStaticBounds[5] &&
+						BikeBounds[5] < CollidedStaticBounds[4])
 					{
 						ShatterObject(0, mesh, -128, rn, 0);
 						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)&pos, SFX_DEFAULT);
