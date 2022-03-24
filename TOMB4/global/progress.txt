@@ -1518,7 +1518,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/drawroom.cpp
 
-0x00471040		ProcessMeshData
+0x00471040	+	ProcessMeshData
 0x00471420	+	ProcessRoomData
 0x00471E00	+	ProjectVerts
 0x00471F40	+	ProjectWaterVerts

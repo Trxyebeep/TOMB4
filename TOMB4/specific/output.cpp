@@ -373,17 +373,56 @@ void ProjectTrainVerts(short nVerts, D3DTLVERTEX* v, short* clip, long x)
 
 void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 {
+#ifdef GENERAL_FIXES
+	DYNAMIC* dptr;
+	PHD_VECTOR t, d, u, w;
+	float fVal;
+#endif
 	long r, g, b, sr, sg, sb;
 
 	sr = (StaticMeshShade & 0x1F) << 3;
 	sg = ((StaticMeshShade >> 5) & 0x1F) << 3;
 	sb = ((StaticMeshShade >> 10) & 0x1F) << 3;
+#ifdef GENERAL_FIXES
+	u.x = phd_mxptr[M03] >> 14;
+	u.y = phd_mxptr[M13] >> 14;
+	u.z = phd_mxptr[M23] >> 14;
+	ApplyTransposeMatrix(w2v_matrix, &u, &t);
+	t.x += w2v_matrix[M03];
+	t.y += w2v_matrix[M13];
+	t.z += w2v_matrix[M23];
+#endif
 
 	for (int i = 0; i < nVerts; i++)
 	{
 		r = CLRR(v->color) + ((sr * (mesh->prelight[i] & 0xFF)) >> 8);
 		g = CLRG(v->color) + ((sg * (mesh->prelight[i] & 0xFF)) >> 8);
 		b = CLRB(v->color) + ((sb * (mesh->prelight[i] & 0xFF)) >> 8);
+
+#ifdef GENERAL_FIXES
+		for (int j = 0; j < 32; j++)
+		{
+			dptr = &dynamics[j];
+
+			if (dptr->on)
+			{
+				d.x = dptr->x - t.x;
+				d.y = dptr->y - t.y;
+				d.z = dptr->z - t.z;
+				ApplyMatrix(w2v_matrix, &d, &w);
+				ApplyTransposeMatrix(phd_mxptr, &w, &u);
+				fVal = sqrt(SQUARE(u.x - mesh->Normals[i].x) + SQUARE(u.y - mesh->Normals[i].y) + SQUARE(u.z - mesh->Normals[i].z));
+
+				if (fVal <= dptr->falloff)
+				{
+					fVal = (dptr->falloff - fVal) / dptr->falloff;
+					r += (long)(fVal * dptr->r);
+					g += (long)(fVal * dptr->g);
+					b += (long)(fVal * dptr->b);
+				}
+			}
+		}
+#endif
 
 		if (r > 255)
 			r = 255;
