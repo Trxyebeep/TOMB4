@@ -411,7 +411,7 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 				d.z = dptr->z - t.z;
 				ApplyMatrix(w2v_matrix, &d, &w);
 				ApplyTransposeMatrix(phd_mxptr, &w, &u);
-				fVal = sqrt(SQUARE(u.x - mesh->Normals[i].x) + SQUARE(u.y - mesh->Normals[i].y) + SQUARE(u.z - mesh->Normals[i].z));
+				fVal = sqrt(SQUARE(u.x - mesh->Normals[i].x) + SQUARE(u.y - mesh->Normals[i].y) + SQUARE(u.z - mesh->Normals[i].z)) * 1.7F;
 
 				if (fVal <= dptr->falloff)
 				{
