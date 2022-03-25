@@ -1311,7 +1311,7 @@ long JeepDynamics(ITEM_INFO* item)
 				jeep->velocity -= jeep->velocity >> 3;
 			}
 
-			if (ang > 16380)
+			if (ang < -16380)
 				jeep->move_angle = item->pos.y_rot + 0x3FFC;
 			else
 				jeep->move_angle -= vel;
@@ -1411,7 +1411,7 @@ long JeepDynamics(ITEM_INFO* item)
 	front_right2 = TestHeight(item, 550, 256, &frPos2);
 
 	if (front_right2 < frPos.y - 256)
-		shift2 = abs(DoShift(item, &frPos2, &frPos) << 2);
+		shift2 = -abs(DoShift(item, &frPos2, &frPos) << 2);
 
 	front_mid2 = TestHeight(item, -600, 0, &fmPos2);
 
@@ -1425,7 +1425,7 @@ long JeepDynamics(ITEM_INFO* item)
 		if (shift2)
 			shift2 -= abs(DoShift(item, &brPos2, &brPos) << 2);
 		else
-			shift2 = ABS(DoShift(item, &brPos2, &brPos) << 2);
+			shift2 = abs(DoShift(item, &brPos2, &brPos) << 2);
 	}
 
 	if (!shift)
