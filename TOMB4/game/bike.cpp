@@ -1308,7 +1308,7 @@ long BikeDynamics(ITEM_INFO* item)
 	front_right2 = TestHeight(item, 500, 128, &frPos2);
 
 	if (front_right2 < frPos.y - 256)
-		shift2 = abs(DoShift(item, &frPos2, &frPos) << 2);	//using the ABS macro gives wrong results??
+		shift2 = -abs(DoShift(item, &frPos2, &frPos) << 2);
 
 	front_mid2 = TestHeight(item, -500, 0, &fmPos2);
 
