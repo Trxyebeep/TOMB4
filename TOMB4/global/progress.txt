@@ -593,7 +593,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00466FA0	+	JeepCollision
 0x004671B0	+	GetOnJeep
 0x00467330	+	DrawJeepExtras
-0x00467380		JeepControl
+0x00467380	+	JeepControl
 0x00467920	+	TriggerExhaustSmoke
 0x00467AC0	+	JeepExplode
 0x00467B90	+	JeepCheckGetOut
@@ -609,7 +609,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00469B90		InitialiseEnemyJeep
 0x00469C20		EnemyJeepControl
 0x0046A4D0		JeepFireGrenade
-0x0046A620		JeepStart
+0x0046A620	+	JeepStart
 
 
 		game/lara.cpp
