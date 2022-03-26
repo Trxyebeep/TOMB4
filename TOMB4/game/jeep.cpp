@@ -1672,6 +1672,47 @@ void JeepStart(ITEM_INFO* item, ITEM_INFO* l)
 	jeep->gear = 0;
 }
 
+void JeepFireGrenade(ITEM_INFO* item)
+{
+	ITEM_INFO* grenade;
+	short item_number;
+
+	item_number = CreateItem();
+
+	if (item_number != NO_ITEM)
+	{
+		grenade = &items[item_number];
+		grenade->shade = -0x3DF0;
+		grenade->object_number = GRENADE;
+		grenade->room_number = item->room_number;
+		InitialiseItem(item_number);
+		grenade->pos.x_rot = item->pos.x_rot;
+		grenade->pos.z_rot = 0;
+		grenade->pos.y_rot= item->pos.y_rot + 0x8000;
+		grenade->pos.x_pos = item->pos.x_pos + (1024 * phd_sin(grenade->pos.y_rot) >> 14);
+		grenade->pos.y_pos = item->pos.y_pos - 768;
+		grenade->pos.z_pos = item->pos.z_pos + (1024 * phd_cos(grenade->pos.y_rot) >> 14);
+		SmokeCountL = 32;
+		SmokeWeapon = 5;
+
+		for (int i = 0; i < 5; i++)
+			TriggerGunSmoke(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 0, 0, 0, 1, 5, 32);
+
+		if (GetRandomControl() & 3)
+			grenade->item_flags[0] = 1;
+		else
+			grenade->item_flags[0] = 2;
+
+		grenade->speed = 32;
+		grenade->fallspeed = -32 * phd_sin(grenade->pos.x_rot) >> 14;
+		grenade->current_anim_state = grenade->pos.x_rot;
+		grenade->goal_anim_state = grenade->pos.y_rot;
+		grenade->required_anim_state = 0;
+		grenade->hit_points = 120;
+		AddActiveItem(item_number);
+	}
+}
+
 void inject_jeep(bool replace)
 {
 	INJECT(0x00466F40, InitialiseJeep, replace);
@@ -1692,4 +1733,5 @@ void inject_jeep(bool replace)
 	INJECT(0x00467CF0, JeepDynamics, replace);
 	INJECT(0x00467380, JeepControl, replace);
 	INJECT(0x0046A620, JeepStart, replace);
+	INJECT(0x0046A4D0, JeepFireGrenade, replace);
 }
