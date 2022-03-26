@@ -1,5 +1,31 @@
 # tomb4 changelog
 
+## [1.1.0](https://github.com/Trxyebeep/TOMB4/tree/V1.1.0) (March 26 2022)
+
+### Original bug fixes
+
+- Fix fog affecting bars.
+- Fix shatter fragments not rotating.
+- Fix wrong inventory/pause menu background on 32bit color mode.
+- Fix wrong fog application of semitransparent faces.
+- Fix water door sfx playing when Lara is shot by a baddie.
+
+### tomb4 bug fixes
+
+- Fix loading text overlapping with the bar.
+- Fix crossbow bolts not hitting their targets.
+- Fix bike not exploding from falling long heights.
+- Fix flame bugs.
+- Fix the crawl tilting menu option.
+
+### new tomb4 features
+
+- implement new mono screen to fix the white stripes.
+- prevent flycheat when on vehicles.
+- add more accurate PSX shadow option.
+- Implement dynamic lighting for static meshes.
+
+
 ## [1.0.0](https://github.com/Trxyebeep/TOMB4/tree/V1.0.0) (March 13 2022)
 
 ### Original bug fixes
