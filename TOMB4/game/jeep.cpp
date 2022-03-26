@@ -1405,7 +1405,7 @@ long JeepDynamics(ITEM_INFO* item)
 		if (shift)
 			shift += abs(DoShift(item, &blPos2, &blPos) << 2);
 		else
-			shift = abs(DoShift(item, &blPos2, &blPos) << 2);
+			shift = -abs(DoShift(item, &blPos2, &blPos) << 2);
 	}
 
 	front_right2 = TestHeight(item, 550, 256, &frPos2);

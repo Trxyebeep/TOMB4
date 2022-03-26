@@ -1293,16 +1293,16 @@ long BikeDynamics(ITEM_INFO* item)
 	front_left2 = TestHeight(item, 500, -350, &flPos2);
 
 	if (front_left2 < flPos.y - 256)
-		shift = ABS(DoShift(item, &flPos2, &flPos) << 2);
+		shift = abs(DoShift(item, &flPos2, &flPos) << 2);
 
 	back_left2 = TestHeight(item, -500, -350, &blPos2);
 
 	if (back_left2 < blPos.y - 256)
 	{
 		if (shift)
-			shift += ABS(DoShift(item, &blPos2, &blPos) << 2);
+			shift += abs(DoShift(item, &blPos2, &blPos) << 2);
 		else
-			shift = ABS(DoShift(item, &blPos2, &blPos) << 2);
+			shift = -abs(DoShift(item, &blPos2, &blPos) << 2);
 	}
 
 	front_right2 = TestHeight(item, 500, 128, &frPos2);
@@ -1320,9 +1320,9 @@ long BikeDynamics(ITEM_INFO* item)
 	if (back_right2 < brPos.y - 256)
 	{
 		if (shift2)
-			shift2 -= ABS(DoShift(item, &brPos2, &brPos) << 2);
+			shift2 -= abs(DoShift(item, &brPos2, &brPos) << 2);
 		else
-			shift2 = ABS(DoShift(item, &brPos2, &brPos) << 2);
+			shift2 = abs(DoShift(item, &brPos2, &brPos) << 2);
 	}
 
 	if (shift)
