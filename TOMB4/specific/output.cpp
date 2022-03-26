@@ -374,6 +374,7 @@ void ProjectTrainVerts(short nVerts, D3DTLVERTEX* v, short* clip, long x)
 void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 {
 #ifdef GENERAL_FIXES
+	D3DVERTEX* vtx;
 	DYNAMIC* dptr;
 	PHD_VECTOR t, d, u, w;
 	float fVal;
@@ -391,6 +392,7 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 	t.x += w2v_matrix[M03];
 	t.y += w2v_matrix[M13];
 	t.z += w2v_matrix[M23];
+	mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&vtx, NULL);
 #endif
 
 	for (int i = 0; i < nVerts; i++)
@@ -411,8 +413,8 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 				d.z = dptr->z - t.z;
 				ApplyMatrix(w2v_matrix, &d, &w);
 				ApplyTransposeMatrix(phd_mxptr, &w, &u);
-				fVal = sqrt(SQUARE(u.x - mesh->Normals[i].x) + SQUARE(u.y - mesh->Normals[i].y) + SQUARE(u.z - mesh->Normals[i].z));
-
+				fVal = sqrt(SQUARE(u.x - vtx[i].x) + SQUARE(u.y - vtx[i].y) + SQUARE(u.z - vtx[i].z)) * 1.7F;
+				
 				if (fVal <= dptr->falloff)
 				{
 					fVal = (dptr->falloff - fVal) / dptr->falloff;
@@ -444,6 +446,10 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 		CalcColorSplit(v->color, &v->color);
 		v++;
 	}
+
+#ifdef GENERAL_FIXES
+	mesh->SourceVB->Unlock();
+#endif
 }
 
 void _InsertRoom(ROOM_INFO* r)

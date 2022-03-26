@@ -670,11 +670,7 @@ void ProcessMeshData(long num_meshes)
 
 				if (mesh->nNorms > 0)
 				{
-#ifdef GENERAL_FIXES
-					mesh->Normals = (D3DVECTOR*)game_malloc((mesh->nNorms + mesh->nVerts) * sizeof(D3DVECTOR));
-#else
 					mesh->Normals = (D3DVECTOR*)game_malloc(mesh->nNorms * sizeof(D3DVECTOR));
-#endif
 
 					for (int j = 0; j < mesh->nVerts; j++)
 					{
@@ -686,22 +682,13 @@ void ProcessMeshData(long num_meshes)
 						mesh->Normals[j].x = vtx[j].nx;
 						mesh->Normals[j].y = vtx[j].ny;
 						mesh->Normals[j].z = vtx[j].nz;
-#ifdef GENERAL_FIXES
-						mesh->Normals[mesh->nNorms + j].x = vtx[j].x;
-						mesh->Normals[mesh->nNorms + j].y = vtx[j].y;
-						mesh->Normals[mesh->nNorms + j].z = vtx[j].z;
-#endif
 					}
 
 					mesh->prelight = NULL;
 				}
 				else
 				{
-#ifdef GENERAL_FIXES
-					mesh->Normals = (D3DVECTOR*)game_malloc(mesh->nVerts * sizeof(D3DVECTOR));
-#else
 					mesh->Normals = NULL;
-#endif
 					mesh->prelight = (long*)game_malloc(4 * mesh->nVerts);
 
 					for (int j = 0; j < mesh->nVerts; j++)
@@ -709,11 +696,6 @@ void ProcessMeshData(long num_meshes)
 						c = 255 - (mesh_ptr[0] >> 5);
 						mesh->prelight[j] = RGBONLY(c, c, c);
 						mesh_ptr++;
-#ifdef GENERAL_FIXES
-						mesh->Normals[j].x = vtx[j].x;
-						mesh->Normals[j].y = vtx[j].y;
-						mesh->Normals[j].z = vtx[j].z;
-#endif
 					}
 				}
 
