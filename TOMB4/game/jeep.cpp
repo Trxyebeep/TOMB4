@@ -22,6 +22,7 @@
 #include "traps.h"
 #include "debris.h"
 #include "bike.h"
+#include "box.h"
 
 void InitialiseJeep(short item_number)
 {
@@ -1713,6 +1714,20 @@ void JeepFireGrenade(ITEM_INFO* item)
 	}
 }
 
+void InitialiseEnemyJeep(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	InitialiseCreature(item_number);
+	item->anim_number = objects[item->object_number].anim_index + 14;
+	item->frame_number = anims[item->anim_number].frame_base;
+	item->current_anim_state = 0;
+	item->goal_anim_state = 0;
+	item->mesh_bits = ~0x24000;
+	item->status = ITEM_DEACTIVATED;
+}
+
 void inject_jeep(bool replace)
 {
 	INJECT(0x00466F40, InitialiseJeep, replace);
@@ -1734,4 +1749,5 @@ void inject_jeep(bool replace)
 	INJECT(0x00467380, JeepControl, replace);
 	INJECT(0x0046A620, JeepStart, replace);
 	INJECT(0x0046A4D0, JeepFireGrenade, replace);
+	INJECT(0x00469B90, InitialiseEnemyJeep, replace);
 }
