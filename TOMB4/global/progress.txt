@@ -803,11 +803,11 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/lara2gun.cpp
 
-0x0042B720		draw_pistols
-0x0042B7C0		set_arm_info
-0x0042B840		undraw_pistols
-0x0042BAB0		ready_pistols
-0x0042BB20		draw_pistol_meshes
+0x0042B720	+	draw_pistols
+0x0042B7C0	+	set_arm_info
+0x0042B840	+	undraw_pistols
+0x0042BAB0	+	ready_pistols
+0x0042BB20	+	draw_pistol_meshes
 0x0042BB70	+	undraw_pistol_mesh_left
 0x0042BBB0	+	undraw_pistol_mesh_right
 0x0042BBF0		PistolHandler
@@ -1308,7 +1308,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00438560		S_DrawFires
 0x00438690		GetFreeSmokeSpark
 0x00438700		UpdateSmokeSparks
-0x00438940		TriggerGunSmoke
+0x00438940	+	TriggerGunSmoke
 0x00438BA0		TriggerShatterSmoke
 0x00438D20		GetFreeBlood
 0x00438D90		UpdateBlood
