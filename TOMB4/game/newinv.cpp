@@ -52,7 +52,11 @@ RINGME pcring2;
 
 long LoadGame()
 {
+#ifdef GENERAL_FIXES
+	if (S_LoadSave(IN_LOAD, 1, 1) < 0)
+#else
 	if (S_LoadSave(IN_LOAD, 1) < 0)
+#endif
 		return -1;
 	else
 		return 1;
@@ -62,7 +66,12 @@ long SaveGame()
 {
 	long Save;
 
-	Save = S_LoadSave(IN_SAVE, 1);
+	Save = 
+#ifdef GENERAL_FIXES
+		S_LoadSave(IN_SAVE, 1, 1);
+#else
+		S_LoadSave(IN_SAVE, 1);
+#endif
 	input = 0;
 	dbinput = 0;
 

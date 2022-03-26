@@ -10,7 +10,11 @@ void S_InitLoadBar(long maxpos);
 void S_LoadBar();
 void DoBar(long x, long y, long width, long height, long pos, long clr1, long clr2);
 void DoOptions();
+#ifdef GENERAL_FIXES
+long S_LoadSave(long load_or_save, long mono, long inv_active);
+#else
 long S_LoadSave(long load_or_save, long mono);
+#endif
 #ifdef IMPROVED_BARS
 void S_DrawEnemyBar(long pos);
 #endif
