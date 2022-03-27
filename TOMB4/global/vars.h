@@ -422,6 +422,7 @@
 #define mesh_vtxbuf VAR_U_(0x0052A340, MESH_DATA**)
 #define dont_exit_jeep	VAR_U_(0x004BFC68, char)
 #define targetMeshP	VAR_U_(0x007FE11C, MESH_DATA*)
+#define binocsMeshP	VAR_U_(0x007FDF60, MESH_DATA*)
 
 
 

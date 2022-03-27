@@ -27,6 +27,7 @@ void DrawSprite(long x, long y, long slot, long col, long size, long z);
 void ShowTitle();
 void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj);
 void InitTarget_2();
+void InitBinoculars();
 
 #define DrawTrainFloorStrip	( (void(__cdecl*)(long, long, TEXTURESTRUCT*, long)) 0x0048B480 )
 #define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )

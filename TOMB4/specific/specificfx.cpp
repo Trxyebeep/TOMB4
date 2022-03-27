@@ -2156,6 +2156,32 @@ void InitTarget_2()
 	targetMeshP->SourceVB->Unlock();
 }
 
+void InitBinoculars()
+{
+	OBJECT_INFO* obj;
+	D3DTLVERTEX* v;
+
+	obj = &objects[BINOCULAR_GRAPHICS];
+
+	if (!obj->loaded)
+		return;
+
+	binocsMeshP = (MESH_DATA*)meshes[obj->mesh_index];
+	binocsMeshP->SourceVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
+
+	for (int i = 0; i < targetMeshP->nVerts; i++)
+	{
+		v[i].sx = (v[i].sx * 32) / 96;
+		v[i].sy = (v[i].sy * 30) / 224;
+		v[i].sz = 0;
+		v[i].rhw = f_mpersp / f_mznear * f_moneopersp;
+		v[i].color = 0xFF000000;
+		v[i].specular = 0xFF000000;
+	}
+
+	binocsMeshP->SourceVB->Unlock();
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -2182,4 +2208,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048B130, ShowTitle, replace);
 	INJECT(0x0048BC30, SetUpLensFlare, replace);
 	INJECT(0x00487B60, InitTarget_2, replace);
+	INJECT(0x00487C30, InitBinoculars, replace);
 }
