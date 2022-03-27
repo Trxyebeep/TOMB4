@@ -138,6 +138,7 @@ void inject_all(bool replace)
 	inject_people(replace);
 	inject_jeep(replace);
 	inject_pickup(replace);
+	inject_switch(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
