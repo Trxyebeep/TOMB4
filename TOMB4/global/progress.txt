@@ -1091,7 +1091,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00458690		PuzzleDone
 0x00458710		KeyTrigger
 0x00458780		PickupTrigger
-0x004587E0		SarcophagusCollision
+0x004587E0	+	SarcophagusCollision
 
 
 		game/raghead.cpp
