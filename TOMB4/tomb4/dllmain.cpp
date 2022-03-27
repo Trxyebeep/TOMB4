@@ -59,6 +59,7 @@
 #include "../game/people.h"
 #include "../game/jeep.h"
 #include "../game/pickup.h"
+#include "../game/switch.h"
 
 HINSTANCE hinstance = NULL;
 

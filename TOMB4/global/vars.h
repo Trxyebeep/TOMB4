@@ -423,6 +423,7 @@
 #define dont_exit_jeep	VAR_U_(0x004BFC68, char)
 #define targetMeshP	VAR_U_(0x007FE11C, MESH_DATA*)
 #define binocsMeshP	VAR_U_(0x007FDF60, MESH_DATA*)
+#define CurrentSequence	VAR_U_(0x007F5700, uchar)
 
 
 

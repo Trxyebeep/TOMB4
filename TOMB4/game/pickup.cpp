@@ -5,7 +5,7 @@
 #include "items.h"
 #include "health.h"
 
-static short SarcophagusBounds[14] = { -512, 512, -100, 100, -512, 0, -1820, 1820, -5460, 5460, 0, 0, 0, 0 };
+static short SarcophagusBounds[12] = { -512, 512, -100, 100, -512, 0, -1820, 1820, -5460, 5460, 0, 0 };
 static PHD_VECTOR  SarcophagusPos = { 0, 0, -300 };
 
 void SarcophagusCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
