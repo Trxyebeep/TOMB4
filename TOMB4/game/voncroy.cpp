@@ -14,7 +14,7 @@
 #include "effects.h"
 #include "switch.h"
 
-static BITE_INFO VonCroyBite = { 0, 35, 130, 18 };
+static BITE_INFO voncroy_hit = { 0, 35, 130, 18 };
 
 void SetCutSceneCamera(ITEM_INFO* item)
 {
@@ -959,7 +959,7 @@ void VoncroyRaceControl(short item_number)
 						oEnemy->hit_points -= 20;
 						oEnemy->hit_status = 1;
 						VonCroy->flags = 1;
-						CreatureEffectT(item, &VonCroyBite, 8, -1, DoBloodSplat);
+						CreatureEffectT(item, &voncroy_hit, 8, -1, DoBloodSplat);
 					}
 				}
 			}
@@ -1822,7 +1822,7 @@ void VoncroyControl(short item_number)
 
 					oEnemy->hit_status = 1;
 					VonCroy->flags = 1;
-					CreatureEffectT(item, &VonCroyBite, 2, -1, DoBloodSplat);
+					CreatureEffectT(item, &voncroy_hit, 2, -1, DoBloodSplat);
 				}
 			}
 		}
@@ -1901,7 +1901,7 @@ void VoncroyControl(short item_number)
 
 					oEnemy->hit_status = 1;
 					VonCroy->flags = 1;
-					CreatureEffectT(item, &VonCroyBite, 8, -1, DoBloodSplat);
+					CreatureEffectT(item, &voncroy_hit, 8, -1, DoBloodSplat);
 				}
 			}
 		}

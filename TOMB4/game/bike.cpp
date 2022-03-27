@@ -796,27 +796,27 @@ long BikeBaddieCollision(ITEM_INFO* bike)
 	short room_count, item_number;
 
 	room_count = 1;
-	rooms_around_the_bike[0] = bike->room_number;
+	broomies[0] = bike->room_number;
 	doors = room[bike->room_number].door;
 
 	for (int i = *doors++; i > 0; i--, doors += 16)
 	{
 		for (j = 0; j < room_count; j++)
 		{
-			if (rooms_around_the_bike[j] == *doors)
+			if (broomies[j] == *doors)
 				break;
 		}
 
 		if (j == room_count)
 		{
-			rooms_around_the_bike[room_count] = *doors;
+			broomies[room_count] = *doors;
 			room_count++;
 		}
 	}
 
 	for (int i = 0; i < room_count; i++)
 	{
-		for (item_number = room[rooms_around_the_bike[i]].item_number; item_number != NO_ITEM; item_number = item->next_item)
+		for (item_number = room[broomies[i]].item_number; item_number != NO_ITEM; item_number = item->next_item)
 		{
 			item = &items[item_number];
 
@@ -875,27 +875,27 @@ void BikeCollideStaticObjects(long x, long y, long z, short room_number, long he
 	BikeBounds[4] = z + 256;
 	BikeBounds[5] = z - 256;
 	room_count = 1;
-	rooms_around_the_bike[0] = room_number;
+	broomies[0] = room_number;
 	doors = room[room_number].door;
 
 	for (int i = *doors++; i > 0; i--, doors += 16)
 	{
 		for (j = 0; j < room_count; j++)
 		{
-			if (rooms_around_the_bike[j] == *doors)
+			if (broomies[j] == *doors)
 				break;
 		}
 
 		if (j == room_count)
 		{
-			rooms_around_the_bike[room_count] = *doors;
+			broomies[room_count] = *doors;
 			room_count++;
 		}
 	}
 
 	for (int i = 0; i < room_count; i++)
 	{
-		rn = rooms_around_the_bike[i];
+		rn = broomies[i];
 		r = &room[rn];
 		mesh = r->mesh;
 

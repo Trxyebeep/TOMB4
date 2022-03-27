@@ -1061,27 +1061,27 @@ void JeepBaddieCollision(ITEM_INFO* item)
 
 	jeep = (JEEPINFO*)item->data;
 	room_count = 1;
-	rooms_around_the_jeep[0] = item->room_number;
+	jroomies[0] = item->room_number;
 	doors = room[item->room_number].door;
 
 	for (int i = *doors++; i > 0; i--, doors += 16)
 	{
 		for (j = 0; j < room_count; j++)
 		{
-			if (rooms_around_the_jeep[j] == *doors)
+			if (jroomies[j] == *doors)
 				break;
 		}
 
 		if (j == room_count)
 		{
-			rooms_around_the_jeep[room_count] = *doors;
+			jroomies[room_count] = *doors;
 			room_count++;
 		}
 	}
 
 	for (int i = 0; i < room_count; i++)
 	{
-		for (item_number = room[rooms_around_the_jeep[i]].item_number; item_number != NO_ITEM; item_number = collided->next_item)
+		for (item_number = room[jroomies[i]].item_number; item_number != NO_ITEM; item_number = collided->next_item)
 		{
 			collided = &items[item_number];
 			obj = &objects[collided->object_number];
@@ -1154,27 +1154,27 @@ void JeepCollideStaticObjects(long x, long y, long z, short room_number, long he
 	JeepBounds[4] = z + 256;
 	JeepBounds[5] = z - 256;
 	room_count = 1;
-	rooms_around_the_jeep[0] = room_number;
+	jroomies[0] = room_number;
 	doors = room[room_number].door;
 
 	for (int i = *doors++; i > 0; i--, doors += 16)
 	{
 		for (j = 0; j < room_count; j++)
 		{
-			if (rooms_around_the_jeep[j] == *doors)
+			if (jroomies[j] == *doors)
 				break;
 		}
 
 		if (j == room_count)
 		{
-			rooms_around_the_jeep[room_count] = *doors;
+			jroomies[room_count] = *doors;
 			room_count++;
 		}
 	}
 
 	for (int i = 0; i < room_count; i++)
 	{
-		rn = rooms_around_the_jeep[i];
+		rn = jroomies[i];
 		r = &room[rn];
 		mesh = r->mesh;
 

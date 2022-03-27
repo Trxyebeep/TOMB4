@@ -33,21 +33,21 @@ short voncroy_chat_ranges9[22] = { 12, 24, 30, 145, 361, 528, 539, 556, 564, 577
 short lara_chat_ranges10[18] = { 283, 296, 305, 603, 1244, 1312, 1759, 1795, 1806, 1848, 1878, 1912, 1925, 1947, 1960, 2000, -1, -1 };
 short voncroy_chat_ranges10[16] = { 963, 1056, 1069, 1137, 1153, 1204, 1339, 1739, 2027, 2193, 2200, 2333, 2368, 2406, -1, -1 };
 short lara_chat_ranges11[12] = { 1216, 1232, 1241, 1323, 1337, 1393, 1678, 1706, 1927, 1954, -1, -1 };
-short sas_chat_ranges11[12] = { 1141, 1181, 1509, 1666, 1758, 1914, 1964, 2016, 2194, 2261, -1, -1 };
+short captain_chat_ranges11[12] = { 1141, 1181, 1509, 1666, 1758, 1914, 1964, 2016, 2194, 2261, -1, -1 };
 short lara_chat_ranges15[10] = { 684, 715, 1314, 1372, 1392, 1417, 1792, 1824, -1, -1 };
 short voncroy_chat_ranges15[10] = { 290, 317, 330, 375, 388, 673, 729, 1301, -1, -1 };
 short lara_chat_ranges16[10] = { 386, 419, 430, 489, 1021, 1058, 1072, 1175, -1, -1 };
-short jean_chat_ranges16[18] = { 97, 136, 174, 197, 214, 308, 329, 372, 511, 672, 684, 781, 812, 845, 863, 988, -1, -1 };
+short jeanyves_chat_ranges16[18] = { 97, 136, 174, 197, 214, 308, 329, 372, 511, 672, 684, 781, 812, 845, 863, 988, -1, -1 };
 short voncroy_chat_ranges16[10] = { 1614, 1641, 1657, 1726, 1741, 1760, 1775, 1974, -1, -1 };
-short jean_chat_ranges17[24] = { 45, 86, 122, 196, 258, 370, 398, 445, 467, 490, 518, 537, 547, 564, 579, 619, 641, 650, 668, 714, 733, 788, -1, -1 };
-short jean_chat_ranges18[14] = { 47, 59, 75, 113, 123, 250, 331, 419, 437, 570, 592, 652, -1, -1 };
-short jean_chat_ranges19[20] = { 224, 251, 288, 304, 328, 472, 502, 794, 1028, 1042, 1067, 1182, 1206, 1294, 1330, 1386, 1402, 1427, -1, -1 };
-short jean_chat_ranges20[28] = { 150, 158, 174, 187, 208, 312, 334, 418, 437, 457, 479, 525, 547, 623, 640, 662, 751, 811, 828, 859, 879, 894, 908, 942, 955, 962, -1, -1 };
+short jeanyves_chat_ranges17[24] = { 45, 86, 122, 196, 258, 370, 398, 445, 467, 490, 518, 537, 547, 564, 579, 619, 641, 650, 668, 714, 733, 788, -1, -1 };
+short jeanyves_chat_ranges18[14] = { 47, 59, 75, 113, 123, 250, 331, 419, 437, 570, 592, 652, -1, -1 };
+short jeanyves_chat_ranges19[20] = { 224, 251, 288, 304, 328, 472, 502, 794, 1028, 1042, 1067, 1182, 1206, 1294, 1330, 1386, 1402, 1427, -1, -1 };
+short jeanyves_chat_ranges20[28] = { 150, 158, 174, 187, 208, 312, 334, 418, 437, 457, 479, 525, 547, 623, 640, 662, 751, 811, 828, 859, 879, 894, 908, 942, 955, 962, -1, -1 };
 short lara_chat_ranges24[16] = { 91, 122, 139, 172, 504, 552, 565, 637, 648, 678, 1596, 1616, 1774, 1821, -1, -1 };
-short sas_chat_ranges24[16] = { 209, 490, 701, 975, 1146, 1583, 1654, 1768, 1839, 1879, 1893, 1930, 1940, 2160, -1, -1 };
+short troop_chat_ranges24[16] = { 209, 490, 701, 975, 1146, 1583, 1654, 1768, 1839, 1879, 1893, 1930, 1940, 2160, -1, -1 };
 short lara_chat_ranges25[14] = { 476, 578, 976, 1018, 1028, 1069, 1317, 1340, 2065, 2178, 2835, 2865, -1, -1 };
-short sas_chat_ranges25[26] = { 289, 363, 378, 449, 596, 604, 635, 744, 764, 780, 811, 959, 1088, 1157, 1191, 1313, 1360, 2046, 2227, 2295, 2330, 2821, 2877, 3322, -1, -1 };
-short sas_chat_ranges26[4] = { 108, 432, -1, -1 };
+short troop_chat_ranges25[26] = { 289, 363, 378, 449, 596, 604, 635, 744, 764, 780, 811, 959, 1088, 1157, 1191, 1313, 1360, 2046, 2227, 2295, 2330, 2821, 2877, 3322, -1, -1 };
+short troop_chat_ranges26[4] = { 108, 432, -1, -1 };
 
 void handle_cutseq_triggering(long name)
 {
@@ -891,7 +891,7 @@ void eleventh_cutseq_control()
 	}
 
 	handle_lara_chatting(lara_chat_ranges11);
-	handle_actor_chatting(ACTOR1_SPEECH_HEAD1, 14, 2, ANIMATING8, sas_chat_ranges11);
+	handle_actor_chatting(ACTOR1_SPEECH_HEAD1, 14, 2, ANIMATING8, captain_chat_ranges11);
 	actor_chat_cnt = (actor_chat_cnt - 1) & 1;
 }
 
@@ -1051,7 +1051,7 @@ void sixteen_control()
 	}
 
 	handle_lara_chatting(lara_chat_ranges16);
-	handle_actor_chatting(ACTOR2_SPEECH_HEAD1, 18, 3, ANIMATING14_MIP, jean_chat_ranges16);
+	handle_actor_chatting(ACTOR2_SPEECH_HEAD1, 18, 3, ANIMATING14_MIP, jeanyves_chat_ranges16);
 	handle_actor_chatting(ACTOR1_SPEECH_HEAD1, 21, 1, ANIMATING9_MIP, voncroy_chat_ranges16);
 	actor_chat_cnt = (actor_chat_cnt - 1) & 1;
 }
@@ -1066,7 +1066,7 @@ void sixteen_end()
 
 void seventeen_control()
 {
-	handle_actor_chatting(ACTOR2_SPEECH_HEAD1, 18, 1, JEAN_YVES, jean_chat_ranges17);
+	handle_actor_chatting(ACTOR2_SPEECH_HEAD1, 18, 1, JEAN_YVES, jeanyves_chat_ranges17);
 	actor_chat_cnt = (actor_chat_cnt - 1) & 1;
 }
 
@@ -1084,7 +1084,7 @@ void eighteen_init()
 
 void eighteen_control()
 {
-	handle_actor_chatting(ACTOR2_SPEECH_HEAD1, 18, 1, JEAN_YVES, jean_chat_ranges18);
+	handle_actor_chatting(ACTOR2_SPEECH_HEAD1, 18, 1, JEAN_YVES, jeanyves_chat_ranges18);
 	actor_chat_cnt = (actor_chat_cnt - 1) & 1;
 }
 
@@ -1102,7 +1102,7 @@ void nineteen_init()
 
 void nineteen_control()
 {
-	handle_actor_chatting(ACTOR2_SPEECH_HEAD1, 18, 1, JEAN_YVES, jean_chat_ranges19);
+	handle_actor_chatting(ACTOR2_SPEECH_HEAD1, 18, 1, JEAN_YVES, jeanyves_chat_ranges19);
 	actor_chat_cnt = (actor_chat_cnt - 1) & 1;
 }
 
@@ -1115,7 +1115,7 @@ void nineteen_end()
 
 void twenty_control()
 {
-	handle_actor_chatting(ACTOR2_SPEECH_HEAD1, 18, 1, JEAN_YVES, jean_chat_ranges20);
+	handle_actor_chatting(ACTOR2_SPEECH_HEAD1, 18, 1, JEAN_YVES, jeanyves_chat_ranges20);
 	actor_chat_cnt = (actor_chat_cnt - 1) & 1;
 }
 
@@ -1216,7 +1216,7 @@ void twentyfour_control()
 	}
 
 	handle_lara_chatting(lara_chat_ranges24);
-	handle_actor_chatting(ACTOR1_SPEECH_HEAD1, 14, 1, ANIMATING13, sas_chat_ranges24);
+	handle_actor_chatting(ACTOR1_SPEECH_HEAD1, 14, 1, ANIMATING13, troop_chat_ranges24);
 	actor_chat_cnt = (actor_chat_cnt - 1) & 1;
 }
 
@@ -1229,7 +1229,7 @@ void twentyfour_end()
 void twentyfive_control()
 {
 	handle_lara_chatting(lara_chat_ranges25);
-	handle_actor_chatting(ACTOR1_SPEECH_HEAD1, 14, 1, ANIMATING8, sas_chat_ranges25);
+	handle_actor_chatting(ACTOR1_SPEECH_HEAD1, 14, 1, ANIMATING8, troop_chat_ranges25);
 	actor_chat_cnt = (actor_chat_cnt - 1) & 1;
 }
 
@@ -1257,7 +1257,7 @@ void twentyfive_init()
 
 void twentysix_control()
 {
-	handle_actor_chatting(ACTOR1_SPEECH_HEAD1, 14, 1, ANIMATING8, sas_chat_ranges26);
+	handle_actor_chatting(ACTOR1_SPEECH_HEAD1, 14, 1, ANIMATING8, troop_chat_ranges26);
 	actor_chat_cnt = (actor_chat_cnt - 1) & 1;
 }
 
