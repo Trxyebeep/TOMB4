@@ -2189,7 +2189,7 @@ void InitBinoculars()
 	binocsMeshP = (MESH_DATA*)meshes[obj->mesh_index];
 	binocsMeshP->SourceVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
 
-	for (int i = 0; i < targetMeshP->nVerts; i++)
+	for (int i = 0; i < binocsMeshP->nVerts; i++)
 	{
 		v[i].sx = (v[i].sx * 32) / 96;
 		v[i].sy = (v[i].sy * 30) / 224;
@@ -2202,7 +2202,7 @@ void InitBinoculars()
 	binocsMeshP->SourceVB->Unlock();
 }
 
-void DrawBinoculars()	//one wrong segment in binoc graphics
+void DrawBinoculars()
 {
 	MESH_DATA* mesh;
 	D3DTLVERTEX* v;
@@ -2354,5 +2354,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048BC30, SetUpLensFlare, replace);
 	INJECT(0x00487B60, InitTarget_2, replace);
 	INJECT(0x00487C30, InitBinoculars, replace);
-	INJECT(0x00487D00, DrawBinoculars, 0);
+	INJECT(0x00487D00, DrawBinoculars, replace);
 }
