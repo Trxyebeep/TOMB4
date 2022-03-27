@@ -421,6 +421,9 @@
 #define num_level_meshes VAR_U_(0x0052A344, long)
 #define mesh_vtxbuf VAR_U_(0x0052A340, MESH_DATA**)
 #define dont_exit_jeep	VAR_U_(0x004BFC68, char)
+#define targetMeshP	VAR_U_(0x007FE11C, MESH_DATA*)
+#define binocsMeshP	VAR_U_(0x007FDF60, MESH_DATA*)
+#define CurrentSequence	VAR_U_(0x007F5700, uchar)
 
 
 
@@ -504,13 +507,13 @@
 #define objects	ARRAY_(0x0052B850, OBJECT_INFO, [465])
 #define Locusts	ARRAY_(0x0080FA00, LOCUST_STRUCT, [64])
 #define ground_zone	ARRAY_(0x007FE980, short*, [5][2])
-#define rooms_around_the_bike	ARRAY_(0x007F5020, short, [22])
+#define broomies	ARRAY_(0x007F5020, short, [22])
 #define MonoScreen	ARRAY_(0x00577460, MONOSCREEN_STRUCT, [5])
 #define XYUVClipperBuffer	ARRAY_(0x006607B0, D3DTLBUMPVERTEX, [20])
 #define zClipperBuffer	ARRAY_(0x005C0488, D3DTLBUMPVERTEX, [20])
 #define debris	ARRAY_(0x00808FA0, DEBRIS_STRUCT, [256])
 #define RPickups	ARRAY_(0x007FD1C0, uchar, [16])
-#define rooms_around_the_jeep	ARRAY_(0x007F4FE0, short, [22])
+#define jroomies	ARRAY_(0x007F4FE0, short, [22])
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)

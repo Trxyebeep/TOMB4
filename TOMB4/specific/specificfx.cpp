@@ -68,6 +68,26 @@ char flare_table[121] =
 	-1
 };
 
+uchar TargetGraphColTab[48] =
+{
+	0, 0, 255,
+	0, 0, 255,
+	255, 255, 0,
+	255, 255, 0,
+	0, 0, 255,
+	0, 0, 255,
+	255, 255, 0,
+	255, 255, 0,
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0
+};
+
 #ifdef SMOOTH_SHADOWS
 static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 {
@@ -2130,6 +2150,183 @@ void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj)
 	}
 }
 
+void InitTarget_2()
+{
+	OBJECT_INFO* obj;
+	D3DTLVERTEX* v;
+
+	obj = &objects[TARGET_GRAPHICS];
+
+	if (!obj->loaded)
+		return;
+
+	targetMeshP = (MESH_DATA*)meshes[obj->mesh_index];
+	targetMeshP->SourceVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
+
+	for (int i = 0; i < targetMeshP->nVerts; i++)
+	{
+		v[i].sx = (v[i].sx * 80) / 96;
+		v[i].sy = (v[i].sy * 60) / 224;
+		v[i].sz = 0;
+		v[i].rhw = f_mpersp / f_mznear * f_moneopersp;
+		v[i].color = 0xFF000000;
+		v[i].specular = 0xFF000000;
+	}
+
+	targetMeshP->SourceVB->Unlock();
+}
+
+void InitBinoculars()
+{
+	OBJECT_INFO* obj;
+	D3DTLVERTEX* v;
+
+	obj = &objects[BINOCULAR_GRAPHICS];
+
+	if (!obj->loaded)
+		return;
+
+	binocsMeshP = (MESH_DATA*)meshes[obj->mesh_index];
+	binocsMeshP->SourceVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
+
+	for (int i = 0; i < binocsMeshP->nVerts; i++)
+	{
+		v[i].sx = (v[i].sx * 32) / 96;
+		v[i].sy = (v[i].sy * 30) / 224;
+		v[i].sz = 0;
+		v[i].rhw = f_mpersp / f_mznear * f_moneopersp;
+		v[i].color = 0xFF000000;
+		v[i].specular = 0xFF000000;
+	}
+
+	binocsMeshP->SourceVB->Unlock();
+}
+
+void DrawBinoculars()
+{
+	MESH_DATA* mesh;
+	D3DTLVERTEX* v;
+	TEXTURESTRUCT* tex;
+	D3DTLVERTEX vtx[256];
+	short* clip;
+	short* quad;
+	short* tri;
+	ushort drawbak;
+	short clipdistance;
+
+	if (LaserSight)
+		mesh = targetMeshP;
+	else
+		mesh = binocsMeshP;
+
+	mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
+	clip = clipflags;
+
+	for (int i = 0; i < mesh->nVerts; i++)
+	{
+		clipdistance = 0;
+		vtx[i] = v[i];
+		vtx[i].sx = (vtx[i].sx * float(phd_winxmax / 512.0F)) + f_centerx;
+		vtx[i].sy = (vtx[i].sy * float(phd_winymax / 240.0F)) + f_centery;
+
+		if (vtx[i].sx < f_left)
+			clipdistance = 1;
+		else if (vtx[i].sx > f_right)
+			clipdistance = 2;
+
+		if (vtx[i].sy < f_top)
+			clipdistance += 4;
+		else if (vtx[i].sy > f_bottom)
+			clipdistance += 8;
+
+		*clip++ = clipdistance;
+	}
+
+	mesh->SourceVB->Unlock();
+	quad = mesh->gt4;
+	tri = mesh->gt3;
+
+	if (LaserSight)
+	{
+		for (int i = 0; i < mesh->ngt4; i++, quad += 6)
+		{
+			tex = &textinfo[quad[4] & 0x7FFF];
+			drawbak = tex->drawtype;
+			tex->drawtype = 0;
+
+			if (quad[5] & 1)
+			{
+				vtx[quad[0]].color = 0xFF000000;
+				vtx[quad[1]].color = 0xFF000000;
+				vtx[quad[2]].color = 0;
+				vtx[quad[3]].color = 0;
+				tex->drawtype = 3;
+			}
+
+			AddQuadSorted(vtx, quad[0], quad[1], quad[2], quad[3], tex, 1);
+			tex->drawtype = drawbak;
+		}
+
+		for (int i = 0, j = 0; i < mesh->ngt3; i++, tri += 5)
+		{
+			tex = &textinfo[tri[3] & 0x7FFF];
+			drawbak = tex->drawtype;
+			tex->drawtype = 0;
+
+			if (tri[4] & 1)
+			{
+				vtx[tri[0]].color = TargetGraphColTab[j] << 24;
+				vtx[tri[1]].color = TargetGraphColTab[j + 1] << 24;
+				vtx[tri[2]].color = TargetGraphColTab[j + 2] << 24;
+				tex->drawtype = 3;
+				j += 3;
+			}
+
+			AddTriSorted(vtx, tri[0], tri[1], tri[2], tex, 1);
+			tex->drawtype = drawbak;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < mesh->ngt4; i++, quad += 6)
+		{
+			tex = &textinfo[quad[4] & 0x7FFF];
+			drawbak = tex->drawtype;
+			tex->drawtype = 0;
+
+			if (quad[5] & 1)
+			{
+				vtx[quad[0]].color = 0xFF000000;
+				vtx[quad[1]].color = 0xFF000000;
+				vtx[quad[2]].color = 0;
+				vtx[quad[3]].color = 0;
+				tex->drawtype = 3;
+			}
+
+			AddQuadSorted(vtx, quad[0], quad[1], quad[2], quad[3], tex, 1);
+			tex->drawtype = drawbak;
+		}
+
+		for (int i = 0; i < mesh->ngt3; i++, tri += 5)
+		{
+			tex = &textinfo[tri[3] & 0x7FFF];
+			drawbak = tex->drawtype;
+			tex->drawtype = 0;
+
+			if (tri[4] & 1)
+			{
+				vtx[tri[0]].color = 0;
+				vtx[tri[1]].color = 0xFF000000;
+				vtx[tri[2]].color = 0;
+				tex->drawtype = 3;
+			}
+
+			AddTriSorted(vtx, tri[0], tri[1], tri[2], tex, 1);
+			tex->drawtype = drawbak;
+		}
+	}
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -2155,4 +2352,7 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048BAB0, DrawSprite, replace);
 	INJECT(0x0048B130, ShowTitle, replace);
 	INJECT(0x0048BC30, SetUpLensFlare, replace);
+	INJECT(0x00487B60, InitTarget_2, replace);
+	INJECT(0x00487C30, InitBinoculars, replace);
+	INJECT(0x00487D00, DrawBinoculars, replace);
 }

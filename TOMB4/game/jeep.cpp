@@ -22,6 +22,7 @@
 #include "traps.h"
 #include "debris.h"
 #include "bike.h"
+#include "box.h"
 
 void InitialiseJeep(short item_number)
 {
@@ -1060,27 +1061,27 @@ void JeepBaddieCollision(ITEM_INFO* item)
 
 	jeep = (JEEPINFO*)item->data;
 	room_count = 1;
-	rooms_around_the_jeep[0] = item->room_number;
+	jroomies[0] = item->room_number;
 	doors = room[item->room_number].door;
 
 	for (int i = *doors++; i > 0; i--, doors += 16)
 	{
 		for (j = 0; j < room_count; j++)
 		{
-			if (rooms_around_the_jeep[j] == *doors)
+			if (jroomies[j] == *doors)
 				break;
 		}
 
 		if (j == room_count)
 		{
-			rooms_around_the_jeep[room_count] = *doors;
+			jroomies[room_count] = *doors;
 			room_count++;
 		}
 	}
 
 	for (int i = 0; i < room_count; i++)
 	{
-		for (item_number = room[rooms_around_the_jeep[i]].item_number; item_number != NO_ITEM; item_number = collided->next_item)
+		for (item_number = room[jroomies[i]].item_number; item_number != NO_ITEM; item_number = collided->next_item)
 		{
 			collided = &items[item_number];
 			obj = &objects[collided->object_number];
@@ -1153,27 +1154,27 @@ void JeepCollideStaticObjects(long x, long y, long z, short room_number, long he
 	JeepBounds[4] = z + 256;
 	JeepBounds[5] = z - 256;
 	room_count = 1;
-	rooms_around_the_jeep[0] = room_number;
+	jroomies[0] = room_number;
 	doors = room[room_number].door;
 
 	for (int i = *doors++; i > 0; i--, doors += 16)
 	{
 		for (j = 0; j < room_count; j++)
 		{
-			if (rooms_around_the_jeep[j] == *doors)
+			if (jroomies[j] == *doors)
 				break;
 		}
 
 		if (j == room_count)
 		{
-			rooms_around_the_jeep[room_count] = *doors;
+			jroomies[room_count] = *doors;
 			room_count++;
 		}
 	}
 
 	for (int i = 0; i < room_count; i++)
 	{
-		rn = rooms_around_the_jeep[i];
+		rn = jroomies[i];
 		r = &room[rn];
 		mesh = r->mesh;
 
@@ -1405,7 +1406,7 @@ long JeepDynamics(ITEM_INFO* item)
 		if (shift)
 			shift += abs(DoShift(item, &blPos2, &blPos) << 2);
 		else
-			shift = abs(DoShift(item, &blPos2, &blPos) << 2);
+			shift = -abs(DoShift(item, &blPos2, &blPos) << 2);
 	}
 
 	front_right2 = TestHeight(item, 550, 256, &frPos2);
@@ -1672,6 +1673,61 @@ void JeepStart(ITEM_INFO* item, ITEM_INFO* l)
 	jeep->gear = 0;
 }
 
+void JeepFireGrenade(ITEM_INFO* item)
+{
+	ITEM_INFO* grenade;
+	short item_number;
+
+	item_number = CreateItem();
+
+	if (item_number != NO_ITEM)
+	{
+		grenade = &items[item_number];
+		grenade->shade = -0x3DF0;
+		grenade->object_number = GRENADE;
+		grenade->room_number = item->room_number;
+		InitialiseItem(item_number);
+		grenade->pos.x_rot = item->pos.x_rot;
+		grenade->pos.z_rot = 0;
+		grenade->pos.y_rot= item->pos.y_rot + 0x8000;
+		grenade->pos.x_pos = item->pos.x_pos + (1024 * phd_sin(grenade->pos.y_rot) >> 14);
+		grenade->pos.y_pos = item->pos.y_pos - 768;
+		grenade->pos.z_pos = item->pos.z_pos + (1024 * phd_cos(grenade->pos.y_rot) >> 14);
+		SmokeCountL = 32;
+		SmokeWeapon = 5;
+
+		for (int i = 0; i < 5; i++)
+			TriggerGunSmoke(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 0, 0, 0, 1, 5, 32);
+
+		if (GetRandomControl() & 3)
+			grenade->item_flags[0] = 1;
+		else
+			grenade->item_flags[0] = 2;
+
+		grenade->speed = 32;
+		grenade->fallspeed = -32 * phd_sin(grenade->pos.x_rot) >> 14;
+		grenade->current_anim_state = grenade->pos.x_rot;
+		grenade->goal_anim_state = grenade->pos.y_rot;
+		grenade->required_anim_state = 0;
+		grenade->hit_points = 120;
+		AddActiveItem(item_number);
+	}
+}
+
+void InitialiseEnemyJeep(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	InitialiseCreature(item_number);
+	item->anim_number = objects[item->object_number].anim_index + 14;
+	item->frame_number = anims[item->anim_number].frame_base;
+	item->current_anim_state = 0;
+	item->goal_anim_state = 0;
+	item->mesh_bits = ~0x24000;
+	item->status = ITEM_DEACTIVATED;
+}
+
 void inject_jeep(bool replace)
 {
 	INJECT(0x00466F40, InitialiseJeep, replace);
@@ -1692,4 +1748,6 @@ void inject_jeep(bool replace)
 	INJECT(0x00467CF0, JeepDynamics, replace);
 	INJECT(0x00467380, JeepControl, replace);
 	INJECT(0x0046A620, JeepStart, replace);
+	INJECT(0x0046A4D0, JeepFireGrenade, replace);
+	INJECT(0x00469B90, InitialiseEnemyJeep, replace);
 }

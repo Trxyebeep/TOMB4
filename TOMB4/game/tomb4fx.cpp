@@ -233,9 +233,87 @@ void DrawGunshells()
 	}
 }
 
+void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, long notLara, long weaponType, long shade)
+{
+	SMOKE_SPARKS* sptr;
+	uchar size;
+
+	sptr = &smoke_spark[GetFreeSmokeSpark()];
+	sptr->On = 1;
+	sptr->sShade = 0;
+	sptr->dShade = uchar(4 * shade);
+	sptr->ColFadeSpeed = 4;
+	sptr->FadeToBlack = uchar(32 - 16 * notLara);
+	sptr->Life = (GetRandomControl() & 3) + 40;
+	sptr->sLife = sptr->Life;
+
+	if ((weaponType == WEAPON_PISTOLS || weaponType == WEAPON_REVOLVER || weaponType == WEAPON_UZI) && sptr->dShade > 64u)
+		sptr->dShade = 64;
+
+	sptr->TransType = 2;
+	sptr->x = (GetRandomControl() & 0x1F) + x - 16;
+	sptr->y = (GetRandomControl() & 0x1F) + y - 16;
+	sptr->z = (GetRandomControl() & 0x1F) + z - 16;
+
+	if (notLara)
+	{
+		sptr->Xvel = short((GetRandomControl() & 0x3FF) + xVel - 512);
+		sptr->Yvel = short((GetRandomControl() & 0x3FF) + yVel - 512);
+		sptr->Zvel = short((GetRandomControl() & 0x3FF) + zVel - 512);
+	}
+	else
+	{
+		sptr->Xvel = ((GetRandomControl() & 0x1FF) - 256) >> 1;
+		sptr->Yvel = ((GetRandomControl() & 0x1FF) - 256) >> 1;
+		sptr->Zvel = ((GetRandomControl() & 0x1FF) - 256) >> 1;
+	}
+
+	sptr->Friction = 4;
+
+	if (GetRandomControl() & 1)
+	{
+		if (room[lara_item->room_number].flags & ROOM_NOT_INSIDE)
+			sptr->Flags = 272;
+
+		else
+			sptr->Flags = 16;
+
+		sptr->RotAng = GetRandomControl() & 0xFFF;
+
+		if (GetRandomControl() & 1)
+			sptr->RotAdd = -16 - (GetRandomControl() & 0xF);
+		else
+			sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
+	}
+	else if (room[lara_item->room_number].flags & ROOM_NOT_INSIDE)
+		sptr->Flags = 256;
+	else
+		sptr->Flags = 0;
+
+	sptr->Gravity = -2 - (GetRandomControl() & 1);
+	sptr->MaxYvel = -2 - (GetRandomControl() & 1);
+	size = (GetRandomControl() & 0xF) - (weaponType != WEAPON_GRENADE ? 24 : 0) + 48;
+
+	if (notLara)
+	{
+		sptr->Size = size >> 1;
+		sptr->sSize = size >> 1;
+		sptr->dSize = (size + 4)<<1;
+	}
+	else
+	{
+		sptr->sSize = size >> 2;
+		sptr->Size = size >> 2;
+		sptr->dSize = size;
+	}
+
+	sptr->mirror = gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
 	INJECT(0x0043A690, ExplodingDeath2, replace);
 	INJECT(0x004395B0, DrawGunshells, replace);
+	INJECT(0x00438940, TriggerGunSmoke, replace);
 }

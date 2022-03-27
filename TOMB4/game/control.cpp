@@ -223,13 +223,19 @@ long ControlPhase(long nframes, long demo_mode)
 		{
 #ifdef GENERAL_FIXES
 			if (input & IN_SAVE && lara_item->hit_points > 0)
+				S_LoadSave(IN_SAVE, 0, 0);
 #else
 			if (input & IN_SAVE)
-#endif
 				S_LoadSave(IN_SAVE, 0);
+#endif
+
 			else if (input & IN_LOAD)
 			{
+#ifdef GENERAL_FIXES
+				if (S_LoadSave(IN_LOAD, 0, 0) >= 0)
+#else
 				if (S_LoadSave(IN_LOAD, 0) >= 0)
+#endif
 					return 2;
 			}
 

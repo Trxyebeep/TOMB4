@@ -52,7 +52,11 @@ RINGME pcring2;
 
 long LoadGame()
 {
+#ifdef GENERAL_FIXES
+	if (S_LoadSave(IN_LOAD, 1, 1) < 0)
+#else
 	if (S_LoadSave(IN_LOAD, 1) < 0)
+#endif
 		return -1;
 	else
 		return 1;
@@ -62,7 +66,12 @@ long SaveGame()
 {
 	long Save;
 
-	Save = S_LoadSave(IN_SAVE, 1);
+	Save = 
+#ifdef GENERAL_FIXES
+		S_LoadSave(IN_SAVE, 1, 1);
+#else
+		S_LoadSave(IN_SAVE, 1);
+#endif
 	input = 0;
 	dbinput = 0;
 
@@ -1301,12 +1310,12 @@ void draw_compass()
 void do_examine_mode()
 {
 	INVOBJ* objme;
-	static long yoff;
-	static long yoff2;
+	static long WANK_RULES_YPOS;
+	static long WANK_SCROL_YPOS;
 	short saved_scale, invitem;
 
-	yoff = font_height;
-	yoff2 = font_height * 5;
+	WANK_RULES_YPOS = font_height;
+	WANK_SCROL_YPOS = font_height * 5;
 
 	examine_mode += 8;
 
@@ -1333,8 +1342,8 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2),
 			INV_EXAMINE2_ITEM, examine_mode, 0, 0, 0, 0, 0);
 		objme->scale1 = saved_scale;
-		PrintString((ushort)phd_centerx, (ushort)yoff, 5, SCRIPT_TEXT(TXT_RULES1), FF_CENTER);
-		PrintString((ushort)phd_centerx, (ushort)(yoff + phd_winheight / 2), 5, SCRIPT_TEXT(TXT_RULES2), FF_CENTER);
+		PrintString((ushort)phd_centerx, (ushort)WANK_RULES_YPOS, 5, SCRIPT_TEXT(TXT_RULES1), FF_CENTER);
+		PrintString((ushort)phd_centerx, (ushort)(WANK_RULES_YPOS + phd_winheight / 2), 5, SCRIPT_TEXT(TXT_RULES2), FF_CENTER);
 		break;
 
 	case INV_EXAMINE3_ITEM:
@@ -1343,7 +1352,7 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2 - 8),
 			INV_EXAMINE3_ITEM, examine_mode, 0x8000, 0x4000, 0x4000, 96, 0);
 		objme->scale1 = saved_scale;
-		PrintString((ushort)phd_centerx, (ushort)yoff2, 8, SCRIPT_TEXT(TXT_PETEPOO), FF_CENTER);
+		PrintString((ushort)phd_centerx, (ushort)WANK_SCROL_YPOS, 8, SCRIPT_TEXT(TXT_PETEPOO), FF_CENTER);
 		break;
 	}
 
