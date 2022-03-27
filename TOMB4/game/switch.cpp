@@ -6,7 +6,11 @@
 #include "control.h"
 
 static short FullBlockSwitchBounds[12] = { -384, 384, 0, 256, 0, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
+#ifdef GENERAL_FIXES
+static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 0 };
+#else
 static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 100 };
+#endif
 
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
