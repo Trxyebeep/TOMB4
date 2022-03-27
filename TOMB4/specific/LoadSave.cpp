@@ -430,7 +430,10 @@ void S_DrawHealthBar(long pos)
 	long x, y;
 
 	if (BinocularRange)
+	{
 		S_DrawHealthBar2(pos);
+		return;
+	}
 
 	if (tomb4.bars_pos == 1 || tomb4.bars_pos == 2)//original or improved
 	{
