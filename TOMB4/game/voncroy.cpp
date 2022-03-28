@@ -1077,7 +1077,7 @@ void VoncroyControl(short item_number)
 	FLOOR_INFO* floor;
 	static AI_INFO VonCroyAI;
 	static AI_INFO VonCroyLaraAI;
-	long Xoffset, Zoffset, x, y, z, nearheight, midheight, farheight, dx, dz, dist, max_dist, h, c, goin;
+	long Xoffset, Zoffset, x, y, z, nearheight, midheight, farheight, dx, dz, dist, max_dist, h, c, goin, goin2;
 	short angle, torso_x, torso_y, head_x, head_y, room_number, jump_ahead, long_jump_ahead, ifl3;
 
 	if (!CreatureActive(item_number))
@@ -1294,6 +1294,7 @@ void VoncroyControl(short item_number)
 		}
 
 		goin = 0;
+		goin2 = 0;
 
 		if (item->required_anim_state)
 			item->goal_anim_state = item->required_anim_state;
@@ -1387,38 +1388,43 @@ void VoncroyControl(short item_number)
 			goin = 1;
 		else if (oEnemy)
 		{
-			if (oEnemy->flags)
-			{
-				if (lara.locationPad == item->item_flags[3] || VonCroyCutTracks[item->item_flags[3]] == -1 &&
-					lara.location == item->item_flags[3] && VonCroyLaraAI.distance < 0x900000)
-					goin = 1;
-				else if (VonCroyLaraAI.distance >= 0x900000)
-					item->goal_anim_state = 1;
-			}
-		}
-		else if (!item->item_flags[2])
-		{
-			if (VonCroyLaraAI.angle > 1024)
-				item->goal_anim_state = 35;
-			else if (VonCroyLaraAI.angle < -1024)
-				item->goal_anim_state = 22;
+			if (oEnemy->flags && (lara.locationPad == item->item_flags[3] || VonCroyCutTracks[item->item_flags[3]] == -1 &&
+				lara.location == item->item_flags[3] && VonCroyLaraAI.distance < 0x900000))
+				goin = 1;
+			else if (oEnemy->flags && VonCroyLaraAI.distance >= 0x900000)
+				item->goal_anim_state = 1;
 			else
-				item->item_flags[2] = 1;
+				goin2 = 1;
 		}
-		else if (item->item_flags[2] == 1)
+		else 
+			goin2 = 1;
+		
+		if (goin2)
 		{
-			ifl3 = 1;
-			VonCroy->reached_goal = 0;
-			VonCroy->enemy = 0;
-			item->item_flags[3] += ifl3;
-			item->ai_bits = 16;
+			if (!item->item_flags[2])
+			{
+				if (VonCroyLaraAI.angle > 1024)
+					item->goal_anim_state = 35;
+				else if (VonCroyLaraAI.angle < -1024)
+					item->goal_anim_state = 22;
+				else
+					item->item_flags[2] = 1;
+			}
+			else if (item->item_flags[2] != 1)
+			{
+				ifl3 = 1;
+				VonCroy->reached_goal = 0;
+				VonCroy->enemy = 0;
+				item->item_flags[3] += ifl3;
+				item->ai_bits = 16;
+			}
+			else if (GetRandomControl() & 0xF)
+				item->item_flags[2] = 0;
+			else if (VonCroyLaraAI.distance >= 0x900000)
+				item->goal_anim_state = 13;
+			else
+				item->goal_anim_state = 14;
 		}
-		else if (GetRandomControl() & 0xF)
-			item->item_flags[2] = 0;
-		else if (VonCroyLaraAI.distance >= 0x900000)
-			item->goal_anim_state = 13;
-		else
-			item->goal_anim_state = 14;
 
 		if (goin)
 		{
