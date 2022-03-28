@@ -1496,6 +1496,7 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/cmdline.cpp
 
 0x0046FE40		CLSetup
+0x0046FE60		CLNoFMV
 0x0046FE80		DXSetupDialog
 0x0046FED0		InitDSDevice
 0x0046FFA0		InitTFormats
@@ -1777,7 +1778,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00484BF0	+	REG_ReadBool
 0x00484C70	+	OpenRegistry
 0x00484CC0	+	CloseRegistry
-0x00484CD0		LoadSettings
+0x00484CD0	+	LoadSettings
 0x00485190		SaveSetup
 0x004853F0		SaveSettings
 

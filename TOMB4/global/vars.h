@@ -424,6 +424,8 @@
 #define targetMeshP	VAR_U_(0x007FE11C, MESH_DATA*)
 #define binocsMeshP	VAR_U_(0x007FDF60, MESH_DATA*)
 #define CurrentSequence	VAR_U_(0x007F5700, uchar)
+#define REG_Setup	VAR_U_(0x00670E44, bool)
+#define fmvs_disabled	VAR_U_(0x004BFE85, bool)
 
 
 
