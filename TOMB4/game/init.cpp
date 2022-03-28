@@ -329,7 +329,7 @@ void InitialiseRaisingBlock(short item_number)
 	item = &items[item_number];
 	room_num = item->room_number;
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_num);
-	boxes[floor->box].overlap_index &= 0xBF;
+	boxes[floor->box].overlap_index &= 0xBFFF;
 
 	if (item->object_number == EXPANDING_PLATFORM)
 	{
