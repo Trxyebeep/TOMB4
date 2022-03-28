@@ -196,6 +196,42 @@ bool LoadSettings()
 	return REG_Setup;
 }
 
+void SaveSettings()
+{
+	OpenRegistry("Game");
+	REG_WriteLong((char*)"Key0", layout[1][0]);
+	REG_WriteLong((char*)"Key1", layout[1][1]);
+	REG_WriteLong((char*)"Key2", layout[1][2]);
+	REG_WriteLong((char*)"Key3", layout[1][3]);
+	REG_WriteLong((char*)"Key4", layout[1][4]);
+	REG_WriteLong((char*)"Key5", layout[1][5]);
+	REG_WriteLong((char*)"Key6", layout[1][6]);
+	REG_WriteLong((char*)"Key7", layout[1][7]);
+	REG_WriteLong((char*)"Key8", layout[1][8]);
+	REG_WriteLong((char*)"Key9", layout[1][9]);
+	REG_WriteLong((char*)"Key10", layout[1][10]);
+	REG_WriteLong((char*)"Key11", layout[1][11]);
+	REG_WriteLong((char*)"Key12", layout[1][12]);
+	REG_WriteLong((char*)"Key13", layout[1][13]);
+	REG_WriteLong((char*)"Key14", layout[1][14]);
+	REG_WriteLong((char*)"Key15", layout[1][15]);
+	REG_WriteLong((char*)"Key16", layout[1][16]);
+	REG_WriteLong((char*)"Key17", layout[1][17]);
+	REG_WriteLong((char*)"ControlMethod", ControlMethod);
+	REG_WriteLong((char*)"MusicVolume", MusicVolume);
+	REG_WriteLong((char*)"SFXVolume", SFXVolume);
+	REG_WriteLong((char*)"SoundQuality", SoundQuality);
+	REG_WriteLong((char*)"AutoTarget", App.AutoTarget);
+	REG_WriteLong((char*)"WindowX", App.dx.rScreen.left);
+	REG_WriteLong((char*)"WindowY", App.dx.rScreen.top);
+	CloseRegistry();
+
+	OpenRegistry("System");
+	REG_WriteLong((char*)"VMode", App.DXInfo.nDisplayMode);
+	REG_WriteBool((char*)"Window", (App.dx.Flags & 2) != 0);
+	CloseRegistry();
+}
+
 #ifdef GENERAL_FIXES	//I need this one
 bool REG_KeyWasCreated()
 {
@@ -214,4 +250,5 @@ void inject_registry(bool replace)
 	INJECT(0x00484B90, REG_ReadLong, replace);
 	INJECT(0x00484BF0, REG_ReadBool, replace);
 	INJECT(0x00484CD0, LoadSettings, replace);
+	INJECT(0x004853F0, SaveSettings, replace);
 }
