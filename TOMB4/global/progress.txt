@@ -1738,7 +1738,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x00480A50	+	DrawSortList
 0x004812D0	+	HWR_DrawSortList
-0x00481760		DoSort
+0x00481760	+	DoSort
 0x00481810		SortPolyList
 0x00481860	+	InitialiseSortList
 0x004818A0	+	ClearFXFogBulbs

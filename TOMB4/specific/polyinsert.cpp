@@ -1147,6 +1147,42 @@ void InitialiseSortList()
 	SortCount = 0;
 }
 
+void DoSort(long left, long right, SORTLIST** list)
+{
+	SORTLIST* swap;
+	float z;
+	long l, r;
+
+	l = left;
+	r = right;
+	z = list[(left + right) / 2]->zVal;
+
+	do
+	{
+		while (l < right && list[l]->zVal > z)
+			l++;
+
+		while (r > left && list[r]->zVal < z)
+			r--;
+
+		if (l <= r)
+		{
+			swap = list[l];
+			list[l] = list[r];
+			list[r] = swap;
+			l++;
+			r--;
+		}
+
+	} while (l <= r);
+
+	if (r > left)
+		DoSort(left, r, list);
+
+	if (l < right)
+		DoSort(l, right, list);
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -1165,4 +1201,5 @@ void inject_polyinsert(bool replace)
 	INJECT(0x004842A0, AddQuadClippedSorted, replace);
 	INJECT(0x00484850, AddLineClippedSorted, replace);
 	INJECT(0x00481860, InitialiseSortList, replace);
+	INJECT(0x00481760, DoSort, replace);
 }
