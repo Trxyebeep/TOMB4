@@ -5,6 +5,7 @@
 ### Original bug fixes
 
 - Fix fog affecting inventory items after saving.
+- Fix Lara's position when interacting with the fullblock switch.
 
 ### tomb4 bug fixes
 
