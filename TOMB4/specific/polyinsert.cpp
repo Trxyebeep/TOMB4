@@ -1140,6 +1140,13 @@ void AddLineClippedSorted(D3DTLVERTEX* v0, D3DTLVERTEX* v1, short drawtype)
 	v[1].specular = v1->specular;
 }
 
+void InitialiseSortList()
+{
+	pSortBuffer = SortBuffer;
+	pSortList = SortList;
+	SortCount = 0;
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -1156,5 +1163,6 @@ void inject_polyinsert(bool replace)
 	INJECT(0x004820C0, OmniFog, replace);
 	INJECT(0x00483C80, AddTriClippedSorted, replace);
 	INJECT(0x004842A0, AddQuadClippedSorted, replace);
-	INJECT(0x00484850, AddLineClippedSorted, 0);
+	INJECT(0x00484850, AddLineClippedSorted, replace);
+	INJECT(0x00481860, InitialiseSortList, replace);
 }

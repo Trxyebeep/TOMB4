@@ -463,6 +463,7 @@
 #define hairs	ARRAY_(0x0080E160, HAIR_STRUCT, [2][7])
 #define first_hair	ARRAY_(0x0080E140, long, [2])
 #define SortList	ARRAY_(0x00660C94, SORTLIST*, [16384])
+#define SortBuffer	ARRAY_(0x005C07AC, char, [65536])
 #define ScratchVertNums	ARRAY_(0x0080E320, char, [40][12])
 #define HairRotScratchVertNums	ARRAY_(0x004AD6D4, char, [5][12])
 #define IMstack	ARRAY_(0x007FD320, long, [768])
