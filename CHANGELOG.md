@@ -1,5 +1,17 @@
 # tomb4 changelog
 
+## [1.1.1](https://github.com/Trxyebeep/TOMB4/tree/V1.1.1) (March 28 2022)
+
+### Original bug fixes
+
+- Fix fog affecting inventory items after saving.
+
+### tomb4 bug fixes
+
+- Fix some Jeep and Bike collision behavior.
+- Fix Guide/Scorpions being stuck in Tomb of Seth. (InitialiseRaisingBlock)
+- Fix VonCroy not gesturing for Lara.
+
 ## [1.1.0](https://github.com/Trxyebeep/TOMB4/tree/V1.1.0) (March 26 2022)
 
 ### Original bug fixes
