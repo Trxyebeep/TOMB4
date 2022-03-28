@@ -1183,6 +1183,17 @@ void DoSort(long left, long right, SORTLIST** list)
 		DoSort(l, right, list);
 }
 
+void SortPolyList(long count, SORTLIST** list)
+{
+	if (!count)
+		return;
+
+	for (int i = 0; i < count; i++)
+		list[i]->zVal -= (float)i * 0.1F;
+
+	DoSort(0, count - 1, list);
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -1202,4 +1213,5 @@ void inject_polyinsert(bool replace)
 	INJECT(0x00484850, AddLineClippedSorted, replace);
 	INJECT(0x00481860, InitialiseSortList, replace);
 	INJECT(0x00481760, DoSort, replace);
+	INJECT(0x00481810, SortPolyList, replace);
 }
