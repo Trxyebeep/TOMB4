@@ -1405,7 +1405,7 @@ void VoncroyControl(short item_number)
 			else
 				item->item_flags[2] = 1;
 		}
-		else if (item->item_flags[2] == 1)
+		else if (item->item_flags[2] != 1)
 		{
 			ifl3 = 1;
 			VonCroy->reached_goal = 0;
