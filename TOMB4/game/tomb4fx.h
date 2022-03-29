@@ -7,6 +7,7 @@ LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation,
 long ExplodingDeath2(short item_number, long mesh_bits, short Flags);
 void DrawGunshells();
 void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, long notLara, long weaponType, long shade);
+void LaraBubbles(ITEM_INFO* item);
 
 #define ClearFires	( (void(__cdecl*)()) 0x004384F0 )
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )

@@ -424,35 +424,35 @@ x for functions decompiled but not injected, for one reason or another.
 0x004372A0		Splash
 0x00437390		WadeSplash
 0x00437530		WaterFall
-0x00437650		finish_level_effect
-0x00437660		turn180_effect
-0x00437680		floor_shake_effect
-0x00437720		SoundFlipEffect
-0x00437740		RubbleFX
-0x004377B0		PoseidonSFX
-0x004377D0		ActivateCamera
-0x004377E0		ActivateKey
-0x004377F0		SwapCrowbar
-0x00437820		ExplosionFX
-0x00437850		LaraLocation
-0x00437880		LaraLocationPad
-0x004378A0		GhostTrap
-0x00437930		KillActiveBaddies
-0x004379E0		lara_hands_free
-0x004379F0		draw_right_gun
-0x00437A40		draw_left_gun
-0x00437A90		shoot_right_gun
-0x00437AA0		shoot_left_gun
+0x00437650	+	finish_level_effect
+0x00437660	+	turn180_effect
+0x00437680	+	floor_shake_effect
+0x00437720	+	SoundFlipEffect
+0x00437740	+	RubbleFX
+0x004377B0	+	PoseidonSFX
+0x004377D0	+	ActivateCamera
+0x004377E0	+	ActivateKey
+0x004377F0	+	SwapCrowbar
+0x00437820	+	ExplosionFX
+0x00437850	+	LaraLocation
+0x00437880	+	LaraLocationPad
+0x004378A0	+	GhostTrap
+0x00437930	+	KillActiveBaddies
+0x004379E0	+	lara_hands_free
+0x004379F0	+	draw_right_gun
+0x00437A40	+	draw_left_gun
+0x00437A90	+	shoot_right_gun
+0x00437AA0	+	shoot_left_gun
 0x00437AB0	+	SetFog
-0x00437B60		swap_meshes_with_meshswap1
-0x00437BC0		swap_meshes_with_meshswap2
-0x00437C20		swap_meshes_with_meshswap3
-0x00437CB0		invisibility_on
-0x00437CC0		invisibility_off
-0x00437CE0		reset_hair
-0x00437CF0		ClearScarabsPatch
-0x00437D00		MeshSwapToPour
-0x00437D30		MeshSwapFromPour
+0x00437B60	+	swap_meshes_with_meshswap1
+0x00437BC0	+	swap_meshes_with_meshswap2
+0x00437C20	+	swap_meshes_with_meshswap3
+0x00437CB0	+	invisibility_on
+0x00437CC0	+	invisibility_off
+0x00437CE0	+	reset_hair
+0x00437CF0	+	ClearScarabsPatch
+0x00437D00	+	MeshSwapToPour
+0x00437D30	+	MeshSwapFromPour
 
 
 		game/elements.cpp
@@ -1320,7 +1320,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00439660		TriggerSmallSplash
 0x00439780		GetFreeBubble
 0x004397F0		CreateBubble
-0x004398B0		LaraBubbles
+0x004398B0	+	LaraBubbles
 0x00439970		UpdateBubbles
 0x00439AE0		TriggerGunflash
 0x00439B80		SetGunFlash
