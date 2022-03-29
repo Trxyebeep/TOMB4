@@ -1852,6 +1852,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool enemy_bars;
 	bool cutseq_skipper;
 	bool cheats;
+	bool loadingtxt;
 };
 #endif
 #pragma pack(pop)

@@ -494,12 +494,15 @@ void RenderLoadPic(long unused)
 		RenderIt(camera.pos.room_number);
 
 #ifdef GENERAL_FIXES
-		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
-			PrintString((ushort)phd_centerx, ushort((float((480 - font_height) * float(phd_winymax / 480.0F))) - (font_height >> 1)),
-				5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
-		else
-			PrintString((ushort)phd_centerx, ushort((float(phd_winymax / 480.0F) + (phd_winymax - font_height)) - (font_height >> 1)),
-				5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+		if (tomb4.loadingtxt)
+		{
+			if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+				PrintString((ushort)phd_centerx, ushort((float((480 - font_height) * float(phd_winymax / 480.0F))) - (font_height >> 1)),
+					5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+			else
+				PrintString((ushort)phd_centerx, ushort((float(phd_winymax / 480.0F) + (phd_winymax - font_height)) - (font_height >> 1)),
+					5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+		}
 #endif
 
 		S_OutputPolyList();
@@ -512,12 +515,15 @@ void RenderLoadPic(long unused)
 	RenderIt(camera.pos.room_number);
 
 #ifdef GENERAL_FIXES
-	if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
-		PrintString((ushort)phd_centerx, ushort((float((480 - font_height) * float(phd_winymax / 480.0F))) - (font_height >> 1)),
-			5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
-	else
-		PrintString((ushort)phd_centerx, ushort((float(phd_winymax / 480.0F) + (phd_winymax - font_height)) - (font_height >> 1)),
-			5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+	if (tomb4.loadingtxt)
+	{
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			PrintString((ushort)phd_centerx, ushort((float((480 - font_height) * float(phd_winymax / 480.0F))) - (font_height >> 1)),
+				5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+		else
+			PrintString((ushort)phd_centerx, ushort((float(phd_winymax / 480.0F) + (phd_winymax - font_height)) - (font_height >> 1)),
+				5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+	}
 #endif
 
 	S_OutputPolyList();

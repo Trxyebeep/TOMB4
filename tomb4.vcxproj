@@ -276,6 +276,7 @@
     <ClInclude Include="TOMB4\tomb4\libs\discordRPC\discord_rpc.h" />
     <ClInclude Include="TOMB4\tomb4\pch.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4.h" />
+    <ClInclude Include="TOMB4\tomb4\troyestuff.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TOMB4\game\ahmet.cpp" />
@@ -389,6 +390,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\tomb4.cpp" />
+    <ClCompile Include="TOMB4\tomb4\troyestuff.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="TOMB4\global\progress.txt" />
