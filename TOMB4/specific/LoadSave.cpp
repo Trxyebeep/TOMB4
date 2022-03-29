@@ -584,9 +584,9 @@ void S_LoadBar()
 
 #ifdef IMPROVED_BARS
 		if (tomb4.bar_mode == 3)
-			S_DrawGouraudBar(20, 480 - font_height, 600, 15, (long)loadbar_pos, &loadBarColourSet);
+			S_DrawGouraudBar(20, 480 - (font_height >> 1), 600, 15, (long)loadbar_pos, &loadBarColourSet);
 		else if (tomb4.bar_mode == 2)
-			S_DoTR5Bar(20, 480 - font_height, 600, 15, (long)loadbar_pos, 0xFF7F007F, 0xFF007F7F);
+			S_DoTR5Bar(20, 480 - (font_height >> 1), 600, 15, (long)loadbar_pos, 0xFF7F007F, 0xFF007F7F);
 		else
 #endif
 			DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
