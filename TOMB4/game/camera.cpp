@@ -8,6 +8,9 @@
 #include "sound.h"
 #include "deltapak.h"
 #include "draw.h"
+#ifdef GENERAL_FIXES
+#include "effect2.h"
+#endif
 
 void InitialiseCamera()
 {
@@ -374,6 +377,97 @@ long CameraCollisionBounds(GAME_VECTOR* ideal, long push, long yfirst)
 
 void LaraTorch(PHD_VECTOR* Soffset, PHD_VECTOR* Eoffset, short yrot, long brightness)
 {
+#ifdef GENERAL_FIXES	//decompiled from PSX TR4
+	FLOOR_INFO* floor;
+	long x, y, z, sx, sy, sz, dx, dy, dz, falloff, counter, h, c, j;
+	long offs[5];
+	short room_number;
+
+	counter = 0;
+	falloff = 15;
+	sx = Soffset->x;
+	sy = Soffset->y;
+	sz = Soffset->z;
+	dx = (Eoffset->x - sx) >> 5;
+	dy = (Eoffset->y - sy) >> 5;
+	dz = (Eoffset->z - sz) >> 5;
+	offs[0] = 0;
+	offs[1] = -0x4000;
+	offs[2] = -0x4001;
+	offs[3] = 0x4000;
+	offs[4] = 0x4001;
+
+	for (int i = 0; i < 32; i++)
+	{
+		if (counter)
+		{
+			counter--;
+
+			brightness -= 7;
+
+			if (brightness < 8)
+				break;
+
+			if (falloff < 31)
+				falloff += 2;
+
+			sx += dx;
+			sy += dy;
+			sz += dz;
+			continue;
+		}
+
+		for (j = 0; j < 5; j++)
+		{
+			if (offs[j])
+			{
+				x = sx + (falloff * (phd_sin(offs[j] + yrot) / 4) >> 5);
+
+				if (offs[j] & 1)
+					y = sy - (falloff << 7);
+				else
+					y = sy + (falloff << 7);
+
+				z = sz + (falloff * (phd_cos(offs[j] + yrot) / 4) >> 5);
+			}
+			else
+			{
+				x = sx;
+				y = sy;
+				z = sz;
+			}
+
+			room_number = lara_item->room_number;
+			floor = GetFloor(x, y, z, &room_number);
+			h = GetHeight(floor, x, y, z);
+			c = GetCeiling(floor, x, y, z);
+
+			if (h == NO_HEIGHT || c == NO_HEIGHT || c >= h || y < c || h < y)
+				break;
+		}
+
+		if (j < 5)
+		{
+			TriggerDynamic(sx, sy, sz, falloff, brightness, brightness, brightness >> 1);
+			counter = 5;
+		}
+
+		if (counter)
+			counter--;
+
+		brightness -= 7;
+
+		if (brightness < 8)
+			break;
+
+		if (falloff < 31)
+			falloff += 2;
+
+		sx += dx;
+		sy += dy;
+		sz += dz;
+	}
+#else
 	bLaraTorch = 1;
 	LaraTorchStart.x = Soffset->x;
 	LaraTorchStart.y = Soffset->y;
@@ -383,6 +477,7 @@ void LaraTorch(PHD_VECTOR* Soffset, PHD_VECTOR* Eoffset, short yrot, long bright
 	LaraTorchEnd.z = Eoffset->z;
 	LaraTorchIntensity = brightness;
 	LaraTorchYRot = yrot;
+#endif
 }
 
 void ChaseCamera(ITEM_INFO* item)

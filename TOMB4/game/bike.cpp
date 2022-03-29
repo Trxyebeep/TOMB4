@@ -64,11 +64,7 @@ void TriggerBikeBeam(ITEM_INFO* item)
 	bike = (BIKEINFO*)item->data;
 	s.x = 0;
 	s.y = -470;
-#ifdef GENERAL_FIXES
-	s.z = 512;
-#else
 	s.z = 1836;
-#endif
 	GetJointAbsPosition(item, &s, 0);
 	d.x = 0;
 	d.y = -470;
