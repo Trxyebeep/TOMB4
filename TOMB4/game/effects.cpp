@@ -11,6 +11,7 @@
 #include "scarab.h"
 #include "tomb4fx.h"
 #include "footprnt.h"
+#include "effect2.h"
 
 void(*effect_routines[47])(ITEM_INFO* item) =
 {
@@ -364,6 +365,29 @@ void void_effect(ITEM_INFO* item)
 
 }
 
+void WaterFall(short item_number)
+{
+	ITEM_INFO* item;
+	long dx, dy, dz;
+
+	item = &items[item_number];
+	dx = item->pos.x_pos - lara_item->pos.x_pos;
+	dy = item->pos.y_pos - lara_item->pos.y_pos;
+	dz = item->pos.z_pos - lara_item->pos.z_pos;
+
+	if (dx >= -0x4000 && dx <= 0x4000 && dz >= -0x4000 && dz <= 0x4000 && dy >= -0x4000 && dy <= 0x4000)
+	{
+		if (!(wibble & 0xC))
+		{
+			dx = (136 * phd_sin(item->pos.y_rot)) >> 12;
+			dz = (136 * phd_cos(item->pos.y_rot)) >> 12;
+			TriggerWaterfallMist(item->pos.x_pos + dx, item->pos.y_pos, item->pos.z_pos + dz, item->pos.y_rot >> 4);
+		}
+
+		SoundEffect(SFX_WATERFALL_LOOP, &item->pos, 0);
+	}
+}
+
 void inject_effects(bool replace)
 {
 	INJECT(0x00437AB0, SetFog, replace);
@@ -395,4 +419,5 @@ void inject_effects(bool replace)
 	INJECT(0x00437CF0, ClearScarabsPatch, replace);
 	INJECT(0x00437D00, MeshSwapToPour, replace);
 	INJECT(0x00437D30, MeshSwapFromPour, replace);
+	INJECT(0x00437530, WaterFall, replace);
 }

@@ -33,6 +33,7 @@ void ClearScarabsPatch(ITEM_INFO* item);
 void MeshSwapToPour(ITEM_INFO* item);
 void MeshSwapFromPour(ITEM_INFO* item);
 void void_effect(ITEM_INFO* item);
+void WaterFall(short item_number);
 
 #define SoundEffects	( (void(__cdecl*)()) 0x004370E0 )
 #define DoBloodSplat	( (short(__cdecl*)(long, long, long, short, short, short)) 0x00437180 )
