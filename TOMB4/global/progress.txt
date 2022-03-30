@@ -607,7 +607,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00469770	+	CanGetOff
 0x00469870	+	UserControl
 0x00469B90	+	InitialiseEnemyJeep
-0x00469C20		EnemyJeepControl
+0x00469C20	+	EnemyJeepControl
 0x0046A4D0	+	JeepFireGrenade
 0x0046A620	+	JeepStart
 
