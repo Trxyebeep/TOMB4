@@ -1285,7 +1285,7 @@ long JeepDynamics(ITEM_INFO* item)
 			jeep->turn_rate = 0;
 
 		item->pos.y_rot += short(jeep->turn_rate + jeep->extra_rotation);
-		jeep->move_angle += (item->pos.y_rot - jeep->move_angle) >> 5;
+		jeep->move_angle += short(item->pos.y_rot - jeep->move_angle) >> 5;
 	}
 	else
 	{

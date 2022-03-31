@@ -1181,7 +1181,7 @@ long BikeDynamics(ITEM_INFO* item)
 			bike->bike_turn = 0;
 
 		item->pos.y_rot += short(bike->bike_turn + bike->extra_rotation);
-		bike->move_angle += (item->pos.y_rot - bike->move_angle) >> 5;
+		bike->move_angle += short(item->pos.y_rot - bike->move_angle) >> 5;
 	}
 	else
 	{
