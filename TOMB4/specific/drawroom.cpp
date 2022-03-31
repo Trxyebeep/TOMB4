@@ -735,6 +735,59 @@ void ProcessMeshData(long num_meshes)
 	Log(2, "End ProcessMeshData");
 }
 
+void InitBuckets()
+{
+	TEXTUREBUCKET* bucket;
+
+	for (int i = 0; i < 20; i++)
+	{
+		bucket = &Bucket[i];
+		bucket->tpage = -1;
+		bucket->cnt = 0;
+	}
+}
+
+void DrawBucket(TEXTUREBUCKET* bucket)
+{
+	if (bucket->tpage == 1)
+		bucket->tpage = 1;
+
+	if (!bucket->cnt)
+		return;
+
+	if (Textures[bucket->tpage].bump && App.BumpMapping)
+	{
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ZERO);
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_CURRENT);
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
+		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[Textures[bucket->tpage].bumptpage].tex));
+		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->Vertex, bucket->cnt, D3DDP_DONOTCLIP);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_DESTCOLOR);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_SRCCOLOR);
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+		DrawPrimitiveCnt++;
+	}
+
+	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
+	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->Vertex, bucket->cnt, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+
+	if (App.BumpMapping)
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+
+	bucket->cnt = 0;
+	bucket->tpage = -1;
+	DrawPrimitiveCnt++;
+}
+
 void inject_drawroom(bool replace)
 {
 	INJECT(0x00471E00, ProjectVerts, replace);
@@ -745,4 +798,6 @@ void inject_drawroom(bool replace)
 	INJECT(0x00472650, InsertRoom, replace);
 	INJECT(0x00472EE0, CalcTriFaceNormal, replace);
 	INJECT(0x00471040, ProcessMeshData, replace);
+	INJECT(0x004728B0, InitBuckets, replace);
+	INJECT(0x004729E0, DrawBucket, replace);
 }
