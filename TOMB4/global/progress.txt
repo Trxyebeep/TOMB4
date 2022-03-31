@@ -1530,7 +1530,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004728B0	+	InitBuckets
 0x004728D0	+	FindBucket
 0x004729E0	+	DrawBucket
-0x00472C10		DrawBuckets
+0x00472C10	+	DrawBuckets
 0x00472EE0	+	CalcTriFaceNormal
 0x00472F50		CreateVertexNormals
 
