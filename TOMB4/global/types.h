@@ -1559,8 +1559,8 @@ struct TEXTURE
 struct TEXTUREBUCKET
 {
 	long tpage;
-	long cnt;
-	D3DTLBUMPVERTEX Vertex[544];
+	long nVtx;
+	D3DTLBUMPVERTEX vtx[544];
 };
 
 struct THREAD

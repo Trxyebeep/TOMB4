@@ -186,7 +186,7 @@ void DrawSortList()
 				break;
 		}
 
-		bVtxbak = Bucket[0].Vertex;
+		bVtxbak = Bucket[0].vtx;
 		bVtx = bVtxbak;
 		tpage = pSort->tpage;
 		drawtype = pSort->drawtype;
