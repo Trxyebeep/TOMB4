@@ -12,6 +12,7 @@
 #include "../game/draw.h"
 #include "specificfx.h"
 #include "function_stubs.h"
+#include "../game/newinv.h"
 #ifdef GENERAL_FIXES
 #include "../game/text.h"
 #include "../game/gameflow.h"
@@ -853,6 +854,14 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 	DestVB->Unlock();
 }
 
+void S_DrawPickup(short object_number)
+{
+	phd_LookAt(0, 1024, 0, 0, 0, 0, 0);
+	SetD3DViewMatrix();
+	DrawThreeDeeObject2D(long((float)phd_winxmax / 512.0F * 448.0F + PickupX), long((float)phd_winymax / 256.0F * 216.0F),
+		convert_obj_to_invobj(object_number), 128, 0, (GnFrameCounter & 0x7F) << 9, 0, 0, 1);
+}
+
 void inject_output(bool replace)
 {
 	INJECT(0x0047DA60, phd_PutPolygons, replace);
@@ -864,4 +873,5 @@ void inject_output(bool replace)
 	INJECT(0x0047D5B0, S_InitialisePolyList, replace);
 	INJECT(0x0047E8B0, phd_PutPolygonsPickup, replace);
 	INJECT(0x0047F620, phd_PutPolygonSkyMesh, replace);
+	INJECT(0x0047F970, S_DrawPickup, replace);
 }
