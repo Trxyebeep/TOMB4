@@ -13,8 +13,8 @@ void S_InitialisePolyList();
 void phd_PutPolygonsPickup(short* objptr, float x, float y, long color);
 void phd_PutPolygonSkyMesh(short* objptr, long clipstatus);
 void S_DrawPickup(short object_number);
+long S_GetObjectBounds(short* bounds);
 
-#define S_GetObjectBounds	( (long(__cdecl*)(short*)) 0x0047FCF0 )
 #define CalcVertsColorSplitMMX ( (void(__cdecl*)(long, D3DTLVERTEX*)) 0x0047D810 )
 #define do_boot_screen	( (void(__cdecl*)(long)) 0x004808E0 )
 #define StashSkinVertices	( (void(__cdecl*)(long)) 0x0047D6B0 )
