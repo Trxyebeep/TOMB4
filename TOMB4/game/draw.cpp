@@ -940,6 +940,228 @@ long DrawPhaseGame()
 	return camera.number_frames;
 }
 
+void GetRoomBounds()
+{
+	ROOM_INFO* r;
+	short* door;
+	long rn, drn;
+
+	while (room_list_start != room_list_end)
+	{
+		rn = draw_room_list[room_list_start % 128];
+		room_list_start++;
+		r = &room[rn];
+		r->bound_active -= 2;
+
+		if (r->test_left < r->left)
+			r->left = r->test_left;
+
+		if (r->test_top < r->top)
+			r->top = r->test_top;
+
+		if (r->test_right > r->right)
+			r->right = r->test_right;
+
+		if (r->test_bottom > r->bottom)
+			r->bottom = r->test_bottom;
+
+		if (!(r->bound_active & 1))
+		{
+			draw_rooms[number_draw_rooms] = (short)rn;
+			number_draw_rooms++;
+			r->bound_active |= 1;
+
+			if (r->flags & ROOM_OUTSIDE)
+				outside = ROOM_OUTSIDE;
+		}
+
+		if (r->flags & ROOM_OUTSIDE)
+		{
+			if (r->left < outside_left)
+				outside_left = r->left;
+
+			if (r->right > outside_right)
+				outside_right = r->right;
+
+			if (r->top < outside_top)
+				outside_top = r->top;
+
+			if (r->bottom > outside_bottom)
+				outside_bottom = r->bottom;
+		}
+
+		phd_PushMatrix();
+		phd_TranslateAbs(r->x, r->y, r->z);
+		door = r->door;
+
+		if (door)
+		{
+			for (drn = *door++; drn > 0; drn--)
+			{
+				rn = *door++;
+
+				if (door[0] * (r->x + door[3] - w2v_matrix[M03]) +
+					door[1] * (r->y + door[4] - w2v_matrix[M13]) +
+					door[2] * (r->z + door[5] - w2v_matrix[M23]) < 0)
+					SetRoomBounds(door, rn, r);
+
+				door += 15;
+			}
+		}
+
+		phd_PopMatrix();
+	}
+}
+
+void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom)
+{
+	ROOM_INFO* r;
+	PHD_VECTOR* v;
+	PHD_VECTOR* lastV;
+	static PHD_VECTOR vbuf[4];
+	long x, y, z, tooNear, tooFar;
+	short tL, tR, tT, tB;
+
+	r = &room[rn];
+
+	if (r->left <= actualRoom->test_left && r->right >= actualRoom->test_right && r->top <= actualRoom->test_top && r->bottom >= actualRoom->test_bottom)
+		return;
+	
+	tL = actualRoom->test_right;
+	tR = actualRoom->test_left;
+	tB = actualRoom->test_top;
+	tT = actualRoom->test_bottom;
+	door += 3;
+	v = vbuf;
+	tooNear = 0;
+	tooFar = 0;
+
+	for (int i = 0; i < 4; i++, v++, door += 3)
+	{
+		v->x = phd_mxptr[M00] * door[0] + phd_mxptr[M01] * door[1] + phd_mxptr[M02] * door[2] + phd_mxptr[M03];
+		v->y = phd_mxptr[M10] * door[0] + phd_mxptr[M11] * door[1] + phd_mxptr[M12] * door[2] + phd_mxptr[M13];
+		v->z = phd_mxptr[M20] * door[0] + phd_mxptr[M21] * door[1] + phd_mxptr[M22] * door[2] + phd_mxptr[M23];
+		x = v->x;
+		y = v->y;
+		z = v->z;
+
+		if (z <= 0)
+			tooNear++;
+		else
+		{
+			if (z > phd_zfar)
+				tooFar++;
+
+			z /= phd_persp;
+
+			if (z)
+			{
+				x = x / z + phd_centerx;
+				y = y / z + phd_centery;
+			}
+			else
+			{
+				if (x < 0)
+					x = phd_left;
+				else
+					x = phd_right;
+
+				if (y < 0)
+					y = phd_top;
+				else
+					y = phd_bottom;
+			}
+
+			if (x - 1 < tL)
+				tL = short(x - 1);
+
+			if (x + 1 > tR)
+				tR = short(x + 1);
+
+			if (y - 1 < tT)
+				tT = short(y - 1);
+
+			if (y + 1 > tB)
+				tB = short(y + 1);
+		}
+	}
+
+	if (tooNear == 4 || (tooFar == 4 && !outside))
+		return;
+
+	if (tooNear > 0)
+	{
+		v = vbuf;
+		lastV = &vbuf[3];
+
+		for (int i = 0; i < 4; i++, lastV = v, v++)
+		{
+			if (lastV->z <= 0 == v->z <= 0)
+				continue;
+
+			if (v->x < 0 && lastV->x < 0)
+				tL = 0;
+			else if (v->x > 0 && lastV->x > 0)
+				tR = phd_winxmax;
+			else
+			{
+				tL = 0;
+				tR = phd_winxmax;
+			}
+
+			if (v->y < 0 && lastV->y < 0)
+				tT = 0;
+			else if (v->y > 0 && lastV->y > 0)
+				tB = phd_winymax;
+			else
+			{
+				tT = 0;
+				tB = phd_winymax;
+			}
+		}
+	}
+
+	if (tL < actualRoom->test_left)
+		tL = actualRoom->test_left;
+
+	if (tR > actualRoom->test_right)
+		tR = actualRoom->test_right;
+
+	if (tT < actualRoom->test_top)
+		tT = actualRoom->test_top;
+
+	if (tB > actualRoom->test_bottom)
+		tB = actualRoom->test_bottom;
+
+	if (tL >= tR || tT >= tB)
+		return;
+
+	if (r->bound_active & 2)
+	{
+		if (tL < r->test_left)
+			r->test_left = tL;
+
+		if (tT < r->test_top)
+			r->test_top = tT;
+
+		if (tR > r->test_right)
+			r->test_right = tR;
+
+		if (tB > r->test_bottom)
+			r->test_bottom = tB;
+	}
+	else
+	{
+		draw_room_list[room_list_end % 128] = rn;
+		room_list_end++;
+		r->bound_active |= 2;
+		r->test_left = tL;
+		r->test_right = tR;
+		r->test_top = tT;
+		r->test_bottom = tB;
+	}
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -963,4 +1185,6 @@ void inject_draw(bool replace)
 	INJECT(0x0044EC10, DrawRooms, replace);
 	INJECT(0x00451240, RenderIt, replace);
 	INJECT(0x0044EBA0, DrawPhaseGame, replace);
+	INJECT(0x0044F5D0, GetRoomBounds, replace);
+	INJECT(0x0044F790, SetRoomBounds, 0);	//still problematic
 }
