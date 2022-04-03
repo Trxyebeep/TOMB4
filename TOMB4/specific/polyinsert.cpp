@@ -725,6 +725,10 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 			if (!double_sided)
 				return;
 
+			swap = v1;
+			v1 = v2;
+			v2 = swap;
+
 			tex2.drawtype = tex->drawtype;
 			tex2.flag = tex->flag;
 			tex2.tpage = tex->tpage;
