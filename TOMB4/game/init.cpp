@@ -382,10 +382,11 @@ void InitialiseObelisk(short item_number)
 
 	if (item->trigger_flags == 2)
 	{
+		ifl = item->item_flags;
+
 		for (int i = 0; i < level_items; i++)
 		{
 			item2 = &items[i];
-			ifl = item->item_flags;
 
 			if (item2->object_number == OBELISK && i != item_number)
 				*ifl++ = i;
