@@ -1019,8 +1019,7 @@ void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom)
 	PHD_VECTOR* v;
 	PHD_VECTOR* lastV;
 	static PHD_VECTOR vbuf[4];
-	long x, y, z, tooNear, tooFar;
-	short tL, tR, tT, tB;
+	long x, y, z, tooNear, tooFar, tL, tR, tT, tB;
 
 	r = &room[rn];
 
@@ -1073,16 +1072,16 @@ void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom)
 			}
 
 			if (x - 1 < tL)
-				tL = short(x - 1);
+				tL = x - 1;
 
 			if (x + 1 > tR)
-				tR = short(x + 1);
+				tR = x + 1;
 
 			if (y - 1 < tT)
-				tT = short(y - 1);
+				tT = y - 1;
 
 			if (y + 1 > tB)
-				tB = short(y + 1);
+				tB = y + 1;
 		}
 	}
 
@@ -1139,26 +1138,26 @@ void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom)
 	if (r->bound_active & 2)
 	{
 		if (tL < r->test_left)
-			r->test_left = tL;
+			r->test_left = (short)tL;
 
 		if (tT < r->test_top)
-			r->test_top = tT;
+			r->test_top = (short)tT;
 
 		if (tR > r->test_right)
-			r->test_right = tR;
+			r->test_right = (short)tR;
 
 		if (tB > r->test_bottom)
-			r->test_bottom = tB;
+			r->test_bottom = (short)tB;
 	}
 	else
 	{
 		draw_room_list[room_list_end % 128] = rn;
 		room_list_end++;
 		r->bound_active |= 2;
-		r->test_left = tL;
-		r->test_right = tR;
-		r->test_top = tT;
-		r->test_bottom = tB;
+		r->test_left = (short)tL;
+		r->test_right = (short)tR;
+		r->test_top = (short)tT;
+		r->test_bottom = (short)tB;
 	}
 }
 
@@ -1186,5 +1185,5 @@ void inject_draw(bool replace)
 	INJECT(0x00451240, RenderIt, replace);
 	INJECT(0x0044EBA0, DrawPhaseGame, replace);
 	INJECT(0x0044F5D0, GetRoomBounds, replace);
-	INJECT(0x0044F790, SetRoomBounds, 0);	//still problematic
+	INJECT(0x0044F790, SetRoomBounds, replace);
 }
