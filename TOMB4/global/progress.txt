@@ -778,7 +778,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00428AD0	+	lara_default_col
 0x00428B20	+	lara_col_jumper
 0x00428BA0	+	ResetLook
-0x00428C40		LookUpDown
+0x00428C40	+	LookUpDown
 0x00428D40		LookLeftRight
 
 

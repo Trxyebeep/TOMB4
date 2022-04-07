@@ -148,9 +148,9 @@ void lara_as_climbroped(ITEM_INFO* item, COLL_INFO* coll);
 void lara_col_jumper(ITEM_INFO* item, COLL_INFO* coll);
 void lara_slide_slope(ITEM_INFO* item, COLL_INFO* coll);
 void ResetLook();
+void LookUpDown();
 
 #define LookLeftRight	( (void(__cdecl*)()) 0x00428D40 )
-#define LookUpDown	( (void(__cdecl*)()) 0x00428C40 )
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
 #define LaraHangLeftCornerTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004266E0 )
 #define LaraHangRightCornerTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00426230 )
