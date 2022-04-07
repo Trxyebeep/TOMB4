@@ -4345,6 +4345,53 @@ void lara_col_jumper(ITEM_INFO* item, COLL_INFO* coll)
 	}
 }
 
+void lara_slide_slope(ITEM_INFO* item, COLL_INFO* coll)
+{
+	coll->bad_pos = -NO_HEIGHT;
+	coll->bad_neg = -512;
+	coll->bad_ceiling = 0;
+	GetLaraCollisionInfo(item, coll);
+
+	if (!LaraHitCeiling(item, coll))
+	{
+		LaraDeflectEdge(item, coll);
+
+		if (coll->mid_floor <= 200)
+		{
+			TestLaraSlide(item, coll);
+			item->pos.y_pos += coll->mid_floor;
+
+			if (ABS(coll->tilt_x) <= 2 && ABS(coll->tilt_z) <= 2)
+			{
+				item->goal_anim_state = AS_STOP;
+				StopSoundEffect(SFX_LARA_SLIPPING);
+			}
+		}
+		else
+		{
+			if (item->current_anim_state == AS_SLIDE)
+			{
+				item->anim_number = ANIM_FALLDOWN;
+				item->frame_number = anims[ANIM_FALLDOWN].frame_base;
+				item->current_anim_state = AS_FORWARDJUMP;
+				item->goal_anim_state = AS_FORWARDJUMP;
+			}
+			else
+			{
+				item->anim_number = ANIM_FALLBACK;
+				item->frame_number = anims[ANIM_FALLBACK].frame_base;
+				item->current_anim_state = AS_FALLBACK;
+				item->goal_anim_state = AS_FALLBACK;
+			}
+
+			StopSoundEffect(SFX_LARA_SLIPPING);
+			item->gravity_status = 1;
+			item->fallspeed = 0;
+		}
+	}
+}
+
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -4486,4 +4533,5 @@ void inject_lara(bool replace)
 	INJECT(0x004248E0, lara_as_climbrope, replace);
 	INJECT(0x00424950, lara_as_climbroped, replace);
 	INJECT(0x00428B20, lara_col_jumper, replace);
+	INJECT(0x00428470, lara_slide_slope, replace);
 }

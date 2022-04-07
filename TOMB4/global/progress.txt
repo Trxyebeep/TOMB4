@@ -764,7 +764,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00428350	+	lara_col_stepright
 0x00428430	+	lara_col_stepleft
 0x00428450	+	lara_col_slide
-0x00428470		lara_slide_slope
+0x00428470	+	lara_slide_slope
 0x00428580	+	lara_col_backjump
 0x004285B0	+	lara_col_rightjump
 0x004285E0	+	lara_col_leftjump
