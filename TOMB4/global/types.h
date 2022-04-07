@@ -257,6 +257,7 @@ enum input_buttons
 	IN_B =					0x8000,
 	IN_CHEAT =				0x10000,
 	IN_D =					0x20000,
+	IN_C =					0x30000,
 	IN_E =					0x40000,
 	IN_FLARE =				0x80000,
 	IN_SELECT =				0x100000,

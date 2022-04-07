@@ -7,3 +7,4 @@ void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count);
 void DXReadKeyboard(char* KeyMap);
 
 #define DXAttempt   ( (void(__cdecl*)(HRESULT)) 0x00491C30 )
+#define DXSaveScreen	( (void(__cdecl*)(LPDIRECTDRAWSURFACE4, const char*)) 0x00494080 )

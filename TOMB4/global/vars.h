@@ -431,6 +431,8 @@
 #define KeyTriggerActive	VAR_U_(0x004BF3F8, char)
 #define G_dxptr	VAR_U_(0x007544F4, DXPTR*)
 #define joy_fire	VAR_U_(0x0053589C, long)
+#define joy_x	VAR_U_(0x005358A0, long)
+#define joy_y	VAR_U_(0x005358A4, long)
 
 
 
