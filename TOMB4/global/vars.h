@@ -430,6 +430,7 @@
 #define fmvs_disabled	VAR_U_(0x004BFE85, bool)
 #define KeyTriggerActive	VAR_U_(0x004BF3F8, char)
 #define G_dxptr	VAR_U_(0x007544F4, DXPTR*)
+#define joy_fire	VAR_U_(0x0053589C, long)
 
 
 
@@ -521,6 +522,7 @@
 #define debris	ARRAY_(0x00808FA0, DEBRIS_STRUCT, [256])
 #define RPickups	ARRAY_(0x007FD1C0, uchar, [16])
 #define jroomies	ARRAY_(0x007F4FE0, short, [22])
+#define conflict	ARRAY_(0x005355B8, long, [18])
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)
