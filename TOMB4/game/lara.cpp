@@ -4449,6 +4449,42 @@ void LookUpDown()
 	}
 }
 
+void LookLeftRight()
+{
+	if (lara.vehicle == NO_ITEM)
+	{
+		camera.type = LOOK_CAMERA;
+
+		if (input & IN_LEFT)
+		{
+			input -= IN_LEFT;
+
+			if (lara.head_y_rot > -8008)
+			{
+				if (BinocularRange)
+					lara.head_y_rot -= short(364 * (1792 - BinocularRange) / 1536);
+				else
+					lara.head_y_rot -= 364;
+			}
+		}
+		else if (input & IN_RIGHT)
+		{
+			input -= IN_RIGHT;
+
+			if (lara.head_y_rot < 8008)
+			{
+				if (BinocularRange)
+					lara.head_y_rot += short(364 * (1792 - BinocularRange) / 1536);
+				else
+					lara.head_y_rot += 364;
+			}
+		}
+
+		if (lara.gun_status != LG_HANDS_BUSY && !lara.left_arm.lock && !lara.right_arm.lock)
+			lara.torso_y_rot = lara.head_y_rot;
+	}
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -4593,4 +4629,5 @@ void inject_lara(bool replace)
 	INJECT(0x00428470, lara_slide_slope, replace);
 	INJECT(0x00428BA0, ResetLook, replace);
 	INJECT(0x00428C40, LookUpDown, replace);
+	INJECT(0x00428D40, LookLeftRight, replace);
 }
