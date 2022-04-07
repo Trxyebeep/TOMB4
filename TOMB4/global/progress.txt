@@ -199,9 +199,9 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/deathsld.cpp
 
-0x00404380		InitialiseDeathSlide
-0x004044B0		ControlDeathSlide
-0x004043D0		DeathSlideCollision
+0x00404380	+	InitialiseDeathSlide
+0x004044B0	+	ControlDeathSlide
+0x004043D0	+	DeathSlideCollision
 
 
 		game/debris.cpp
