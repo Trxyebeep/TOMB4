@@ -688,7 +688,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004248E0	+	lara_as_climbrope
 0x00424950	+	lara_as_climbroped
 0x00424A60	+	lara_as_stop
-0x00424E90		UseInventoryItems
+0x00424E90	+	UseInventoryItems
 0x00425070	+	lara_col_stop
 0x00425110	+	lara_as_upjump
 0x00425130	+	lara_col_upjump

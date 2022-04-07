@@ -150,6 +150,7 @@ void lara_slide_slope(ITEM_INFO* item, COLL_INFO* coll);
 void ResetLook();
 void LookUpDown();
 void LookLeftRight();
+long UseInventoryItems(ITEM_INFO* item);
 
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
 #define LaraHangLeftCornerTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004266E0 )
@@ -166,7 +167,6 @@ void LookLeftRight();
 #define TestMonkeyLeft	( (short(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004236B0 )
 #define TestMonkeyRight	( (short(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004237B0 )
 #define LaraSlideEdgeJump	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004259C0 )
-#define UseInventoryItems	( (long(__cdecl*)(ITEM_INFO*)) 0x00424E90 )
 #define FallFromRope	( (void(__cdecl*)(ITEM_INFO*)) 0x004241D0 )
 #define UpdateRopeSwing	( (void(__cdecl*)(ITEM_INFO*)) 0x00424320 )
 #define JumpOffRope	( (void(__cdecl*)(ITEM_INFO*)) 0x00424820 )
