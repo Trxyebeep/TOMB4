@@ -409,38 +409,38 @@ void WraithControl(short item_number)
 
 	wraith = (WRAITH_STRUCT*)item->data;
 
-	for (int i = 0; i < 7; i++)
+	for (int i = 7; i > 0; i--)
 	{
-		wraith[i].pos.x += wraith[i].xv >> 4;
-		wraith[i].pos.y += wraith[i].yv >> 4;
-		wraith[i].pos.z += wraith[i].zv >> 4;
-		wraith[i].xv -= wraith[i].xv >> 4;
-		wraith[i].yv -= wraith[i].yv >> 4;
-		wraith[i].zv -= wraith[i].zv >> 4;
-		wraith[i + 1].pos.x = wraith[i].pos.x;
-		wraith[i + 1].pos.y = wraith[i].pos.y;
-		wraith[i + 1].pos.z = wraith[i].pos.z;
-		wraith[i + 1].xv = wraith[i].xv;
-		wraith[i + 1].yv = wraith[i].yv;
-		wraith[i + 1].zv = wraith[i].zv;
+		wraith[i - 1].pos.x += wraith[i - 1].xv >> 4;
+		wraith[i - 1].pos.y += wraith[i - 1].yv >> 4;
+		wraith[i - 1].pos.z += wraith[i - 1].zv >> 4;
+		wraith[i - 1].xv -= wraith[i - 1].xv >> 4;
+		wraith[i - 1].yv -= wraith[i - 1].yv >> 4;
+		wraith[i - 1].zv -= wraith[i - 1].zv >> 4;
+		wraith[i].pos.x = wraith[i - 1].pos.x;
+		wraith[i].pos.y = wraith[i - 1].pos.y;
+		wraith[i].pos.z = wraith[i - 1].pos.z;
+		wraith[i].xv = wraith[i - 1].xv;
+		wraith[i].yv = wraith[i - 1].yv;
+		wraith[i].zv = wraith[i - 1].zv;
 
 		if (item->object_number == WRAITH1)
 		{
-			wraith[i + 1].r = (GetRandomControl() & 0x3F) - 64;
-			wraith[i + 1].g = uchar(16 * (8 - i) + (GetRandomControl() & 0x3F));
-			wraith[i + 1].b = GetRandomControl() & 0xF;
+			wraith[i].r = (GetRandomControl() & 0x3F) - 64;
+			wraith[i].g = uchar(16 * (8 - i) + (GetRandomControl() & 0x3F));
+			wraith[i].b = GetRandomControl() & 0xF;
 		}
 		else if (item->object_number == WRAITH2)
 		{
-			wraith[i + 1].r = GetRandomControl() & 0xF;
-			wraith[i + 1].g = uchar(16 * (8 - i) + (GetRandomControl() & 0x3F));
-			wraith[i + 1].b = (GetRandomControl() & 0x3F) - 64;
+			wraith[i].r = GetRandomControl() & 0xF;
+			wraith[i].g = uchar(16 * (8 - i) + (GetRandomControl() & 0x3F));
+			wraith[i].b = (GetRandomControl() & 0x3F) - 64;
 		}
 		else
 		{
-			wraith[i + 1].r = uchar(8 * (9 - i) + (GetRandomControl() & 0x3F));
-			wraith[i + 1].g = wraith[i + 1].r;
-			wraith[i + 1].b = wraith[i + 1].r + (GetRandomControl() & 0xF);
+			wraith[i].r = uchar(8 * (9 - i) + (GetRandomControl() & 0x3F));
+			wraith[i].g = wraith[i].r;
+			wraith[i].b = wraith[i].r + (GetRandomControl() & 0xF);
 		}
 	}
 
