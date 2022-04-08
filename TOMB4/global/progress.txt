@@ -650,7 +650,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00422A90	+	lara_as_dashdive
 0x00422AC0	+	lara_col_dashdive
 0x00422BE0	+	LaraLandedBad
-0x00422C50		LaraDeflectEdgeJump
+0x00422C50	+	LaraDeflectEdgeJump
 0x00422DE0	+	lara_as_hang2
 0x00422E50	+	MonkeySwingFall
 0x00422EB0	+	lara_col_hang2

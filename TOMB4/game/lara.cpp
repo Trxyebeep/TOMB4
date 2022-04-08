@@ -4578,6 +4578,69 @@ long UseInventoryItems(ITEM_INFO* item)
 	return 0;
 }
 
+void LaraDeflectEdgeJump(ITEM_INFO* item, COLL_INFO* coll)
+{
+	ShiftItem(item, coll);
+
+	switch (coll->coll_type)
+	{
+	case CT_FRONT:
+	case CT_TOP_FRONT:
+
+		if (!lara.climb_status || item->speed != 2)
+		{
+			if (coll->mid_floor > 512)
+			{
+				item->current_anim_state = AS_FASTFALL;
+				item->goal_anim_state = AS_FASTFALL;
+				item->anim_number = ANIM_FASTSPLAT;
+				item->frame_number = anims[ANIM_FASTSPLAT].frame_base + 1;
+			}
+			else if (coll->mid_floor <= 128)
+			{
+				item->current_anim_state = AS_LAND;
+				item->goal_anim_state = AS_LAND;
+				item->anim_number = ANIM_LAND;
+				item->frame_number = anims[ANIM_LAND].frame_base;
+			}
+
+			item->speed /= 4;
+			lara.move_angle += 0x8000;
+
+			if (item->fallspeed <= 0)
+				item->fallspeed = 1;
+		}
+
+		break;
+
+	case CT_LEFT:
+		item->pos.y_rot += 910;
+		break;
+
+	case CT_RIGHT:
+		item->pos.y_rot -= 910;
+		break;
+
+	case CT_TOP:
+
+		if (item->fallspeed <= 0)
+			item->fallspeed = 1;
+
+		break;
+
+	case CT_CLAMP:
+		item->pos.z_pos -= (100 * phd_cos(coll->facing)) >> 14;
+		item->pos.x_pos -= (100 * phd_sin(coll->facing)) >> 14;
+		item->speed = 0;
+		coll->mid_floor = 0;
+
+		if (item->fallspeed < 1)
+			item->fallspeed = 16;
+
+		break;
+	}
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -4724,4 +4787,5 @@ void inject_lara(bool replace)
 	INJECT(0x00428C40, LookUpDown, replace);
 	INJECT(0x00428D40, LookLeftRight, replace);
 	INJECT(0x00424E90, UseInventoryItems, replace);
+	INJECT(0x00422C50, LaraDeflectEdgeJump, replace);
 }

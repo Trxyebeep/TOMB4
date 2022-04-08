@@ -151,6 +151,7 @@ void ResetLook();
 void LookUpDown();
 void LookLeftRight();
 long UseInventoryItems(ITEM_INFO* item);
+void LaraDeflectEdgeJump(ITEM_INFO* item, COLL_INFO* coll);
 
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
 #define LaraHangLeftCornerTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004266E0 )
@@ -163,7 +164,6 @@ long UseInventoryItems(ITEM_INFO* item);
 #define LaraDeflectEdge	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422400 )
 #define TestWall	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x004228D0 )
 #define LaraCollideStop	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004229D0 )
-#define LaraDeflectEdgeJump	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422C50 )
 #define TestMonkeyLeft	( (short(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004236B0 )
 #define TestMonkeyRight	( (short(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004237B0 )
 #define LaraSlideEdgeJump	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004259C0 )
