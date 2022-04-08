@@ -354,10 +354,10 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044EBA0	+	DrawPhaseGame
 0x0044EC10	+	DrawRooms
 0x0044F2D0	+	S_InsertRoom
-0x0044F330		PrintObjects
+0x0044F330	+	PrintObjects
 0x0044F5D0	+	GetRoomBounds
 0x0044F790	+	SetRoomBounds
-0x0044FB10		DrawEffect
+0x0044FB10	+	DrawEffect
 0x0044FC00		calc_animating_item_clip_window
 0x0044FF60	+	DrawAnimatingItem
 0x00450520	+	InitInterpolate

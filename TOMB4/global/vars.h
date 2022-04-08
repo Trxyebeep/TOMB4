@@ -433,6 +433,7 @@
 #define joy_fire	VAR_U_(0x0053589C, long)
 #define joy_x	VAR_U_(0x005358A0, long)
 #define joy_y	VAR_U_(0x005358A4, long)
+#define ClipRoomNum	VAR_U_(0x007FDF50, short)
 
 
 

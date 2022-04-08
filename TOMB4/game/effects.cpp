@@ -377,6 +377,8 @@ void WaterFall(short item_number)
 
 	if (dx >= -0x4000 && dx <= 0x4000 && dz >= -0x4000 && dz <= 0x4000 && dy >= -0x4000 && dy <= 0x4000)
 	{
+		//empty func call here
+
 		if (!(wibble & 0xC))
 		{
 			dx = (136 * phd_sin(item->pos.y_rot)) >> 12;

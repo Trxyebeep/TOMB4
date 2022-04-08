@@ -19,6 +19,7 @@
 #include "scarab.h"
 #include "croc.h"
 #include "health.h"
+#include "items.h"
 #ifdef FOOTPRINTS
 #include "footprnt.h"
 #endif
@@ -453,6 +454,7 @@ void DrawAnimatingItem(ITEM_INFO* item)
 					phd_TranslateRel_I(bite->x, bite->y, bite->z);
 					phd_RotYXZ_I(0, -0x3FFC, short((rnd << 14) + (rnd >> 2) - 4096));
 					InterpolateMatrix();
+					//empty func call here
 					phd_PutPolygons(meshes[objects[GUN_FLASH].mesh_index], clip);
 					phd_PopMatrix_I();
 					item->fired_weapon--;
@@ -513,6 +515,7 @@ void DrawAnimatingItem(ITEM_INFO* item)
 					phd_PushMatrix();
 					phd_RotX(-16380);
 					phd_TranslateRel(bite->x, bite->y, bite->z);
+					//empty func call here
 					phd_PutPolygons(meshes[objects[GUN_FLASH].mesh_index], clip);
 					phd_PopMatrix();
 					item->fired_weapon--;
@@ -1161,6 +1164,140 @@ void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom)
 	}
 }
 
+void DrawEffect(short fx_num)
+{
+	FX_INFO* fx;
+	OBJECT_INFO* obj;
+	short* meshp;
+
+	fx = &effects[fx_num];
+	obj = &objects[fx->object_number];
+
+	if (obj->draw_routine && obj->loaded)
+	{
+		phd_PushMatrix();
+		phd_TranslateAbs(fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos);
+
+		if (phd_mxptr[M23] > phd_znear && phd_mxptr[M23] < phd_zfar)
+		{
+			phd_RotYXZ(fx->pos.y_rot, fx->pos.x_rot, fx->pos.z_rot);
+			
+			if (obj->nmeshes)
+				meshp = meshes[obj->mesh_index];
+			else
+				meshp = meshes[fx->frame_number];
+
+			//empty func call here
+			phd_PutPolygons(meshp, -1);
+		}
+
+		phd_PopMatrix();
+	}
+}
+
+void PrintObjects(short room_number)
+{
+	ROOM_INFO* r;
+	MESH_INFO* mesh;
+	STATIC_INFO* sinfo;
+	ITEM_INFO* item;
+	OBJECT_INFO* obj;
+	FX_INFO* fx;
+	long clip;
+	short item_number, fx_number;
+
+	current_room = room_number;
+	nPolyType = 1;
+	r = &room[room_number];
+	r->bound_active = 0;
+	phd_PushMatrix();
+	phd_TranslateAbs(r->x, r->y, r->z);
+
+	if (gfLevelFlags & GF_TRAIN)
+	{
+		phd_left = 0;
+		phd_top = 0;
+		phd_right = phd_winxmax + 1;
+		phd_bottom = phd_winymax + 1;
+	}
+	else
+	{
+		phd_left = r->left;
+		phd_right = r->right;
+		phd_top = r->top;
+		phd_bottom = r->bottom;
+	}
+
+	mesh = r->mesh;
+
+	for (int i = r->num_meshes; i > 0; i--, mesh++)
+	{
+		if (mesh->Flags & 1)
+		{
+			phd_PushMatrix();
+			phd_TranslateAbs(mesh->x, mesh->y, mesh->z);
+			phd_RotY(mesh->y_rot);
+			sinfo = &static_objects[mesh->static_number];
+			clip = S_GetObjectBounds(&sinfo->x_minp);
+
+			if (clip)
+			{
+				S_CalculateStaticMeshLight(mesh->x, mesh->y, mesh->z, mesh->shade, r);
+				phd_PutPolygons(meshes[sinfo->mesh_number], clip);
+			}
+
+			phd_PopMatrix();
+		}
+	}
+
+	nPolyType = 2;
+	phd_left = 0;
+	phd_top = 0;
+	phd_right = phd_winxmax + 1;
+	phd_bottom = phd_winymax + 1;
+
+	for (item_number = r->item_number; item_number != NO_ITEM; item_number = item->next_item)
+	{
+		ClipRoomNum = room_number;
+		item = &items[item_number];
+		obj = &objects[item->object_number];
+
+		if (item->status != ITEM_INVISIBLE)
+		{
+			if (item->after_death)
+				GlobalAlpha = 0xFE000000 * item->after_death;	//mmmm
+
+			if (obj->draw_routine)
+				obj->draw_routine(item);
+
+			if (obj->draw_routine_extra)
+				obj->draw_routine_extra(item);
+
+			GlobalAlpha = 0xFF000000;
+		}
+
+		if (item->after_death < 128 && item->after_death > 0)
+			item->after_death++;
+
+		if (item->after_death == 128)
+			KillItem(item_number);
+	}
+
+	nPolyType = 3;
+
+	for (fx_number = r->fx_number; fx_number != NO_ITEM; fx_number = fx->next_fx)
+	{
+		fx = &effects[fx_number];
+		DrawEffect(fx_number);
+	}
+
+	phd_PopMatrix();
+	r->left = phd_winxmax;
+	r->top = phd_winymax;
+	r->right = 0;
+	r->bottom = 0;
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -1186,4 +1323,6 @@ void inject_draw(bool replace)
 	INJECT(0x0044EBA0, DrawPhaseGame, replace);
 	INJECT(0x0044F5D0, GetRoomBounds, replace);
 	INJECT(0x0044F790, SetRoomBounds, replace);
+	INJECT(0x0044FB10, DrawEffect, replace);
+	INJECT(0x0044F330, PrintObjects, replace);
 }

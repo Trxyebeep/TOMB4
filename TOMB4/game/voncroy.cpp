@@ -162,6 +162,7 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 	{
 	case 0:
 		SetFadeClip(24, 1);
+		//empty func call here
 		ScreenFading = 1;
 		dScreenFade = 255;
 		ScreenFade = 255;

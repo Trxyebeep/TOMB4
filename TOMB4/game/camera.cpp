@@ -1265,9 +1265,11 @@ void CalculateCamera()
 		SoundEffect(SFX_UNDERWATER, 0, SFX_ALWAYS);
 
 		if (!camera.underwater)
+			//empty func call here
 			camera.underwater = 1;
 	}
 	else if (camera.underwater)
+		//if unused var -> empty func call here
 		camera.underwater = 0;
 
 	if (camera.type == CINEMATIC_CAMERA)

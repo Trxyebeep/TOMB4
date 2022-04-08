@@ -26,10 +26,11 @@ void RenderIt(short CurrentRoom);
 long DrawPhaseGame();
 void GetRoomBounds();
 void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom);
+void DrawEffect(short fx_num);
+void PrintObjects(short room_number);
 
 #define GetFrames	( (long(__cdecl*)(ITEM_INFO*, short*[], long*)) 0x00450DC0 )
 #define GetBestFrame	( (short*(__cdecl*)(ITEM_INFO*)) 0x00450EE0 )
 #define GetBoundsAccurate	( (short*(__cdecl*)(ITEM_INFO*)) 0x00450E60 )
 #define calc_animating_item_clip_window	( (void(__cdecl*)(ITEM_INFO*, short*)) 0x0044FC00 )
 #define UpdateSkyLightning	( (void(__cdecl*)()) 0x00451180 )
-#define PrintObjects	( (void(__cdecl*)(short)) 0x0044F330 )
