@@ -19,6 +19,7 @@
 #include "scarab.h"
 #include "croc.h"
 #include "health.h"
+#include "items.h"
 #ifdef FOOTPRINTS
 #include "footprnt.h"
 #endif
@@ -453,6 +454,7 @@ void DrawAnimatingItem(ITEM_INFO* item)
 					phd_TranslateRel_I(bite->x, bite->y, bite->z);
 					phd_RotYXZ_I(0, -0x3FFC, short((rnd << 14) + (rnd >> 2) - 4096));
 					InterpolateMatrix();
+					//empty func call here
 					phd_PutPolygons(meshes[objects[GUN_FLASH].mesh_index], clip);
 					phd_PopMatrix_I();
 					item->fired_weapon--;
@@ -513,6 +515,7 @@ void DrawAnimatingItem(ITEM_INFO* item)
 					phd_PushMatrix();
 					phd_RotX(-16380);
 					phd_TranslateRel(bite->x, bite->y, bite->z);
+					//empty func call here
 					phd_PutPolygons(meshes[objects[GUN_FLASH].mesh_index], clip);
 					phd_PopMatrix();
 					item->fired_weapon--;
@@ -940,6 +943,361 @@ long DrawPhaseGame()
 	return camera.number_frames;
 }
 
+void GetRoomBounds()
+{
+	ROOM_INFO* r;
+	short* door;
+	long rn, drn;
+
+	while (room_list_start != room_list_end)
+	{
+		rn = draw_room_list[room_list_start % 128];
+		room_list_start++;
+		r = &room[rn];
+		r->bound_active -= 2;
+
+		if (r->test_left < r->left)
+			r->left = r->test_left;
+
+		if (r->test_top < r->top)
+			r->top = r->test_top;
+
+		if (r->test_right > r->right)
+			r->right = r->test_right;
+
+		if (r->test_bottom > r->bottom)
+			r->bottom = r->test_bottom;
+
+		if (!(r->bound_active & 1))
+		{
+			draw_rooms[number_draw_rooms] = (short)rn;
+			number_draw_rooms++;
+			r->bound_active |= 1;
+
+			if (r->flags & ROOM_OUTSIDE)
+				outside = ROOM_OUTSIDE;
+		}
+
+		if (r->flags & ROOM_OUTSIDE)
+		{
+			if (r->left < outside_left)
+				outside_left = r->left;
+
+			if (r->right > outside_right)
+				outside_right = r->right;
+
+			if (r->top < outside_top)
+				outside_top = r->top;
+
+			if (r->bottom > outside_bottom)
+				outside_bottom = r->bottom;
+		}
+
+		phd_PushMatrix();
+		phd_TranslateAbs(r->x, r->y, r->z);
+		door = r->door;
+
+		if (door)
+		{
+			for (drn = *door++; drn > 0; drn--)
+			{
+				rn = *door++;
+
+				if (door[0] * (r->x + door[3] - w2v_matrix[M03]) +
+					door[1] * (r->y + door[4] - w2v_matrix[M13]) +
+					door[2] * (r->z + door[5] - w2v_matrix[M23]) < 0)
+					SetRoomBounds(door, rn, r);
+
+				door += 15;
+			}
+		}
+
+		phd_PopMatrix();
+	}
+}
+
+void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom)
+{
+	ROOM_INFO* r;
+	PHD_VECTOR* v;
+	PHD_VECTOR* lastV;
+	static PHD_VECTOR vbuf[4];
+	long x, y, z, tooNear, tooFar, tL, tR, tT, tB;
+
+	r = &room[rn];
+
+	if (r->left <= actualRoom->test_left && r->right >= actualRoom->test_right && r->top <= actualRoom->test_top && r->bottom >= actualRoom->test_bottom)
+		return;
+	
+	tL = actualRoom->test_right;
+	tR = actualRoom->test_left;
+	tB = actualRoom->test_top;
+	tT = actualRoom->test_bottom;
+	door += 3;
+	v = vbuf;
+	tooNear = 0;
+	tooFar = 0;
+
+	for (int i = 0; i < 4; i++, v++, door += 3)
+	{
+		v->x = phd_mxptr[M00] * door[0] + phd_mxptr[M01] * door[1] + phd_mxptr[M02] * door[2] + phd_mxptr[M03];
+		v->y = phd_mxptr[M10] * door[0] + phd_mxptr[M11] * door[1] + phd_mxptr[M12] * door[2] + phd_mxptr[M13];
+		v->z = phd_mxptr[M20] * door[0] + phd_mxptr[M21] * door[1] + phd_mxptr[M22] * door[2] + phd_mxptr[M23];
+		x = v->x;
+		y = v->y;
+		z = v->z;
+
+		if (z <= 0)
+			tooNear++;
+		else
+		{
+			if (z > phd_zfar)
+				tooFar++;
+
+			z /= phd_persp;
+
+			if (z)
+			{
+				x = x / z + phd_centerx;
+				y = y / z + phd_centery;
+			}
+			else
+			{
+				if (x < 0)
+					x = phd_left;
+				else
+					x = phd_right;
+
+				if (y < 0)
+					y = phd_top;
+				else
+					y = phd_bottom;
+			}
+
+			if (x - 1 < tL)
+				tL = x - 1;
+
+			if (x + 1 > tR)
+				tR = x + 1;
+
+			if (y - 1 < tT)
+				tT = y - 1;
+
+			if (y + 1 > tB)
+				tB = y + 1;
+		}
+	}
+
+	if (tooNear == 4 || (tooFar == 4 && !outside))
+		return;
+
+	if (tooNear > 0)
+	{
+		v = vbuf;
+		lastV = &vbuf[3];
+
+		for (int i = 0; i < 4; i++, lastV = v, v++)
+		{
+			if (lastV->z <= 0 == v->z <= 0)
+				continue;
+
+			if (v->x < 0 && lastV->x < 0)
+				tL = 0;
+			else if (v->x > 0 && lastV->x > 0)
+				tR = phd_winxmax;
+			else
+			{
+				tL = 0;
+				tR = phd_winxmax;
+			}
+
+			if (v->y < 0 && lastV->y < 0)
+				tT = 0;
+			else if (v->y > 0 && lastV->y > 0)
+				tB = phd_winymax;
+			else
+			{
+				tT = 0;
+				tB = phd_winymax;
+			}
+		}
+	}
+
+	if (tL < actualRoom->test_left)
+		tL = actualRoom->test_left;
+
+	if (tR > actualRoom->test_right)
+		tR = actualRoom->test_right;
+
+	if (tT < actualRoom->test_top)
+		tT = actualRoom->test_top;
+
+	if (tB > actualRoom->test_bottom)
+		tB = actualRoom->test_bottom;
+
+	if (tL >= tR || tT >= tB)
+		return;
+
+	if (r->bound_active & 2)
+	{
+		if (tL < r->test_left)
+			r->test_left = (short)tL;
+
+		if (tT < r->test_top)
+			r->test_top = (short)tT;
+
+		if (tR > r->test_right)
+			r->test_right = (short)tR;
+
+		if (tB > r->test_bottom)
+			r->test_bottom = (short)tB;
+	}
+	else
+	{
+		draw_room_list[room_list_end % 128] = rn;
+		room_list_end++;
+		r->bound_active |= 2;
+		r->test_left = (short)tL;
+		r->test_right = (short)tR;
+		r->test_top = (short)tT;
+		r->test_bottom = (short)tB;
+	}
+}
+
+void DrawEffect(short fx_num)
+{
+	FX_INFO* fx;
+	OBJECT_INFO* obj;
+	short* meshp;
+
+	fx = &effects[fx_num];
+	obj = &objects[fx->object_number];
+
+	if (obj->draw_routine && obj->loaded)
+	{
+		phd_PushMatrix();
+		phd_TranslateAbs(fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos);
+
+		if (phd_mxptr[M23] > phd_znear && phd_mxptr[M23] < phd_zfar)
+		{
+			phd_RotYXZ(fx->pos.y_rot, fx->pos.x_rot, fx->pos.z_rot);
+			
+			if (obj->nmeshes)
+				meshp = meshes[obj->mesh_index];
+			else
+				meshp = meshes[fx->frame_number];
+
+			//empty func call here
+			phd_PutPolygons(meshp, -1);
+		}
+
+		phd_PopMatrix();
+	}
+}
+
+void PrintObjects(short room_number)
+{
+	ROOM_INFO* r;
+	MESH_INFO* mesh;
+	STATIC_INFO* sinfo;
+	ITEM_INFO* item;
+	OBJECT_INFO* obj;
+	FX_INFO* fx;
+	long clip;
+	short item_number, fx_number;
+
+	current_room = room_number;
+	nPolyType = 1;
+	r = &room[room_number];
+	r->bound_active = 0;
+	phd_PushMatrix();
+	phd_TranslateAbs(r->x, r->y, r->z);
+
+	if (gfLevelFlags & GF_TRAIN)
+	{
+		phd_left = 0;
+		phd_top = 0;
+		phd_right = phd_winxmax + 1;
+		phd_bottom = phd_winymax + 1;
+	}
+	else
+	{
+		phd_left = r->left;
+		phd_right = r->right;
+		phd_top = r->top;
+		phd_bottom = r->bottom;
+	}
+
+	mesh = r->mesh;
+
+	for (int i = r->num_meshes; i > 0; i--, mesh++)
+	{
+		if (mesh->Flags & 1)
+		{
+			phd_PushMatrix();
+			phd_TranslateAbs(mesh->x, mesh->y, mesh->z);
+			phd_RotY(mesh->y_rot);
+			sinfo = &static_objects[mesh->static_number];
+			clip = S_GetObjectBounds(&sinfo->x_minp);
+
+			if (clip)
+			{
+				S_CalculateStaticMeshLight(mesh->x, mesh->y, mesh->z, mesh->shade, r);
+				phd_PutPolygons(meshes[sinfo->mesh_number], clip);
+			}
+
+			phd_PopMatrix();
+		}
+	}
+
+	nPolyType = 2;
+	phd_left = 0;
+	phd_top = 0;
+	phd_right = phd_winxmax + 1;
+	phd_bottom = phd_winymax + 1;
+
+	for (item_number = r->item_number; item_number != NO_ITEM; item_number = item->next_item)
+	{
+		ClipRoomNum = room_number;
+		item = &items[item_number];
+		obj = &objects[item->object_number];
+
+		if (item->status != ITEM_INVISIBLE)
+		{
+			if (item->after_death)
+				GlobalAlpha = 0xFE000000 * item->after_death;	//mmmm
+
+			if (obj->draw_routine)
+				obj->draw_routine(item);
+
+			if (obj->draw_routine_extra)
+				obj->draw_routine_extra(item);
+
+			GlobalAlpha = 0xFF000000;
+		}
+
+		if (item->after_death < 128 && item->after_death > 0)
+			item->after_death++;
+
+		if (item->after_death == 128)
+			KillItem(item_number);
+	}
+
+	nPolyType = 3;
+
+	for (fx_number = r->fx_number; fx_number != NO_ITEM; fx_number = fx->next_fx)
+	{
+		fx = &effects[fx_number];
+		DrawEffect(fx_number);
+	}
+
+	phd_PopMatrix();
+	r->left = phd_winxmax;
+	r->top = phd_winymax;
+	r->right = 0;
+	r->bottom = 0;
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -963,4 +1321,8 @@ void inject_draw(bool replace)
 	INJECT(0x0044EC10, DrawRooms, replace);
 	INJECT(0x00451240, RenderIt, replace);
 	INJECT(0x0044EBA0, DrawPhaseGame, replace);
+	INJECT(0x0044F5D0, GetRoomBounds, replace);
+	INJECT(0x0044F790, SetRoomBounds, replace);
+	INJECT(0x0044FB10, DrawEffect, replace);
+	INJECT(0x0044F330, PrintObjects, replace);
 }

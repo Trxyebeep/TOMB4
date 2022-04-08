@@ -15,3 +15,4 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 #define MoveLaraPosition	( (long(__cdecl*)(PHD_VECTOR*, ITEM_INFO*, ITEM_INFO*)) 0x004483E0 )
 #define ObjectCollision	( (void(__cdecl*)(short, ITEM_INFO*, COLL_INFO*)) 0x004475F0 )
 #define ObjectCollisionNoBigPush	( (void(__cdecl*)(short, ITEM_INFO*, COLL_INFO*)) 0x00447660 )
+#define AlignLaraPosition	( (void(__cdecl*)(PHD_VECTOR*, ITEM_INFO*, ITEM_INFO*)) 0x00448070 )

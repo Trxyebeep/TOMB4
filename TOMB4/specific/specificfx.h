@@ -29,6 +29,7 @@ void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj);
 void InitTarget_2();
 void InitBinoculars();
 void DrawBinoculars();
+void DrawWraithTrail(ITEM_INFO* item);
 
 #define DrawTrainFloorStrip	( (void(__cdecl*)(long, long, TEXTURESTRUCT*, long)) 0x0048B480 )
 #define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )

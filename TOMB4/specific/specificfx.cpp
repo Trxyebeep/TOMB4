@@ -2327,6 +2327,112 @@ void DrawBinoculars()
 	}
 }
 
+void DrawWraithTrail(ITEM_INFO* item)
+{
+	WRAITH_STRUCT* wraith;
+	PHD_VECTOR pos;
+	D3DTLVERTEX v[2];
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	ulong r, g, b;
+	long c0, c1, x0, y0, z0, x1, y1, z1;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+
+	for (int i = 0; i < 5; i++)
+	{
+		if (!i)
+			phd_RotY(-1092);
+		else if (i == 2)
+			phd_RotY(1092);
+		else if (i == 3)
+			phd_RotZ(-1092);
+		else if (i == 4)
+			phd_RotZ(1092);
+
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[256];
+		offsets = (short*)&scratchpad[512];
+		wraith = (WRAITH_STRUCT*)item->data;
+
+		for (int j = 0; j < 8; j++, XY += 2, Z += 2, wraith++)
+		{
+			offsets[0] = short(wraith->pos.x - item->pos.x_pos);
+			offsets[1] = short(wraith->pos.y - item->pos.y_pos);
+			offsets[2] = short(wraith->pos.z - item->pos.z_pos);
+			pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
+			pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
+			pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
+			perspz = f_persp / (float)pos.z;
+			XY[0] = short(float(pos.x * perspz + f_centerx));
+			XY[1] = short(float(pos.y * perspz + f_centery));
+			Z[0] = pos.z >> 14;
+
+			if (!j || j == 7)
+				Z[1] = 0;
+			else
+				Z[1] = RGBONLY(wraith->r, wraith->g, wraith->b);
+		}
+
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[256];
+
+		for (int j = 0; j < 7; j++, XY += 2, Z += 2)
+		{
+			if (Z[0] <= f_mznear || Z[0] >= 20480)
+				continue;
+
+			if (Z[0] > 12288)
+			{
+				r = ((Z[1] & 0xFF) * (12288 - Z[0])) >> 13;
+				g = (((Z[1] >> 8) & 0xFF) * (12288 - Z[0])) >> 13;
+				b = (((Z[1] >> 16) & 0xFF) * (12288 - Z[0])) >> 13;
+				c0 = RGBA(r, g, b, 0xFF);
+				r = ((Z[3] & 0xFF) * (12288 - Z[0])) >> 13;
+				g = (((Z[3] >> 8) & 0xFF) * (12288 - Z[0])) >> 13;
+				b = (((Z[3] >> 16) & 0xFF) * (12288 - Z[0])) >> 13;
+				c1 = RGBA(r, g, b, 0xFF);
+			}
+			else
+			{
+				c0 = Z[1];
+				c1 = Z[3];
+			}
+
+			x0 = XY[0];
+			y0 = XY[1];
+			z0 = Z[0];
+			x1 = XY[2];
+			y1 = XY[3];
+			z1 = Z[2];
+
+			if (ClipLine(x0, y0, z0, x1, y1, z1, phd_winxmin, phd_winymin, phd_winxmax, phd_winymax))
+			{
+				v[0].sx = (float)x0;
+				v[0].sy = (float)y0;
+				v[0].sz = (float)z0;
+				v[0].rhw = f_mpersp / v[0].sz * f_moneopersp;
+				v[0].color = c0;
+				v[0].specular = 0xFF000000;
+
+				v[1].sx = (float)x1;
+				v[1].sy = (float)y1;
+				v[1].sz = (float)z1;
+				v[1].rhw = f_mpersp / v[1].sz * f_moneopersp;
+				v[1].color = c1;
+				v[1].specular = 0xFF000000;
+
+				AddLineSorted(v, &v[1], 6);
+			}
+		}
+	}
+
+	phd_PopMatrix();
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -2355,4 +2461,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x00487B60, InitTarget_2, replace);
 	INJECT(0x00487C30, InitBinoculars, replace);
 	INJECT(0x00487D00, DrawBinoculars, replace);
+	INJECT(0x0048AD60, DrawWraithTrail, replace);
 }

@@ -146,10 +146,13 @@ void lara_col_ropefwd(ITEM_INFO* item, COLL_INFO* coll);
 void lara_as_climbrope(ITEM_INFO* item, COLL_INFO* coll);
 void lara_as_climbroped(ITEM_INFO* item, COLL_INFO* coll);
 void lara_col_jumper(ITEM_INFO* item, COLL_INFO* coll);
+void lara_slide_slope(ITEM_INFO* item, COLL_INFO* coll);
+void ResetLook();
+void LookUpDown();
+void LookLeftRight();
+long UseInventoryItems(ITEM_INFO* item);
+void LaraDeflectEdgeJump(ITEM_INFO* item, COLL_INFO* coll);
 
-#define LookLeftRight	( (void(__cdecl*)()) 0x00428D40 )
-#define ResetLook	( (void(__cdecl*)()) 0x00428BA0 )
-#define LookUpDown	( (void(__cdecl*)()) 0x00428C40 )
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
 #define LaraHangLeftCornerTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004266E0 )
 #define LaraHangRightCornerTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00426230 )
@@ -161,12 +164,9 @@ void lara_col_jumper(ITEM_INFO* item, COLL_INFO* coll);
 #define LaraDeflectEdge	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422400 )
 #define TestWall	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x004228D0 )
 #define LaraCollideStop	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004229D0 )
-#define LaraDeflectEdgeJump	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422C50 )
 #define TestMonkeyLeft	( (short(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004236B0 )
 #define TestMonkeyRight	( (short(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004237B0 )
-#define lara_slide_slope	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00428470 )
 #define LaraSlideEdgeJump	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004259C0 )
-#define UseInventoryItems	( (long(__cdecl*)(ITEM_INFO*)) 0x00424E90 )
 #define FallFromRope	( (void(__cdecl*)(ITEM_INFO*)) 0x004241D0 )
 #define UpdateRopeSwing	( (void(__cdecl*)(ITEM_INFO*)) 0x00424320 )
 #define JumpOffRope	( (void(__cdecl*)(ITEM_INFO*)) 0x00424820 )

@@ -12,6 +12,7 @@
 #include "../game/draw.h"
 #include "specificfx.h"
 #include "function_stubs.h"
+#include "../game/newinv.h"
 #ifdef GENERAL_FIXES
 #include "../game/text.h"
 #include "../game/gameflow.h"
@@ -494,10 +495,15 @@ void RenderLoadPic(long unused)
 		RenderIt(camera.pos.room_number);
 
 #ifdef GENERAL_FIXES
-		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
-			PrintString((ushort)phd_centerx, ushort((phd_winymax * 0.8F) + float((480.0F / phd_winymax) * 50)), 5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
-		else
-			PrintString((ushort)phd_centerx, ushort(phd_winymax - (font_height << 1)), 5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+		if (tomb4.loadingtxt)
+		{
+			if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+				PrintString((ushort)phd_centerx, ushort((float((480 - (font_height >> 1)) * float(phd_winymax / 480.0F))) - (font_height >> 1)),
+					5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+			else
+				PrintString((ushort)phd_centerx, ushort((float(phd_winymax / 480.0F) + (phd_winymax - font_height)) - (font_height >> 1)),
+					5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+		}
 #endif
 
 		S_OutputPolyList();
@@ -510,10 +516,15 @@ void RenderLoadPic(long unused)
 	RenderIt(camera.pos.room_number);
 
 #ifdef GENERAL_FIXES
-	if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
-		PrintString((ushort)phd_centerx, ushort((phd_winymax * 0.8F) + float((480.0F / phd_winymax) * 50)), 5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
-	else
-		PrintString((ushort)phd_centerx, ushort(phd_winymax - (font_height << 1)), 5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+	if (tomb4.loadingtxt)
+	{
+		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
+			PrintString((ushort)phd_centerx, ushort((float((480 - (font_height >> 1)) * float(phd_winymax / 480.0F))) - (font_height >> 1)),
+				5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+		else
+			PrintString((ushort)phd_centerx, ushort((float(phd_winymax / 480.0F) + (phd_winymax - font_height)) - (font_height >> 1)),
+				5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+	}
 #endif
 
 	S_OutputPolyList();
@@ -843,6 +854,112 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 	DestVB->Unlock();
 }
 
+void S_DrawPickup(short object_number)
+{
+	phd_LookAt(0, 1024, 0, 0, 0, 0, 0);
+	SetD3DViewMatrix();
+	DrawThreeDeeObject2D(long((float)phd_winxmax / 512.0F * 448.0F + PickupX), long((float)phd_winymax / 256.0F * 216.0F),
+		convert_obj_to_invobj(object_number), 128, 0, (GnFrameCounter & 0x7F) << 9, 0, 0, 1);
+}
+
+long S_GetObjectBounds(short* bounds)
+{
+	FVECTOR vtx[8];
+	float xMin, xMax, yMin, yMax, zMin, zMax, numZ, xv, yv, zv;
+
+	if (phd_mxptr[11] >= phd_zfar && !outside)
+		return 0;
+
+	xMin = bounds[0];
+	xMax = bounds[1];
+	yMin = bounds[2];
+	yMax = bounds[3];
+	zMin = bounds[4];
+	zMax = bounds[5];
+
+	vtx[0].x = xMin;
+	vtx[0].y = yMin;
+	vtx[0].z = zMin;
+
+	vtx[1].x = xMax;
+	vtx[1].y = yMin;
+	vtx[1].z = zMin;
+
+	vtx[2].x = xMax;
+	vtx[2].y = yMax;
+	vtx[2].z = zMin;
+
+	vtx[3].x = xMin;
+	vtx[3].y = yMax;
+	vtx[3].z = zMin;
+
+	vtx[4].x = xMin;
+	vtx[4].y = yMin;
+	vtx[4].z = zMax;
+
+	vtx[5].x = xMax;
+	vtx[5].y = yMin;
+	vtx[5].z = zMax;
+
+	vtx[6].x = xMax;
+	vtx[6].y = yMax;
+	vtx[6].z = zMax;
+
+	vtx[7].x = xMin;
+	vtx[7].y = yMax;
+	vtx[7].z = zMax;
+
+	xMin = (float)0x3FFFFFFF;
+	xMax = (float)-0x3FFFFFFF;
+	yMin = (float)0x3FFFFFFF;
+	yMax = (float)-0x3FFFFFFF;
+	numZ = 0;
+
+	for (int i = 0; i < 8; i++)
+	{
+		zv = vtx[i].x * phd_mxptr[M20] + vtx[i].y * phd_mxptr[M21] + vtx[i].z * phd_mxptr[M22] + phd_mxptr[M23];
+
+		if (zv > phd_znear && phd_zfar > zv)
+		{
+			numZ++;
+			zv /= phd_persp;
+
+			if (!zv)
+				zv = 1;
+
+			zv = 1 / zv;
+			xv = zv * (vtx[i].x * phd_mxptr[M00] + vtx[i].y * phd_mxptr[M01] + vtx[i].z * phd_mxptr[M02] + phd_mxptr[M03]);
+
+			if (xv < xMin)
+				xMin = xv;
+
+			if (xv > xMax)
+				xMax = xv;
+
+			yv = zv * (vtx[i].x * phd_mxptr[M10] + vtx[i].y * phd_mxptr[M11] + vtx[i].z * phd_mxptr[M12] + phd_mxptr[M13]);
+
+			if (yv < yMin)
+				yMin = yv;
+
+			if (yv > yMax)
+				yMax = yv;
+		}
+	}
+
+	xMin += phd_centerx;
+	xMax += phd_centerx;
+	yMin += phd_centery;
+	yMax += phd_centery;
+
+	if (numZ < 8 || xMin < 0 || yMin < 0 || phd_winxmax < xMax || phd_winymax < yMax)
+		return -1;
+
+	if (phd_right >= xMin && phd_bottom >= yMin && phd_left <= xMax && phd_top <= yMax)
+		return 1;
+	else
+		return 0;
+}
+
 void inject_output(bool replace)
 {
 	INJECT(0x0047DA60, phd_PutPolygons, replace);
@@ -854,4 +971,6 @@ void inject_output(bool replace)
 	INJECT(0x0047D5B0, S_InitialisePolyList, replace);
 	INJECT(0x0047E8B0, phd_PutPolygonsPickup, replace);
 	INJECT(0x0047F620, phd_PutPolygonSkyMesh, replace);
+	INJECT(0x0047F970, S_DrawPickup, replace);
+	INJECT(0x0047FCF0, S_GetObjectBounds, replace);
 }

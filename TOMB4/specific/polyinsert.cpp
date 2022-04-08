@@ -186,7 +186,7 @@ void DrawSortList()
 				break;
 		}
 
-		bVtxbak = Bucket[0].Vertex;
+		bVtxbak = Bucket[0].vtx;
 		bVtx = bVtxbak;
 		tpage = pSort->tpage;
 		drawtype = pSort->drawtype;
@@ -725,6 +725,10 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 			if (!double_sided)
 				return;
 
+			swap = v1;
+			v1 = v2;
+			v2 = swap;
+
 			tex2.drawtype = tex->drawtype;
 			tex2.flag = tex->flag;
 			tex2.tpage = tex->tpage;
@@ -1140,6 +1144,60 @@ void AddLineClippedSorted(D3DTLVERTEX* v0, D3DTLVERTEX* v1, short drawtype)
 	v[1].specular = v1->specular;
 }
 
+void InitialiseSortList()
+{
+	pSortBuffer = SortBuffer;
+	pSortList = SortList;
+	SortCount = 0;
+}
+
+void DoSort(long left, long right, SORTLIST** list)
+{
+	SORTLIST* swap;
+	float z;
+	long l, r;
+
+	l = left;
+	r = right;
+	z = list[(left + right) / 2]->zVal;
+
+	do
+	{
+		while (l < right && list[l]->zVal > z)
+			l++;
+
+		while (r > left && list[r]->zVal < z)
+			r--;
+
+		if (l <= r)
+		{
+			swap = list[l];
+			list[l] = list[r];
+			list[r] = swap;
+			l++;
+			r--;
+		}
+
+	} while (l <= r);
+
+	if (r > left)
+		DoSort(left, r, list);
+
+	if (l < right)
+		DoSort(l, right, list);
+}
+
+void SortPolyList(long count, SORTLIST** list)
+{
+	if (!count)
+		return;
+
+	for (int i = 0; i < count; i++)
+		list[i]->zVal -= (float)i * 0.1F;
+
+	DoSort(0, count - 1, list);
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -1156,5 +1214,8 @@ void inject_polyinsert(bool replace)
 	INJECT(0x004820C0, OmniFog, replace);
 	INJECT(0x00483C80, AddTriClippedSorted, replace);
 	INJECT(0x004842A0, AddQuadClippedSorted, replace);
-	INJECT(0x00484850, AddLineClippedSorted, 0);
+	INJECT(0x00484850, AddLineClippedSorted, replace);
+	INJECT(0x00481860, InitialiseSortList, replace);
+	INJECT(0x00481760, DoSort, replace);
+	INJECT(0x00481810, SortPolyList, replace);
 }

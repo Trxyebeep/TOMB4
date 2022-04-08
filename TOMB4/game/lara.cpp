@@ -15,6 +15,8 @@
 #include "laraswim.h"
 #include "larasurf.h"
 #include "laraclmb.h"
+#include "newinv.h"
+#include "clockworkbeetle.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
@@ -4345,6 +4347,300 @@ void lara_col_jumper(ITEM_INFO* item, COLL_INFO* coll)
 	}
 }
 
+void lara_slide_slope(ITEM_INFO* item, COLL_INFO* coll)
+{
+	coll->bad_pos = -NO_HEIGHT;
+	coll->bad_neg = -512;
+	coll->bad_ceiling = 0;
+	GetLaraCollisionInfo(item, coll);
+
+	if (!LaraHitCeiling(item, coll))
+	{
+		LaraDeflectEdge(item, coll);
+
+		if (coll->mid_floor <= 200)
+		{
+			TestLaraSlide(item, coll);
+			item->pos.y_pos += coll->mid_floor;
+
+			if (ABS(coll->tilt_x) <= 2 && ABS(coll->tilt_z) <= 2)
+			{
+				item->goal_anim_state = AS_STOP;
+				StopSoundEffect(SFX_LARA_SLIPPING);
+			}
+		}
+		else
+		{
+			if (item->current_anim_state == AS_SLIDE)
+			{
+				item->anim_number = ANIM_FALLDOWN;
+				item->frame_number = anims[ANIM_FALLDOWN].frame_base;
+				item->current_anim_state = AS_FORWARDJUMP;
+				item->goal_anim_state = AS_FORWARDJUMP;
+			}
+			else
+			{
+				item->anim_number = ANIM_FALLBACK;
+				item->frame_number = anims[ANIM_FALLBACK].frame_base;
+				item->current_anim_state = AS_FALLBACK;
+				item->goal_anim_state = AS_FALLBACK;
+			}
+
+			StopSoundEffect(SFX_LARA_SLIPPING);
+			item->gravity_status = 1;
+			item->fallspeed = 0;
+		}
+	}
+}
+
+void ResetLook()
+{
+	if (camera.type != LOOK_CAMERA)
+	{
+		if (lara.head_x_rot > -364 && lara.head_x_rot < 364)
+			lara.head_x_rot = 0;
+		else
+			lara.head_x_rot -= lara.head_x_rot / 8;
+
+		if (lara.head_y_rot > -364 && lara.head_y_rot < 364)
+			lara.head_y_rot = 0;
+		else
+			lara.head_y_rot -= lara.head_y_rot / 8;
+
+		if (lara.gun_status != LG_HANDS_BUSY && lara.vehicle == NO_ITEM)
+		{
+			lara.torso_x_rot = lara.head_x_rot;
+			lara.torso_y_rot = lara.head_y_rot;
+		}
+	}
+}
+
+void LookUpDown()
+{
+	if (lara.vehicle == NO_ITEM)
+	{
+		camera.type = LOOK_CAMERA;
+
+		if (input & IN_FORWARD)
+		{
+			input -= IN_FORWARD;
+
+			if (lara.head_x_rot > -6370)
+			{
+				if (BinocularRange)
+					lara.head_x_rot -= short(364 * (1792 - BinocularRange) / 3072);
+				else
+					lara.head_x_rot -= 364;
+			}
+		}
+		else if (input & IN_BACK)
+		{
+			input -= IN_BACK;
+
+			if (lara.head_x_rot < 5460)
+			{
+				if (BinocularRange)
+					lara.head_x_rot += short(364 * (1792 - BinocularRange) / 3072);
+				else
+					lara.head_x_rot += 364;
+			}
+		}
+
+		if (lara.gun_status != LG_HANDS_BUSY && !lara.left_arm.lock && !lara.right_arm.lock)
+			lara.torso_x_rot = lara.head_x_rot;
+	}
+}
+
+void LookLeftRight()
+{
+	if (lara.vehicle == NO_ITEM)
+	{
+		camera.type = LOOK_CAMERA;
+
+		if (input & IN_LEFT)
+		{
+			input -= IN_LEFT;
+
+			if (lara.head_y_rot > -8008)
+			{
+				if (BinocularRange)
+					lara.head_y_rot -= short(364 * (1792 - BinocularRange) / 1536);
+				else
+					lara.head_y_rot -= 364;
+			}
+		}
+		else if (input & IN_RIGHT)
+		{
+			input -= IN_RIGHT;
+
+			if (lara.head_y_rot < 8008)
+			{
+				if (BinocularRange)
+					lara.head_y_rot += short(364 * (1792 - BinocularRange) / 1536);
+				else
+					lara.head_y_rot += 364;
+			}
+		}
+
+		if (lara.gun_status != LG_HANDS_BUSY && !lara.left_arm.lock && !lara.right_arm.lock)
+			lara.torso_y_rot = lara.head_y_rot;
+	}
+}
+
+long UseInventoryItems(ITEM_INFO* item)
+{
+	long in_use, goin;
+	short flags;
+
+	in_use = GLOBAL_inventoryitemchosen;
+	goin = 0;
+
+	if (item->anim_number == ANIM_BREATH && lara.gun_status == LG_NO_ARMS && in_use != NO_ITEM)
+	{
+		if (in_use >= WATERSKIN1_EMPTY && in_use <= WATERSKIN2_5)
+		{
+			item->item_flags[2] = LARA_WATER_MESH;
+
+			if (in_use != WATERSKIN1_3 && in_use != WATERSKIN2_5 && (LaraNodeUnderwater[3] || LaraNodeUnderwater[6]))
+			{
+				if (in_use >= WATERSKIN1_3)
+					lara.big_water_skin = 6;
+				else
+					lara.small_water_skin = 4;
+
+				item->anim_number = ANIM_FILLWATERSKIN;
+				goin = 1;
+			}
+			else if (in_use != WATERSKIN1_EMPTY && in_use != WATERSKIN2_EMPTY)
+			{
+				if (in_use > WATERSKIN1_3)
+				{
+					item->item_flags[3] = lara.big_water_skin - 1;
+					lara.big_water_skin = 1;
+				}
+				else
+				{
+					item->item_flags[3] = lara.small_water_skin - 1;
+					lara.small_water_skin = 1;
+				}
+
+				item->anim_number = ANIM_POURWATERSKIN;
+				goin = 1;
+			}
+		}
+		else if (in_use >= PICKUP_ITEM1 && in_use <= PICKUP_ITEM4)
+		{
+			flags = inventry_objects_list[in_use - 138].flags;
+
+			if (flags & 0x80)
+			{
+				item->item_flags[2] = LARA_DIRT_MESH;
+				item->anim_number = ANIM_POURWATERSKIN;
+				goin = 1;
+			}
+			else if (flags & 0x4000)
+			{
+				item->item_flags[2] = LARA_PETROL_MESH;
+				item->anim_number = ANIM_POURWATERSKIN;
+				goin = 1;
+			}
+		}
+		else if (in_use == PUZZLE_ITEM8)
+		{
+			if (inventry_objects_list[INV_PUZZLE8_ITEM].flags & 0x2000)
+			{
+				if (item->room_number == 25 || item->room_number == 26)
+				{
+					remove_inventory_item(PUZZLE_ITEM8);
+					item->anim_number = ANIM_MINEDETECT;
+					goin = 1;
+				}
+			}
+		}
+		else if (in_use == CLOCKWORK_BEETLE)
+		{
+			item->anim_number = ANIM_USEBEETLE;
+			TriggerClockworkBeetle(1);
+			goin = 1;
+		}
+
+		if (goin)
+		{
+			item->frame_number = anims[item->anim_number].frame_base;
+			item->current_anim_state = AS_CONTROLLED;
+			item->goal_anim_state = AS_CONTROLLED;
+			lara.gun_status = LG_HANDS_BUSY;
+			GLOBAL_inventoryitemchosen = NO_ITEM;
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+void LaraDeflectEdgeJump(ITEM_INFO* item, COLL_INFO* coll)
+{
+	ShiftItem(item, coll);
+
+	switch (coll->coll_type)
+	{
+	case CT_FRONT:
+	case CT_TOP_FRONT:
+
+		if (!lara.climb_status || item->speed != 2)
+		{
+			if (coll->mid_floor > 512)
+			{
+				item->current_anim_state = AS_FASTFALL;
+				item->goal_anim_state = AS_FASTFALL;
+				item->anim_number = ANIM_FASTSPLAT;
+				item->frame_number = anims[ANIM_FASTSPLAT].frame_base + 1;
+			}
+			else if (coll->mid_floor <= 128)
+			{
+				item->current_anim_state = AS_LAND;
+				item->goal_anim_state = AS_LAND;
+				item->anim_number = ANIM_LAND;
+				item->frame_number = anims[ANIM_LAND].frame_base;
+			}
+
+			item->speed /= 4;
+			lara.move_angle += 0x8000;
+
+			if (item->fallspeed <= 0)
+				item->fallspeed = 1;
+		}
+
+		break;
+
+	case CT_LEFT:
+		item->pos.y_rot += 910;
+		break;
+
+	case CT_RIGHT:
+		item->pos.y_rot -= 910;
+		break;
+
+	case CT_TOP:
+
+		if (item->fallspeed <= 0)
+			item->fallspeed = 1;
+
+		break;
+
+	case CT_CLAMP:
+		item->pos.z_pos -= (100 * phd_cos(coll->facing)) >> 14;
+		item->pos.x_pos -= (100 * phd_sin(coll->facing)) >> 14;
+		item->speed = 0;
+		coll->mid_floor = 0;
+
+		if (item->fallspeed < 1)
+			item->fallspeed = 16;
+
+		break;
+	}
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -4486,4 +4782,10 @@ void inject_lara(bool replace)
 	INJECT(0x004248E0, lara_as_climbrope, replace);
 	INJECT(0x00424950, lara_as_climbroped, replace);
 	INJECT(0x00428B20, lara_col_jumper, replace);
+	INJECT(0x00428470, lara_slide_slope, replace);
+	INJECT(0x00428BA0, ResetLook, replace);
+	INJECT(0x00428C40, LookUpDown, replace);
+	INJECT(0x00428D40, LookLeftRight, replace);
+	INJECT(0x00424E90, UseInventoryItems, replace);
+	INJECT(0x00422C50, LaraDeflectEdgeJump, replace);
 }

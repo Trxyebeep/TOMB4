@@ -6,6 +6,8 @@
 #include "items.h"
 #include "objects.h"
 #include "../specific/output.h"
+#include "sound.h"
+#include "delstuff.h"
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments)
 {
@@ -310,10 +312,34 @@ void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, lo
 	sptr->mirror = gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom;
 }
 
+void LaraBubbles(ITEM_INFO* item)
+{
+	PHD_VECTOR pos;
+
+	SoundEffect(SFX_LARA_BUBBLES, &item->pos, SFX_WATER);
+	pos.x = 0;
+	pos.y = -4;
+	pos.z = 64;
+	GetLaraJointPos(&pos, 8);
+
+	for (int i = (GetRandomControl() & 1) + 2; i > 0; i--)
+	{
+		CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7, 0, 0, 0, 0);
+
+		if (gfLevelFlags & GF_MIRROR  && item->room_number == gfMirrorRoom)
+		{
+			pos.z = 2 * gfMirrorZPlane - pos.z;
+			CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7, 0, 0, 0, 0);
+			pos.z = 2 * gfMirrorZPlane - pos.z;
+		}
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
 	INJECT(0x0043A690, ExplodingDeath2, replace);
 	INJECT(0x004395B0, DrawGunshells, replace);
 	INJECT(0x00438940, TriggerGunSmoke, replace);
+	INJECT(0x004398B0, LaraBubbles, replace);
 }

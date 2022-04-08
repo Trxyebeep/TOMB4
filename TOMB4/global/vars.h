@@ -184,6 +184,8 @@
 #define phd_winxmax	VAR_U_(0x00753C84, short)
 #define phd_winymin	VAR_U_(0x00753C54, short)
 #define phd_winxmin	VAR_U_(0x00753C9C, short)
+#define phd_znear	VAR_U_(0x00753C88, long)
+#define phd_zfar	VAR_U_(0x00753C60, long)
 #define GLaraShadowframe	VAR_U_(0x0080E710, short*)
 #define CamPos	VAR_U_(0x007E71B0, PHD_VECTOR)
 #define in_joints	VAR_U_(0x0080E500, long)
@@ -424,6 +426,16 @@
 #define targetMeshP	VAR_U_(0x007FE11C, MESH_DATA*)
 #define binocsMeshP	VAR_U_(0x007FDF60, MESH_DATA*)
 #define CurrentSequence	VAR_U_(0x007F5700, uchar)
+#define REG_Setup	VAR_U_(0x00670E44, bool)
+#define fmvs_disabled	VAR_U_(0x004BFE85, bool)
+#define KeyTriggerActive	VAR_U_(0x004BF3F8, char)
+#define G_dxptr	VAR_U_(0x007544F4, DXPTR*)
+#define joy_fire	VAR_U_(0x0053589C, long)
+#define joy_x	VAR_U_(0x005358A0, long)
+#define joy_y	VAR_U_(0x005358A4, long)
+#define ClipRoomNum	VAR_U_(0x007FDF50, short)
+#define OutsideRoomTable	VAR_U_(0x007FE384, char*)
+#define OutsideRoomOffsets	VAR_U_(0x007FE2E8, short*)
 
 
 
@@ -461,6 +473,7 @@
 #define hairs	ARRAY_(0x0080E160, HAIR_STRUCT, [2][7])
 #define first_hair	ARRAY_(0x0080E140, long, [2])
 #define SortList	ARRAY_(0x00660C94, SORTLIST*, [16384])
+#define SortBuffer	ARRAY_(0x005C07AC, char, [65536])
 #define ScratchVertNums	ARRAY_(0x0080E320, char, [40][12])
 #define HairRotScratchVertNums	ARRAY_(0x004AD6D4, char, [5][12])
 #define IMstack	ARRAY_(0x007FD320, long, [768])
@@ -514,6 +527,7 @@
 #define debris	ARRAY_(0x00808FA0, DEBRIS_STRUCT, [256])
 #define RPickups	ARRAY_(0x007FD1C0, uchar, [16])
 #define jroomies	ARRAY_(0x007F4FE0, short, [22])
+#define conflict	ARRAY_(0x005355B8, long, [18])
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)

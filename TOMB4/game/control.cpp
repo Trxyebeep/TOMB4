@@ -150,6 +150,9 @@ long ControlPhase(long nframes, long demo_mode)
 		RPC_Update();
 #endif
 
+	//	if (cdtrack > 0)
+			//empty func call here
+
 		if (S_UpdateInput() == IN_ALL)
 			return 0;
 
