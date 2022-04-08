@@ -16,3 +16,4 @@ void JeepControl(short item_number);
 void JeepStart(ITEM_INFO* item, ITEM_INFO* l);
 void JeepFireGrenade(ITEM_INFO* item);
 void InitialiseEnemyJeep(short item_number);
+void EnemyJeepControl(short item_number);

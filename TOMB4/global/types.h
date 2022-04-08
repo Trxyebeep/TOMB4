@@ -257,6 +257,7 @@ enum input_buttons
 	IN_B =					0x8000,
 	IN_CHEAT =				0x10000,
 	IN_D =					0x20000,
+	IN_C =					0x30000,
 	IN_E =					0x40000,
 	IN_FLARE =				0x80000,
 	IN_SELECT =				0x100000,
@@ -1559,8 +1560,8 @@ struct TEXTURE
 struct TEXTUREBUCKET
 {
 	long tpage;
-	long cnt;
-	D3DTLBUMPVERTEX Vertex[544];
+	long nVtx;
+	D3DTLBUMPVERTEX vtx[544];
 };
 
 struct THREAD
@@ -1852,6 +1853,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool enemy_bars;
 	bool cutseq_skipper;
 	bool cheats;
+	bool loadingtxt;
 };
 #endif
 #pragma pack(pop)

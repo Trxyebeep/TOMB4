@@ -199,9 +199,9 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/deathsld.cpp
 
-0x00404380		InitialiseDeathSlide
-0x004044B0		ControlDeathSlide
-0x004043D0		DeathSlideCollision
+0x00404380	+	InitialiseDeathSlide
+0x004044B0	+	ControlDeathSlide
+0x004043D0	+	DeathSlideCollision
 
 
 		game/debris.cpp
@@ -354,10 +354,10 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044EBA0	+	DrawPhaseGame
 0x0044EC10	+	DrawRooms
 0x0044F2D0	+	S_InsertRoom
-0x0044F330		PrintObjects
-0x0044F5D0		GetRoomBounds
-0x0044F790		SetRoomBounds
-0x0044FB10		DrawEffect
+0x0044F330	+	PrintObjects
+0x0044F5D0	+	GetRoomBounds
+0x0044F790	+	SetRoomBounds
+0x0044FB10	+	DrawEffect
 0x0044FC00		calc_animating_item_clip_window
 0x0044FF60	+	DrawAnimatingItem
 0x00450520	+	InitInterpolate
@@ -423,36 +423,36 @@ x for functions decompiled but not injected, for one reason or another.
 0x004371F0		DoLotsOfBlood
 0x004372A0		Splash
 0x00437390		WadeSplash
-0x00437530		WaterFall
-0x00437650		finish_level_effect
-0x00437660		turn180_effect
-0x00437680		floor_shake_effect
-0x00437720		SoundFlipEffect
-0x00437740		RubbleFX
-0x004377B0		PoseidonSFX
-0x004377D0		ActivateCamera
-0x004377E0		ActivateKey
-0x004377F0		SwapCrowbar
-0x00437820		ExplosionFX
-0x00437850		LaraLocation
-0x00437880		LaraLocationPad
-0x004378A0		GhostTrap
-0x00437930		KillActiveBaddies
-0x004379E0		lara_hands_free
-0x004379F0		draw_right_gun
-0x00437A40		draw_left_gun
-0x00437A90		shoot_right_gun
-0x00437AA0		shoot_left_gun
+0x00437530	+	WaterFall
+0x00437650	+	finish_level_effect
+0x00437660	+	turn180_effect
+0x00437680	+	floor_shake_effect
+0x00437720	+	SoundFlipEffect
+0x00437740	+	RubbleFX
+0x004377B0	+	PoseidonSFX
+0x004377D0	+	ActivateCamera
+0x004377E0	+	ActivateKey
+0x004377F0	+	SwapCrowbar
+0x00437820	+	ExplosionFX
+0x00437850	+	LaraLocation
+0x00437880	+	LaraLocationPad
+0x004378A0	+	GhostTrap
+0x00437930	+	KillActiveBaddies
+0x004379E0	+	lara_hands_free
+0x004379F0	+	draw_right_gun
+0x00437A40	+	draw_left_gun
+0x00437A90	+	shoot_right_gun
+0x00437AA0	+	shoot_left_gun
 0x00437AB0	+	SetFog
-0x00437B60		swap_meshes_with_meshswap1
-0x00437BC0		swap_meshes_with_meshswap2
-0x00437C20		swap_meshes_with_meshswap3
-0x00437CB0		invisibility_on
-0x00437CC0		invisibility_off
-0x00437CE0		reset_hair
-0x00437CF0		ClearScarabsPatch
-0x00437D00		MeshSwapToPour
-0x00437D30		MeshSwapFromPour
+0x00437B60	+	swap_meshes_with_meshswap1
+0x00437BC0	+	swap_meshes_with_meshswap2
+0x00437C20	+	swap_meshes_with_meshswap3
+0x00437CB0	+	invisibility_on
+0x00437CC0	+	invisibility_off
+0x00437CE0	+	reset_hair
+0x00437CF0	+	ClearScarabsPatch
+0x00437D00	+	MeshSwapToPour
+0x00437D30	+	MeshSwapFromPour
 
 
 		game/elements.cpp
@@ -607,7 +607,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00469770	+	CanGetOff
 0x00469870	+	UserControl
 0x00469B90	+	InitialiseEnemyJeep
-0x00469C20		EnemyJeepControl
+0x00469C20	+	EnemyJeepControl
 0x0046A4D0	+	JeepFireGrenade
 0x0046A620	+	JeepStart
 
@@ -650,7 +650,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00422A90	+	lara_as_dashdive
 0x00422AC0	+	lara_col_dashdive
 0x00422BE0	+	LaraLandedBad
-0x00422C50		LaraDeflectEdgeJump
+0x00422C50	+	LaraDeflectEdgeJump
 0x00422DE0	+	lara_as_hang2
 0x00422E50	+	MonkeySwingFall
 0x00422EB0	+	lara_col_hang2
@@ -688,7 +688,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004248E0	+	lara_as_climbrope
 0x00424950	+	lara_as_climbroped
 0x00424A60	+	lara_as_stop
-0x00424E90		UseInventoryItems
+0x00424E90	+	UseInventoryItems
 0x00425070	+	lara_col_stop
 0x00425110	+	lara_as_upjump
 0x00425130	+	lara_col_upjump
@@ -764,7 +764,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00428350	+	lara_col_stepright
 0x00428430	+	lara_col_stepleft
 0x00428450	+	lara_col_slide
-0x00428470		lara_slide_slope
+0x00428470	+	lara_slide_slope
 0x00428580	+	lara_col_backjump
 0x004285B0	+	lara_col_rightjump
 0x004285E0	+	lara_col_leftjump
@@ -777,9 +777,9 @@ x for functions decompiled but not injected, for one reason or another.
 0x00428960	+	lara_col_wade
 0x00428AD0	+	lara_default_col
 0x00428B20	+	lara_col_jumper
-0x00428BA0		ResetLook
-0x00428C40		LookUpDown
-0x00428D40		LookLeftRight
+0x00428BA0	+	ResetLook
+0x00428C40	+	LookUpDown
+0x00428D40	+	LookLeftRight
 
 
 		game/lara1gun.cpp
@@ -1320,7 +1320,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00439660		TriggerSmallSplash
 0x00439780		GetFreeBubble
 0x004397F0		CreateBubble
-0x004398B0		LaraBubbles
+0x004398B0	+	LaraBubbles
 0x00439970		UpdateBubbles
 0x00439AE0		TriggerGunflash
 0x00439B80		SetGunFlash
@@ -1496,6 +1496,7 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/cmdline.cpp
 
 0x0046FE40		CLSetup
+0x0046FE60		CLNoFMV
 0x0046FE80		DXSetupDialog
 0x0046FED0		InitDSDevice
 0x0046FFA0		InitTFormats
@@ -1526,10 +1527,10 @@ x for functions decompiled but not injected, for one reason or another.
 0x00472400		PrelightVertsMMX
 0x004724C0	+	PrelightVertsNonMMX
 0x00472650	+	InsertRoom
-0x004728B0		InitBuckets
-0x004728D0		FindBucket
-0x004729E0		DrawBucket
-0x00472C10		DrawBuckets
+0x004728B0	+	InitBuckets
+0x004728D0	+	FindBucket
+0x004729E0	+	DrawBucket
+0x00472C10	+	DrawBuckets
 0x00472EE0	+	CalcTriFaceNormal
 0x00472F50		CreateVertexNormals
 
@@ -1564,7 +1565,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00494030		DXMove
 0x00494080		DXSaveScreen
 0x00494270		DXInitKeyboard
-0x004944D0		DXReadKeyboard
+0x004944D0	+	DXReadKeyboard
 
 
 		specific/dxsound.cpp
@@ -1617,7 +1618,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00476260		LoadSamples
 0x00476410		S_GetUVRotateTextures
 0x00476470		LoadLevel
-0x00476790		FreeLevel
+0x00476790	+	FreeLevel
 0x004768C0	+	S_LoadLevelFile
 
 
@@ -1659,9 +1660,9 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/input.cpp
 
-0x004776C0		Key
+0x004776C0	+	Key
 0x004777E0		ReadJoystick
-0x004778B0		S_UpdateInput
+0x004778B0	+	S_UpdateInput
 
 
 		specific/lighting.cpp
@@ -1720,10 +1721,10 @@ x for functions decompiled but not injected, for one reason or another.
 0x0047E8B0	+	phd_PutPolygonsPickup
 0x0047F620	+	phd_PutPolygonSkyMesh
 0x0047F950	+	_InsertRoom
-0x0047F970		S_DrawPickup
+0x0047F970	+	S_DrawPickup
 0x0047FA10		S_OutputPolyList
 0x0047FCA0		S_DumpScreen
-0x0047FCF0		S_GetObjectBounds
+0x0047FCF0	+	S_GetObjectBounds
 0x00480070		S_AnimateTextures
 0x00480220	+	ProjectTrainVerts
 0x00480310	+	phd_PutPolygons_train
@@ -1737,9 +1738,9 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x00480A50	+	DrawSortList
 0x004812D0	+	HWR_DrawSortList
-0x00481760		DoSort
-0x00481810		SortPolyList
-0x00481860		InitialiseSortList
+0x00481760	+	DoSort
+0x00481810	+	SortPolyList
+0x00481860	+	InitialiseSortList
 0x004818A0	+	ClearFXFogBulbs
 0x004818C0	+	ControlFXBulb
 0x004819B0	+	CreateFXBulbs
@@ -1777,9 +1778,9 @@ x for functions decompiled but not injected, for one reason or another.
 0x00484BF0	+	REG_ReadBool
 0x00484C70	+	OpenRegistry
 0x00484CC0	+	CloseRegistry
-0x00484CD0		LoadSettings
+0x00484CD0	+	LoadSettings
 0x00485190		SaveSetup
-0x004853F0		SaveSettings
+0x004853F0	+	SaveSettings
 
 
 		specific/specificfx.cpp
@@ -1807,7 +1808,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0048A0C0		DrawBlood
 0x0048A430		DrawDrips
 0x0048A840		DoUwEffect
-0x0048AD60		DrawWraithTrail
+0x0048AD60	+	DrawWraithTrail
 0x0048B130	+	ShowTitle
 0x0048B480		DrawTrainFloorStrip
 0x0048B990	+	DrawTrainStrips

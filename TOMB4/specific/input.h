@@ -1,5 +1,9 @@
 #pragma once
 #include "../global/vars.h"
 
-#define S_UpdateInput	( (long(__cdecl*)()) 0x004778B0 )
+void inject_input(bool replace);
+
+long Key(long number);
+long S_UpdateInput();
+
 #define ReadJoystick	( (long(__cdecl*)(long&, long&)) 0x004777E0 )

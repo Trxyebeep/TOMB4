@@ -71,6 +71,7 @@ void handle_cutseq_triggering(long name)
 			SetFadeClip(28, 1);
 
 		if (!ScreenFadedOut)
+			// if gfCurrentLevel -> empty func call here
 			SetScreenFadeOut(16, 0);
 	}
 	else if (cutseq_trig == 1)
@@ -144,6 +145,10 @@ void handle_cutseq_triggering(long name)
 	else if (cutseq_trig == 3)
 	{
 		SetScreenFadeOut(16, 1);
+
+	//	if (cutseq_num != 1 && gfCurrentLevel)
+			//empty func call here
+
 		cutseq_trig = 4;
 	}
 	else if (cutseq_trig == 4)

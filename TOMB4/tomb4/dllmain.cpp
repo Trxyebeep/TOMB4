@@ -61,6 +61,8 @@
 #include "../game/pickup.h"
 #include "../game/switch.h"
 #include "../game/baboon.h"
+#include "../specific/input.h"
+#include "../game/deathsld.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -141,6 +143,8 @@ void inject_all(bool replace)
 	inject_pickup(replace);
 	inject_switch(replace);
 	inject_baboon(replace);
+	inject_input(replace);
+	inject_deathslide(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

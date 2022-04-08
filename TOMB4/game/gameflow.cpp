@@ -331,6 +331,7 @@ void DoLevel(uchar Name, uchar Audio)
 	ClearFXFogBulbs();
 	InitSpotCamSequences();
 	InitialisePickUpDisplay();
+	//empty func call here
 	SOUND_Stop();
 	bDisableLaraControl = 0;
 
@@ -759,9 +760,11 @@ void DoTitle(uchar Name, uchar Audio)
 	SetFogColor(gfFog.r, gfFog.g, gfFog.b);
 	ClearFXFogBulbs();
 	InitialisePickUpDisplay();
+	//empty func call here
 	SOUND_Stop();
 	S_CDPlay(Audio, 1);
 	IsAtmospherePlaying = 0;
+	//empty func call here
 	InitialiseCamera();
 
 	if (bDoCredits)

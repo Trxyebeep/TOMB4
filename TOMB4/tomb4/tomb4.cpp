@@ -58,6 +58,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "cheats");
 		tomb4.cheats = 0;								//off
 		REG_WriteBool(buf, tomb4.cheats);
+
+		sprintf(buf, "loadtxt");
+		tomb4.loadingtxt = 1;							//on
+		REG_WriteBool(buf, tomb4.loadingtxt);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -93,6 +97,9 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "cheats");
 		REG_ReadBool(buf, tomb4.cheats, 0);
+
+		sprintf(buf, "loadtxt");
+		REG_ReadBool(buf, tomb4.loadingtxt, 1);
 	}
 
 	CloseRegistry();
@@ -136,6 +143,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "cheats");
 	REG_WriteBool(buf, tomb4.cheats);
+
+	sprintf(buf, "loadtxt");
+	REG_WriteBool(buf, tomb4.loadingtxt);
 
 	CloseRegistry();
 }
