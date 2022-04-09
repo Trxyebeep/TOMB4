@@ -62,6 +62,7 @@
 #include "../game/switch.h"
 #include "../specific/input.h"
 #include "../game/deathsld.h"
+#include "../specific/fmv.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -143,6 +144,7 @@ void inject_all(bool replace)
 	inject_switch(replace);
 	inject_input(replace);
 	inject_deathslide(replace);
+	inject_fmv(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

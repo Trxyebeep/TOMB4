@@ -556,6 +556,12 @@
 #define VonCroyCutTracks	ARRAY_(0x004AD458, short, [62])
 
 
+/*Bink bs*/
+#define BinkSurfaceType	VAR_U_(0x007E6E00, long)
+#define BinkSurface	VAR_U_(0x007E6E04, LPDIRECTDRAWSURFACE4)
+#define Bink	VAR_U_(0x007E6E08, BINK_STRUCT*)
+
+
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)

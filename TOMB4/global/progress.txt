@@ -1622,6 +1622,12 @@ x for functions decompiled but not injected, for one reason or another.
 0x004768C0	+	S_LoadLevelFile
 
 
+		specific/fmv.cpp
+
+0x0049C350	+	ShowBinkFrame
+0x0049C3E0		PlayFmvNow
+
+
 		specific/function_stubs.cpp
 
 0x00490E80	+	other_log

@@ -257,6 +257,7 @@
     <ClInclude Include="TOMB4\specific\dxshell.h" />
     <ClInclude Include="TOMB4\specific\dxsound.h" />
     <ClInclude Include="TOMB4\specific\file.h" />
+    <ClInclude Include="TOMB4\specific\fmv.h" />
     <ClInclude Include="TOMB4\specific\function_stubs.h" />
     <ClInclude Include="TOMB4\specific\function_table.h" />
     <ClInclude Include="TOMB4\specific\gamemain.h" />
@@ -368,6 +369,7 @@
     <ClCompile Include="TOMB4\specific\dxshell.cpp" />
     <ClCompile Include="TOMB4\specific\dxsound.cpp" />
     <ClCompile Include="TOMB4\specific\file.cpp" />
+    <ClCompile Include="TOMB4\specific\fmv.cpp" />
     <ClCompile Include="TOMB4\specific\function_stubs.cpp" />
     <ClCompile Include="TOMB4\specific\function_table.cpp" />
     <ClCompile Include="TOMB4\specific\gamemain.cpp" />
