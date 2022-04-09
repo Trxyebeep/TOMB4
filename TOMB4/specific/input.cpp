@@ -76,6 +76,9 @@ long S_UpdateInput()
 	short state;
 	static bool flare_no_db = 0;
 	bool debounce;
+#ifdef GENERAL_FIXES
+	bool goin;
+#endif
 
 	debounce = SetDebounce;
 	DXReadKeyboard(keymap);
@@ -198,11 +201,17 @@ long S_UpdateInput()
 	}
 
 #ifdef GENERAL_FIXES
-	state = lara_item->current_anim_state;
+	if (!lara_item)
+		goin = 0;
+	else
+	{
+		state = lara_item->current_anim_state;
+		goin = !(gfLevelFlags & GF_YOUNGLARA) && (lara.water_status == LW_ABOVE_WATER || lara.water_status == LW_WADE) && !bDisableLaraControl &&
+			(state != AS_ALL4S && state != AS_CRAWL && state != AS_ALL4TURNL && state != AS_ALL4TURNR && state != AS_CRAWLBACK &&
+				state != AS_CRAWL2HANG && state != AS_DUCK && state != AS_DUCKROTL && state != AS_DUCKROTR);
+	}
 	
-	if(!(gfLevelFlags & GF_YOUNGLARA) && (lara.water_status == LW_ABOVE_WATER || lara.water_status == LW_WADE) && !bDisableLaraControl && 
-		(state != AS_ALL4S && state != AS_CRAWL && state != AS_ALL4TURNL && state != AS_ALL4TURNR && state != AS_CRAWLBACK &&
-			state != AS_CRAWL2HANG && state != AS_DUCK && state != AS_DUCKROTL && state != AS_DUCKROTR))
+	if(goin)
 #else
 	if (!(gfLevelFlags & GF_YOUNGLARA))
 #endif
