@@ -430,12 +430,14 @@
 #define fmvs_disabled	VAR_U_(0x004BFE85, bool)
 #define KeyTriggerActive	VAR_U_(0x004BF3F8, char)
 #define G_dxptr	VAR_U_(0x007544F4, DXPTR*)
+#define G_dxinfo	VAR_U_(0x00754120, DXINFO*)
 #define joy_fire	VAR_U_(0x0053589C, long)
 #define joy_x	VAR_U_(0x005358A0, long)
 #define joy_y	VAR_U_(0x005358A4, long)
 #define ClipRoomNum	VAR_U_(0x007FDF50, short)
 #define OutsideRoomTable	VAR_U_(0x007FE384, char*)
 #define OutsideRoomOffsets	VAR_U_(0x007FE2E8, short*)
+#define cd_drive	VAR_U_(0x005333A0, char)
 
 
 

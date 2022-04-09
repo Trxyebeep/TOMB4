@@ -1625,7 +1625,7 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/fmv.cpp
 
 0x0049C350	+	ShowBinkFrame
-0x0049C3E0		PlayFmvNow
+0x0049C3E0	+	PlayFmvNow
 
 
 		specific/function_stubs.cpp
