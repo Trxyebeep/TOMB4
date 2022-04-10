@@ -8,6 +8,7 @@
 #include "../specific/output.h"
 #include "sound.h"
 #include "delstuff.h"
+#include "control.h"
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments)
 {
@@ -335,6 +336,51 @@ void LaraBubbles(ITEM_INFO* item)
 	}
 }
 
+void UpdateDrips()
+{
+	DRIP_STRUCT* drip;
+	FLOOR_INFO* floor;
+	long h;
+
+	for (int i = 0; i < 32; i++)
+	{
+		drip = &Drips[i];
+
+		if (!drip->On)
+			continue;
+
+		drip->Life--;
+
+		if (!drip->Life)
+		{
+			drip->On = 0;
+			continue;
+		}
+
+		if (drip->Life < 16)
+		{
+			drip->R -= drip->R >> 3;
+			drip->G -= drip->G >> 3;
+			drip->B -= drip->B >> 3;
+		}
+
+		drip->Yvel += drip->Gravity;
+
+		if (room[drip->RoomNumber].flags & ROOM_NOT_INSIDE)
+		{
+			drip->x += SmokeWindX >> 1;
+			drip->z += SmokeWindZ >> 1;
+		}
+
+		drip->y += drip->Yvel >> 5;
+		floor = GetFloor(drip->x, drip->y, drip->z, &drip->RoomNumber);
+		h = GetHeight(floor, drip->x, drip->y, drip->z);
+
+		if (room[drip->RoomNumber].flags & ROOM_UNDERWATER || drip->y > h)
+			drip->On = 0;
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -342,4 +388,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x004395B0, DrawGunshells, replace);
 	INJECT(0x00438940, TriggerGunSmoke, replace);
 	INJECT(0x004398B0, LaraBubbles, replace);
+	INJECT(0x00439F80, UpdateDrips, replace);
 }
