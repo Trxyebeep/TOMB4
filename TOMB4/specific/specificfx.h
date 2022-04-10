@@ -30,6 +30,7 @@ void InitTarget_2();
 void InitBinoculars();
 void DrawBinoculars();
 void DrawWraithTrail(ITEM_INFO* item);
+void DrawDrips();
 
 #define DrawTrainFloorStrip	( (void(__cdecl*)(long, long, TEXTURESTRUCT*, long)) 0x0048B480 )
 #define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )
@@ -39,7 +40,6 @@ void DrawWraithTrail(ITEM_INFO* item);
 #define S_DrawSplashes	( (void(__cdecl*)()) 0x00486430 )
 #define DrawBubbles	( (void(__cdecl*)()) 0x004860D0 )
 #define DrawBlood	( (void(__cdecl*)()) 0x0048A0C0 )
-#define DrawDrips	( (void(__cdecl*)()) 0x0048A430 )
 #define DrawShockwaves	( (void(__cdecl*)()) 0x0048CAA0 )
 #define DrawLightning	( (void(__cdecl*)()) 0x0048D9B0 )
 #define ClipLine	( (long(__cdecl*)(long&, long&, long, long&, long&, long, long, long, long, long)) 0x00488690 )
