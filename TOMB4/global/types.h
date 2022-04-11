@@ -1811,6 +1811,14 @@ struct PISTOL_DEF
 	char RecoilAnim;
 };
 
+struct BINK_STRUCT
+{
+	long pad;
+	long num;
+	char padfuck[8];
+	long num2;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

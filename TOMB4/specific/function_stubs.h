@@ -13,5 +13,4 @@ void init_game_malloc();
 void* game_malloc(long size);
 
 #define Log	( (void(__cdecl*)(ulong, const char*, ...)) 0x0049C750 )//wrong place, idk where it goes
-#define PlayFmvNow	( (long(__cdecl*)(long)) 0x0049C3E0 )//wrong place, idk where it goes
 #define ClearFakeDevice	( (HRESULT(__cdecl*)(LPDIRECT3DDEVICE3, long, D3DRECT*, long, long, float, long)) 0x00494D20 )

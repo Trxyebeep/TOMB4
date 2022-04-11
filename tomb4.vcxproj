@@ -90,7 +90,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;DISCORD_RPC;IMPROVED_BARS;ENEMY_BARS;TR2MAIN_WIDESCREEN;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;DISCORD_RPC;IMPROVED_BARS;ENEMY_BARS;TR2MAIN_WIDESCREEN;NO_CD;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -111,7 +111,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;DISCORD_RPC;IMPROVED_BARS;ENEMY_BARS;TR2MAIN_WIDESCREEN;NDEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;DISCORD_RPC;IMPROVED_BARS;ENEMY_BARS;TR2MAIN_WIDESCREEN;NO_CD;NDEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -257,6 +257,7 @@
     <ClInclude Include="TOMB4\specific\dxshell.h" />
     <ClInclude Include="TOMB4\specific\dxsound.h" />
     <ClInclude Include="TOMB4\specific\file.h" />
+    <ClInclude Include="TOMB4\specific\fmv.h" />
     <ClInclude Include="TOMB4\specific\function_stubs.h" />
     <ClInclude Include="TOMB4\specific\function_table.h" />
     <ClInclude Include="TOMB4\specific\gamemain.h" />
@@ -368,6 +369,7 @@
     <ClCompile Include="TOMB4\specific\dxshell.cpp" />
     <ClCompile Include="TOMB4\specific\dxsound.cpp" />
     <ClCompile Include="TOMB4\specific\file.cpp" />
+    <ClCompile Include="TOMB4\specific\fmv.cpp" />
     <ClCompile Include="TOMB4\specific\function_stubs.cpp" />
     <ClCompile Include="TOMB4\specific\function_table.cpp" />
     <ClCompile Include="TOMB4\specific\gamemain.cpp" />

@@ -1210,7 +1210,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0045C0D0		InitialiseObjects
 0x0045C1E0		BaddyObjects
 0x0045DC10		TrapObjects
-0x0045E1F0		ObjectObjects
+0x0045E1F0	+	ObjectObjects
 0x0045EB40		GetCarriedItems
 0x0045EC50		GetAIPickups
 0x0045ED30		BuildOutsideTable
@@ -1331,7 +1331,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00439E00		SetScreenFadeIn
 0x00439E40		Fade
 0x00439F10		GetFreeDrip
-0x00439F80		UpdateDrips
+0x00439F80	+	UpdateDrips
 0x0043A080		TriggerLaraDrips
 0x0043A1B0		S_DrawSparks
 0x0043A690	+	ExplodingDeath2
@@ -1622,6 +1622,12 @@ x for functions decompiled but not injected, for one reason or another.
 0x004768C0	+	S_LoadLevelFile
 
 
+		specific/fmv.cpp
+
+0x0049C350	+	ShowBinkFrame
+0x0049C3E0	+	PlayFmvNow
+
+
 		specific/function_stubs.cpp
 
 0x00490E80	+	other_log
@@ -1806,7 +1812,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00489950	+	DrawLaserSightSprite
 0x00489B90	+	DrawDebris
 0x0048A0C0		DrawBlood
-0x0048A430		DrawDrips
+0x0048A430	+	DrawDrips
 0x0048A840		DoUwEffect
 0x0048AD60	+	DrawWraithTrail
 0x0048B130	+	ShowTitle

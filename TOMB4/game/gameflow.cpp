@@ -1,6 +1,6 @@
 #include "../tomb4/pch.h"
 #include "gameflow.h"
-#include "../specific/function_stubs.h"
+#include "../specific/fmv.h"
 #include "../specific/output.h"
 #include "savegame.h"
 #include "../specific/specificfx.h"
