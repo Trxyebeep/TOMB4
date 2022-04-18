@@ -1,5 +1,6 @@
 #include "../tomb4/pch.h"
 #include "dxshell.h"
+#include "function_stubs.h"
 
 void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count)
 {
@@ -31,8 +32,18 @@ void DXReadKeyboard(char* KeyMap)
 	}
 }
 
+long DXAttempt(HRESULT r)
+{
+	if (SUCCEEDED(r))
+		return DD_OK;
+
+	Log(1, "ERROR : %s", DXGetErrorString(r));
+	return DD_FALSE;
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
 	INJECT(0x004944D0, DXReadKeyboard, replace);
+	INJECT(0x00491C30, DXAttempt, replace);
 }
