@@ -152,6 +152,83 @@ long DXSetCooperativeLevel(LPDIRECTDRAW4 pDD4, HWND hwnd, long flags)
 	return 1;
 }
 
+BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext)
+{
+	DXINFO* dxinfo;
+	DXDIRECTDRAWINFO* DDInfo;
+	long nDDInfo;
+
+	Log(2, "DXEnumDirectDraw");
+	dxinfo = (DXINFO*)lpContext;
+	nDDInfo = dxinfo->nDDInfo;
+	dxinfo->DDInfo = (DXDIRECTDRAWINFO*)AddStruct(dxinfo->DDInfo, dxinfo->nDDInfo, sizeof(DXDIRECTDRAWINFO));
+	DDInfo = &dxinfo->DDInfo[nDDInfo];
+
+	if (lpGUID)
+	{
+		DDInfo->lpGuid = &DDInfo->Guid;
+		DDInfo->Guid = *lpGUID;
+	}
+	else
+		DDInfo->lpGuid = 0;
+
+	lstrcpy(DDInfo->About, lpDriverDescription);
+	lstrcpy(DDInfo->Name, lpDriverName);
+	Log(5, "Obtaining Information For %s", lpDriverDescription);
+
+	if (DXDDCreate(lpGUID, (void**)&G_ddraw))
+	{
+		DXAttempt(G_ddraw->GetDeviceIdentifier(&DDInfo->DDIdentifier, 0));
+
+		Log(5, "Found - %s\nDriver %s Version %d.%d.%d.%d",
+			DDInfo->DDIdentifier.szDescription,
+			DDInfo->DDIdentifier.szDriver,
+			HIWORD(DDInfo->DDIdentifier.liDriverVersion.HighPart),
+			LOWORD(DDInfo->DDIdentifier.liDriverVersion.HighPart),
+			HIWORD(DDInfo->DDIdentifier.liDriverVersion.LowPart),
+			LOWORD(DDInfo->DDIdentifier.liDriverVersion.LowPart));
+
+		memset(&DDInfo->DDCaps, 0, sizeof(DDInfo->DDCaps));
+		DDInfo->DDCaps.dwSize = sizeof(DDCAPS);
+
+		Log(5, "Getting Device Capabilities");
+		DXAttempt(G_ddraw->GetCaps(&DDInfo->DDCaps, 0));
+
+		Log(5, "Enumerating Display Modes");
+		DXSetCooperativeLevel(G_ddraw, 0, DDSCL_FULLSCREEN | DDSCL_NOWINDOWCHANGES | DDSCL_NORMAL | DDSCL_ALLOWMODEX);
+
+		Log(2, "DXEnumDisplayModes");
+		DXAttempt(G_ddraw->EnumDisplayModes(0, 0, (void*)DDInfo, DXEnumDisplayModes));
+
+		if (DXD3DCreate(G_ddraw, (void**)&G_d3d))
+		{
+			Log(2, "DXEnumDirect3D");
+			DXAttempt(G_d3d->EnumDevices(DXEnumDirect3D, (void*)DDInfo));
+
+			if (G_d3d)
+			{
+				Log(4, "Released %s @ %x - RefCnt = %d", "Direct3D", G_d3d, G_d3d->Release());
+				G_d3d = 0;
+			}
+			else
+				Log(1, "%s Attempt To Release NULL Ptr", "Direct3D");
+		}
+
+		DXSetCooperativeLevel(G_ddraw, 0, DDSCL_NORMAL);
+
+		if (G_ddraw)
+		{
+			Log(4, "Released %s @ %x - RefCnt = %d", "DirectDraw", G_ddraw, G_ddraw->Release());
+			G_ddraw = 0;
+		}
+		else
+			Log(1, "%s Attempt To Release NULL Ptr", "DirectDraw");
+	}
+
+	dxinfo->nDDInfo++;
+	return DDENUMRET_OK;
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -161,4 +238,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00491EA0, DXDDCreate, replace);
 	INJECT(0x00491F60, DXD3DCreate, replace);
 	INJECT(0x00492BE0, DXSetCooperativeLevel, replace);
+	INJECT(0x00491FC0, DXEnumDirectDraw, replace);
 }
