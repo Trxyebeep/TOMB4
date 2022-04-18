@@ -80,6 +80,20 @@ long DXDDCreate(LPGUID pGuid, void** pDD4)
 	return 1;
 }
 
+long DXD3DCreate(LPDIRECTDRAW4 pDD4, void** pD3D)
+{
+	Log(2, "DXD3DCreate");
+
+	if (DXAttempt(pDD4->QueryInterface(IID_IDirect3D3, pD3D)) != DD_OK)
+	{
+		Log(1, "DXD3DCreate Failed");
+		return 0;
+	}
+
+	Log(5, "DXD3DCreate Successful");
+	return 1;
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -87,4 +101,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00491C30, DXAttempt, replace);
 	INJECT(0x00491E50, AddStruct, replace);
 	INJECT(0x00491EA0, DXDDCreate, replace);
+	INJECT(0x00491F60, DXD3DCreate, replace);
 }

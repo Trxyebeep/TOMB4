@@ -1544,7 +1544,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00491D60		DXFreeInfo
 0x00491E50	+	AddStruct
 0x00491EA0	+	DXDDCreate
-0x00491F60		DXD3DCreate
+0x00491F60	+	DXD3DCreate
 0x00491FC0		DXEnumDirectDraw
 0x00492240	+	DXBitMask2ShiftCnt
 0x00492280		DXEnumDisplayModes
