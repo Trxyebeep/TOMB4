@@ -499,6 +499,29 @@ long DXCreateViewport(LPDIRECT3D3 d3d, LPDIRECT3DDEVICE3 device, long w, long h,
 	return 1;
 }
 
+HRESULT DXShowFrame()
+{
+	if (G_dxptr->lpPrimaryBuffer->IsLost())
+	{
+		Log(3, "Restored Primary Buffer");
+		DXAttempt(G_dxptr->lpPrimaryBuffer->Restore());
+	}
+
+	if (G_dxptr->lpBackBuffer->IsLost())
+	{
+		Log(3, "Restored Back Buffer");
+		DXAttempt(G_dxptr->lpBackBuffer->Restore());
+	}
+
+	if (!(App.dx.Flags & 0x82))
+		return 0;
+
+	if (G_dxptr->Flags & 2)
+		return DXAttempt(G_dxptr->lpPrimaryBuffer->Blt(&G_dxptr->rScreen, G_dxptr->lpBackBuffer, &G_dxptr->rViewport, DDBLT_WAIT, 0));
+	else
+		return DXAttempt(G_dxptr->lpPrimaryBuffer->Flip(0, DDFLIP_WAIT));
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -520,4 +543,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00492B90, DXSetVideoMode, replace);
 	INJECT(0x004930D0, DXCreateD3DDevice, replace);
 	INJECT(0x00493E70, DXCreateViewport, replace);
+	INJECT(0x00493F60, DXShowFrame, replace);
 }
