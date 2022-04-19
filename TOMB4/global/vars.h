@@ -433,6 +433,7 @@
 #define G_dxinfo	VAR_U_(0x00754120, DXINFO*)
 #define G_ddraw	VAR_U_(0x0075411C, LPDIRECTDRAW4)
 #define G_d3d	VAR_U_(0x007541A4, LPDIRECT3D3)
+#define G_hwnd	VAR_U_(0x00754118, HWND)
 #define joy_fire	VAR_U_(0x0053589C, long)
 #define joy_x	VAR_U_(0x005358A0, long)
 #define joy_y	VAR_U_(0x005358A4, long)

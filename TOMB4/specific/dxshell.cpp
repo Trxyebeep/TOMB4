@@ -256,6 +256,17 @@ BOOL __stdcall DXEnumDirectSound(LPGUID lpGuid, LPCSTR lpcstrDescription, LPCSTR
 	return DDENUMRET_OK;
 }
 
+long DXGetInfo(DXINFO* dxinfo, HWND hwnd)
+{
+	Log(2, "DXInitialise");
+	G_hwnd = hwnd;
+	Log(5, "Enumerating DirectDraw Devices");
+	DXAttempt(DirectDrawEnumerate(DXEnumDirectDraw, dxinfo));
+	DXAttempt(DirectSoundEnumerate(DXEnumDirectSound, dxinfo));
+	G_dxinfo = dxinfo;
+	return 1;
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -267,4 +278,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00492BE0, DXSetCooperativeLevel, replace);
 	INJECT(0x00491FC0, DXEnumDirectDraw, replace);
 	INJECT(0x00491CC0, DXEnumDirectSound, replace);
+	INJECT(0x00491C60, DXGetInfo, replace);
 }
