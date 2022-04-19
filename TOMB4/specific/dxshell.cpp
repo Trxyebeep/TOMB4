@@ -450,6 +450,22 @@ long DXSetVideoMode(LPDIRECTDRAW4 dd, long dwWidth, long dwHeight, long dwBPP)
 	return 1;
 }
 
+long DXCreateD3DDevice(LPDIRECT3D3 d3d, GUID guid, LPDIRECTDRAWSURFACE4 surf, LPDIRECT3DDEVICE3* device)
+{
+	Log(2, "DXCreateD3DDevice");
+
+	if (DXAttempt(d3d->CreateDevice(guid, surf, device, 0)) != DD_OK)
+	{
+		Log(1, "DXCreateD3DDevice Failed");
+		return 0;
+	}
+	else
+	{
+		Log(2, "DXCreateD3DDevice Successful");
+		return 1;
+	}
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -469,4 +485,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00492AD0, DXEnumZBufferFormats, replace);
 	INJECT(0x00492B40, DXCreateSurface, replace);
 	INJECT(0x00492B90, DXSetVideoMode, replace);
+	INJECT(0x004930D0, DXCreateD3DDevice, replace);
 }
