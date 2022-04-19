@@ -29,6 +29,7 @@ void DXSaveScreen(LPDIRECTDRAWSURFACE4 surf, const char* name);
 void DXClose();
 long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, long WindowStyle);
 long DXChangeVideoMode();
+long DXToggleFullScreen();
 
 #define DXGetErrorString	( (const char*(__cdecl*)(HRESULT)) 0x00490FF0 )
 #define DXEnumDirect3D	( (HRESULT(__stdcall*)(LPGUID, LPSTR, LPSTR, LPD3DDEVICEDESC, LPD3DDEVICEDESC, LPVOID)) 0x00492430 )
