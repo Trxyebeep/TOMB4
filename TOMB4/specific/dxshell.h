@@ -25,8 +25,8 @@ long DXCreateViewport(LPDIRECT3D3 d3d, LPDIRECT3DDEVICE3 device, long w, long h,
 HRESULT DXShowFrame();
 void DXMove(long x, long y);
 void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance);
+void DXSaveScreen(LPDIRECTDRAWSURFACE4 surf, const char* name);
 
 #define DXGetErrorString	( (const char*(__cdecl*)(HRESULT)) 0x00490FF0 )
-#define DXSaveScreen	( (void(__cdecl*)(LPDIRECTDRAWSURFACE4, const char*)) 0x00494080 )
 #define DXChangeVideoMode	( (long(__cdecl*)()) 0x004939E0 )
 #define DXEnumDirect3D	( (HRESULT(__stdcall*)(LPGUID, LPSTR, LPSTR, LPD3DDEVICEDESC, LPD3DDEVICEDESC, LPVOID)) 0x00492430 )

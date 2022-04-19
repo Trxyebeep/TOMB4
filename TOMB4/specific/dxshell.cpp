@@ -32,6 +32,8 @@ const char* DDSCL_TEXT[11] =
 	"setfocuswindow"
 };
 
+char tga_header[18] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 1, 0, 1, 16, 0 };
+
 void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count)
 {
 	uchar i;
@@ -566,6 +568,71 @@ void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 #endif
 }
 
+void DXSaveScreen(LPDIRECTDRAWSURFACE4 surf, const char* name)
+{
+	FILE* file;
+	DDSURFACEDESC2 desc;
+	short* pSurf;
+	short* pDest;
+	char* pM;
+	ulong val;
+	static long num = 0;
+	long r, g, b;
+	char buf[16];
+
+	memset(&desc, 0, sizeof(DDSURFACEDESC2));
+	desc.dwSize = sizeof(DDSURFACEDESC2);
+	DXAttempt(surf->GetSurfaceDesc(&desc));
+	DXAttempt(surf->Lock(0, &desc, DDLOCK_WAIT, 0));
+	pSurf = (short*)desc.lpSurface;
+	sprintf(buf, "%s%04d.tga", name, num);
+	num++;
+	file = fopen(buf, "wb");
+
+	if (file)
+	{
+		*(short*)&tga_header[12] = (short)desc.dwWidth;
+		*(short*)&tga_header[14] = (short)desc.dwHeight;
+		fwrite(tga_header, sizeof(tga_header), 1, file);
+		pM = (char*)malloc(2 * desc.dwWidth * desc.dwHeight);
+		pDest = (short*)pM;
+		pSurf += desc.dwHeight * (desc.lPitch / 2);
+
+		for (ulong h = 0; h < desc.dwHeight; h++)
+		{
+			for (ulong w = 0; w < desc.dwWidth; w++)
+			{
+				val = pSurf[w];
+
+				if (desc.ddpfPixelFormat.dwRBitMask == 0xF800)
+				{
+					r = (val >> 11) & 0x1F;
+					g = (val >> 6) & 0x1F;
+					b = val & 0x1F;
+					*pDest++ = short((r << 10) + (g << 5) + b);
+				}
+				else
+					*pDest++ = (short)val;
+			}
+
+			pSurf -= desc.lPitch / 2;
+		}
+
+		fwrite(pM, 2 * desc.dwWidth * desc.dwHeight, 1, file);
+		fclose(file);
+		free(pM);
+		buf[7]++;
+
+		if (buf[7] > '9')
+		{
+			buf[7] = '0';
+			buf[6]++;
+		}
+	}
+
+	DXAttempt(surf->Unlock(0));
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -590,4 +657,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00493F60, DXShowFrame, replace);
 	INJECT(0x00494030, DXMove, replace);
 	INJECT(0x00494270, DXInitKeyboard, 0);
+	INJECT(0x00494080, DXSaveScreen, replace);
 }
