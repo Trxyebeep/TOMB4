@@ -700,6 +700,209 @@ void DXClose()
 	}
 }
 
+long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, long WindowStyle)
+{
+	DXDISPLAYMODE* dm;
+	LPDIRECTDRAWCLIPPER clipper;
+	HWND desktop;
+	DEVMODE dev;
+	HDC hDC;
+	DDSURFACEDESC2 desc;
+	RECT r;
+	long flag, CoopLevel;
+
+	flag = 0;
+	Log(2, "DXCreate");
+	G_dxptr = dxptr;
+	G_dxptr->Flags = Flags;
+	G_dxptr->hWnd = hWnd;
+	G_dxptr->WindowStyle = WindowStyle;
+
+	if (Flags & 0x40)
+		flag = 1;
+
+	DXClose();
+
+	if (!DXDDCreate(G_dxinfo->DDInfo[G_dxinfo->nDD].lpGuid, (void**)&G_dxptr->lpDD) || !DXD3DCreate(G_dxptr->lpDD, (void**)&G_dxptr->lpD3D))
+	{
+		if (!flag)
+		{
+			DXClose();
+			return 0;
+		}
+	}
+
+	if (Flags & 1)
+		CoopLevel = DDSCL_FULLSCREEN | DDSCL_ALLOWREBOOT | DDSCL_EXCLUSIVE;
+	else
+		CoopLevel = DDSCL_NORMAL;
+
+	if (Flags & 0x20)
+		CoopLevel |= DDSCL_FPUSETUP;
+
+	G_dxptr->CoopLevel = CoopLevel;
+
+	if (!DXSetCooperativeLevel(G_dxptr->lpDD, hWnd, CoopLevel))
+	{
+		DXClose();
+		return 0;
+	}
+
+	if (Flags & 1)
+	{
+		dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
+		DXSetVideoMode(G_dxptr->lpDD, dm->w, dm->h, dm->bpp);
+	}
+	else
+	{
+		desktop = GetDesktopWindow();
+		hDC = GetDC(desktop);
+		ReleaseDC(desktop, hDC);
+		dev.dmBitsPerPel = G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode].bpp;
+		dev.dmSize = 148;	//sizeof(DEVMODE) is 156????
+		dev.dmFields = DM_BITSPERPEL;
+		ChangeDisplaySettings(&dev, 0);
+	}
+
+	memset(&desc, 0, sizeof(DDSURFACEDESC2));
+	desc.dwSize = sizeof(DDSURFACEDESC2);
+
+	if (Flags & 1)
+	{
+		desc.dwBackBufferCount = 1;
+		desc.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
+		desc.ddsCaps.dwCaps = DDSCAPS_COMPLEX | DDSCAPS_FLIP | DDSCAPS_PRIMARYSURFACE | DDSCAPS_3DDEVICE | DDSCAPS_VIDEOMEMORY;
+
+		if (!(Flags & 0x80))
+		{
+			desc.dwBackBufferCount = 0;
+			desc.dwFlags = DDSD_CAPS;
+			desc.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_3DDEVICE | DDSCAPS_VIDEOMEMORY;
+		}
+
+		Log(3, "Create Primary Surface");
+
+		if (!DXCreateSurface(G_dxptr->lpDD, &desc, &G_dxptr->lpPrimaryBuffer))
+		{
+			DXClose();
+			return 0;
+		}
+
+		if (Flags & 0x80)
+		{
+			Log(3, "Get Attached Back Buffer");
+			desc.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
+			G_dxptr->lpPrimaryBuffer->GetAttachedSurface(&desc.ddsCaps, &G_dxptr->lpBackBuffer);
+		}
+		else
+			G_dxptr->lpBackBuffer = G_dxptr->lpPrimaryBuffer;
+
+		dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
+		G_dxptr->dwRenderWidth = dm->w;
+		G_dxptr->dwRenderHeight = dm->h;
+		G_dxptr->rViewport.top = 0;
+		G_dxptr->rViewport.left = 0;
+		G_dxptr->rViewport.right = dm->w;
+		G_dxptr->rViewport.bottom = dm->h;
+	}
+	else
+	{
+		Log(5, "DXCreate: Windowed Mode");
+		dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
+		r.top = 0;
+		r.left = 0;
+		r.right = dm->w;
+		r.bottom = dm->h;
+		AdjustWindowRect(&r, WindowStyle, 0);
+		SetWindowPos(hWnd, 0, 0, 0, r.right - r.left, r.bottom - r.top, SWP_NOMOVE | SWP_NOZORDER);
+		GetClientRect(hWnd, &G_dxptr->rViewport);
+		GetClientRect(hWnd, &G_dxptr->rScreen);
+		ClientToScreen(hWnd, (LPPOINT)&G_dxptr->rScreen);
+		ClientToScreen(hWnd, (LPPOINT)&G_dxptr->rScreen.right);
+		G_dxptr->dwRenderWidth = G_dxptr->rViewport.right;
+		G_dxptr->dwRenderHeight = G_dxptr->rViewport.bottom;
+		Log(5, "w %d h %d", G_dxptr->dwRenderWidth, G_dxptr->dwRenderHeight);
+		desc.dwFlags = DDSD_CAPS;
+		desc.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
+
+		if (!DXCreateSurface(G_dxptr->lpDD, &desc, &G_dxptr->lpPrimaryBuffer))
+		{
+			DXClose();
+			return 0;
+		}
+
+		if (DXAttempt(G_dxptr->lpDD->CreateClipper(0, &clipper, 0)) != DD_OK)
+		{
+			DXClose();
+			return 0;
+		}
+
+		DXAttempt(clipper->SetHWnd(0, hWnd));
+		DXAttempt(G_dxptr->lpPrimaryBuffer->SetClipper(clipper));
+
+		if (clipper)
+		{
+			Log(4, "Released %s @ %x - RefCnt = %d", "Clipper", clipper, clipper->Release());
+			clipper = 0;
+		}
+		else
+			Log(1, "%s Attempt To Release NULL Ptr", "Clipper");
+
+		desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
+		desc.dwWidth = G_dxptr->dwRenderWidth;
+		desc.dwHeight = G_dxptr->dwRenderHeight;
+		desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_3DDEVICE;
+
+		if (DXAttempt(G_dxptr->lpDD->CreateSurface(&desc, &G_dxptr->lpBackBuffer, 0)) != DD_OK)
+		{
+			DXClose();
+			return 0;
+		}
+	}
+
+	if (Flags & 0x10 && Flags & 0x80)
+	{
+		Log(3, "Creating ZBuffer");
+		memset(&desc, 0, sizeof(DDSURFACEDESC2));
+		desc.dwSize = sizeof(DDSURFACEDESC2);
+		desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+		desc.ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY | DDSCAPS_ZBUFFER;
+		desc.dwWidth = G_dxptr->dwRenderWidth;
+		desc.dwHeight = G_dxptr->dwRenderHeight;
+		memcpy(&desc.ddpfPixelFormat, &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].ZBufferInfos->ddpf, sizeof(DDPIXELFORMAT));
+
+		if (DXAttempt(G_dxptr->lpDD->CreateSurface(&desc, &G_dxptr->lpZBuffer, 0)) != DD_OK)
+		{
+			DXClose();
+			return 0;
+		}
+
+		DXAttempt(G_dxptr->lpBackBuffer->AddAttachedSurface(G_dxptr->lpZBuffer));
+		Log(3, "ZBuffer Created %x", G_dxptr->lpZBuffer);
+	}
+
+	if (!DXCreateD3DDevice(G_dxptr->lpD3D, G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].Guid, G_dxptr->lpBackBuffer, &G_dxptr->lpD3DDevice))
+	{
+		DXClose();
+		return 0;
+	}
+
+	G_dxptr->_lpD3DDevice = G_dxptr->lpD3DDevice;
+
+	if (!DXCreateViewport(G_dxptr->lpD3D, G_dxptr->lpD3DDevice, G_dxptr->dwRenderWidth, G_dxptr->dwRenderHeight, &G_dxptr->lpViewport))
+	{
+		DXClose();
+		return 0;
+	}
+
+	DXAttempt(G_dxptr->lpD3DDevice->SetRenderTarget(G_dxptr->lpBackBuffer, 0));
+
+	if (!(G_dxptr->Flags & 0x80))
+		CreateFakeD3D();
+
+	return 1;
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -726,4 +929,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00494270, DXInitKeyboard, 0);
 	INJECT(0x00494080, DXSaveScreen, replace);
 	INJECT(0x00493C00, DXClose, replace);
+	INJECT(0x00493130, DXCreate, replace);
 }

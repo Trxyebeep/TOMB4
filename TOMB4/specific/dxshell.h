@@ -27,6 +27,7 @@ void DXMove(long x, long y);
 void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance);
 void DXSaveScreen(LPDIRECTDRAWSURFACE4 surf, const char* name);
 void DXClose();
+long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, long WindowStyle);
 
 #define DXGetErrorString	( (const char*(__cdecl*)(HRESULT)) 0x00490FF0 )
 #define DXChangeVideoMode	( (long(__cdecl*)()) 0x004939E0 )

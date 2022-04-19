@@ -1556,7 +1556,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00492B90	+	DXSetVideoMode
 0x00492BE0	+	DXSetCooperativeLevel
 0x004930D0	+	DXCreateD3DDevice
-0x00493130		DXCreate
+0x00493130	+	DXCreate
 0x004939E0		DXChangeVideoMode
 0x00493A50		DXToggleFullScreen
 0x00493C00	+	DXClose
