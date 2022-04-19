@@ -229,6 +229,33 @@ BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPS
 	return DDENUMRET_OK;
 }
 
+BOOL __stdcall DXEnumDirectSound(LPGUID lpGuid, LPCSTR lpcstrDescription, LPCSTR lpcstrModule, LPVOID lpContext)
+{
+	DXINFO* dxinfo;
+	DXDIRECTSOUNDINFO* DSInfo;
+	long nDSInfo;
+
+	Log(2, "DXEnumDirectSound");
+	dxinfo = (DXINFO*)lpContext;
+	nDSInfo = dxinfo->nDSInfo;
+	dxinfo->DSInfo = (DXDIRECTSOUNDINFO*)AddStruct(dxinfo->DSInfo, nDSInfo, sizeof(DXDIRECTSOUNDINFO));
+	DSInfo = &dxinfo->DSInfo[nDSInfo];
+
+	if (lpGuid)
+	{
+		DSInfo->lpGuid = &DSInfo->Guid;
+		DSInfo->Guid = *lpGuid;
+	}
+	else
+		DSInfo->lpGuid = 0;
+
+	lstrcpy(DSInfo->About, lpcstrDescription);
+	lstrcpy(DSInfo->Name, lpcstrModule);
+	Log(5, "Found - %s %s", lpcstrDescription, lpcstrModule);
+	dxinfo->nDSInfo++;
+	return DDENUMRET_OK;
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -239,4 +266,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00491F60, DXD3DCreate, replace);
 	INJECT(0x00492BE0, DXSetCooperativeLevel, replace);
 	INJECT(0x00491FC0, DXEnumDirectDraw, replace);
+	INJECT(0x00491CC0, DXEnumDirectSound, replace);
 }

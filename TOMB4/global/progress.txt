@@ -1540,7 +1540,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00490FF0		DXGetErrorString
 0x00491C30	+	DXAttempt
 0x00491C60		DXGetInfo
-0x00491CC0		DXEnumDirectSound
+0x00491CC0	+	DXEnumDirectSound
 0x00491D60		DXFreeInfo
 0x00491E50	+	AddStruct
 0x00491EA0	+	DXDDCreate
