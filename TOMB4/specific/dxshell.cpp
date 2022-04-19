@@ -718,14 +718,14 @@ long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, lon
 	G_dxptr->hWnd = hWnd;
 	G_dxptr->WindowStyle = WindowStyle;
 
-	if (Flags & 0x40)
+	if (Flags & 64)
 		flag = 1;
 
 	DXClose();
 
-	if (!DXDDCreate(G_dxinfo->DDInfo[G_dxinfo->nDD].lpGuid, (void**)&G_dxptr->lpDD) || !DXD3DCreate(G_dxptr->lpDD, (void**)&G_dxptr->lpD3D))
+	if (!flag)
 	{
-		if (!flag)
+		if (!DXDDCreate(G_dxinfo->DDInfo[G_dxinfo->nDD].lpGuid, (void**)&G_dxptr->lpDD) || !DXD3DCreate(G_dxptr->lpDD, (void**)&G_dxptr->lpD3D))
 		{
 			DXClose();
 			return 0;
