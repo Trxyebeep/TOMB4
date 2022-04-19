@@ -411,6 +411,23 @@ HRESULT __stdcall DXEnumTextureFormats(LPDDPIXELFORMAT lpDDPixFmt, LPVOID lpCont
 	return D3DENUMRET_OK;
 }
 
+HRESULT __stdcall DXEnumZBufferFormats(LPDDPIXELFORMAT lpDDPixFmt, LPVOID lpContext)
+{
+	DXD3DDEVICE* d3d;
+	DXZBUFFERINFO* zbuffer;
+	long nZBufferInfos;
+
+	d3d = (DXD3DDEVICE*)lpContext;
+	nZBufferInfos = d3d->nZBufferInfos;
+	d3d->ZBufferInfos = (DXZBUFFERINFO*)AddStruct(d3d->ZBufferInfos, nZBufferInfos, sizeof(DXZBUFFERINFO));
+	zbuffer = &d3d->ZBufferInfos[nZBufferInfos];
+	memcpy(&zbuffer->ddpf, lpDDPixFmt, sizeof(DDPIXELFORMAT));
+	zbuffer->bpp = lpDDPixFmt->dwRGBBitCount;
+	Log(3, "%d Bit", zbuffer->bpp);
+	d3d->nZBufferInfos++;
+	return D3DENUMRET_OK;
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -427,4 +444,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00492280, DXEnumDisplayModes, replace);
 	INJECT(0x004923A0, BPPToDDBD, replace);
 	INJECT(0x00492920, DXEnumTextureFormats, replace);
+	INJECT(0x00492AD0, DXEnumZBufferFormats, replace);
 }
