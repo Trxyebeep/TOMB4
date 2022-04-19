@@ -355,6 +355,62 @@ long BPPToDDBD(long BPP)
 	}
 }
 
+HRESULT __stdcall DXEnumTextureFormats(LPDDPIXELFORMAT lpDDPixFmt, LPVOID lpContext)
+{
+	DXD3DDEVICE* d3d;
+	DXTEXTUREINFO* tex;
+	long nTextureInfos;
+
+	if (!(lpDDPixFmt->dwFlags & DDPF_ALPHAPIXELS) || !(lpDDPixFmt->dwFlags & DDPF_RGB))
+		return DDENUMRET_OK;
+
+	d3d = (DXD3DDEVICE*)lpContext;
+	nTextureInfos = d3d->nTextureInfos;
+	d3d->TextureInfos = (DXTEXTUREINFO*)AddStruct(d3d->TextureInfos, nTextureInfos, sizeof(DXTEXTUREINFO));
+	tex = &d3d->TextureInfos[nTextureInfos];
+	memcpy(&tex->ddpf, lpDDPixFmt, sizeof(DDPIXELFORMAT));
+
+	if (lpDDPixFmt->dwFlags & DDPF_PALETTEINDEXED8)
+	{
+		tex->bPalette = 1;
+		tex->bpp = 8;
+		Log(3, "8 Bit");
+	}
+	else if (lpDDPixFmt->dwFlags & DDPF_PALETTEINDEXED4)
+	{
+		tex->bPalette = 1;
+		tex->bpp = 4;
+		Log(3, "4 Bit");
+	}
+	else
+	{
+		tex->bPalette = 0;
+		tex->bpp = lpDDPixFmt->dwRGBBitCount;
+
+		if (lpDDPixFmt->dwFlags & DDPF_RGB)
+		{
+			if (lpDDPixFmt->dwFlags & DDPF_ALPHAPIXELS)
+			{
+				DXBitMask2ShiftCnt(lpDDPixFmt->dwRBitMask, &tex->rshift, &tex->rbpp);
+				DXBitMask2ShiftCnt(lpDDPixFmt->dwGBitMask, &tex->gshift, &tex->gbpp);
+				DXBitMask2ShiftCnt(lpDDPixFmt->dwBBitMask, &tex->bshift, &tex->bbpp);
+				DXBitMask2ShiftCnt(lpDDPixFmt->dwRGBAlphaBitMask, &tex->ashift, &tex->abpp);
+				Log(3, "%d Bit %d%d%d%d RGBA", tex->bpp, tex->rbpp, tex->gbpp, tex->bbpp, tex->abpp);
+			}
+			else
+			{
+				DXBitMask2ShiftCnt(lpDDPixFmt->dwRBitMask, &tex->rshift, &tex->rbpp);
+				DXBitMask2ShiftCnt(lpDDPixFmt->dwGBitMask, &tex->gshift, &tex->gbpp);
+				DXBitMask2ShiftCnt(lpDDPixFmt->dwBBitMask, &tex->bshift, &tex->bbpp);
+				Log(3, "%d Bit %d%d%d RGB", tex->bpp, tex->rbpp, tex->gbpp, tex->bbpp);
+			}
+		}
+	}
+
+	d3d->nTextureInfos++;
+	return D3DENUMRET_OK;
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -370,4 +426,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00491D60, DXFreeInfo, replace);
 	INJECT(0x00492280, DXEnumDisplayModes, replace);
 	INJECT(0x004923A0, BPPToDDBD, replace);
+	INJECT(0x00492920, DXEnumTextureFormats, replace);
 }
