@@ -1559,7 +1559,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00493130		DXCreate
 0x004939E0		DXChangeVideoMode
 0x00493A50		DXToggleFullScreen
-0x00493C00		DXClose
+0x00493C00	+	DXClose
 0x00493E70	+	DXCreateViewport
 0x00493F60	+	DXShowFrame
 0x00494030	+	DXMove
