@@ -530,6 +530,42 @@ void DXMove(long x, long y)
 		SetRect(&G_dxptr->rScreen, x, y, x + G_dxptr->dwRenderWidth, y + G_dxptr->dwRenderHeight);
 }
 
+void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
+{
+#if 0	//sort out old dinput stuff (need to set up old dx sdk stuff to link dinput.lib and not be forced to upgrade to dinput8)
+	IDirectInput* dinput;
+	IDirectInputDevice* Keyboard;
+
+	DXAttempt(DirectInputCreate(hinstance, DIRECTINPUT_VERSION, &dinput, 0));
+	dinput->QueryInterface(IID_IDirectInput2, (void**)&G_dxptr->lpDirectInput);
+
+	if (dinput)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "DirectInput", dinput, dinput->Release());
+		dinput = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "DirectInput");
+
+	DXAttempt(G_dxptr->lpDirectInput->CreateDevice(GUID_SysKeyboard, &Keyboard, 0));
+	Keyboard->QueryInterface(IID_IDirectInputDevice2, (void**)&G_dxptr->Keyboard);
+
+	if (Keyboard)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Keyboard", Keyboard, Keyboard->Release());
+		Keyboard = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Keyboard");
+
+	DXAttempt(G_dxptr->Keyboard->SetCooperativeLevel(hwnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND));
+	DXAttempt(G_dxptr->Keyboard->SetDataFormat(&c_dfDIKeyboard));
+	DXAttempt(G_dxptr->Keyboard->Acquire());
+	memset(keymap, 0, sizeof(keymap));
+	memset(keymap2, 0, sizeof(keymap2));
+#endif
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -553,4 +589,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00493E70, DXCreateViewport, replace);
 	INJECT(0x00493F60, DXShowFrame, replace);
 	INJECT(0x00494030, DXMove, replace);
+	INJECT(0x00494270, DXInitKeyboard, 0);
 }

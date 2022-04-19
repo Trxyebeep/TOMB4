@@ -448,6 +448,7 @@
 #define SmashedMeshRoom	ARRAY_(0x007FE360, short, [16])
 #define SmashedMesh	ARRAY_(0x007FE7A0, MESH_INFO*, [16])
 #define keymap	ARRAY_(0x007542EC, char, [256])
+#define keymap2	ARRAY_(0x007543EC, char, [256])
 #define static_objects	ARRAY_(0x005333C0, STATIC_INFO, [60])
 #define flip_stats	ARRAY_(0x007FE300, long, [10])
 #define Lightning	ARRAY_(0x007FFB20, LIGHTNING_STRUCT, [16])
