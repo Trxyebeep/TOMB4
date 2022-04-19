@@ -439,6 +439,17 @@ long DXCreateSurface(LPDIRECTDRAW4 dd, LPDDSURFACEDESC2 desc, LPDIRECTDRAWSURFAC
 	return 0;
 }
 
+long DXSetVideoMode(LPDIRECTDRAW4 dd, long dwWidth, long dwHeight, long dwBPP)
+{
+	Log(2, "DXSetVideoMode");
+	Log(5, "SetDisplayMode - %dx%dx%d", dwWidth, dwHeight, dwBPP);
+
+	if (DXAttempt(dd->SetDisplayMode(dwWidth, dwHeight, dwBPP, 0, 0)) != DD_OK)
+		return 0;
+
+	return 1;
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -457,4 +468,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00492920, DXEnumTextureFormats, replace);
 	INJECT(0x00492AD0, DXEnumZBufferFormats, replace);
 	INJECT(0x00492B40, DXCreateSurface, replace);
+	INJECT(0x00492B90, DXSetVideoMode, replace);
 }
