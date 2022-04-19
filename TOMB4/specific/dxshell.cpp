@@ -428,6 +428,17 @@ HRESULT __stdcall DXEnumZBufferFormats(LPDDPIXELFORMAT lpDDPixFmt, LPVOID lpCont
 	return D3DENUMRET_OK;
 }
 
+long DXCreateSurface(LPDIRECTDRAW4 dd, LPDDSURFACEDESC2 desc, LPDIRECTDRAWSURFACE4* surf)
+{
+	Log(2, "DXCreateSurface");
+
+	if (DXAttempt(dd->CreateSurface(desc, surf, 0)) == DD_OK)
+		return 1;
+
+	Log(1, "DXCreateSurface Failed");
+	return 0;
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -445,4 +456,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x004923A0, BPPToDDBD, replace);
 	INJECT(0x00492920, DXEnumTextureFormats, replace);
 	INJECT(0x00492AD0, DXEnumZBufferFormats, replace);
+	INJECT(0x00492B40, DXCreateSurface, replace);
 }
