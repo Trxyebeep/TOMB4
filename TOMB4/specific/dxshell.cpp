@@ -903,6 +903,19 @@ long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, lon
 	return 1;
 }
 
+long DXChangeVideoMode()
+{
+	long val;
+
+	Log(2, "DXChangeVideoMode");
+	G_dxptr->Flags |= 0x40;
+	G_dxptr->lpD3D->EvictManagedTextures();
+	val = DXCreate(0, 0, 0, G_dxptr->Flags, G_dxptr, G_dxptr->hWnd, G_dxptr->WindowStyle);
+	G_dxptr->Flags ^= 0x40;
+	Log(2, "Exited DXChangeVideoMode %d", val);
+	return val;
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -930,4 +943,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00494080, DXSaveScreen, replace);
 	INJECT(0x00493C00, DXClose, replace);
 	INJECT(0x00493130, DXCreate, replace);
+	INJECT(0x004939E0, DXChangeVideoMode, replace);
 }
