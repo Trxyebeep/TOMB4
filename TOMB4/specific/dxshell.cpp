@@ -267,6 +267,33 @@ long DXGetInfo(DXINFO* dxinfo, HWND hwnd)
 	return 1;
 }
 
+void DXFreeInfo(DXINFO* dxinfo)
+{
+	DXDIRECTDRAWINFO* DDInfo;
+	DXD3DDEVICE* d3d;
+
+	Log(2, "DXFreeInfo");
+
+	for (int i = 0; i < dxinfo->nDDInfo; i++)
+	{
+		DDInfo = &dxinfo->DDInfo[i];
+
+		for (int j = 0; j < DDInfo->nD3DDevices; j++)
+		{
+			d3d = &DDInfo->D3DDevices[j];
+			free(d3d->DisplayModes);
+			free(d3d->TextureInfos);
+			free(d3d->ZBufferInfos);
+		}
+
+		free(DDInfo->D3DDevices);
+		free(DDInfo->DisplayModes);
+	}
+
+	free(dxinfo->DDInfo);
+	free(dxinfo->DSInfo);
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -279,4 +306,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00491FC0, DXEnumDirectDraw, replace);
 	INJECT(0x00491CC0, DXEnumDirectSound, replace);
 	INJECT(0x00491C60, DXGetInfo, replace);
+	INJECT(0x00491D60, DXFreeInfo, replace);
 }
