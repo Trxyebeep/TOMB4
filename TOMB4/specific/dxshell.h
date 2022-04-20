@@ -30,6 +30,6 @@ void DXClose();
 long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, long WindowStyle);
 long DXChangeVideoMode();
 long DXToggleFullScreen();
+HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC lpHWDesc, LPD3DDEVICEDESC lpHELDesc, LPVOID lpContext);
 
 #define DXGetErrorString	( (const char*(__cdecl*)(HRESULT)) 0x00490FF0 )
-#define DXEnumDirect3D	( (HRESULT(__stdcall*)(LPGUID, LPSTR, LPSTR, LPD3DDEVICEDESC, LPD3DDEVICEDESC, LPVOID)) 0x00492430 )

@@ -943,6 +943,134 @@ long DXToggleFullScreen()
 	return 1;
 }
 
+HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC lpHWDesc, LPD3DDEVICEDESC lpHELDesc, LPVOID lpContext)
+{
+	DXDIRECTDRAWINFO* ddi;
+	DXD3DDEVICE* device;
+	LPDIRECT3DDEVICE3 d3dDevice;
+	DXDISPLAYMODE* dm;
+	LPDIRECTDRAWSURFACE4 surf;
+	DDSURFACEDESC2 desc;
+	long nD3DDevices;
+
+	ddi = (DXDIRECTDRAWINFO*)lpContext;
+	nD3DDevices = ddi->nD3DDevices;
+	ddi->D3DDevices = (DXD3DDEVICE*)AddStruct(ddi->D3DDevices, nD3DDevices, sizeof(DXD3DDEVICE));
+	device = &ddi->D3DDevices[nD3DDevices];
+
+	if (lpGuid)
+	{
+		device->lpGuid = &device->Guid;
+		device->Guid = *lpGuid;
+	}
+	else
+		device->lpGuid = 0;
+
+	lstrcpy(device->About, lpDeviceDescription);
+	lstrcpy(device->Name, lpDeviceName);
+	Log(5, "Found - %s", lpDeviceDescription);
+
+	if (lpHWDesc->dwFlags)
+	{
+		device->bHardware = 1;
+		memcpy(&device->DeviceDesc, lpHWDesc, sizeof(D3DDEVICEDESC));
+	}
+	else
+	{
+		device->bHardware = 0;
+		memcpy(&device->DeviceDesc, lpHELDesc, sizeof(D3DDEVICEDESC));
+
+		if (!App.mmx)
+			strcpy(device->About, "Core Design Hardware Card Emulation");
+		else
+			strcpy(device->About, "Core Design MMX Hardware Card Emulation");
+	}
+
+	Log(5, "Finding Compatible Display Modes");
+	device->nDisplayModes = 0;
+
+	for (int i = 0; i < ddi->nDisplayModes; i++)
+	{
+		if (BPPToDDBD(ddi->DisplayModes[i].bpp) & device->DeviceDesc.dwDeviceRenderBitDepth)
+		{
+			device->DisplayModes = (DXDISPLAYMODE*)AddStruct(device->DisplayModes, ddi->nDisplayModes, sizeof(DXDISPLAYMODE));
+			dm = &device->DisplayModes[device->nDisplayModes];
+			memcpy(dm, &ddi->DisplayModes[i], sizeof(DXDISPLAYMODE));
+
+			if (dm->bPalette)
+				Log(3, "%d x %d - %d Bit - Palette", dm->w, dm->h, dm->bpp);
+			else
+				Log(3, "%d x %d - %d Bit - %d%d%d", dm->w, dm->h, dm->bpp, dm->rbpp, dm->gbpp, dm->bbpp);
+
+			device->nDisplayModes++;
+		}
+	}
+
+	Log(5, "Enumerate Texture Formats");
+	memset(&desc, 0, sizeof(DDSURFACEDESC2));
+	desc.dwSize = sizeof(DDSURFACEDESC2);
+	desc.dwFlags = DDSD_CAPS;
+	desc.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_3DDEVICE;
+	DXSetCooperativeLevel(G_ddraw, G_hwnd, DDSCL_FULLSCREEN | DDSCL_NOWINDOWCHANGES | DDSCL_EXCLUSIVE);
+	DXCreateSurface(G_ddraw, &desc, &surf);
+
+	if (surf)
+	{
+		DXCreateD3DDevice(G_d3d, device->Guid, surf, &d3dDevice);
+
+		if (!d3dDevice)	//fail
+		{
+			Log(1, "Create D3DDevice Failed");
+
+			//release surface, recreate it and try again
+
+			if (surf)
+			{
+				Log(4, "Released %s @ %x - RefCnt = %d", "DirectDrawSurface", surf, surf->Release());
+				surf = 0;
+			}
+			else
+				Log(1, "%s Attempt To Release NULL Ptr", "DirectDrawSurface");
+
+			DXSetVideoMode(G_ddraw, device->DisplayModes->w, device->DisplayModes->h, device->DisplayModes->bpp);
+			DXCreateSurface(G_ddraw, &desc, &surf);
+
+			if (surf)
+				DXCreateD3DDevice(G_d3d, device->Guid, surf, &d3dDevice);
+		}
+
+		if (d3dDevice)	//did it work?
+		{
+			device->nTextureInfos = 0;
+			Log(2, "DXEnumTextureFormats");
+			DXAttempt(d3dDevice->EnumTextureFormats(DXEnumTextureFormats, (void*)device));
+
+			if (d3dDevice)
+			{
+				Log(4, "Released %s @ %x - RefCnt = %d", "D3DDevice", d3dDevice, d3dDevice->Release());
+				d3dDevice = 0;
+			}
+			else
+				Log(1, "%s Attempt To Release NULL Ptr", "D3DDevice");
+		}
+
+		if (surf)
+		{
+			Log(4, "Released %s @ %x - RefCnt = %d", "DirectDrawSurface", surf, surf->Release());
+			surf = 0;
+		}
+		else
+			Log(1, "%s Attempt To Release NULL Ptr", "DirectDrawSurface");
+	}
+
+	DXSetCooperativeLevel(G_ddraw, G_hwnd, DDSCL_NORMAL);
+	Log(5, "Enumerating ZBuffer Formats");
+	Log(2, "DXEnumZBufferFormats");
+	DXAttempt(G_d3d->EnumZBufferFormats(device->Guid, DXEnumZBufferFormats, (void*)device));
+	ddi->nD3DDevices++;
+	return D3DENUMRET_OK;
+}
+
 void inject_dxshell(bool replace)
 {
 	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
@@ -972,4 +1100,5 @@ void inject_dxshell(bool replace)
 	INJECT(0x00493130, DXCreate, replace);
 	INJECT(0x004939E0, DXChangeVideoMode, replace);
 	INJECT(0x00493A50, DXToggleFullScreen, replace);
+	INJECT(0x00492430, DXEnumDirect3D, replace);
 }
