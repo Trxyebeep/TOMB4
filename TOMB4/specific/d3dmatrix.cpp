@@ -62,9 +62,17 @@ void SetD3DViewMatrix()
 	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, &D3DMView));
 }
 
+void D3DTransform(D3DVECTOR* vec, D3DMATRIX* mx)
+{
+	vec->x = vec->x * mx->_11 + mx->_21 * vec->y + mx->_31 * vec->z;
+	vec->y = vec->x * mx->_22 + mx->_22 * vec->y + mx->_32 * vec->z;
+	vec->z = vec->x * mx->_13 + mx->_23 * vec->y + mx->_33 * vec->z;
+}
+
 void inject_d3dmatrix(bool replace)
 {
 	INJECT(0x00490DD0, D3DIdentityMatrix, replace);
 	INJECT(0x00490C30, SetD3DMatrix, replace);
 	INJECT(0x00490B30, SetD3DViewMatrix, replace);
+	INJECT(0x00490E10, D3DTransform, replace);
 }
