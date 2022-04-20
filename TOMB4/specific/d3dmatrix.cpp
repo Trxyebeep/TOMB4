@@ -1,5 +1,6 @@
 #include "../tomb4/pch.h"
 #include "d3dmatrix.h"
+#include "dxshell.h"
 
 D3DMATRIX* D3DIdentityMatrix(D3DMATRIX* mx)
 {
@@ -43,8 +44,27 @@ void SetD3DMatrix(D3DMATRIX* mx, long* imx)
 	mx->_43 = float(imx[M23] >> 14);
 }
 
+void SetD3DViewMatrix()
+{
+	D3DIdentityMatrix(&D3DMView);
+	D3DMView._11 = (float)phd_mxptr[M00] / 16384;
+	D3DMView._12 = (float)phd_mxptr[M10] / 16384;
+	D3DMView._13 = (float)phd_mxptr[M20] / 16384;
+	D3DMView._21 = (float)phd_mxptr[M01] / 16384;
+	D3DMView._22 = (float)phd_mxptr[M11] / 16384;
+	D3DMView._23 = (float)phd_mxptr[M21] / 16384;
+	D3DMView._31 = (float)phd_mxptr[M02] / 16384;
+	D3DMView._32 = (float)phd_mxptr[M12] / 16384;
+	D3DMView._33 = (float)phd_mxptr[M22] / 16384;
+	D3DMView._41 = float(phd_mxptr[M03] >> 14);
+	D3DMView._42 = float(phd_mxptr[M13] >> 14);
+	D3DMView._43 = float(phd_mxptr[M23] >> 14);
+	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, &D3DMView));
+}
+
 void inject_d3dmatrix(bool replace)
 {
 	INJECT(0x00490DD0, D3DIdentityMatrix, replace);
 	INJECT(0x00490C30, SetD3DMatrix, replace);
+	INJECT(0x00490B30, SetD3DViewMatrix, replace);
 }
