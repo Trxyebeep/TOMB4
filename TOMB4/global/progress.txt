@@ -1512,7 +1512,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00490B30	+	SetD3DViewMatrix
 0x00490C30	+	SetD3DMatrix
 0x00490CF0		S_InitD3DMatrix
-0x00490D50		D3DNormalise
+0x00490D50	+	D3DNormalise
 0x00490DD0	+	D3DIdentityMatrix
 0x00490E10	+	D3DTransform
 

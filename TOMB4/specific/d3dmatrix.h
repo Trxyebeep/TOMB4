@@ -7,6 +7,6 @@ D3DMATRIX* D3DIdentityMatrix(D3DMATRIX* mx);
 void SetD3DMatrix(D3DMATRIX* mx, long* imx);
 void SetD3DViewMatrix();
 void D3DTransform(D3DVECTOR* vec, D3DMATRIX* mx);
+D3DVECTOR* D3DNormalise(D3DVECTOR* vec);
 
-#define D3DNormalise	( (void(__cdecl*)(D3DVECTOR*)) 0x00490D50 )
 #define S_InitD3DMatrix	( (void(__cdecl*)()) 0x00490CF0 )

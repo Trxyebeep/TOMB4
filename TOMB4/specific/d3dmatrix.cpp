@@ -69,10 +69,26 @@ void D3DTransform(D3DVECTOR* vec, D3DMATRIX* mx)
 	vec->z = vec->x * mx->_13 + mx->_23 * vec->y + mx->_33 * vec->z;
 }
 
+D3DVECTOR* D3DNormalise(D3DVECTOR* vec)
+{
+	float val;
+
+	if (vec->x != 0 || vec->y != 0 || vec->z != 0)
+	{
+		val = 1.0F / sqrt(SQUARE(vec->x) + SQUARE(vec->y) + SQUARE(vec->z));
+		vec->x = val * vec->x;
+		vec->y = val * vec->y;
+		vec->z = val * vec->z;
+	}
+
+	return vec;
+}
+
 void inject_d3dmatrix(bool replace)
 {
 	INJECT(0x00490DD0, D3DIdentityMatrix, replace);
 	INJECT(0x00490C30, SetD3DMatrix, replace);
 	INJECT(0x00490B30, SetD3DViewMatrix, replace);
 	INJECT(0x00490E10, D3DTransform, replace);
+	INJECT(0x00490D50, D3DNormalise, replace);
 }
