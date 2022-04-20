@@ -8,5 +8,4 @@ void SetD3DMatrix(D3DMATRIX* mx, long* imx);
 void SetD3DViewMatrix();
 void D3DTransform(D3DVECTOR* vec, D3DMATRIX* mx);
 D3DVECTOR* D3DNormalise(D3DVECTOR* vec);
-
-#define S_InitD3DMatrix	( (void(__cdecl*)()) 0x00490CF0 )
+void S_InitD3DMatrix();
