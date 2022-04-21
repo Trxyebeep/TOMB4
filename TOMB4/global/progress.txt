@@ -1209,7 +1209,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0045BFB0		InitialiseLara
 0x0045C0D0		InitialiseObjects
 0x0045C1E0		BaddyObjects
-0x0045DC10		TrapObjects
+0x0045DC10	+	TrapObjects
 0x0045E1F0	+	ObjectObjects
 0x0045EB40		GetCarriedItems
 0x0045EC50		GetAIPickups
