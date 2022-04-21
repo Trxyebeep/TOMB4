@@ -148,6 +148,38 @@ long FileSize(FILE* file)
 	return size;
 }
 
+long LoadFile(const char* name, char** dest)
+{
+	FILE* file;
+	long size, count;
+
+	Log(2, "LoadFile");
+	Log(5, "File - %s", name);
+	file = FileOpen(name);
+
+	if (!file)
+		return 0;
+
+	size = FileSize(file);
+
+	if (!*dest)
+		*dest = (char*)malloc(size);
+
+	count = READ(*dest, 1, size, file); //fread(*dest, 1, size, file);
+	Log(5, "Read - %d FileSize - %d", count, size);
+
+	if (count != size)
+	{
+		Log(1, "Error Reading File");
+		FileClose(file);
+		free(*dest);
+		return 0;
+	}
+
+	FileClose(file);
+	return size;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -158,4 +190,5 @@ void inject_file(bool replace)
 	INJECT(0x00473CE0, FileOpen, replace);
 	INJECT(0x00473D80, FileClose, replace);
 	INJECT(0x00473DA0, FileSize, replace);
+	INJECT(0x00473DD0, LoadFile, replace);
 }

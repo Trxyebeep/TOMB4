@@ -9,3 +9,4 @@ bool FindCDDrive();
 FILE* FileOpen(const char* name);
 void FileClose(FILE* file);
 long FileSize(FILE* file);
+long LoadFile(const char* name, char** dest);
