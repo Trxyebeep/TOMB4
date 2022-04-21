@@ -71,10 +71,50 @@ void FreeLevel()
 	malloc_free = malloc_size;
 }
 
+bool FindCDDrive()
+{
+	HANDLE file;
+	ulong drives, type;
+	char path[14];
+	char root[5];
+
+	strcpy(path, "c:\\script.dat");
+	drives = GetLogicalDrives();
+	cd_drive = 'A';
+	lstrcpy(root, "A:\\");
+
+	while (drives)
+	{
+		if (drives & 1)
+		{
+			root[0] = cd_drive;
+			type = GetDriveType(root);
+
+			if (type == DRIVE_CDROM)
+			{
+				path[0] = cd_drive;
+				file = CreateFile(path, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+				if (file != INVALID_HANDLE_VALUE)
+				{
+					CloseHandle(file);
+					return 1;
+				}
+			}
+		}
+
+		cd_drive++;
+		drives >>= 1;
+	}
+
+	return 0;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
 
 	INJECT(0x004768C0, S_LoadLevelFile, replace);
 	INJECT(0x00476790, FreeLevel, 0);
+	INJECT(0x00473C10, FindCDDrive, replace);
 }

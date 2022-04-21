@@ -5,3 +5,4 @@ void inject_file(bool replace);
 
 long S_LoadLevelFile(long num);
 void FreeLevel();
+bool FindCDDrive();
