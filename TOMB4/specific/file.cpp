@@ -110,6 +110,44 @@ bool FindCDDrive()
 	return 0;
 }
 
+FILE* FileOpen(const char* name)
+{
+	FILE* file;
+	char path_name[80];
+
+	memset(path_name, 0, 80);
+#ifndef NO_CD
+	path_name[0] = cd_drive;
+	path_name[1] = ':';		//original code
+	path_name[2] = '\\';
+#endif
+
+	strcat(path_name, name);
+	Log(5, "FileOpen - %s", path_name);
+	file = OPEN(path_name, "rb");//file = fopen(path_name, "rb");
+
+	if (!file)
+		Log(1, "Unable To Open %s", path_name);
+
+	return file;
+}
+
+void FileClose(FILE* file)
+{
+	Log(2, "FileClose");
+	CLOSE(file);//fclose(file);
+}
+
+long FileSize(FILE* file)
+{
+	long size;
+
+	SEEK(file, 0, SEEK_END);//fseek(file, 0, SEEK_END);
+	size = TELL(file);//ftell(file);
+	SEEK(file, 0, SEEK_SET);//fseek(file, 0, SEEK_SET);
+	return size;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -117,4 +155,7 @@ void inject_file(bool replace)
 	INJECT(0x004768C0, S_LoadLevelFile, replace);
 	INJECT(0x00476790, FreeLevel, 0);
 	INJECT(0x00473C10, FindCDDrive, replace);
+	INJECT(0x00473CE0, FileOpen, replace);
+	INJECT(0x00473D80, FileClose, replace);
+	INJECT(0x00473DA0, FileSize, replace);
 }
