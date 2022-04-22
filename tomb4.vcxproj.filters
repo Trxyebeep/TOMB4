@@ -365,6 +365,9 @@
     <ClInclude Include="TOMB4\tomb4\troyestuff.h">
       <Filter>TOMB4\tomb4</Filter>
     </ClInclude>
+    <ClInclude Include="TOMB4\specific\fmv.h">
+      <Filter>TOMB4\specific</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TOMB4\game\lara.cpp">
@@ -687,6 +690,9 @@
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\troyestuff.cpp">
       <Filter>TOMB4\tomb4</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\specific\fmv.cpp">
+      <Filter>TOMB4\specific</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

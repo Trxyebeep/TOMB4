@@ -100,6 +100,8 @@
 #define clipflags   VAR_U_(0x0075397C, short*)
 #define textinfo	VAR_U_(0x00533AC0, TEXTURESTRUCT*)
 #define D3DMView	VAR_U_(0x00753B90, D3DMATRIX)
+#define D3DMWorld	VAR_U_(0x00753BE0, D3DMATRIX)
+#define D3DMProjection	VAR_U_(0x00753918, D3DMATRIX)
 #define GlobalAlpha	VAR_U_(0x004AD7D4, long)
 #define level_items	VAR_U_(0x004BF68C, long)
 #define FlashFadeR	VAR_U_(0x004BF386, short)
@@ -426,16 +428,25 @@
 #define targetMeshP	VAR_U_(0x007FE11C, MESH_DATA*)
 #define binocsMeshP	VAR_U_(0x007FDF60, MESH_DATA*)
 #define CurrentSequence	VAR_U_(0x007F5700, uchar)
+#define SequenceUsed	ARRAY_(0x007F5708, uchar, [6])
+#define SequenceResults	ARRAY_(0x007F5720, uchar, [3][3][3])
+#define Sequences	ARRAY_(0x007F573C, uchar, [3])
 #define REG_Setup	VAR_U_(0x00670E44, bool)
 #define fmvs_disabled	VAR_U_(0x004BFE85, bool)
 #define KeyTriggerActive	VAR_U_(0x004BF3F8, char)
 #define G_dxptr	VAR_U_(0x007544F4, DXPTR*)
+#define G_dxinfo	VAR_U_(0x00754120, DXINFO*)
+#define G_ddraw	VAR_U_(0x0075411C, LPDIRECTDRAW4)
+#define G_d3d	VAR_U_(0x007541A4, LPDIRECT3D3)
+#define G_hwnd	VAR_U_(0x00754118, HWND)
 #define joy_fire	VAR_U_(0x0053589C, long)
 #define joy_x	VAR_U_(0x005358A0, long)
 #define joy_y	VAR_U_(0x005358A4, long)
 #define ClipRoomNum	VAR_U_(0x007FDF50, short)
 #define OutsideRoomTable	VAR_U_(0x007FE384, char*)
 #define OutsideRoomOffsets	VAR_U_(0x007FE2E8, short*)
+#define cd_drive	VAR_U_(0x005333A0, char)
+#define OldPickupPos	VAR_U_(0x007FD1D0, PHD_VECTOR)
 
 
 
@@ -443,6 +454,7 @@
 #define SmashedMeshRoom	ARRAY_(0x007FE360, short, [16])
 #define SmashedMesh	ARRAY_(0x007FE7A0, MESH_INFO*, [16])
 #define keymap	ARRAY_(0x007542EC, char, [256])
+#define keymap2	ARRAY_(0x007543EC, char, [256])
 #define static_objects	ARRAY_(0x005333C0, STATIC_INFO, [60])
 #define flip_stats	ARRAY_(0x007FE300, long, [10])
 #define Lightning	ARRAY_(0x007FFB20, LIGHTNING_STRUCT, [16])
@@ -554,6 +566,12 @@
 #define VonCroyCutscenes	ARRAY_(0x004AD518, VonCroyCutData, [15])
 #define VonCroyCutFlags	ARRAY_(0x007FE2A0, uchar, [64])					//flags cuts played
 #define VonCroyCutTracks	ARRAY_(0x004AD458, short, [62])
+
+
+/*Bink bs*/
+#define BinkSurfaceType	VAR_U_(0x007E6E00, long)
+#define BinkSurface	VAR_U_(0x007E6E04, LPDIRECTDRAWSURFACE4)
+#define Bink	VAR_U_(0x007E6E08, BINK_STRUCT*)
 
 
 #define NO_HEIGHT -32512

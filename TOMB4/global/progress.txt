@@ -338,15 +338,15 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/door.cpp
 
-0x0044DF60		ShutThatDoor
-0x0044DFC0		OpenThatDoor
-0x0044E010		DoorControl
-0x0044E1C0		DoorCollision
-0x0044E420		PushPullKickDoorControl
-0x0044E480		PushPullKickDoorCollision
-0x0044E660		DoubleDoorCollision
-0x0044E7C0		UnderwaterDoorCollision
-0x0044E930		SequenceDoorControl
+0x0044DF60	+	ShutThatDoor
+0x0044DFC0	+	OpenThatDoor
+0x0044E010	+	DoorControl
+0x0044E1C0	+	DoorCollision
+0x0044E420	+	PushPullKickDoorControl
+0x0044E480	+	PushPullKickDoorCollision
+0x0044E660	+	DoubleDoorCollision
+0x0044E7C0	+	UnderwaterDoorCollision
+0x0044E930	+	SequenceDoorControl
 
 
 		game/draw.cpp
@@ -1209,8 +1209,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x0045BFB0		InitialiseLara
 0x0045C0D0		InitialiseObjects
 0x0045C1E0		BaddyObjects
-0x0045DC10		TrapObjects
-0x0045E1F0		ObjectObjects
+0x0045DC10	+	TrapObjects
+0x0045E1F0	+	ObjectObjects
 0x0045EB40		GetCarriedItems
 0x0045EC50		GetAIPickups
 0x0045ED30		BuildOutsideTable
@@ -1331,7 +1331,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00439E00		SetScreenFadeIn
 0x00439E40		Fade
 0x00439F10		GetFreeDrip
-0x00439F80		UpdateDrips
+0x00439F80	+	UpdateDrips
 0x0043A080		TriggerLaraDrips
 0x0043A1B0		S_DrawSparks
 0x0043A690	+	ExplodingDeath2
@@ -1509,12 +1509,12 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/d3dmatrix.cpp
 
-0x00490B30		SetD3DViewMatrix
-0x00490C30		SetD3DMatrix
-0x00490CF0		S_InitD3DMatrix
-0x00490D50		D3DNormalise
-0x00490DD0		D3DIdentityMatrix
-0x00490E10		D3DTransform
+0x00490B30	+	SetD3DViewMatrix
+0x00490C30	+	SetD3DMatrix
+0x00490CF0	+	S_InitD3DMatrix
+0x00490D50	+	D3DNormalise
+0x00490DD0	+	D3DIdentityMatrix
+0x00490E10	+	D3DTransform
 
 
 		specific/drawroom.cpp
@@ -1538,33 +1538,33 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/dxshell.cpp
 
 0x00490FF0		DXGetErrorString
-0x00491C30		DXAttempt
-0x00491C60		DXGetInfo
-0x00491CC0		DXEnumDirectSound
-0x00491D60		DXFreeInfo
-0x00491E50		AddStruct
-0x00491EA0		DXDDCreate
-0x00491F60		DXD3DCreate
-0x00491FC0		DXEnumDirectDraw
+0x00491C30	+	DXAttempt
+0x00491C60	+	DXGetInfo
+0x00491CC0	+	DXEnumDirectSound
+0x00491D60	+	DXFreeInfo
+0x00491E50	+	AddStruct
+0x00491EA0	+	DXDDCreate
+0x00491F60	+	DXD3DCreate
+0x00491FC0	+	DXEnumDirectDraw
 0x00492240	+	DXBitMask2ShiftCnt
-0x00492280		DXEnumDisplayModes
-0x004923A0		BPPToDDBD
-0x00492430		DXEnumDirect3D
-0x00492920		DXEnumTextureFormats
-0x00492AD0		DXEnumZBufferFormats
-0x00492B40		DXCreateSurface
-0x00492B90		DXSetVideoMode
-0x00492BE0		DXSetCooperativeLevel
-0x004930D0		DXCreateD3DDevice
-0x00493130		DXCreate
-0x004939E0		DXChangeVideoMode
-0x00493A50		DXToggleFullScreen
-0x00493C00		DXClose
-0x00493E70		DXCreateViewport
-0x00493F60		DXShowFrame
-0x00494030		DXMove
-0x00494080		DXSaveScreen
-0x00494270		DXInitKeyboard
+0x00492280	+	DXEnumDisplayModes
+0x004923A0	+	BPPToDDBD
+0x00492430	+	DXEnumDirect3D
+0x00492920	+	DXEnumTextureFormats
+0x00492AD0	+	DXEnumZBufferFormats
+0x00492B40	+	DXCreateSurface
+0x00492B90	+	DXSetVideoMode
+0x00492BE0	+	DXSetCooperativeLevel
+0x004930D0	+	DXCreateD3DDevice
+0x00493130	+	DXCreate
+0x004939E0	+	DXChangeVideoMode
+0x00493A50	+	DXToggleFullScreen
+0x00493C00	+	DXClose
+0x00493E70	+	DXCreateViewport
+0x00493F60	+	DXShowFrame
+0x00494030	+	DXMove
+0x00494080	+	DXSaveScreen
+0x00494270	x	DXInitKeyboard
 0x004944D0	+	DXReadKeyboard
 
 
@@ -1596,11 +1596,11 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/file.cpp
 
-0x00473C10		FindCDDrive	
-0x00473CE0		FileOpen
-0x00473D80		FileClose
-0x00473DA0		FileSize
-0x00473DD0		LoadFile
+0x00473C10	+	FindCDDrive	
+0x00473CE0	+	FileOpen
+0x00473D80	+	FileClose
+0x00473DA0	+	FileSize
+0x00473DD0	+	LoadFile
 0x00473E80		Decompress
 0x00473F20		LoadTextures
 0x004749C0		LoadRooms
@@ -1620,6 +1620,12 @@ x for functions decompiled but not injected, for one reason or another.
 0x00476470		LoadLevel
 0x00476790	+	FreeLevel
 0x004768C0	+	S_LoadLevelFile
+
+
+		specific/fmv.cpp
+
+0x0049C350	+	ShowBinkFrame
+0x0049C3E0	+	PlayFmvNow
 
 
 		specific/function_stubs.cpp
@@ -1806,7 +1812,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00489950	+	DrawLaserSightSprite
 0x00489B90	+	DrawDebris
 0x0048A0C0		DrawBlood
-0x0048A430		DrawDrips
+0x0048A430	+	DrawDrips
 0x0048A840		DoUwEffect
 0x0048AD60	+	DrawWraithTrail
 0x0048B130	+	ShowTitle

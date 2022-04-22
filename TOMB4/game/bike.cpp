@@ -82,8 +82,7 @@ long GetOnBike(short item_number, COLL_INFO* coll)
 {
 	ITEM_INFO* item;
 	long dx, dz;
-	ushort rot;
-	short room_number;
+	short room_number, rot;
 
 	item = &items[item_number];
 
@@ -105,14 +104,14 @@ long GetOnBike(short item_number, COLL_INFO* coll)
 		item->pos.x_pos, item->pos.y_pos, item->pos.z_pos) < -32000)
 		return 0;
 
-	rot = (ushort)phd_atan(item->pos.z_pos - lara_item->pos.z_pos, item->pos.x_pos - lara_item->pos.x_pos) - item->pos.y_rot;
+	rot = short(phd_atan(item->pos.z_pos - lara_item->pos.z_pos, item->pos.x_pos - lara_item->pos.x_pos) - item->pos.y_rot);
 
 	if (rot > -8190 && rot < 24570)
 		return 0;
 
 	rot = lara_item->pos.y_rot - item->pos.y_rot;
 
-	if (rot <= 40950 || rot >= 57330)
+	if (rot <= -24586 || rot >= -8206)
 		return 0;
 
 	return 1;

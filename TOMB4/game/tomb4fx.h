@@ -8,6 +8,7 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags);
 void DrawGunshells();
 void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, long notLara, long weaponType, long shade);
 void LaraBubbles(ITEM_INFO* item);
+void UpdateDrips();
 
 #define ClearFires	( (void(__cdecl*)()) 0x004384F0 )
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
@@ -16,7 +17,6 @@ void LaraBubbles(ITEM_INFO* item);
 #define UpdateSmokeSparks	( (void(__cdecl*)()) 0x00438700 )
 #define UpdateBubbles	( (void(__cdecl*)()) 0x00439970 )
 #define UpdateBlood	( (void(__cdecl*)()) 0x00438D90 )
-#define UpdateDrips	( (void(__cdecl*)()) 0x00439F80 )
 #define UpdateGunShells	( (void(__cdecl*)()) 0x00439340 )
 #define UpdateShockwaves	( (void(__cdecl*)()) 0x0043AD10 )
 #define UpdateLightning	( (void(__cdecl*)()) 0x0043AF80 )

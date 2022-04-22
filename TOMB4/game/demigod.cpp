@@ -631,18 +631,12 @@ void DemigodControl(short item_number)
 					lara.torso_y_rot = 0;
 					lara.head_x_rot = 0;
 					lara.head_y_rot = 0;
-#ifdef GENERAL_FIXES
-					lara_item->anim_number = ANIM_FASTSPLAT;
-					lara_item->frame_number = anims[ANIM_FASTSPLAT].frame_base + 1;
-					lara_item->current_anim_state = AS_FASTFALL;
-					lara_item->goal_anim_state = AS_FASTFALL;
-					lara.move_angle = lara_item->pos.y_rot + 0x8000;
-
-#else
 					lara_item->anim_number = ANIM_FALLDOWN;
 					lara_item->frame_number = anims[ANIM_FALLDOWN].frame_base;
 					lara_item->current_anim_state = AS_FORWARDJUMP;
 					lara_item->goal_anim_state = AS_FORWARDJUMP;
+#ifdef GENERAL_FIXES
+					lara_item->pos.x_pos += -50 * phd_sin(lara_item->pos.y_rot) >> 14;
 #endif
 					lara_item->gravity_status = 1;
 					lara_item->speed = 2;
