@@ -64,6 +64,8 @@
 #include "../game/deathsld.h"
 #include "../specific/fmv.h"
 #include "../game/setup.h"
+#include "../specific/d3dmatrix.h"
+#include "../game/door.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -147,6 +149,8 @@ void inject_all(bool replace)
 	inject_deathslide(replace);
 	inject_fmv(replace);
 	inject_setup(replace);
+	inject_d3dmatrix(replace);
+	inject_door(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

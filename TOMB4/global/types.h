@@ -46,6 +46,14 @@ do \
 #define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
 #define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
 
+	/**********************************/
+#define OPEN	( (FILE*(__cdecl*)(const char*, const char*)) 0x004A0B4C )
+#define SEEK	( (int(__cdecl*)(FILE*, int, int)) 0x004A0948 )
+#define READ	( (size_t(__cdecl*)(void*, size_t, size_t, FILE*)) 0x004A0860 )
+#define TELL	( (int(__cdecl*)(FILE*)) 0x004A0B5F )
+#define CLOSE	( (int(__cdecl*)(FILE*)) 0x004A07B4 )
+	/**********************************/
+
 enum font_flags
 {
 	FF_SMALL = 0x1000,

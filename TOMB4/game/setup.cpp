@@ -9,6 +9,10 @@
 #include "effect2.h"
 #include "effects.h"
 #include "clockworkbeetle.h"
+#include "traps.h"
+#include "deathsld.h"
+#include "../specific/specificfx.h"
+#include "door.h"
 
 void ObjectObjects()
 {
@@ -122,40 +126,40 @@ void ObjectObjects()
 	for (int i = DOOR_TYPE1; i <= DOOR_TYPE8; i++)	//skips over MIPs
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseDoor;
-	//	obj->control = DoorControl;
-	//	obj->collision = DoorCollision;
+		obj->initialise = InitialiseDoor;
+		obj->control = DoorControl;
+		obj->collision = DoorCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
 
 	obj = &objects[UNDERWATER_DOOR];
-//	obj->initialise = InitialiseDoor;
-//	obj->control = PushPullKickDoorControl;
-//	obj->collision = UnderwaterDoorCollision;
+	obj->initialise = InitialiseDoor;
+	obj->control = PushPullKickDoorControl;
+	obj->collision = UnderwaterDoorCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[DOUBLE_DOORS];
-//	obj->initialise = InitialiseDoor;
-//	obj->control = PushPullKickDoorControl;
-//	obj->collision = DoubleDoorCollision;
+	obj->initialise = InitialiseDoor;
+	obj->control = PushPullKickDoorControl;
+	obj->collision = DoubleDoorCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[SEQUENCE_DOOR1];
-//	obj->initialise = InitialiseDoor;
-//	obj->control = SequenceDoorControl;
-//	obj->collision = DoorCollision;
+	obj->initialise = InitialiseDoor;
+	obj->control = SequenceDoorControl;
+	obj->collision = DoorCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	for (int i = PUSHPULL_DOOR1; i <= KICK_DOOR2; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseDoor;
-	//	obj->control = PushPullKickDoorControl;
-	//	obj->collision = PushPullKickDoorCollision;
+		obj->initialise = InitialiseDoor;
+		obj->control = PushPullKickDoorControl;
+		obj->collision = PushPullKickDoorCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -163,7 +167,7 @@ void ObjectObjects()
 	for (int i = FLOOR_TRAPDOOR1; i <= FLOOR_TRAPDOOR2; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseTrapDoor;
+		obj->initialise = InitialiseTrapDoor;
 	//	obj->control = TrapDoorControl;
 	//	obj->collision = FloorTrapDoorCollision;
 		obj->save_flags = 1;
@@ -173,7 +177,7 @@ void ObjectObjects()
 	for (int i = CEILING_TRAPDOOR1; i <= CEILING_TRAPDOOR2; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseTrapDoor;
+		obj->initialise = InitialiseTrapDoor;
 	//	obj->control = TrapDoorControl;
 	//	obj->collision = CeilingTrapDoorCollision;
 		obj->save_flags = 1;
@@ -183,7 +187,7 @@ void ObjectObjects()
 	for (int i = TRAPDOOR1; i <= TRAPDOOR3; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseTrapDoor;
+		obj->initialise = InitialiseTrapDoor;
 	//	obj->control = TrapDoorControl;
 	//	obj->collision = TrapDoorCollision;
 		obj->save_flags = 1;
@@ -491,7 +495,266 @@ void ObjectObjects()
 	obj->loaded = 1;
 }
 
+void TrapObjects()
+{
+	OBJECT_INFO* obj;
+
+	obj = &objects[ROLLINGBALL];
+//	obj->control = ControlRollingBall;
+//	obj->collision = RollingBallCollision;
+	obj->save_position = 1;
+	obj->save_flags = 1;
+
+	obj = &objects[CHAIN];
+//	obj->control = ControlChain;
+//	obj->collision = GenericSphereBoxCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[PLOUGH];
+//	obj->control = ControlPlough;
+//	obj->collision = GenericSphereBoxCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+	
+	obj = &objects[STARGATE];
+//	obj->control = ControlStargate;
+//	obj->collision = StargateCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[HAMMER];
+//	obj->control = ControlHammer;
+//	obj->collision = GenericSphereBoxCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[BURNING_FLOOR];
+	obj->initialise = InitialiseBurningFloor;
+//	obj->control = ControlBurningFloor;
+//	obj->collision = empty func here;
+	obj->save_position = 1;
+	obj->save_flags = 1;
+
+	obj = &objects[COG];
+//	obj->control = ControlAnimatingSlots;
+//	obj->collision = CogCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[SPIKEBALL];
+//	obj->control = ControlSpikeball;
+//	obj->collision = GenericSphereBoxCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[TWOBLOCK_PLATFORM];
+	obj->initialise = InitialiseTwoBlockPlatform;
+	obj->control = ControlTwoBlockPlatform;
+	obj->floor = TwoBlockPlatformFloor;
+	obj->ceiling = TwoBlockPlatformCeiling;
+	obj->save_position = 1;
+	obj->save_flags = 1;
+
+	obj = &objects[FLOOR_4BLADE];
+//	obj->control = Control4xFloorRoofBlade;
+//	obj->collision = GenericSphereBoxCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[ROOF_4BLADE];
+//	obj->control = Control4xFloorRoofBlade;
+//	obj->collision = GenericSphereBoxCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[BIRD_BLADE];
+//	obj->control = ControlBirdBlade;
+//	obj->collision = GenericSphereBoxCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[CATWALK_BLADE];
+//	obj->control = ControlCatwalkBlade;
+//	obj->collision = GenericDeadlyBoundingBoxCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[MOVING_BLADE];
+//	obj->control = ControlMovingBlade;
+//	obj->collision = GenericDeadlyBoundingBoxCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[PLINTH_BLADE];
+//	obj->control = ControlPlinthBlade;
+//	obj->collision = GenericDeadlyBoundingBoxCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[SETH_BLADE];
+	obj->initialise = InitialiseSethBlade;
+//	obj->control = ControlSethBlade;
+//	obj->collision = GenericSphereBoxCollision;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[KILL_ALL_TRIGGERS];
+//	obj->control = KillAllCurrentItems;
+	obj->draw_routine = 0;
+	obj->hit_points = 0;
+	obj->using_drawanimating_item = 0;
+	obj->save_flags = 1;
+
+	obj = &objects[DEATH_SLIDE];
+	obj->initialise = InitialiseDeathSlide;
+	obj->control = ControlDeathSlide;
+	obj->collision = DeathSlideCollision;
+	obj->save_position = 1;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	for (int i = FALLING_BLOCK; i <= FALLING_BLOCK2; i++)
+	{
+		obj = &objects[i];
+		obj->initialise = InitialiseFallingBlock2;
+	//	obj->control = FallingBlock;
+	//	obj->collision = FallingBlockCollision;
+	//	obj->floor = FallingBlockFloor;
+	//	obj->ceiling = FallingBlockCeiling;
+		obj->save_position = 1;
+		obj->save_flags = 1;
+		obj->save_anim = 1;
+	}
+
+	obj = &objects[FALLING_CEILING];
+//	obj->control = FallingCeiling;
+//	obj->collision = TrapCollision;
+	obj->save_position = 1;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[SMASHABLE_BIKE_WALL];
+	obj->initialise = InitialiseFallingBlock2;
+//	obj->control = ControlSmashableBikeWall;
+	obj->collision = ObjectCollision;
+	obj->save_flags = 1;
+
+	obj = &objects[SMASHABLE_BIKE_FLOOR];
+	obj->initialise = InitialiseFallingBlock2;
+//	obj->control = ControlFallingBlock2;
+	obj->collision = ObjectCollision;
+	obj->floor = TwoBlockPlatformFloor;
+	obj->ceiling = TwoBlockPlatformCeiling;
+	obj->save_position = 1;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	for (int i = PUSHABLE_OBJECT1; i < PUSHABLE_OBJECT5; i++)
+	{
+		obj = &objects[i];
+	//	obj->initialise = InitialiseMovingBlock;
+	//	obj->control = MovableBlock;
+	//	obj->collision = MovableBlockCollision;
+		obj->save_position = 1;
+		obj->save_flags = 1;
+	}
+
+	obj = &objects[SAS_DRAG_BLOKE];
+//	obj->control = ControlAnimatingSlots;
+//	obj->collision = DragSASCollision;
+	obj->save_position = 1;
+	obj->save_flags = 1;
+	obj->save_anim = 1;
+
+	obj = &objects[DARTS];
+//	obj->control = DartsControl;
+	obj->collision = ObjectCollision;
+	obj->draw_routine = S_DrawDarts;
+	obj->using_drawanimating_item = 0;
+	obj->shadow_size = 128;
+
+	obj = &objects[DART_EMITTER];
+//	obj->control = DartEmitterControl;
+	obj->draw_routine = 0;
+	obj->save_flags = 1;
+	obj->using_drawanimating_item = 0;
+
+	obj = &objects[HOMING_DART_EMITTER];
+//	obj->control = DartEmitterControl;
+	obj->draw_routine = 0;
+	obj->save_flags = 1;
+	obj->using_drawanimating_item = 0;
+
+	obj = &objects[FLAME];
+//	obj->control = FlameControl;
+	obj->draw_routine = 0;
+	obj->using_drawanimating_item = 0;
+
+	obj = &objects[FLAME_EMITTER];
+	obj->initialise = InitialiseFlameEmitter;
+	obj->control = FlameEmitterControl;
+//	obj->collision = FireCollision;
+	obj->draw_routine = 0;
+	obj->using_drawanimating_item = 0;
+	obj->save_flags = 1;
+
+	obj = &objects[FLAME_EMITTER2];
+	obj->initialise = InitialiseFlameEmitter2;
+//	obj->control = FlameEmitter2Control;
+//	obj->collision = FireCollision;
+	obj->draw_routine = 0;
+	obj->using_drawanimating_item = 0;
+	obj->save_flags = 1;
+
+	obj = &objects[FLAME_EMITTER3];
+//	obj->control = FlameEmitter3Control;
+	obj->draw_routine = 0;
+	obj->using_drawanimating_item = 0;
+	obj->save_flags = 1;
+
+//	init_all_ropes();
+	obj = &objects[ROPE];
+//	obj->initialise = InitialiseRope;
+//	obj->control = RopeControl;
+//	obj->collision = RopeCollision;
+	obj->draw_routine = 0;
+	obj->using_drawanimating_item = 0;
+	obj->save_flags = 1;
+
+	obj = &objects[POLEROPE];
+//	obj->collision = PoleCollision;
+	obj->save_flags = 1;
+
+	obj = &objects[MINE];
+	obj->initialise = InitialiseMineHelicopter;
+//	obj->control = ControlMineHelicopter;
+//	obj->collision = MineCollision;
+	obj->HitEffect = 3;
+
+	obj = &objects[SPRINKLER];
+//	obj->control = ControlSprinkler;
+//	obj->collision = FireCollision;
+	obj->save_flags = 1;
+
+	obj = &objects[TRIGGER_TRIGGERER];
+//	obj->initialise = ControlTriggerTriggerer;
+//	obj->control = ControlTriggerTriggerer;
+	obj->draw_routine = 0;
+	obj->using_drawanimating_item = 0;
+	obj->save_flags = 1;
+
+	obj = &objects[PLANET_EFFECT];
+//	obj->initialise = InitialisePlanetEffect;
+//	obj->control = ControlPlanetEffect;
+//	obj->draw_routine = DrawPlanetEffect;
+	obj->save_flags = 1;
+	obj->using_drawanimating_item = 0;
+	obj->save_mesh = 1;
+}
+
 void inject_setup(bool replace)
 {
 	INJECT(0x0045E1F0, ObjectObjects, 0);
+	INJECT(0x0045DC10, TrapObjects, 0);
 }
