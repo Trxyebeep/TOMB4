@@ -443,6 +443,7 @@
 #define OutsideRoomTable	VAR_U_(0x007FE384, char*)
 #define OutsideRoomOffsets	VAR_U_(0x007FE2E8, short*)
 #define cd_drive	VAR_U_(0x005333A0, char)
+#define OldPickupPos	VAR_U_(0x007FD1D0, PHD_VECTOR)
 
 
 
