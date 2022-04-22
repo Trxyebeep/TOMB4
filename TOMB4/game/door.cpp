@@ -19,9 +19,17 @@ static PHD_VECTOR CrowbarDoorPos = { -412, 0, 256 };
 static PHD_VECTOR PullDoorPos = { -201, 0, 322 };
 static PHD_VECTOR PushDoorPos = { 201, 0, -702 };
 static PHD_VECTOR KickDoorPos = { 0, 0, -917 };
+static PHD_VECTOR DoubleDoorPos = { 0, 0, 220 };
+
+#ifdef GENERAL_FIXES
+static PHD_VECTOR UnderwaterDoorPos = { -251, -760, -46 };
+#else
+static PHD_VECTOR UnderwaterDoorPos = { -251, -540, -46 };
+#endif
 
 static short CrowbarDoorBounds[12] = { -512, 512, -1024, 0, 0, 512, -14560, 14560, -14560, 14560, -14560, 14560 };
 static short PushPullKickDoorBounds[12] = { -384, 384, 0, 0, -1024, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
+static short UnderwaterDoorBounds[12] = { -256, 256, -1024, 0, -1024, 0, -14560, 14560, -14560, 14560, -14560, 14560 };
 
 void ShutThatDoor(DOORPOS_DATA* d)
 {
@@ -59,7 +67,7 @@ void OpenThatDoor(DOORPOS_DATA* d)
 
 		if (d->block != 2047)
 		{
-			boxes[d->block].overlap_index |= ~0x4000;
+			boxes[d->block].overlap_index &= ~0x4000;
 
 			for (short slot = 0; slot < 5; slot++)
 			{
@@ -348,6 +356,171 @@ void PushPullKickDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 		DoorCollision(item_num, l, coll);
 }
 
+void DoubleDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_num];
+
+	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && item->status != ITEM_ACTIVE &&
+		!l->gravity_status && lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+	{
+		item->pos.y_rot ^= 0x8000;
+
+		if (TestLaraPosition(PushPullKickDoorBounds, item, l))
+		{
+			if (MoveLaraPosition(&DoubleDoorPos, item, l))
+			{
+				l->anim_number = ANIM_TWODOOR;
+				l->frame_number = anims[ANIM_TWODOOR].frame_base;
+				l->current_anim_state = AS_TWODOOR;
+				AddActiveItem(item_num);
+				item->status = ITEM_ACTIVE;
+				lara.IsMoving = 0;
+				lara.gun_status = LG_HANDS_BUSY;
+				lara.head_x_rot = 0;
+				lara.head_y_rot = 0;
+				lara.torso_x_rot = 0;
+				lara.torso_y_rot = 0;
+			}
+			else
+				lara.GeneralPtr = (void*)item_num;
+		}
+		else if (lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		{
+			lara.IsMoving = 0;
+			lara.gun_status = LG_NO_ARMS;
+		}
+
+		item->pos.y_rot ^= 0x8000;
+	}
+}
+
+void UnderwaterDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_num];
+
+	if (input & IN_ACTION && item->status != ITEM_ACTIVE && l->current_anim_state == AS_TREAD && lara.water_status == LW_UNDERWATER &&
+		lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+	{
+		l->pos.y_rot ^= 0x8000;
+
+		if (TestLaraPosition(UnderwaterDoorBounds, item, l))
+		{
+			if (MoveLaraPosition(&UnderwaterDoorPos, item, l))
+			{
+				l->anim_number = ANIM_WATERDOOR;
+				l->frame_number = anims[ANIM_WATERDOOR].frame_base;
+				l->current_anim_state = AS_CONTROLLED;
+				l->fallspeed = 0;
+				item->status = ITEM_ACTIVE;
+				AddActiveItem(item_num);
+				item->goal_anim_state = 1;
+				AnimateItem(item);
+				lara.IsMoving = 0;
+				lara.gun_status = LG_HANDS_BUSY;
+			}
+			else
+				lara.GeneralPtr = (void*)item_num;
+		}
+		else if (lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		{
+			lara.IsMoving = 0;
+			lara.gun_status = LG_NO_ARMS;
+		}
+
+		l->pos.y_rot ^= 0x8000;
+	}
+	else if (item->status == ITEM_ACTIVE)
+		ObjectCollision(item_num, l, coll);
+}
+
+void SequenceDoorControl(short item_number)
+{
+	ITEM_INFO* item;
+	DOOR_DATA* door;
+
+	item = &items[item_number];
+	door = (DOOR_DATA*)item->data;
+
+	if (item->item_flags[0])
+	{
+		if (TriggerActive(item))
+		{
+			if (!item->current_anim_state)
+				item->goal_anim_state = 1;
+			else
+			{
+				if (!door->Opened)
+				{
+					OpenThatDoor(&door->d1);
+					OpenThatDoor(&door->d2);
+					OpenThatDoor(&door->d1flip);
+					OpenThatDoor(&door->d2flip);
+					door->Opened = 1;
+				}
+
+				if (CurrentSequence == 3)
+				{
+					if (SequenceResults[Sequences[0]][Sequences[1]][Sequences[2]] == item->trigger_flags &&
+						!Sequences[0] && Sequences[1] == 1 && Sequences[2] == 2)
+					{
+						CurrentSequence = 4;
+						SequenceUsed[item->trigger_flags] = Sequences[1];
+					}
+				}
+				else if ((CurrentSequence == 1 || CurrentSequence == 2) && item->trigger_flags == 2)
+				{
+					item->flags &= ~(IFL_INVISIBLE | IFL_ANTITRIGGER_ONESHOT);
+					item->goal_anim_state = 0;
+					item->item_flags[0] = 0;
+				}
+			}
+		}
+		else
+		{
+			if (item->current_anim_state == 1)
+				item->goal_anim_state = 0;
+			else
+			{
+				if (CurrentSequence == 3 && SequenceResults[Sequences[0]][Sequences[1]][Sequences[2]] == item->trigger_flags)
+				{
+					CurrentSequence = 4;
+
+					if (item->trigger_flags != 2)
+						SequenceUsed[item->trigger_flags] = 1;
+				}
+
+				if (door->Opened)
+				{
+					ShutThatDoor(&door->d1);
+					ShutThatDoor(&door->d2);
+					ShutThatDoor(&door->d1flip);
+					ShutThatDoor(&door->d2flip);
+					door->Opened = 0;
+				}
+			}
+		}
+	}
+	else if (!item->current_anim_state && CurrentSequence == 3 && SequenceResults[Sequences[0]][Sequences[1]][Sequences[2]] == item->trigger_flags)
+	{
+		if (item->trigger_flags && item->trigger_flags != 2 && !SequenceUsed[0])
+		{
+			Sequences[1] = 0;
+			Sequences[0] = 1;
+			Sequences[2] = 2;
+			return;
+		}
+
+		item->goal_anim_state = 1;
+		item->item_flags[0] = 1;
+	}
+
+	AnimateItem(item);
+}
+
 void inject_door(bool replace)
 {
 	INJECT(0x0044DF60, ShutThatDoor, replace);
@@ -356,4 +529,7 @@ void inject_door(bool replace)
 	INJECT(0x0044E1C0, DoorCollision, replace);
 	INJECT(0x0044E420, PushPullKickDoorControl, replace);
 	INJECT(0x0044E480, PushPullKickDoorCollision, replace);
+	INJECT(0x0044E660, DoubleDoorCollision, replace);
+	INJECT(0x0044E7C0, UnderwaterDoorCollision, replace);
+	INJECT(0x0044E930, SequenceDoorControl, replace);
 }
