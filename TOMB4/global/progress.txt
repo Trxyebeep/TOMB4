@@ -338,8 +338,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/door.cpp
 
-0x0044DF60		ShutThatDoor
-0x0044DFC0		OpenThatDoor
+0x0044DF60	+	ShutThatDoor
+0x0044DFC0	+	OpenThatDoor
 0x0044E010		DoorControl
 0x0044E1C0		DoorCollision
 0x0044E420		PushPullKickDoorControl

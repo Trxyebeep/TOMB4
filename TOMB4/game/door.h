@@ -1,4 +1,7 @@
 #pragma once
 #include "../global/vars.h"
 
-#define ShutThatDoor	( (void(__cdecl*)(DOORPOS_DATA*)) 0x0044DF60 )
+void inject_door(bool replace);
+
+void ShutThatDoor(DOORPOS_DATA* d);
+void OpenThatDoor(DOORPOS_DATA* d);
