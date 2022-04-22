@@ -16,7 +16,12 @@ static PHD_VECTOR CrowbarDoorPos = { -412, 0, 140 };
 static PHD_VECTOR CrowbarDoorPos = { -412, 0, 256 };
 #endif
 
+static PHD_VECTOR PullDoorPos = { -201, 0, 322 };
+static PHD_VECTOR PushDoorPos = { 201, 0, -702 };
+static PHD_VECTOR KickDoorPos = { 0, 0, -917 };
+
 static short CrowbarDoorBounds[12] = { -512, 512, -1024, 0, 0, 512, -14560, 14560, -14560, 14560, -14560, 14560 };
+static short PushPullKickDoorBounds[12] = { -384, 384, 0, 0, -1024, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 
 void ShutThatDoor(DOORPOS_DATA* d)
 {
@@ -238,10 +243,117 @@ void DoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void PushPullKickDoorControl(short item_number)
+{
+	ITEM_INFO* item;
+	DOOR_DATA* door;
+
+	item = &items[item_number];
+	door = (DOOR_DATA*)item->data;
+
+	if (!door->Opened)
+	{
+		OpenThatDoor(&door->d1);
+		OpenThatDoor(&door->d2);
+		OpenThatDoor(&door->d1flip);
+		OpenThatDoor(&door->d2flip);
+		door->Opened = 1;
+	}
+
+	AnimateItem(item);
+}
+
+void PushPullKickDoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	long pull, goin;
+
+	item = &items[item_num];
+
+	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && item->status != ITEM_ACTIVE &&
+		!l->gravity_status && lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+	{
+		pull = 0;
+
+		if (l->room_number == item->room_number)
+		{
+			item->pos.y_rot ^= 0x8000;
+			pull = 1;
+		}
+
+		if (TestLaraPosition(PushPullKickDoorBounds, item, l))
+		{
+			goin = 0;
+
+			if (pull)
+			{
+				if (MoveLaraPosition(&PullDoorPos, item, l))
+				{
+					l->anim_number = ANIM_PULLDOOR;
+					l->frame_number = anims[ANIM_PULLDOOR].frame_base;
+					item->goal_anim_state = 3;
+					goin = 1;
+				}
+				else
+					lara.GeneralPtr = (void*)item_num;
+			}
+			else
+			{
+				if (item->object_number < KICK_DOOR1)
+				{
+					if (MoveLaraPosition(&PushDoorPos, item, l))
+					{
+						l->anim_number = ANIM_PUSHDOOR;
+						l->frame_number = anims[ANIM_PUSHDOOR].frame_base;
+						item->goal_anim_state = 2;
+						goin = 1;
+					}
+					else
+						lara.GeneralPtr = (void*)item_num;
+				}
+				else
+				{
+					if (MoveLaraPosition(&KickDoorPos, item, l))
+					{
+						l->anim_number = ANIM_KICKDOOR;
+						l->frame_number = anims[ANIM_KICKDOOR].frame_base;
+						item->goal_anim_state = 2;
+						goin = 1;
+					}
+					else
+						lara.GeneralPtr = (void*)item_num;
+				}
+			}
+
+			if (goin)
+			{
+				AddActiveItem(item_num);
+				item->status = ITEM_ACTIVE;
+				l->current_anim_state = AS_CONTROLLED;
+				l->goal_anim_state = AS_STOP;
+				lara.IsMoving = 0;
+				lara.gun_status = LG_HANDS_BUSY;
+			}
+		}
+		else if (lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		{
+			lara.IsMoving = 0;
+			lara.gun_status = LG_NO_ARMS;
+		}
+
+		if (pull)
+			item->pos.y_rot ^= 0x8000;
+	}
+	else if (!item->current_anim_state)
+		DoorCollision(item_num, l, coll);
+}
+
 void inject_door(bool replace)
 {
 	INJECT(0x0044DF60, ShutThatDoor, replace);
 	INJECT(0x0044DFC0, OpenThatDoor, replace);
 	INJECT(0x0044E010, DoorControl, replace);
 	INJECT(0x0044E1C0, DoorCollision, replace);
+	INJECT(0x0044E420, PushPullKickDoorControl, replace);
+	INJECT(0x0044E480, PushPullKickDoorCollision, replace);
 }
