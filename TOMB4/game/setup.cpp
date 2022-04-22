@@ -12,6 +12,7 @@
 #include "traps.h"
 #include "deathsld.h"
 #include "../specific/specificfx.h"
+#include "door.h"
 
 void ObjectObjects()
 {
@@ -125,40 +126,40 @@ void ObjectObjects()
 	for (int i = DOOR_TYPE1; i <= DOOR_TYPE8; i++)	//skips over MIPs
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseDoor;
-	//	obj->control = DoorControl;
-	//	obj->collision = DoorCollision;
+		obj->initialise = InitialiseDoor;
+		obj->control = DoorControl;
+		obj->collision = DoorCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
 
 	obj = &objects[UNDERWATER_DOOR];
-//	obj->initialise = InitialiseDoor;
-//	obj->control = PushPullKickDoorControl;
-//	obj->collision = UnderwaterDoorCollision;
+	obj->initialise = InitialiseDoor;
+	obj->control = PushPullKickDoorControl;
+	obj->collision = UnderwaterDoorCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[DOUBLE_DOORS];
-//	obj->initialise = InitialiseDoor;
-//	obj->control = PushPullKickDoorControl;
-//	obj->collision = DoubleDoorCollision;
+	obj->initialise = InitialiseDoor;
+	obj->control = PushPullKickDoorControl;
+	obj->collision = DoubleDoorCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[SEQUENCE_DOOR1];
-//	obj->initialise = InitialiseDoor;
-//	obj->control = SequenceDoorControl;
-//	obj->collision = DoorCollision;
+	obj->initialise = InitialiseDoor;
+	obj->control = SequenceDoorControl;
+	obj->collision = DoorCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	for (int i = PUSHPULL_DOOR1; i <= KICK_DOOR2; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseDoor;
-	//	obj->control = PushPullKickDoorControl;
-	//	obj->collision = PushPullKickDoorCollision;
+		obj->initialise = InitialiseDoor;
+		obj->control = PushPullKickDoorControl;
+		obj->collision = PushPullKickDoorCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -166,7 +167,7 @@ void ObjectObjects()
 	for (int i = FLOOR_TRAPDOOR1; i <= FLOOR_TRAPDOOR2; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseTrapDoor;
+		obj->initialise = InitialiseTrapDoor;
 	//	obj->control = TrapDoorControl;
 	//	obj->collision = FloorTrapDoorCollision;
 		obj->save_flags = 1;
@@ -176,7 +177,7 @@ void ObjectObjects()
 	for (int i = CEILING_TRAPDOOR1; i <= CEILING_TRAPDOOR2; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseTrapDoor;
+		obj->initialise = InitialiseTrapDoor;
 	//	obj->control = TrapDoorControl;
 	//	obj->collision = CeilingTrapDoorCollision;
 		obj->save_flags = 1;
@@ -186,7 +187,7 @@ void ObjectObjects()
 	for (int i = TRAPDOOR1; i <= TRAPDOOR3; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseTrapDoor;
+		obj->initialise = InitialiseTrapDoor;
 	//	obj->control = TrapDoorControl;
 	//	obj->collision = TrapDoorCollision;
 		obj->save_flags = 1;
