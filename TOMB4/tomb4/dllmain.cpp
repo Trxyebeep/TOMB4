@@ -60,6 +60,7 @@
 #include "../game/jeep.h"
 #include "../game/pickup.h"
 #include "../game/switch.h"
+#include "../game/baboon.h"
 #include "../specific/input.h"
 #include "../game/deathsld.h"
 #include "../specific/fmv.h"
@@ -145,6 +146,7 @@ void inject_all(bool replace)
 	inject_jeep(replace);
 	inject_pickup(replace);
 	inject_switch(replace);
+	inject_baboon(replace);
 	inject_input(replace);
 	inject_deathslide(replace);
 	inject_fmv(replace);
