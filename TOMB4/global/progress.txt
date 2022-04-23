@@ -20,11 +20,11 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/baboon.cpp
 
-0x00401DB0		InitialiseBaboon
-0x00401E50		BaboonControl
-0x004027E0		FindCrowbarSwitch
-0x00402850		ReTriggerBaboon
-0x00402970		ExplodeBaboon
+0x00401DB0	+	InitialiseBaboon
+0x00401E50	+	BaboonControl
+0x004027E0	+	FindCrowbarSwitch
+0x00402850	+	ReTriggerBaboon
+0x00402970	+	ExplodeBaboon
 
 
 		game/bat.cpp
