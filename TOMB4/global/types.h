@@ -1874,6 +1874,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool tr5_loadbar;
 	bool look_transparency;
 	bool ammo_counter;
+	bool ammotype_hotkeys;
 };
 #endif
 #pragma pack(pop)

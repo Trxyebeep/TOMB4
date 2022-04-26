@@ -78,6 +78,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "ammo_counter");
 		tomb4.ammo_counter = 0;							//off
 		REG_WriteBool(buf, tomb4.ammo_counter);
+
+		sprintf(buf, "ammotype_hotkeys");
+		tomb4.ammotype_hotkeys = 1;						//on
+		REG_WriteBool(buf, tomb4.ammotype_hotkeys);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -128,6 +132,9 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "ammo_counter");
 		REG_ReadBool(buf, tomb4.ammo_counter, 0);
+
+		sprintf(buf, "ammotype_hotkeys");
+		REG_ReadBool(buf, tomb4.ammotype_hotkeys, 1);
 	}
 
 	CloseRegistry();
@@ -186,6 +193,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "ammo_counter");
 	REG_WriteBool(buf, tomb4.ammo_counter);
+
+	sprintf(buf, "ammotype_hotkeys");
+	REG_WriteBool(buf, tomb4.ammotype_hotkeys);
 
 	CloseRegistry();
 }

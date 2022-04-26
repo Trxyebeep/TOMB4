@@ -10,6 +10,9 @@
 #ifdef AMMO_COUNTER
 #include "larafire.h"
 #endif
+#ifdef GENERAL_FIXES
+#include "../specific/input.h"
+#endif
 
 long FlashIt()
 {
@@ -85,6 +88,17 @@ void DrawGameInfo(long timed)
 					PrintString(ushort(LaserSight ? phd_centerx + 30 : (phd_winxmax - length - 80)), phd_winymax - btm - 70, 0, buf, 0);
 				}
 			}
+		}
+#endif
+
+#ifdef GENERAL_FIXES	//Ammotype change tings
+		if (ammo_change_timer)
+		{
+			ammo_change_timer--;
+			PrintString(ushort(phd_winwidth >> 1), (ushort)font_height, 5, ammo_change_buf, 0x8000);
+
+			if (ammo_change_timer <= 0)
+				ammo_change_timer = 0;
 		}
 #endif
 	}
