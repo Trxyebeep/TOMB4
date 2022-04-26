@@ -583,13 +583,27 @@ void S_LoadBar()
 		loadbar_pos += 100 / loadbar_maxpos;
 
 #ifdef IMPROVED_BARS
-		if (tomb4.bar_mode == 3)
-			S_DrawGouraudBar(20, 480 - (font_height >> 1), 600, 15, (long)loadbar_pos, &loadBarColourSet);
-		else if (tomb4.bar_mode == 2)
-			S_DoTR5Bar(20, 480 - (font_height >> 1), 600, 15, (long)loadbar_pos, 0xFF7F007F, 0xFF007F7F);
+		if (tomb4.tr5_loadbar)
+		{
+			if (tomb4.bar_mode == 3)
+				S_DrawGouraudBar(170, 480 - (font_height >> 1), 300, 10, (long)loadbar_pos, &loadBarColourSet);
+			else if (tomb4.bar_mode == 2)
+				S_DoTR5Bar(170, 480 - (font_height >> 1), 300, 10, (long)loadbar_pos, 0xA0, 0xF0);
+			else
+				DoBar(170, phd_winymax - font_height, 300, 10, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
+		}
 		else
+		{
+			if (tomb4.bar_mode == 3)
+				S_DrawGouraudBar(20, 480 - (font_height >> 1), 600, 15, (long)loadbar_pos, &loadBarColourSet);
+			else if (tomb4.bar_mode == 2)
+				S_DoTR5Bar(20, 480 - (font_height >> 1), 600, 15, (long)loadbar_pos, 0xFF7F007F, 0xFF007F7F);
+			else
+				DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
+		}
+#else
+		DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
 #endif
-			DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
 
 		SortPolyList(SortCount, SortList);
 		RestoreFPCW(FPCW);
@@ -1438,6 +1452,7 @@ void S_DisplayMonoScreen()
 {
 	long x[4];
 	long y[4];
+	ulong col;
 
 #ifdef GENERAL_FIXES
 	x[0] = phd_winxmin;
@@ -1454,7 +1469,17 @@ void S_DisplayMonoScreen()
 	x[3] = phd_winxmin + phd_winwidth * MonoScreenX[3] / 640;
 #endif
 	RestoreFPCW(FPCW);
-	S_DrawTile(x[0], y[0], x[1] - x[0], y[1] - y[0], MonoScreen[0].tex, 0, 0, 256, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+
+#ifdef GENERAL_FIXES
+	if (tomb4.inv_bg_mode == 1 || tomb4.inv_bg_mode == 3)
+		col = 0xFFFFFFFF;
+	else
+		col = 0xFFFFFF80;
+#else
+	col = 0xFFFFFFFF;
+#endif
+
+	S_DrawTile(x[0], y[0], x[1] - x[0], y[1] - y[0], MonoScreen[0].tex, 0, 0, 256, 256, col, col, col, col);
 #ifndef GENERAL_FIXES
 	S_DrawTile(x[1], y[0], x[2] - x[1], y[1] - y[0], MonoScreen[1].tex, 0, 0, 256, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
 	S_DrawTile(x[2], y[0], x[3] - x[2], y[1] - y[0], MonoScreen[2].tex, 0, 0, 128, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
@@ -1566,6 +1591,11 @@ void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever
 void RGBM_Mono(uchar* r, uchar* g, uchar* b)
 {
 	uchar c;
+
+#ifdef GENERAL_FIXES
+	if (tomb4.inv_bg_mode == 3)
+		return;
+#endif
 
 	c = (*r + *b) >> 1;
 	*r = c;

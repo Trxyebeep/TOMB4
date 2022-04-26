@@ -62,6 +62,14 @@ void init_tomb4_stuff()
 		sprintf(buf, "loadtxt");
 		tomb4.loadingtxt = 1;							//on
 		REG_WriteBool(buf, tomb4.loadingtxt);
+
+		sprintf(buf, "inv_bgM");
+		tomb4.inv_bg_mode = 1;							//original
+		REG_WriteLong(buf, tomb4.inv_bg_mode);
+
+		sprintf(buf, "tr5LB");
+		tomb4.tr5_loadbar = 0;							//off
+		REG_WriteBool(buf, tomb4.tr5_loadbar);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -100,6 +108,12 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "loadtxt");
 		REG_ReadBool(buf, tomb4.loadingtxt, 1);
+
+		sprintf(buf, "inv_bgM");
+		REG_ReadLong(buf, tomb4.inv_bg_mode, 1);
+
+		sprintf(buf, "tr5LB");
+		REG_ReadBool(buf, tomb4.tr5_loadbar, 0);
 	}
 
 	CloseRegistry();
@@ -146,6 +160,12 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "loadtxt");
 	REG_WriteBool(buf, tomb4.loadingtxt);
+
+	sprintf(buf, "inv_bgM");
+	REG_WriteLong(buf, tomb4.inv_bg_mode);
+
+	sprintf(buf, "tr5LB");
+	REG_WriteBool(buf, tomb4.tr5_loadbar);
 
 	CloseRegistry();
 }

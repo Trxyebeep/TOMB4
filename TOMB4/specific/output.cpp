@@ -495,7 +495,7 @@ void RenderLoadPic(long unused)
 		RenderIt(camera.pos.room_number);
 
 #ifdef GENERAL_FIXES
-		if (tomb4.loadingtxt)
+		if (tomb4.loadingtxt && !tomb4.tr5_loadbar)
 		{
 			if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
 				PrintString((ushort)phd_centerx, ushort((float((480 - (font_height >> 1)) * float(phd_winymax / 480.0F))) - (font_height >> 1)),
@@ -516,7 +516,7 @@ void RenderLoadPic(long unused)
 	RenderIt(camera.pos.room_number);
 
 #ifdef GENERAL_FIXES
-	if (tomb4.loadingtxt)
+	if (tomb4.loadingtxt && !tomb4.tr5_loadbar)
 	{
 		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
 			PrintString((ushort)phd_centerx, ushort((float((480 - (font_height >> 1)) * float(phd_winymax / 480.0F))) - (font_height >> 1)),
