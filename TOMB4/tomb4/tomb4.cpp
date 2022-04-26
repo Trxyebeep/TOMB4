@@ -70,6 +70,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "tr5LB");
 		tomb4.tr5_loadbar = 0;							//off
 		REG_WriteBool(buf, tomb4.tr5_loadbar);
+
+		sprintf(buf, "ltransparency");
+		tomb4.look_transparency = 0;					//off
+		REG_WriteBool(buf, tomb4.look_transparency);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -114,6 +118,9 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "tr5LB");
 		REG_ReadBool(buf, tomb4.tr5_loadbar, 0);
+
+		sprintf(buf, "ltransparency");
+		REG_ReadBool(buf, tomb4.look_transparency, 1);
 	}
 
 	CloseRegistry();
@@ -166,6 +173,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "tr5LB");
 	REG_WriteBool(buf, tomb4.tr5_loadbar);
+
+	sprintf(buf, "ltransparency");
+	REG_WriteBool(buf, tomb4.look_transparency);
 
 	CloseRegistry();
 }

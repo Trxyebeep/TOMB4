@@ -5,7 +5,7 @@
 #include "tomb4.h"
 
 #define PAGE0_NUM	10
-#define PAGE1_NUM	4
+#define PAGE1_NUM	5
 
 #pragma warning(push)
 #pragma warning(disable : 4244)
@@ -302,22 +302,26 @@ bool Page1(long& num, long textY, ulong selection)
 	changed = 0;
 	num = PAGE1_NUM;
 	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
-	PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 1 ? 1 : 2, "Cheats", 0);
-	PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 2 ? 1 : 2, "Loading text", 0);
-	PrintString(phd_centerx >> 2, textY + 4 * font_height, selection & 4 ? 1 : 2, "mono screen style", 0);
-	PrintString(phd_centerx >> 2, textY + 5 * font_height, selection & 8 ? 1 : 2, "loadbar style", 0);
+	PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 0x1 ? 1 : 2, "Cheats", 0);
+	PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 0x2 ? 1 : 2, "Loading text", 0);
+	PrintString(phd_centerx >> 2, textY + 4 * font_height, selection & 0x4 ? 1 : 2, "mono screen style", 0);
+	PrintString(phd_centerx >> 2, textY + 5 * font_height, selection & 0x8 ? 1 : 2, "loadbar style", 0);
+	PrintString(phd_centerx >> 2, textY + 6 * font_height, selection & 0x10 ? 1 : 2, "look transparency", 0);
 
 	strcpy(buffer, tomb4.cheats ? "on" : "off");
-	PrintString(phd_centerx + (phd_centerx >> 1), textY + 2 * font_height, selection & 1 ? 1 : 6, buffer, 0);
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 2 * font_height, selection & 0x1 ? 1 : 6, buffer, 0);
 
 	strcpy(buffer, tomb4.loadingtxt ? "on" : "off");
-	PrintString(phd_centerx + (phd_centerx >> 1), textY + 3 * font_height, selection & 2 ? 1 : 6, buffer, 0);
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 3 * font_height, selection & 0x2 ? 1 : 6, buffer, 0);
 
 	strcpy(buffer, tomb4.inv_bg_mode == 1 ? "original" : tomb4.inv_bg_mode == 2 ? "TR5" : "clear");
-	PrintString(phd_centerx + (phd_centerx >> 1), textY + 4 * font_height, selection & 4 ? 1 : 6, buffer, 0);
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 4 * font_height, selection & 0x4 ? 1 : 6, buffer, 0);
 
 	strcpy(buffer, tomb4.tr5_loadbar ? "TR5" : "TR4");
-	PrintString(phd_centerx + (phd_centerx >> 1), textY + 5 * font_height, selection & 8 ? 1 : 6, buffer, 0);
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 5 * font_height, selection & 0x8 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.look_transparency ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 6 * font_height, selection & 0x10 ? 1 : 6, buffer, 0);
 
 	switch (selection)
 	{
@@ -375,6 +379,17 @@ bool Page1(long& num, long textY, ulong selection)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			tomb4.tr5_loadbar = !tomb4.tr5_loadbar;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 4:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.look_transparency = !tomb4.look_transparency;
 			changed = 1;
 		}
 

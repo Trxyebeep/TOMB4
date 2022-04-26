@@ -8,6 +8,9 @@
 #include "objects.h"
 #include "control.h"
 #include "lara_states.h"
+#ifdef GENERAL_FIXES
+#include "../tomb4/tomb4.h"
+#endif
 
 char lara_underwater_skin_sweetness_table[15] =
 {
@@ -99,33 +102,38 @@ void DrawLara(ITEM_INFO* item, long mirror)
 	if (lara.vehicle == NO_ITEM)
 		S_PrintShadow(obj->shadow_size, GLaraShadowframe, item);
 
-	if (input & IN_LOOK)
+#ifdef GENERAL_FIXES
+	if (tomb4.look_transparency)
+#endif
 	{
-		dx = lara_item->pos.x_pos - CamPos.x;
-		dy = lara_item->pos.y_pos - CamPos.y - 512;
-		dz = lara_item->pos.z_pos - CamPos.z;
-		dist = phd_sqrt(SQUARE(dx) + SQUARE(dy) + SQUARE(dz));
-		a = dist >> 2;
-
-		if (a < 0)
-			a = 0;
-
-		if (a > 255)
-			a = 255;
-
-		GlobalAlpha = a << 24;
-	}
-	else
-	{
-		if (a < 255)
+		if (input & IN_LOOK)
 		{
-			a += 8;
+			dx = lara_item->pos.x_pos - CamPos.x;
+			dy = lara_item->pos.y_pos - CamPos.y - 512;
+			dz = lara_item->pos.z_pos - CamPos.z;
+			dist = phd_sqrt(SQUARE(dx) + SQUARE(dy) + SQUARE(dz));
+			a = dist >> 2;
+
+			if (a < 0)
+				a = 0;
 
 			if (a > 255)
 				a = 255;
-		}
 
-		GlobalAlpha = a << 24;
+			GlobalAlpha = a << 24;
+		}
+		else
+		{
+			if (a < 255)
+			{
+				a += 8;
+
+				if (a > 255)
+					a = 255;
+			}
+
+			GlobalAlpha = a << 24;
+		}
 	}
 
 	if (!mirror)
