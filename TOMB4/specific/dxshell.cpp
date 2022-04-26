@@ -1085,7 +1085,7 @@ void inject_dxshell(bool replace)
 	INJECT(0x00491FC0, DXEnumDirectDraw, replace);
 	INJECT(0x00491CC0, DXEnumDirectSound, replace);
 	INJECT(0x00491C60, DXGetInfo, replace);
-	INJECT(0x00491D60, DXFreeInfo, replace);
+	INJECT(0x00491D60, DXFreeInfo, 0);
 	INJECT(0x00492280, DXEnumDisplayModes, replace);
 	INJECT(0x004923A0, BPPToDDBD, replace);
 	INJECT(0x00492920, DXEnumTextureFormats, replace);
