@@ -74,6 +74,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "ltransparency");
 		tomb4.look_transparency = 0;					//off
 		REG_WriteBool(buf, tomb4.look_transparency);
+
+		sprintf(buf, "ammo_counter");
+		tomb4.ammo_counter = 0;							//off
+		REG_WriteBool(buf, tomb4.ammo_counter);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -121,6 +125,9 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "ltransparency");
 		REG_ReadBool(buf, tomb4.look_transparency, 1);
+
+		sprintf(buf, "ammo_counter");
+		REG_ReadBool(buf, tomb4.ammo_counter, 0);
 	}
 
 	CloseRegistry();
@@ -176,6 +183,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "ltransparency");
 	REG_WriteBool(buf, tomb4.look_transparency);
+
+	sprintf(buf, "ammo_counter");
+	REG_WriteBool(buf, tomb4.ammo_counter);
 
 	CloseRegistry();
 }
