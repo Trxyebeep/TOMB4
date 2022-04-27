@@ -473,6 +473,9 @@ void RenderLoadPic(long unused)
 	camera.target.y = load_target.y;
 	camera.target.z = load_target.z;
 	camera.pos.room_number = load_roomnum;
+#ifdef GENERAL_FIXES
+	camera.underwater = room[load_roomnum].flags & ROOM_UNDERWATER;
+#endif
 
 	if (load_roomnum == 255)
 		return;
