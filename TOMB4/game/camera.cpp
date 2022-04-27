@@ -10,6 +10,7 @@
 #include "draw.h"
 #ifdef GENERAL_FIXES
 #include "effect2.h"
+#include "../tomb4/tomb4.h"
 #endif
 
 void InitialiseCamera()
@@ -641,7 +642,13 @@ void CombatCamera(ITEM_INFO* item)
 	else
 	{
 		camera.target_angle = lara.head_y_rot + lara.torso_y_rot + item->pos.y_rot;
-		camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot - 2730;
+
+#ifdef GENERAL_FIXES
+		if (!tomb4.combat_cam_tilt)
+			camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot - 1820;
+		else
+#endif
+			camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot - 2730;
 	}
 
 	wx = camera.target.x;
@@ -1377,7 +1384,10 @@ void CalculateCamera()
 	}
 	else
 	{
-		y -= 256;
+#ifdef GENERAL_FIXES
+		if (camera.type != COMBAT_CAMERA || tomb4.combat_cam_tilt)
+#endif
+			y -= 256;
 
 		if (camera.type == COMBAT_CAMERA)
 		{

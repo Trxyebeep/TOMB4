@@ -5,7 +5,7 @@
 #include "tomb4.h"
 
 #define PAGE0_NUM	10
-#define PAGE1_NUM	7
+#define PAGE1_NUM	8
 
 #pragma warning(push)
 #pragma warning(disable : 4244)
@@ -309,6 +309,7 @@ bool Page1(long& num, long textY, ulong selection)
 	PrintString(phd_centerx >> 2, textY + 6 * font_height, selection & 0x10 ? 1 : 2, "look transparency", 0);
 	PrintString(phd_centerx >> 2, textY + 7 * font_height, selection & 0x20 ? 1 : 2, "ammo counter", 0);
 	PrintString(phd_centerx >> 2, textY + 8 * font_height, selection & 0x40 ? 1 : 2, "ammotype hotkeys", 0);
+	PrintString(phd_centerx >> 2, textY + 9 * font_height, selection & 0x80 ? 1 : 2, "combat cam tilt", 0);
 
 	strcpy(buffer, tomb4.cheats ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), textY + 2 * font_height, selection & 0x1 ? 1 : 6, buffer, 0);
@@ -330,6 +331,9 @@ bool Page1(long& num, long textY, ulong selection)
 
 	strcpy(buffer, tomb4.ammotype_hotkeys ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), textY + 8 * font_height, selection & 0x40 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.combat_cam_tilt ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 9 * font_height, selection & 0x80 ? 1 : 6, buffer, 0);
 
 	switch (selection)
 	{
@@ -420,6 +424,17 @@ bool Page1(long& num, long textY, ulong selection)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			tomb4.ammotype_hotkeys = !tomb4.ammotype_hotkeys;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 7:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.combat_cam_tilt = !tomb4.combat_cam_tilt;
 			changed = 1;
 		}
 

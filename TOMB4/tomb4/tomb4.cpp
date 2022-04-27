@@ -82,6 +82,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "ammotype_hotkeys");
 		tomb4.ammotype_hotkeys = 1;						//on
 		REG_WriteBool(buf, tomb4.ammotype_hotkeys);
+
+		sprintf(buf, "combat_tilt");
+		tomb4.combat_cam_tilt = 1;						//on
+		REG_WriteBool(buf, tomb4.combat_cam_tilt);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -135,6 +139,9 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "ammotype_hotkeys");
 		REG_ReadBool(buf, tomb4.ammotype_hotkeys, 1);
+
+		sprintf(buf, "combat_tilt");
+		REG_ReadBool(buf, tomb4.combat_cam_tilt, 1);
 	}
 
 	CloseRegistry();
@@ -196,6 +203,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "ammotype_hotkeys");
 	REG_WriteBool(buf, tomb4.ammotype_hotkeys);
+
+	sprintf(buf, "combat_tilt");
+	REG_WriteBool(buf, tomb4.combat_cam_tilt);
 
 	CloseRegistry();
 }
