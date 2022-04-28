@@ -386,14 +386,19 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 	sg = ((StaticMeshShade >> 5) & 0x1F) << 3;
 	sb = ((StaticMeshShade >> 10) & 0x1F) << 3;
 #ifdef GENERAL_FIXES
-	u.x = phd_mxptr[M03] >> 14;
-	u.y = phd_mxptr[M13] >> 14;
-	u.z = phd_mxptr[M23] >> 14;
-	ApplyTransposeMatrix(w2v_matrix, &u, &t);
-	t.x += w2v_matrix[M03];
-	t.y += w2v_matrix[M13];
-	t.z += w2v_matrix[M23];
-	mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&vtx, NULL);
+	vtx = 0;
+
+	if (tomb4.static_lighting)
+	{
+		u.x = phd_mxptr[M03] >> 14;
+		u.y = phd_mxptr[M13] >> 14;
+		u.z = phd_mxptr[M23] >> 14;
+		ApplyTransposeMatrix(w2v_matrix, &u, &t);
+		t.x += w2v_matrix[M03];
+		t.y += w2v_matrix[M13];
+		t.z += w2v_matrix[M23];
+		mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&vtx, NULL);
+	}
 #endif
 
 	for (int i = 0; i < nVerts; i++)
@@ -403,25 +408,28 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 		b = CLRB(v->color) + ((sb * (mesh->prelight[i] & 0xFF)) >> 8);
 
 #ifdef GENERAL_FIXES
-		for (int j = 0; j < 32; j++)
+		if (tomb4.static_lighting)
 		{
-			dptr = &dynamics[j];
-
-			if (dptr->on)
+			for (int j = 0; j < 32; j++)
 			{
-				d.x = dptr->x - t.x;
-				d.y = dptr->y - t.y;
-				d.z = dptr->z - t.z;
-				ApplyMatrix(w2v_matrix, &d, &w);
-				ApplyTransposeMatrix(phd_mxptr, &w, &u);
-				fVal = sqrt(SQUARE(u.x - vtx[i].x) + SQUARE(u.y - vtx[i].y) + SQUARE(u.z - vtx[i].z)) * 1.7F;
-				
-				if (fVal <= dptr->falloff)
+				dptr = &dynamics[j];
+
+				if (dptr->on)
 				{
-					fVal = (dptr->falloff - fVal) / dptr->falloff;
-					r += (long)(fVal * dptr->r);
-					g += (long)(fVal * dptr->g);
-					b += (long)(fVal * dptr->b);
+					d.x = dptr->x - t.x;
+					d.y = dptr->y - t.y;
+					d.z = dptr->z - t.z;
+					ApplyMatrix(w2v_matrix, &d, &w);
+					ApplyTransposeMatrix(phd_mxptr, &w, &u);
+					fVal = sqrt(SQUARE(u.x - vtx[i].x) + SQUARE(u.y - vtx[i].y) + SQUARE(u.z - vtx[i].z)) * 1.7F;
+
+					if (fVal <= dptr->falloff)
+					{
+						fVal = (dptr->falloff - fVal) / dptr->falloff;
+						r += (long)(fVal * dptr->r);
+						g += (long)(fVal * dptr->g);
+						b += (long)(fVal * dptr->b);
+					}
 				}
 			}
 		}
@@ -449,7 +457,8 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 	}
 
 #ifdef GENERAL_FIXES
-	mesh->SourceVB->Unlock();
+	if (tomb4.static_lighting)
+		mesh->SourceVB->Unlock();
 #endif
 }
 
@@ -473,6 +482,9 @@ void RenderLoadPic(long unused)
 	camera.target.y = load_target.y;
 	camera.target.z = load_target.z;
 	camera.pos.room_number = load_roomnum;
+#ifdef GENERAL_FIXES
+	camera.underwater = room[load_roomnum].flags & ROOM_UNDERWATER;
+#endif
 
 	if (load_roomnum == 255)
 		return;
@@ -495,7 +507,7 @@ void RenderLoadPic(long unused)
 		RenderIt(camera.pos.room_number);
 
 #ifdef GENERAL_FIXES
-		if (tomb4.loadingtxt)
+		if (tomb4.loadingtxt && !tomb4.tr5_loadbar)
 		{
 			if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
 				PrintString((ushort)phd_centerx, ushort((float((480 - (font_height >> 1)) * float(phd_winymax / 480.0F))) - (font_height >> 1)),
@@ -516,7 +528,7 @@ void RenderLoadPic(long unused)
 	RenderIt(camera.pos.room_number);
 
 #ifdef GENERAL_FIXES
-	if (tomb4.loadingtxt)
+	if (tomb4.loadingtxt && !tomb4.tr5_loadbar)
 	{
 		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
 			PrintString((ushort)phd_centerx, ushort((float((480 - (font_height >> 1)) * float(phd_winymax / 480.0F))) - (font_height >> 1)),

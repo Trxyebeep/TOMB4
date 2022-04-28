@@ -62,6 +62,38 @@ void init_tomb4_stuff()
 		sprintf(buf, "loadtxt");
 		tomb4.loadingtxt = 1;							//on
 		REG_WriteBool(buf, tomb4.loadingtxt);
+
+		sprintf(buf, "inv_bgM");
+		tomb4.inv_bg_mode = 1;							//original
+		REG_WriteLong(buf, tomb4.inv_bg_mode);
+
+		sprintf(buf, "tr5LB");
+		tomb4.tr5_loadbar = 0;							//off
+		REG_WriteBool(buf, tomb4.tr5_loadbar);
+
+		sprintf(buf, "ltransparency");
+		tomb4.look_transparency = 0;					//off
+		REG_WriteBool(buf, tomb4.look_transparency);
+
+		sprintf(buf, "ammo_counter");
+		tomb4.ammo_counter = 0;							//off
+		REG_WriteBool(buf, tomb4.ammo_counter);
+
+		sprintf(buf, "ammotype_hotkeys");
+		tomb4.ammotype_hotkeys = 1;						//on
+		REG_WriteBool(buf, tomb4.ammotype_hotkeys);
+
+		sprintf(buf, "combat_tilt");
+		tomb4.combat_cam_tilt = 1;						//on
+		REG_WriteBool(buf, tomb4.combat_cam_tilt);
+
+		sprintf(buf, "inv_hpbar");
+		tomb4.hpbar_inv = 0;							//off
+		REG_WriteBool(buf, tomb4.hpbar_inv);
+
+		sprintf(buf, "static_lighting");
+		tomb4.static_lighting = 1;						//on
+		REG_WriteBool(buf, tomb4.static_lighting);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -100,6 +132,30 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "loadtxt");
 		REG_ReadBool(buf, tomb4.loadingtxt, 1);
+
+		sprintf(buf, "inv_bgM");
+		REG_ReadLong(buf, tomb4.inv_bg_mode, 1);
+
+		sprintf(buf, "tr5LB");
+		REG_ReadBool(buf, tomb4.tr5_loadbar, 0);
+
+		sprintf(buf, "ltransparency");
+		REG_ReadBool(buf, tomb4.look_transparency, 1);
+
+		sprintf(buf, "ammo_counter");
+		REG_ReadBool(buf, tomb4.ammo_counter, 0);
+
+		sprintf(buf, "ammotype_hotkeys");
+		REG_ReadBool(buf, tomb4.ammotype_hotkeys, 1);
+
+		sprintf(buf, "combat_tilt");
+		REG_ReadBool(buf, tomb4.combat_cam_tilt, 1);
+
+		sprintf(buf, "inv_hpbar");
+		REG_ReadBool(buf, tomb4.hpbar_inv, 0);
+
+		sprintf(buf, "static_lighting");
+		REG_ReadBool(buf, tomb4.static_lighting, 1);
 	}
 
 	CloseRegistry();
@@ -146,6 +202,30 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "loadtxt");
 	REG_WriteBool(buf, tomb4.loadingtxt);
+
+	sprintf(buf, "inv_bgM");
+	REG_WriteLong(buf, tomb4.inv_bg_mode);
+
+	sprintf(buf, "tr5LB");
+	REG_WriteBool(buf, tomb4.tr5_loadbar);
+
+	sprintf(buf, "ltransparency");
+	REG_WriteBool(buf, tomb4.look_transparency);
+
+	sprintf(buf, "ammo_counter");
+	REG_WriteBool(buf, tomb4.ammo_counter);
+
+	sprintf(buf, "ammotype_hotkeys");
+	REG_WriteBool(buf, tomb4.ammotype_hotkeys);
+
+	sprintf(buf, "combat_tilt");
+	REG_WriteBool(buf, tomb4.combat_cam_tilt);
+
+	sprintf(buf, "inv_hpbar");
+	REG_WriteBool(buf, tomb4.hpbar_inv);
+
+	sprintf(buf, "static_lighting");
+	REG_WriteBool(buf, tomb4.static_lighting);
 
 	CloseRegistry();
 }

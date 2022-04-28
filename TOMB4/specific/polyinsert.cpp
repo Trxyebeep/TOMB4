@@ -1198,6 +1198,18 @@ void SortPolyList(long count, SORTLIST** list)
 	DoSort(0, count - 1, list);
 }
 
+void mD3DTransform(FVECTOR* vec, D3DMATRIX* mx)
+{
+	float x, y, z;
+
+	x = vec->x * mx->_11 + mx->_21 * vec->y + mx->_31 * vec->z + mx->_41;
+	y = vec->x * mx->_12 + mx->_22 * vec->y + mx->_32 * vec->z + mx->_42;
+	z = vec->x * mx->_13 + mx->_23 * vec->y + mx->_33 * vec->z + mx->_43;
+	vec->x = x;
+	vec->y = y;
+	vec->z = z;
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -1218,4 +1230,5 @@ void inject_polyinsert(bool replace)
 	INJECT(0x00481860, InitialiseSortList, replace);
 	INJECT(0x00481760, DoSort, replace);
 	INJECT(0x00481810, SortPolyList, replace);
+	INJECT(0x00481AE0, mD3DTransform, replace);
 }

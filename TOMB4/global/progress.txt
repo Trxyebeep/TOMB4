@@ -1752,7 +1752,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004819B0	+	CreateFXBulbs
 0x004819F0	+	TriggerFXFogBulb
 0x00481AD0	+	IsVolumetric
-0x00481AE0		mD3DTransform
+0x00481AE0	+	mD3DTransform
 0x00481B50	+	CreateFogPos
 0x00481D20	+	DistCompare
 0x00481DF0	+	InitialiseFogBulbs

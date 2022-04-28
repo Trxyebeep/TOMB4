@@ -5,7 +5,7 @@
 #include "tomb4.h"
 
 #define PAGE0_NUM	10
-#define PAGE1_NUM	2
+#define PAGE1_NUM	10
 
 #pragma warning(push)
 #pragma warning(disable : 4244)
@@ -302,14 +302,46 @@ bool Page1(long& num, long textY, ulong selection)
 	changed = 0;
 	num = PAGE1_NUM;
 	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
-	PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 1 ? 1 : 2, "Cheats", 0);
-	PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 2 ? 1 : 2, "Loading text", 0);
+	PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 0x1 ? 1 : 2, "Cheats", 0);
+	PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 0x2 ? 1 : 2, "Loading text", 0);
+	PrintString(phd_centerx >> 2, textY + 4 * font_height, selection & 0x4 ? 1 : 2, "mono screen style", 0);
+	PrintString(phd_centerx >> 2, textY + 5 * font_height, selection & 0x8 ? 1 : 2, "loadbar style", 0);
+	PrintString(phd_centerx >> 2, textY + 6 * font_height, selection & 0x10 ? 1 : 2, "look transparency", 0);
+	PrintString(phd_centerx >> 2, textY + 7 * font_height, selection & 0x20 ? 1 : 2, "ammo counter", 0);
+	PrintString(phd_centerx >> 2, textY + 8 * font_height, selection & 0x40 ? 1 : 2, "ammotype hotkeys", 0);
+	PrintString(phd_centerx >> 2, textY + 9 * font_height, selection & 0x80 ? 1 : 2, "combat cam tilt", 0);
+	PrintString(phd_centerx >> 2, textY + 10 * font_height, selection & 0x100 ? 1 : 2, "Inv healthbar", 0);
+	PrintString(phd_centerx >> 2, textY + 11 * font_height, selection & 0x200 ? 1 : 2, "static lighting", 0);
 
 	strcpy(buffer, tomb4.cheats ? "on" : "off");
-	PrintString(phd_centerx + (phd_centerx >> 1), textY + 2 * font_height, selection & 1 ? 1 : 6, buffer, 0);
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 2 * font_height, selection & 0x1 ? 1 : 6, buffer, 0);
 
 	strcpy(buffer, tomb4.loadingtxt ? "on" : "off");
-	PrintString(phd_centerx + (phd_centerx >> 1), textY + 3 * font_height, selection & 2 ? 1 : 6, buffer, 0);
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 3 * font_height, selection & 0x2 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.inv_bg_mode == 1 ? "original" : tomb4.inv_bg_mode == 2 ? "TR5" : "clear");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 4 * font_height, selection & 0x4 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.tr5_loadbar ? "TR5" : "TR4");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 5 * font_height, selection & 0x8 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.look_transparency ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 6 * font_height, selection & 0x10 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.ammo_counter ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 7 * font_height, selection & 0x20 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.ammotype_hotkeys ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 8 * font_height, selection & 0x40 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.combat_cam_tilt ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 9 * font_height, selection & 0x80 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.hpbar_inv ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 10 * font_height, selection & 0x100 ? 1 : 6, buffer, 0);
+
+	strcpy(buffer, tomb4.static_lighting ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), textY + 11 * font_height, selection & 0x200 ? 1 : 6, buffer, 0);
 
 	switch (selection)
 	{
@@ -330,6 +362,109 @@ bool Page1(long& num, long textY, ulong selection)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			tomb4.loadingtxt = !tomb4.loadingtxt;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 2:
+
+		if (dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.inv_bg_mode++;
+
+			if (tomb4.inv_bg_mode > 3)
+				tomb4.inv_bg_mode = 1;
+
+			changed = 1;
+		}
+
+		if (dbinput & IN_LEFT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.inv_bg_mode--;
+
+			if (tomb4.inv_bg_mode < 1)
+				tomb4.inv_bg_mode = 3;
+
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 3:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.tr5_loadbar = !tomb4.tr5_loadbar;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 4:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.look_transparency = !tomb4.look_transparency;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 5:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.ammo_counter = !tomb4.ammo_counter;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 6:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.ammotype_hotkeys = !tomb4.ammotype_hotkeys;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 7:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.combat_cam_tilt = !tomb4.combat_cam_tilt;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 8:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.hpbar_inv = !tomb4.hpbar_inv;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 9:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.static_lighting = !tomb4.static_lighting;
 			changed = 1;
 		}
 

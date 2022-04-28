@@ -77,6 +77,6 @@ void inject_funcstubs(bool replace)
 	INJECT(0x00490F20, SeedRandomControl, replace);
 	INJECT(0x00490F00, GetRandomDraw, replace);
 	INJECT(0x00490F30, SeedRandomDraw, replace);
-	INJECT(0x00490F40, init_game_malloc, replace);
+	INJECT(0x00490F40, init_game_malloc, 0);
 	INJECT(0x00490F80, game_malloc, replace);
 }

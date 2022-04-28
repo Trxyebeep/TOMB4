@@ -90,7 +90,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;DISCORD_RPC;IMPROVED_BARS;ENEMY_BARS;TR2MAIN_WIDESCREEN;NO_CD;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;DISCORD_RPC;IMPROVED_BARS;ENEMY_BARS;TR2MAIN_WIDESCREEN;NO_CD;AMMO_COUNTER;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -111,7 +111,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;DISCORD_RPC;IMPROVED_BARS;ENEMY_BARS;TR2MAIN_WIDESCREEN;NO_CD;NDEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;DISCORD_RPC;IMPROVED_BARS;ENEMY_BARS;TR2MAIN_WIDESCREEN;NO_CD;AMMO_COUNTER;NDEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>

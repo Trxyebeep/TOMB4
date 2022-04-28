@@ -190,5 +190,5 @@ void inject_file(bool replace)
 	INJECT(0x00473CE0, FileOpen, replace);
 	INJECT(0x00473D80, FileClose, replace);
 	INJECT(0x00473DA0, FileSize, replace);
-	INJECT(0x00473DD0, LoadFile, replace);
+	INJECT(0x00473DD0, LoadFile, 0);
 }

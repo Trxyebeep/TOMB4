@@ -1870,6 +1870,14 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool cutseq_skipper;
 	bool cheats;
 	bool loadingtxt;
+	ulong inv_bg_mode;			//1-> original, 2->TR5, 3-> clear
+	bool tr5_loadbar;
+	bool look_transparency;
+	bool ammo_counter;
+	bool ammotype_hotkeys;
+	bool combat_cam_tilt;
+	bool hpbar_inv;
+	bool static_lighting;
 };
 #endif
 #pragma pack(pop)
