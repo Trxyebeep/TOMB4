@@ -90,6 +90,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "inv_hpbar");
 		tomb4.hpbar_inv = 0;							//off
 		REG_WriteBool(buf, tomb4.hpbar_inv);
+
+		sprintf(buf, "static_lighting");
+		tomb4.static_lighting = 1;						//on
+		REG_WriteBool(buf, tomb4.static_lighting);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -149,6 +153,9 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "inv_hpbar");
 		REG_ReadBool(buf, tomb4.hpbar_inv, 0);
+
+		sprintf(buf, "static_lighting");
+		REG_ReadBool(buf, tomb4.static_lighting, 1);
 	}
 
 	CloseRegistry();
@@ -216,6 +223,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "inv_hpbar");
 	REG_WriteBool(buf, tomb4.hpbar_inv);
+
+	sprintf(buf, "static_lighting");
+	REG_WriteBool(buf, tomb4.static_lighting);
 
 	CloseRegistry();
 }
