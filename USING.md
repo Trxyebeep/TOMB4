@@ -88,3 +88,38 @@ Toggles ingame cheats on and off.
 - HELP: Inventory cheat. Face north and select the loadgame item. Skips the level.
 - BITS: Inventory cheat. Face north and select the large-med item. gives all items/keys present in the level.
 - GUNS: Inventory cheat. Face north and select the small-med item. gives all weapons and unlimited ammo.
+
+### 12. Loading text:
+Toggled the loading text in loading screens.
+
+### 13. mono screen style:
+Determines the style of the inventory/pause menu background.
+
+- original: original black and white.
+- TR5: The TR5 yellow-ish style.
+- Clear: Clear game screen as is, no color modification.
+
+### 14. loadbar style:
+Determines the style of the loading bar in the loading screens.
+
+- TR4: original big bar, like TR4.
+- TR5: small TR5 bar.
+
+### 15. look transparency:
+Toggles Lara going transparent when looking around.
+
+### 16. ammo counter:
+Toggles a weapon ammo counter on and off.
+
+### 17. ammotype hotkeys:
+Toggles the hotkeys that change the ammotypes.
+While having a weapon with multiple ammotypes equipped (eg. shotgun), tap its hotkey and the ammotype will change, and a text notification with the new ammotype will pop up on the screen.
+
+### 18. combat cam tilt:
+Toggles the camera slightly tilting up when taking out weapons.
+
+### 19. Inv healthbar:
+Toggles the healthbar appearing in the inventory when looking over the medipacks.
+
+### 20. static lighting:
+Toggles static lighting.
