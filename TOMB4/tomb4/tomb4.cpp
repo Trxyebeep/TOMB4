@@ -86,6 +86,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "combat_tilt");
 		tomb4.combat_cam_tilt = 1;						//on
 		REG_WriteBool(buf, tomb4.combat_cam_tilt);
+
+		sprintf(buf, "inv_hpbar");
+		tomb4.hpbar_inv = 0;							//off
+		REG_WriteBool(buf, tomb4.hpbar_inv);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -142,6 +146,9 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "combat_tilt");
 		REG_ReadBool(buf, tomb4.combat_cam_tilt, 1);
+
+		sprintf(buf, "inv_hpbar");
+		REG_ReadBool(buf, tomb4.hpbar_inv, 0);
 	}
 
 	CloseRegistry();
@@ -206,6 +213,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "combat_tilt");
 	REG_WriteBool(buf, tomb4.combat_cam_tilt);
+
+	sprintf(buf, "inv_hpbar");
+	REG_WriteBool(buf, tomb4.hpbar_inv);
 
 	CloseRegistry();
 }

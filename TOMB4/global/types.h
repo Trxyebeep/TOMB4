@@ -1876,6 +1876,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool ammo_counter;
 	bool ammotype_hotkeys;
 	bool combat_cam_tilt;
+	bool hpbar_inv;
 };
 #endif
 #pragma pack(pop)

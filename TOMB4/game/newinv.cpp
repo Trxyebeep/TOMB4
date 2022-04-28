@@ -2429,6 +2429,11 @@ void draw_current_object_list(long ringnum)
 				}
 			}
 
+#ifdef GENERAL_FIXES
+			if (tomb4.hpbar_inv && (objme->object_number == SMALLMEDI_ITEM || objme->object_number == BIGMEDI_ITEM))
+				S_DrawHealthBar(lara_item->hit_points / 10);
+#endif
+
 			if (nummeup)
 			{
 				if (nummeup == -1)
