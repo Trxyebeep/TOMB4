@@ -1,5 +1,41 @@
 # tomb4 changelog
 
+## [1.2.0](https://github.com/Trxyebeep/TOMB4/tree/V1.2.0) (April 28 2022)
+
+### Original bug fixes
+
+- Fix weapon hotkeys allowing weapons while ducked, and underwater
+- Fix problems with medipack hotkeys
+- Fix Minotaur not dropping Lara when she climbs on two hands, fix softlock on other ladder
+- Fix Lara going through the floor when opening underwater doors
+- Fix loadscreens when reloading from underwater
+
+### tomb4 bug fixes
+
+- Fix loading text position
+- Fix enemy jeep triggering
+- Fix super close tri drawing (title issue)
+- Fix Obelisk puzzle
+- Fix wraith trail effect
+- Fix softlock when getting on bike
+- Fix some bike and jeep collision issues
+
+### new tomb4 features
+
+- Fix bike light to be more like PSX so it affects statics
+- Add pages system to options menu
+- Correct loadbar position for PSX and TR5 modes
+- Make loading text customizable
+- Customize the mono screen
+- Add TR5 loading bar option
+- Customize Lara look transparency
+- Add ammo counter
+- Add hotkeys to change ammo type
+- Customize combat camera tilt
+- Add option to show healthbar in the inventory
+- Customize static lighting
+
+
 ## [1.1.1](https://github.com/Trxyebeep/TOMB4/tree/V1.1.1) (March 28 2022)
 
 ### Original bug fixes
