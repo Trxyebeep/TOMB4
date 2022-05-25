@@ -583,8 +583,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/jean.cpp
 
-0x00409060		InitialiseJeanYves
-0x004090B0		JeanYvesControl
+0x00409060	+	InitialiseJeanYves
+0x004090B0	+	JeanYvesControl
 
 
 		game/jeep.cpp

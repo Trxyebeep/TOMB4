@@ -67,6 +67,7 @@
 #include "../game/setup.h"
 #include "../specific/d3dmatrix.h"
 #include "../game/door.h"
+#include "../game/jean.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -153,6 +154,7 @@ void inject_all(bool replace)
 	inject_setup(replace);
 	inject_d3dmatrix(replace);
 	inject_door(replace);
+	inject_jean(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
