@@ -764,7 +764,7 @@ void DoOptions()
 	static long sfx_bak;	//backup sfx volume
 	static long sfx_quality_bak;	//backup sfx quality
 	static long sfx_breath_db = -1;
-	long textY, joystick, joystick_x, joystick_y, joy1, joy2, joy3;
+	long textY, joystick, joystick_x, joystick_y, index, joyButton;
 	uchar num, num2;
 	char quality_text[80];
 	static char sfx_backup_flag;	//have we backed sfx stuff up?
@@ -990,26 +990,25 @@ void DoOptions()
 
 				if (joystick)
 				{
-					joy1 = controls_selection >> 2;
-					joy2 = 0;
+					controls_selection >>= 2;
+					index = 0;
 
-					while (joy1)
+					while (controls_selection)
 					{
-						joy1 >>= 1;
-						joy2++;
+						controls_selection >>= 1;
+						index++;
 					}
 
 					controls_selection = 0;
-					joy1 = joystick >> 1;
-					joy3 = 0;
+					joyButton = 0;
 
-					while (joy1)
+					while (joystick)
 					{
-						joy1 >>= 1;
-						joy3++;
+						joystick >>= 1;
+						joyButton++;
 					}
 
-					layout[1][joy2] = joy3 + 255;
+					layout[1][index] = joyButton + 255;
 					waiting_for_key = 0;
 				}
 			}
