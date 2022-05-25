@@ -182,34 +182,38 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 
 long Key(long number)
 {
-	short key = layout[1][number];
+	short key;
 
-	if (number >= 256)
-		return joy_fire & (1 << number);
+	key = layout[1][number];
 
-	if (keymap[key])
-		return 1;
-
-	switch (key)
+	if (key < 256)
 	{
-	case DIK_RCONTROL:
-		return keymap[DIK_LCONTROL];
+		if (keymap[key])
+			return 1;
 
-	case DIK_LCONTROL:
-		return keymap[DIK_RCONTROL];
+		switch (key)
+		{
+		case DIK_RCONTROL:
+			return keymap[DIK_LCONTROL];
 
-	case DIK_RSHIFT:
-		return keymap[DIK_LSHIFT];
+		case DIK_LCONTROL:
+			return keymap[DIK_RCONTROL];
 
-	case DIK_LSHIFT:
-		return keymap[DIK_RSHIFT];
+		case DIK_RSHIFT:
+			return keymap[DIK_LSHIFT];
 
-	case DIK_RMENU:
-		return keymap[DIK_LMENU];
+		case DIK_LSHIFT:
+			return keymap[DIK_RSHIFT];
 
-	case DIK_LMENU:
-		return keymap[DIK_RMENU];
+		case DIK_RMENU:
+			return keymap[DIK_LMENU];
+
+		case DIK_LMENU:
+			return keymap[DIK_RMENU];
+		}
 	}
+	else if (joy_fire & (1 << key))
+		return 1;
 
 	if (conflict[number])
 		return 0;
