@@ -136,7 +136,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00448140		Move3DPosTo3DPos
 0x004483E0		MoveLaraPosition
 0x004485A0		GenericSphereBoxCollision
-0x00448840		GenericDeadlyBoundingBoxCollision
+0x00448840	+	GenericDeadlyBoundingBoxCollision
 0x004489A0		TestBoundsCollide2
 0x00448A80		StargateCollision
 0x00448CC0		CogCollision
@@ -1381,13 +1381,13 @@ x for functions decompiled but not injected, for one reason or another.
 0x00414F30		LavaBurn
 0x00414FA0		ControlRollingBall
 0x00415680		RollingBallCollision
-0x00415750		ControlJobySpike
-0x004158E0		DrawScaledSpike
+0x00415750	+	ControlJobySpike
+0x004158E0	+	DrawScaledSpike
 0x00415AD0	+	TwoBlockPlatformFloor
 0x00415B20	+	TwoBlockPlatformCeiling
 0x00415B60	+	OnTwoBlockPlatform
 0x00415C30	+	ControlTwoBlockPlatform
-0x00415DB0		ControlSlicerDicer
+0x00415DB0	+	ControlSlicerDicer
 0x00415EC0		TestBoundsCollideTeethSpikes
 0x00415FD0		ControlScaledSpike
 0x00416390		ControlRaisingBlock

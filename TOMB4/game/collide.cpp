@@ -2,6 +2,9 @@
 #include "collide.h"
 #include "draw.h"
 #include "objects.h"
+#include "control.h"
+#include "../specific/function_stubs.h"
+#include "effects.h"
 
 void ShiftItem(ITEM_INFO* item, COLL_INFO* coll)
 {
@@ -199,8 +202,42 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 	return items_count | statics_count;
 }
 
+void GenericDeadlyBoundingBoxCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	long dx, dy, dz;
+
+	item = &items[item_number];
+
+	if (item->status != ITEM_INVISIBLE && item->item_flags[3] && TestBoundsCollide(item, l, coll->radius))
+	{
+		dx = lara_item->pos.x_pos;
+		dy = lara_item->pos.y_pos;
+		dz = lara_item->pos.z_pos;
+
+		if (ItemPushLara(item, l, coll, 1, 1))
+		{
+			lara_item->hit_points -= item->item_flags[3];
+			dx -= lara_item->pos.x_pos;
+			dy -= lara_item->pos.y_pos;
+			dz -= lara_item->pos.z_pos;
+
+			if ((dx || dy || dz) && TriggerActive(item))
+				DoBloodSplat(l->pos.x_pos + (GetRandomControl() & 0x3F) - 32, l->pos.y_pos - (GetRandomControl() & 0x1FF) - 256, l->pos.z_pos + (GetRandomControl() & 0x3F) - 32, (item->item_flags[3] >> 5) + (GetRandomControl() & 0x3) + 2, (short)(2 * GetRandomControl()), l->room_number);
+
+			if (!coll->enable_baddie_push)
+			{
+				lara_item->pos.x_pos += dx;
+				lara_item->pos.y_pos += dy;
+				lara_item->pos.z_pos += dz;
+			}
+		}
+	}
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
 	INJECT(0x00448DA0, GetCollidedObjects, replace);
+	INJECT(0x00448840, GenericDeadlyBoundingBoxCollision, replace);
 }

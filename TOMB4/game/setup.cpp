@@ -310,7 +310,7 @@ void ObjectObjects()
 	obj = &objects[EXPANDING_PLATFORM];
 //	obj->initialise = InitialiseRaisingBlock;
 //	obj->control = ControlRaisingBlock;
-//	obj->draw_routine = DrawScaledSpike;
+	obj->draw_routine = DrawScaledSpike;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
 
@@ -374,21 +374,21 @@ void ObjectObjects()
 	obj = &objects[TEETH_SPIKES];
 	obj->initialise = InitialiseScaledSpike;
 //	obj->control = ControlScaledSpike;
-//	obj->draw_routine = DrawScaledSpike;
+	obj->draw_routine = DrawScaledSpike;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
 
 	obj = &objects[JOBY_SPIKES];
 	obj->initialise = InitialiseJobySpike;
-//	obj->control = ControlJobySpike;
-//	obj->draw_routine = DrawScaledSpike;
+	obj->control = ControlJobySpike;
+	obj->draw_routine = DrawScaledSpike;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
 
 	obj = &objects[SLICER_DICER];
 	obj->initialise = InitialiseSlicerDicer;
-//	obj->control = ControlSlicerDicer;
-//	obj->collision = GenericDeadlyBoundingBoxCollision;
+	obj->control = ControlSlicerDicer;
+	obj->collision = GenericDeadlyBoundingBoxCollision;
 	obj->save_flags = 1;
 
 	obj = &objects[SARCOPHAGUS_CUT];
@@ -576,19 +576,19 @@ void TrapObjects()
 
 	obj = &objects[CATWALK_BLADE];
 //	obj->control = ControlCatwalkBlade;
-//	obj->collision = GenericDeadlyBoundingBoxCollision;
+	obj->collision = GenericDeadlyBoundingBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[MOVING_BLADE];
 //	obj->control = ControlMovingBlade;
-//	obj->collision = GenericDeadlyBoundingBoxCollision;
+	obj->collision = GenericDeadlyBoundingBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[PLINTH_BLADE];
 //	obj->control = ControlPlinthBlade;
-//	obj->collision = GenericDeadlyBoundingBoxCollision;
+	obj->collision = GenericDeadlyBoundingBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
