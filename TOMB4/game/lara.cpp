@@ -4532,7 +4532,7 @@ long UseInventoryItems(ITEM_INFO* item)
 		{
 			flags = inventry_objects_list[in_use - 138].flags;
 
-			if (flags & 0x80)
+			if (flags & 0x8000)
 			{
 				item->item_flags[2] = LARA_DIRT_MESH;
 				item->anim_number = ANIM_POURWATERSKIN;
