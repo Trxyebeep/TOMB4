@@ -238,7 +238,7 @@ void ControlJobySpike(short item_number)
 
 		if (lara_item->hit_points > 0 && h > y && ABS(item->pos.x_pos - lara_item->pos.x_pos) < 512 && ABS(item->pos.z_pos - lara_item->pos.z_pos) < 512)
 		{
-			DoBloodSplat(lara_item->pos.x_pos + (GetRandomControl() & 0x7F) - 64, GetRandomControl() % (h - y) + y, lara_item->pos.z_pos + (GetRandomControl() & 0x7F) - 64, (GetRandomControl() & 3) + 2, 2 * GetRandomControl(), item->room_number);
+			DoBloodSplat(lara_item->pos.x_pos + (GetRandomControl() & 0x7F) - 64, GetRandomControl() % (h - y) + y, lara_item->pos.z_pos + (GetRandomControl() & 0x7F) - 64, (GetRandomControl() & 3) + 2, (short)(2 * GetRandomControl()), item->room_number);
 			lara_item->hit_points -= 8;
 		}
 
