@@ -764,7 +764,7 @@ void DrawRooms(short CurrentRoom)
 	InitDynamicLighting();
 	nPolyType = 0;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
 		if (dynamics[i].on)
 		{

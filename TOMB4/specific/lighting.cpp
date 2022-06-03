@@ -32,7 +32,7 @@ void InitItemDynamicLighting(ITEM_INFO* item)
 	last_off = -1;	//uninitialized var
 #endif
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
 		dptr = &dynamics[i];
 
@@ -112,7 +112,7 @@ void InitDynamicLighting()
 	ClearObjectLighting();
 	App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_AMBIENT, 0);
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
 		dptr = &dynamics[i];
 
@@ -294,7 +294,7 @@ void ClearDynamicLighting()
 {
 	App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_AMBIENT, 0);
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
 		if (D3DDynamics[i].D3DLight2.dwFlags & D3DLIGHT_ACTIVE)
 		{
@@ -326,7 +326,7 @@ void MallocD3DLights()
 
 	MaxRoomLights *= 2;
 	D3DLights = (D3DLIGHT_STRUCT*)game_malloc(sizeof(D3DLIGHT_STRUCT) * MaxRoomLights);
-	D3DDynamics = (D3DLIGHT_STRUCT*)game_malloc(sizeof(D3DLIGHT_STRUCT) * 32);
+	D3DDynamics = (D3DLIGHT_STRUCT*)game_malloc(sizeof(D3DLIGHT_STRUCT) * MAX_DYNAMICS);
 }
 
 void CreateD3DLights()
@@ -349,7 +349,7 @@ void CreateD3DLights()
 
 	if (D3DDynamics)
 	{
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < MAX_DYNAMICS; i++)
 		{
 			DXAttempt(App.dx.lpD3D->CreateLight(&D3DDynamics[i].D3DLight, 0));
 			memset(&D3DDynamics[i].D3DLight2, 0, sizeof(D3DDynamics[i].D3DLight2));
@@ -397,7 +397,7 @@ void FreeD3DLights()
 
 	if (D3DDynamics)
 	{
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < MAX_DYNAMICS; i++)
 		{
 			DXAttempt(App.dx.lpViewport->DeleteLight(D3DDynamics[i].D3DLight));
 

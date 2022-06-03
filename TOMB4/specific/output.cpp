@@ -410,7 +410,7 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 #ifdef GENERAL_FIXES
 		if (tomb4.static_lighting)
 		{
-			for (int j = 0; j < 32; j++)
+			for (int j = 0; j < MAX_DYNAMICS; j++)
 			{
 				dptr = &dynamics[j];
 

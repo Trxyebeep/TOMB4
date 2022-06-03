@@ -398,7 +398,7 @@ void LaraTorch(PHD_VECTOR* Soffset, PHD_VECTOR* Eoffset, short yrot, long bright
 	offs[3] = 0x4000;
 	offs[4] = 0x4001;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
 		if (counter)
 		{

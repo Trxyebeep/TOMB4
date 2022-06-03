@@ -453,7 +453,7 @@ void TriggerDynamic(long x, long y, long z, long falloff, long r, long g, long b
 {
 	DYNAMIC* dl;
 
-	if (number_dynamics == 32 || !falloff)
+	if (number_dynamics == MAX_DYNAMICS || !falloff)
 		return;
 
 	dl = &dynamics[number_dynamics];
@@ -486,7 +486,7 @@ void TriggerDynamic_MIRROR(long x, long y, long z, long falloff, long r, long g,
 
 	for (int i = 0; i < 2; i++)
 	{
-		if (number_dynamics == 32 || !falloff)
+		if (number_dynamics == MAX_DYNAMICS || !falloff)
 			return;
 
 		dl = &dynamics[number_dynamics];
@@ -519,7 +519,7 @@ void ClearDynamics()
 {
 	number_dynamics = 0;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DYNAMICS; i++)
 		dynamics[i].on = 0;
 }
 

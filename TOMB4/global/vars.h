@@ -459,7 +459,7 @@
 #define static_objects	ARRAY_(0x005333C0, STATIC_INFO, [60])
 #define flip_stats	ARRAY_(0x007FE300, long, [10])
 #define Lightning	ARRAY_(0x007FFB20, LIGHTNING_STRUCT, [16])
-#define dynamics	ARRAY_(0x00804860, DYNAMIC, [32])
+#define dynamics	ARRAY_(0x00804860, DYNAMIC, [64])
 #define w2v_matrix	ARRAY_(0x00753CC8, long, [12])
 #define dels_handy_train_map	ARRAY_(0x004AFF9C, short, [512])
 #define LaraNodeAmbient	ARRAY_(0x0080E9F0, long, [2])
@@ -578,3 +578,8 @@
 #define NO_HEIGHT -32512
 #define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
+#ifdef GENERAL_FIXES
+#define MAX_DYNAMICS	64
+#else
+#define MAX_DYNAMICS	32
+#endif
