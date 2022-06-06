@@ -507,13 +507,13 @@ void TrapObjects()
 
 	obj = &objects[CHAIN];
 //	obj->control = ControlChain;
-//	obj->collision = GenericSphereBoxCollision;
+	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[PLOUGH];
 //	obj->control = ControlPlough;
-//	obj->collision = GenericSphereBoxCollision;
+	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 	
@@ -525,7 +525,7 @@ void TrapObjects()
 
 	obj = &objects[HAMMER];
 //	obj->control = ControlHammer;
-//	obj->collision = GenericSphereBoxCollision;
+	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
@@ -544,7 +544,7 @@ void TrapObjects()
 
 	obj = &objects[SPIKEBALL];
 //	obj->control = ControlSpikeball;
-//	obj->collision = GenericSphereBoxCollision;
+	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
@@ -558,19 +558,19 @@ void TrapObjects()
 
 	obj = &objects[FLOOR_4BLADE];
 //	obj->control = Control4xFloorRoofBlade;
-//	obj->collision = GenericSphereBoxCollision;
+	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[ROOF_4BLADE];
 //	obj->control = Control4xFloorRoofBlade;
-//	obj->collision = GenericSphereBoxCollision;
+	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[BIRD_BLADE];
 //	obj->control = ControlBirdBlade;
-//	obj->collision = GenericSphereBoxCollision;
+	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
@@ -595,7 +595,7 @@ void TrapObjects()
 	obj = &objects[SETH_BLADE];
 	obj->initialise = InitialiseSethBlade;
 //	obj->control = ControlSethBlade;
-//	obj->collision = GenericSphereBoxCollision;
+	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
