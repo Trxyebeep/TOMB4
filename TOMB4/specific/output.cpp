@@ -1028,6 +1028,31 @@ HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACE4 surf, HBITMAP hbm, long x, long y, lon
 	return result;
 }
 
+HRESULT _LoadBitmap(LPDIRECTDRAWSURFACE4 surf, LPCSTR name)
+{
+	HBITMAP hBitmap;
+	HRESULT result;
+
+	hBitmap = (HBITMAP)LoadImage(GetModuleHandle(0), name, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
+
+	if (!hBitmap)
+		hBitmap = (HBITMAP)LoadImage(0, name, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_LOADFROMFILE);
+
+	if (!hBitmap)
+	{
+		OutputDebugString("handle is null\n");
+		return E_FAIL;
+	}
+
+	result = DDCopyBitmap(surf, hBitmap, 0, 0, 0, 0);
+
+	if (result != DD_OK)
+		OutputDebugString("ddcopybitmap failed\n");
+
+	DeleteObject(hBitmap);
+	return result;
+}
+
 void inject_output(bool replace)
 {
 	INJECT(0x0047DA60, phd_PutPolygons, replace);
@@ -1042,4 +1067,5 @@ void inject_output(bool replace)
 	INJECT(0x0047F970, S_DrawPickup, replace);
 	INJECT(0x0047FCF0, S_GetObjectBounds, replace);
 	INJECT(0x00480700, DDCopyBitmap, replace);
+	INJECT(0x00480850, _LoadBitmap, replace);
 }

@@ -15,6 +15,7 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus);
 void S_DrawPickup(short object_number);
 long S_GetObjectBounds(short* bounds);
 HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACE4 surf, HBITMAP hbm, long x, long y, long dx, long dy);
+HRESULT _LoadBitmap(LPDIRECTDRAWSURFACE4 surf, LPCSTR name);
 
 #define CalcVertsColorSplitMMX ( (void(__cdecl*)(long, D3DTLVERTEX*)) 0x0047D810 )
 #define do_boot_screen	( (void(__cdecl*)(long)) 0x004808E0 )
