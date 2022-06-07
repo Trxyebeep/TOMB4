@@ -1737,7 +1737,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00480570	+	RenderLoadPic
 0x00480700	+	DDCopyBitmap
 0x00480850	+	LoadBitmap
-0x004808E0		do_boot_screen
+0x004808E0	+	do_boot_screen
 
 
 		specific/polyinsert.cpp

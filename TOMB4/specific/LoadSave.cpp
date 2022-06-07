@@ -794,7 +794,7 @@ void DoOptions()
 		}
 #endif
 
-		if (Gameflow->Language == 2)
+		if (Gameflow->Language == GERMAN)
 			keyboard_buttons = GermanKeyboard;
 		else
 			keyboard_buttons = KeyboardButtons;

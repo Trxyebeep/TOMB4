@@ -16,9 +16,9 @@ void S_DrawPickup(short object_number);
 long S_GetObjectBounds(short* bounds);
 HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACE4 surf, HBITMAP hbm, long x, long y, long dx, long dy);
 HRESULT _LoadBitmap(LPDIRECTDRAWSURFACE4 surf, LPCSTR name);
+void do_boot_screen(long language);
 
 #define CalcVertsColorSplitMMX ( (void(__cdecl*)(long, D3DTLVERTEX*)) 0x0047D810 )
-#define do_boot_screen	( (void(__cdecl*)(long)) 0x004808E0 )
 #define StashSkinVertices	( (void(__cdecl*)(long)) 0x0047D6B0 )
 #define SkinVerticesToScratch	( (void(__cdecl*)(long)) 0x0047D760 )
 #define S_DumpScreen	( (long(__cdecl*)()) 0x0047FCA0 )

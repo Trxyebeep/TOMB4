@@ -54,6 +54,18 @@ do \
 #define CLOSE	( (int(__cdecl*)(FILE*)) 0x004A07B4 )
 	/**********************************/
 
+enum languages
+{
+	ENGLISH,
+	FRENCH,
+	GERMAN,
+	ITALIAN,
+	SPANISH,
+	US,
+	JAPAN,
+	DUTCH
+};
+
 enum font_flags
 {
 	FF_SMALL = 0x1000,
