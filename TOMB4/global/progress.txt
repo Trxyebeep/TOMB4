@@ -1700,7 +1700,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0047A220	+	S_DrawTile
 0x0047A500	+	S_DisplayMonoScreen
 0x0047A6F0	+	GetSaveLoadFiles
-0x0047A880		DoLoadSave
+0x0047A880	+	DoLoadSave
 0x0047AB80	+	DoSlider
 0x0047B130	+	CheckKeyConflicts
 0x0047B170	+	DoOptions

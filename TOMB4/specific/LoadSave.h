@@ -12,6 +12,7 @@ void DoBar(long x, long y, long width, long height, long pos, long clr1, long cl
 void DoOptions();
 void DoStatScreen();
 long S_DisplayPauseMenu(long reset);
+long DoLoadSave(long LoadSave);
 #ifdef GENERAL_FIXES
 long S_LoadSave(long load_or_save, long mono, long inv_active);
 #else
@@ -31,5 +32,3 @@ void DoSlider(long x, long y, long width, long height, long pos, long clr1, long
 void CheckKeyConflicts();
 long S_PauseMenu();
 long GetSaveLoadFiles();
-
-#define DoLoadSave	( (long(__cdecl*)(long)) 0x0047A880 )

@@ -1372,6 +1372,84 @@ long S_DisplayPauseMenu(long reset)
 
 	return 0;
 }
+
+long DoLoadSave(long LoadSave)
+{
+	SAVEFILE_INFO* pSave;
+	static long selection;
+	long txt, color, l;
+	char string[80];
+	char name[41];
+
+	if (LoadSave & IN_SAVE)
+		txt = TXT_Save_Game;
+	else
+		txt = TXT_Load_Game;
+
+	PrintString(phd_centerx, font_height, 6, SCRIPT_TEXT(txt), FF_CENTER);
+
+	for (int i = 0; i < 15; i++)
+	{
+		pSave = &SaveGames[i];
+		color = 2;
+
+		if (i == selection)
+			color = 1;
+
+		memset(name, ' ', 40);
+		l = strlen(pSave->name);
+
+		if (l > 40)
+			l = 40;
+
+		strncpy(name, pSave->name, l);
+		name[40] = 0;
+		small_font = 1;
+
+		if (pSave->valid)
+		{
+			wsprintf(string, "%03d", pSave->num);
+			PrintString(phd_centerx - long((float)phd_winwidth / 640.0F * 310.0), font_height + font_height * (i + 2), color, string, 0);
+			PrintString(phd_centerx - long((float)phd_winwidth / 640.0F * 270.0), font_height + font_height * (i + 2), color, name, 0);
+			wsprintf(string, "%d %s %02d:%02d:%02d", pSave->days, SCRIPT_TEXT(TXT_days), pSave->hours, pSave->minutes, pSave->seconds);
+			PrintString(phd_centerx - long((float)phd_winwidth / 640.0F * -135.0), font_height + font_height * (i + 2), color, string, 0);
+		}
+		else
+		{
+			wsprintf(string, "%s", pSave->name);
+			PrintString(phd_centerx, font_height + font_height * (i + 2), color, string, FF_CENTER);
+		}
+
+		small_font = 0;
+	}
+
+	if (dbinput & IN_FORWARD)
+	{
+		selection--;
+		SoundEffect(SFX_MENU_CHOOSE, 0, SFX_DEFAULT);
+	}
+
+	if (dbinput & IN_BACK)
+	{
+		selection++;
+		SoundEffect(SFX_MENU_CHOOSE, 0, SFX_DEFAULT);
+	}
+
+	if (selection < 0)
+		selection = 0;
+	else if (selection > 14)
+		selection = 14;
+
+	if (dbinput & IN_SELECT)
+	{
+		if (SaveGames[selection].valid || LoadSave == IN_SAVE)
+			return selection;
+
+		SoundEffect(SFX_LARA_NO, 0, SFX_DEFAULT);
+	}
+
+	return -1;
+}
 #pragma warning(pop)
 
 #ifdef GENERAL_FIXES
@@ -2235,6 +2313,7 @@ void inject_loadsave(bool replace)
 	INJECT(0x0047CD20, S_LoadSave, replace);
 	INJECT(0x0047C6B0, DoStatScreen, replace);
 	INJECT(0x0047CA20, S_DisplayPauseMenu, replace);
+	INJECT(0x0047A880, DoLoadSave, replace);
 	INJECT(0x0047A220, S_DrawTile, replace);
 	INJECT(0x0047A500, S_DisplayMonoScreen, replace);
 	INJECT(0x00479F20, CreateMonoScreen, replace);
