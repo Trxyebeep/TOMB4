@@ -45,6 +45,8 @@ do \
 #define SetCutPlayed(num)	(CutSceneTriggered |= 1 << (num))
 #define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
 #define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
+#define	TRIGMULT2(a,b)		(((a) * (b)) >> W2V_SHIFT)
+#define	TRIGMULT3(a,b,c)	(TRIGMULT2((TRIGMULT2(a, b)), c))
 
 	/**********************************/
 #define OPEN	( (FILE*(__cdecl*)(const char*, const char*)) 0x004A0B4C )

@@ -449,6 +449,7 @@
 #define OldPickupPos	VAR_U_(0x007FD1D0, PHD_VECTOR)
 #define number_dynamics	VAR_U_(0x007FE110, long)
 #define SaveCounter	VAR_U_(0x005355B4, long)
+#define D3DMW2VMatrix	VAR_U_(0x007540D8, D3DMATRIX)
 
 
 
