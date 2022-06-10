@@ -1760,7 +1760,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004820C0	+	OmniFog
 0x00482390		AddQuadClippedZBuffer
 0x00482910		AddTriClippedZBuffer
-0x00482E40		AddClippedPoly
+0x00482E40	+	AddClippedPoly
 0x00482F90		SubdivideEdge
 0x004831C0		SubdivideTri
 0x00483520		SubdivideQuad

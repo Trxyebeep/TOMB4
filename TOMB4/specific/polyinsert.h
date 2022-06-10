@@ -22,6 +22,6 @@ void InitialiseSortList();
 void DoSort(long left, long right, SORTLIST** list);
 void SortPolyList(long count, SORTLIST** list);
 void mD3DTransform(FVECTOR* vec, D3DMATRIX* mx);
+void AddClippedPoly(D3DTLBUMPVERTEX* dest, long nPoints, D3DTLBUMPVERTEX* v, TEXTURESTRUCT* pTex);
 
 #define CalcColorSplit	( (void(__cdecl*)(D3DCOLOR, D3DCOLOR*)) 0x00484A20 )
-#define AddClippedPoly	( (void(__cdecl*)(D3DTLBUMPVERTEX*, long, D3DTLBUMPVERTEX*, TEXTURESTRUCT*)) 0x00482E40 )

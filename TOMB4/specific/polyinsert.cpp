@@ -1210,6 +1210,68 @@ void mD3DTransform(FVECTOR* vec, D3DMATRIX* mx)
 	vec->z = z;
 }
 
+void AddClippedPoly(D3DTLBUMPVERTEX* dest, long nPoints, D3DTLBUMPVERTEX* v, TEXTURESTRUCT* pTex)
+{
+	D3DTLBUMPVERTEX* p;
+	float z;
+
+	p = dest;
+
+	for (int i = 0; i < 3; i++, v++, p++)
+	{
+		p->sx = v->sx;
+		p->sy = v->sy;
+		p->sz = f_a - f_boo * v->rhw;
+		p->rhw = v->rhw;
+		p->color = v->color;
+		p->specular = v->specular;
+		z = 1.0F / v->rhw;
+		p->tu = z * v->tu;
+		p->tv = z * v->tv;
+	}
+
+	nPoints -= 3;
+	nClippedPolys++;
+	v--;
+
+	for (int i = nPoints; i > 0; i--)
+	{
+		v++;
+		p->sx = dest->sx;
+		p->sy = dest->sy;
+		p->sz = dest->sz;
+		p->rhw = dest->rhw;
+		p->color = dest->color;
+		p->specular = dest->specular;
+		p->tu = dest->tu;
+		p->tv = dest->tv;
+		p++;
+
+		p->sx = p[-2].sx;
+		p->sy = p[-2].sy;
+		p->sz = p[-2].sz;
+		p->rhw = p[-2].rhw;
+		p->color = p[-2].color;
+		p->specular = p[-2].specular;
+		p->tu = p[-2].tu;
+		p->tv = p[-2].tv;
+		p++;
+
+		p->sx = v->sx;
+		p->sy = v->sy;
+		p->sz = f_a - f_boo * v->rhw;
+		p->rhw = v->rhw;
+		p->color = v->color;
+		p->specular = v->specular;
+		z = 1.0F / v->rhw;
+		p->tu = z * v->tu;
+		p->tv = z * v->tv;
+		p++;
+
+		nClippedPolys++;
+	}
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -1231,4 +1293,5 @@ void inject_polyinsert(bool replace)
 	INJECT(0x00481760, DoSort, replace);
 	INJECT(0x00481810, SortPolyList, replace);
 	INJECT(0x00481AE0, mD3DTransform, replace);
+	INJECT(0x00482E40, AddClippedPoly, replace);
 }
