@@ -15,8 +15,8 @@ void phd_TranslateAbs(long x, long y, long z);
 void phd_GetVectorAngles(long x, long y, long z, short* angles);
 ulong mGetAngle(long x, long z, long x1, long z1);
 void AlterFOV(short fov);
+long phd_atan(long x, long y);
 
-#define phd_atan	( (long(__cdecl*)(long, long)) 0x00490210 )
 #define phd_sqrt	( (long(__cdecl*)(long)) 0x00490280 )
 #define phd_LookAt	( (void(__cdecl*)(long, long, long, long, long, long, short)) 0x00490110 )
 #define ScaleCurrentMatrix	( (void(__cdecl*)(PHD_VECTOR*)) 0x0048FB60 )

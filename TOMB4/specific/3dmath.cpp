@@ -338,7 +338,7 @@ ulong mGetAngle(long x, long z, long x1, long z1)
 		dz >>= 1;
 	}
 
-	angle = atanOctantTab[octant] + atanTab[(dz << 11) / dx];
+	angle = phdtan2[octant] + phdtantab[(dz << 11) / dx];
 
 	if (angle < 0)
 		angle = -angle;
@@ -374,6 +374,50 @@ void AlterFOV(short fov)
 	f_mperspoznear = f_persp / f_mznear;
 }
 
+long phd_atan(long x, long y)
+{
+	long octant, n, result;
+
+	result = 0;
+	octant = 0;
+
+	if (x || y)
+	{
+		if (x < 0)
+		{
+			octant += 4;
+			x = -x;
+		}
+
+		if (y < 0)
+		{
+			octant += 2;
+			y = -y;
+		}
+
+		if (y > x)
+		{
+			octant++;
+			n = x;
+			x = y;
+			y = n;
+		}
+
+		while ((short)y != y)
+		{
+			x >>= 1;
+			y >>= 1;
+		}
+
+		result = phdtan2[octant] + phdtantab[(y << 11) / x];
+
+		if (result < 0)
+			result = -result;
+	}
+
+	return result;
+}
+
 void inject_3dmath(bool replace)
 {
 	INJECT(0x004902B0, phd_PushMatrix, replace);
@@ -388,4 +432,5 @@ void inject_3dmath(bool replace)
 	INJECT(0x00490A90, phd_GetVectorAngles, replace);
 	INJECT(0x0048FD40, mGetAngle, replace);
 	INJECT(0x0048F9D0, AlterFOV, replace);
+	INJECT(0x00490210, phd_atan, replace);
 }

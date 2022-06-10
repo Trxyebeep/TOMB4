@@ -1455,7 +1455,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0048FD40	+	mGetAngle
 0x0048FDC0		phd_GenerateW2V
 0x00490110		phd_LookAt
-0x00490210		phd_atan
+0x00490210	+	phd_atan
 0x00490280		phd_sqrt
 0x004902B0	+	phd_PushMatrix
 0x00490310	+	phd_PushUnitMatrix
