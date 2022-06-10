@@ -15,23 +15,23 @@ void phd_PushMatrix()
 	phd_mxptr[indices_count + M21] = phd_mxptr[M21];
 	phd_mxptr[indices_count + M22] = phd_mxptr[M22];
 	phd_mxptr[indices_count + M23] = phd_mxptr[M23];
-	phd_mxptr += 12;
+	phd_mxptr += indices_count;
 }
 
 void phd_PushUnitMatrix()
 {
-	phd_mxptr += 12;
-	phd_mxptr[M00] = 16384;
+	phd_mxptr += indices_count;
+	phd_mxptr[M00] = 0x4000;
 	phd_mxptr[M01] = 0;
 	phd_mxptr[M02] = 0;
 	phd_mxptr[M03] = 0;
 	phd_mxptr[M10] = 0;
-	phd_mxptr[M11] = 16384;
+	phd_mxptr[M11] = 0x4000;
 	phd_mxptr[M12] = 0;
 	phd_mxptr[M13] = 0;
 	phd_mxptr[M20] = 0;
 	phd_mxptr[M21] = 0;
-	phd_mxptr[M22] = 16384;
+	phd_mxptr[M22] = 0x4000;
 	phd_mxptr[M23] = 0;
 }
 
@@ -418,6 +418,35 @@ long phd_atan(long x, long y)
 	return result;
 }
 
+ulong phd_sqrt(ulong num)
+{
+	ulong base, result, tmp;
+
+	base = 0x40000000;
+	result = 0;
+
+	do
+	{
+		tmp = result;
+		result += base;
+		tmp >>= 1;
+
+		if (result > num)
+			result = tmp;
+		else
+		{
+			num -= result;
+			result = base | tmp;
+		}
+
+		base >>= 2;
+
+	} while (base);
+
+	return result;
+}
+
+
 void inject_3dmath(bool replace)
 {
 	INJECT(0x004902B0, phd_PushMatrix, replace);
@@ -433,4 +462,5 @@ void inject_3dmath(bool replace)
 	INJECT(0x0048FD40, mGetAngle, replace);
 	INJECT(0x0048F9D0, AlterFOV, replace);
 	INJECT(0x00490210, phd_atan, replace);
+	INJECT(0x00490280, phd_sqrt, replace);
 }

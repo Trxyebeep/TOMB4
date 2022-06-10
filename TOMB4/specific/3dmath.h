@@ -16,8 +16,8 @@ void phd_GetVectorAngles(long x, long y, long z, short* angles);
 ulong mGetAngle(long x, long z, long x1, long z1);
 void AlterFOV(short fov);
 long phd_atan(long x, long y);
+ulong phd_sqrt(ulong num);
 
-#define phd_sqrt	( (long(__cdecl*)(long)) 0x00490280 )
 #define phd_LookAt	( (void(__cdecl*)(long, long, long, long, long, long, short)) 0x00490110 )
 #define ScaleCurrentMatrix	( (void(__cdecl*)(PHD_VECTOR*)) 0x0048FB60 )
 #define InitWindow	(  (void(__cdecl*)(long, long, long, long, long, long, long, long, long)) 0x0048FC10 )
