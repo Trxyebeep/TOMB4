@@ -1633,6 +1633,75 @@ void AddQuadClippedZBuffer(D3DTLVERTEX* v, short v0, short v1, short v2, short v
 	v[v3].specular = specBak[3];
 }
 
+void SubdivideEdge(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v, short* c, float tu1, float tv1, float tu2, float tv2, float* tu, float* tv)
+{
+	float zv;
+	short cf, r0, g0, b0, a0, r1, g1, b1, a1;
+
+	cf = 0;
+	*tu = (tu1 + tu2) * 0.5F;
+	*tv = (tv1 + tv2) * 0.5F;
+	v->sx = (v0->tu + v1->tu) * 0.5F;
+	v->sy = (v0->tv + v1->tv) * 0.5F;
+	v->sz = (v0->sz + v1->sz) * 0.5F;
+	v->tu = v->sx;
+	v->tv = v->sy;
+
+	if (v->sz < f_mznear)
+		cf = -128;
+	else
+	{
+		zv = f_mpersp / v->sz;
+		v->sx = zv * v->sx + f_centerx;
+		v->sy = zv * v->sy + f_centery;
+		v->rhw = f_moneopersp * zv;
+
+		if (v->sx < f_left)
+			cf++;
+		else if (v->sx > f_right)
+			cf += 2;
+
+		if (v->sy < f_top)
+			cf += 4;
+		else if (v->sy > f_bottom)
+			cf += 8;
+	}
+
+	*c = cf;
+
+	a0 = CLRA(v0->color);
+	r0 = CLRR(v0->color);
+	g0 = CLRG(v0->color);
+	b0 = CLRB(v0->color);
+
+	a1 = CLRA(v1->color);
+	r1 = CLRR(v1->color);
+	g1 = CLRG(v1->color);
+	b1 = CLRB(v1->color);
+
+	a1 = (a0 + a1) >> 1;
+	r1 = (r0 + r1) >> 1;
+	g1 = (g0 + g1) >> 1;
+	b1 = (b0 + b1) >> 1;
+	v->color = RGBA(r1, g1, b1, a1);
+
+	a0 = CLRA(v0->specular);
+	r0 = CLRR(v0->specular);
+	g0 = CLRG(v0->specular);
+	b0 = CLRB(v0->specular);
+
+	a1 = CLRA(v1->specular);
+	r1 = CLRR(v1->specular);
+	g1 = CLRG(v1->specular);
+	b1 = CLRB(v1->specular);
+
+	a1 = (a0 + a1) >> 1;
+	r1 = (r0 + r1) >> 1;
+	g1 = (g0 + g1) >> 1;
+	b1 = (b0 + b1) >> 1;
+	v->specular = RGBA(r1, g1, b1, a1);
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -1657,4 +1726,5 @@ void inject_polyinsert(bool replace)
 	INJECT(0x00482E40, AddClippedPoly, replace);
 	INJECT(0x00482910, AddTriClippedZBuffer, replace);
 	INJECT(0x00482390, AddQuadClippedZBuffer, replace);
+	INJECT(0x00482F90, SubdivideEdge, replace);
 }
