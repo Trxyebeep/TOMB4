@@ -2175,6 +2175,54 @@ long S_PauseMenu()
 	return ret;
 }
 
+long GetSaveLoadFiles()
+{
+	FILE* file;
+	SAVEFILE_INFO* pSave;
+	SAVEGAME_INFO save_info;
+	static long nSaves;
+	char name[75];
+
+	for (int i = 0; i < 15; i++)
+	{
+		pSave = &SaveGames[i];
+		wsprintf(name, "savegame.%d", i);
+		file = OPEN(name, "rb");
+
+		if (!file)
+		{
+			pSave->valid = 0;
+			strcpy(pSave->name, SCRIPT_TEXT(TXT_Empty_Slot));
+			continue;
+		}
+
+		READ(&pSave->name, sizeof(char), 75, file);
+		READ(&pSave->num, sizeof(long), 1, file);
+		READ(&pSave->days, sizeof(short), 1, file);
+		READ(&pSave->hours, sizeof(short), 1, file);
+		READ(&pSave->minutes, sizeof(short), 1, file);
+		READ(&pSave->seconds, sizeof(short), 1, file);
+		READ(&save_info, 1, sizeof(SAVEGAME_INFO), file);
+
+		if (!CheckSumValid((char*)&save_info))
+		{
+			pSave->valid = 0;
+			strcpy(pSave->name, SCRIPT_TEXT(TXT_Empty_Slot));
+			continue;
+		}
+
+		if (pSave->num > SaveCounter)
+			SaveCounter = pSave->num;
+
+		pSave->valid = 1;
+		CLOSE(file);
+		nSaves++;
+	}
+
+	SaveCounter++;
+	return nSaves;
+}
+
 void inject_loadsave(bool replace)
 {
 	INJECT(0x0047D460, S_DrawHealthBar, replace);
@@ -2197,4 +2245,5 @@ void inject_loadsave(bool replace)
 	INJECT(0x0047AB80, DoSlider, replace);
 	INJECT(0x0047B130, CheckKeyConflicts, replace);
 	INJECT(0x0047CC60, S_PauseMenu, replace);
+	INJECT(0x0047A6F0, GetSaveLoadFiles, replace);
 }

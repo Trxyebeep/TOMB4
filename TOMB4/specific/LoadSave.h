@@ -30,6 +30,6 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACE4 surface);
 void DoSlider(long x, long y, long width, long height, long pos, long clr1, long clr2, long clr3);
 void CheckKeyConflicts();
 long S_PauseMenu();
+long GetSaveLoadFiles();
 
-#define GetSaveLoadFiles	( (void(__cdecl*)()) 0x0047A6F0 )
 #define DoLoadSave	( (long(__cdecl*)(long)) 0x0047A880 )

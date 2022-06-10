@@ -1839,6 +1839,17 @@ struct BINK_STRUCT
 	long num2;
 };
 
+struct SAVEFILE_INFO
+{
+	char name[75];
+	char valid;
+	short hours;
+	short minutes;
+	short seconds;
+	short days;
+	long num;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {
