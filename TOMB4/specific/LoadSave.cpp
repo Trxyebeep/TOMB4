@@ -936,7 +936,6 @@ void DoOptions()
 			txt = keyboard_buttons[layout[1][15]];
 
 		PrintString(phd_centerx + (phd_centerx >> 2), textY + 16 * font_height, controls_selection & 0x10000 ? 1 : 6, txt, 0);
-
 		small_font = 0;
 
 		if (ControlMethod < 2 && !waiting_for_key)
@@ -2127,6 +2126,55 @@ void CheckKeyConflicts()
 	}
 }
 
+long S_PauseMenu()
+{
+	long fade, ret;
+
+	fade = 0;
+	CreateMonoScreen();
+	S_DisplayPauseMenu(1);
+	InventoryActive = 1;
+
+	do
+	{
+		S_InitialisePolyList();
+
+		if (fade)
+			dbinput = 0;
+		else
+			S_UpdateInput();
+
+		SetDebounce = 1;
+		S_DisplayMonoScreen();
+		ret = S_DisplayPauseMenu(0);
+		UpdatePulseColour();
+		S_OutputPolyList();
+		S_DumpScreen();
+
+		if (ret == 1)
+			break;
+
+		if (ret == 8)
+		{
+			fade = 8;
+			ret = 0;
+			SetFade(0, 255);
+		}
+
+		if (fade && DoFade == 2)
+		{
+			ret = fade;
+			break;
+		}
+
+	} while (!MainThread.ended);
+
+	TIME_Init();
+	FreeMonoScreen();
+	InventoryActive = 0;
+	return ret;
+}
+
 void inject_loadsave(bool replace)
 {
 	INJECT(0x0047D460, S_DrawHealthBar, replace);
@@ -2148,4 +2196,5 @@ void inject_loadsave(bool replace)
 	INJECT(0x00479C10, ConvertSurfaceToTextures, replace);
 	INJECT(0x0047AB80, DoSlider, replace);
 	INJECT(0x0047B130, CheckKeyConflicts, replace);
+	INJECT(0x0047CC60, S_PauseMenu, replace);
 }
