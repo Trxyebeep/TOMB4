@@ -18,6 +18,7 @@ void AlterFOV(short fov);
 long phd_atan(long x, long y);
 ulong phd_sqrt(ulong num);
 void ScaleCurrentMatrix(PHD_VECTOR* vec);
+void SetupZRange(long znear, long zfar);
 
 #define phd_LookAt	( (void(__cdecl*)(long, long, long, long, long, long, short)) 0x00490110 )
 #define InitWindow	(  (void(__cdecl*)(long, long, long, long, long, long, long, long, long)) 0x0048FC10 )
