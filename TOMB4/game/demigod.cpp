@@ -134,9 +134,9 @@ void TriggerHammerSmoke(long x, long y, long z, long num)
 		sptr->y = (GetRandomControl() & 0x1F) + y - 16;
 		sptr->z = (GetRandomControl() & 0x1F) + z - 16;
 		off = (GetRandomControl() & 0xFF) + 255;
-		sptr->Xvel = short((off * phd_sin(angle)) >> 14);
+		sptr->Xvel = short((off * phd_sin(angle)) >> W2V_SHIFT);
 		sptr->Yvel = -32 - (GetRandomControl() & 0x3F);
-		sptr->Zvel = short((off * phd_cos(angle)) >> 14);
+		sptr->Zvel = short((off * phd_cos(angle)) >> W2V_SHIFT);
 		sptr->Friction = 9;
 
 		if (GetRandomControl() & 1)
@@ -636,7 +636,7 @@ void DemigodControl(short item_number)
 					lara_item->current_anim_state = AS_FORWARDJUMP;
 					lara_item->goal_anim_state = AS_FORWARDJUMP;
 #ifdef GENERAL_FIXES
-					lara_item->pos.x_pos += -50 * phd_sin(lara_item->pos.y_rot) >> 14;
+					lara_item->pos.x_pos += -50 * phd_sin(lara_item->pos.y_rot) >> W2V_SHIFT;
 #endif
 					lara_item->gravity_status = 1;
 					lara_item->speed = 2;

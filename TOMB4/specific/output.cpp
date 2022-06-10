@@ -390,9 +390,9 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 
 	if (tomb4.static_lighting)
 	{
-		u.x = phd_mxptr[M03] >> 14;
-		u.y = phd_mxptr[M13] >> 14;
-		u.z = phd_mxptr[M23] >> 14;
+		u.x = phd_mxptr[M03] >> W2V_SHIFT;
+		u.y = phd_mxptr[M13] >> W2V_SHIFT;
+		u.z = phd_mxptr[M23] >> W2V_SHIFT;
 		ApplyTransposeMatrix(w2v_matrix, &u, &t);
 		t.x += w2v_matrix[M03];
 		t.y += w2v_matrix[M13];

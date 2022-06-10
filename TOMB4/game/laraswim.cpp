@@ -162,9 +162,9 @@ void LaraUnderWater(ITEM_INFO* item, COLL_INFO* coll)
 #endif
 
 	AnimateLara(item);
-	item->pos.x_pos += (((phd_sin(item->pos.y_rot) * item->fallspeed) >> 16) * phd_cos(item->pos.x_rot)) >> 14;
+	item->pos.x_pos += (((phd_sin(item->pos.y_rot) * item->fallspeed) >> 16) * phd_cos(item->pos.x_rot)) >> W2V_SHIFT;
 	item->pos.y_pos -= (phd_sin(item->pos.x_rot) * item->fallspeed) >> 16;
-	item->pos.z_pos += (((phd_cos(item->pos.y_rot) * item->fallspeed) >> 16) * phd_cos(item->pos.x_rot)) >> 14;
+	item->pos.z_pos += (((phd_cos(item->pos.y_rot) * item->fallspeed) >> 16) * phd_cos(item->pos.x_rot)) >> W2V_SHIFT;
 	LaraBaddieCollision(item, coll);
 
 	if (lara.vehicle == NO_ITEM)

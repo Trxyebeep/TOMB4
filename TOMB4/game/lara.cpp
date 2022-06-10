@@ -314,8 +314,8 @@ static void TiltHer(ITEM_INFO* item, long rad, long height)
 
 	for (int i = 0; i < 4; i++)
 	{
-		wx = item->pos.x_pos + (rad * phd_sin(item->pos.y_rot + 16384 * i) >> 14);
-		wz = item->pos.z_pos + (rad * phd_cos(item->pos.y_rot + 16384 * i) >> 14);
+		wx = item->pos.x_pos + (rad * phd_sin(item->pos.y_rot + 16384 * i) >> W2V_SHIFT);
+		wz = item->pos.z_pos + (rad * phd_cos(item->pos.y_rot + 16384 * i) >> W2V_SHIFT);
 		x = wx >> 10;
 		z = wz >> 10;
 
@@ -574,7 +574,7 @@ long CanLaraHangSideways(ITEM_INFO* item, COLL_INFO* coll, short angle)
 	z = item->pos.z_pos;
 	lara.move_angle = angle + item->pos.y_rot;
 
-	switch ((ushort)(lara.move_angle + 8192) >> 14)
+	switch ((ushort)(lara.move_angle + 8192) >> W2V_SHIFT)
 	{
 	case NORTH:
 		z += 16;
@@ -785,9 +785,9 @@ short LaraCeilingFront(ITEM_INFO* item, short ang, long dist, long h)
 	long x, y, z, height;
 	short room_num;
 
-	x = item->pos.x_pos + ((dist * phd_sin(ang)) >> 14);
+	x = item->pos.x_pos + ((dist * phd_sin(ang)) >> W2V_SHIFT);
 	y = item->pos.y_pos - h;
-	z = item->pos.z_pos + ((dist * phd_cos(ang)) >> 14);
+	z = item->pos.z_pos + ((dist * phd_cos(ang)) >> W2V_SHIFT);
 	room_num = item->room_number;
 	height = GetCeiling(GetFloor(x, y, z, &room_num), x, y, z);
 
@@ -803,9 +803,9 @@ short LaraFloorFront(ITEM_INFO* item, short ang, long dist)
 	short room_num;
 
 	room_num = item->room_number;
-	x = item->pos.x_pos + ((dist * phd_sin(ang)) >> 14);
+	x = item->pos.x_pos + ((dist * phd_sin(ang)) >> W2V_SHIFT);
 	y = item->pos.y_pos - 762;
-	z = item->pos.z_pos + ((dist * phd_cos(ang)) >> 14);
+	z = item->pos.z_pos + ((dist * phd_cos(ang)) >> W2V_SHIFT);
 	height = GetHeight(GetFloor(x, y, z, &room_num), x, y, z);
 
 	if (height != NO_HEIGHT)
@@ -1119,8 +1119,8 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 						{
 							x = item->pos.x_pos;
 							z = item->pos.z_pos;
-							item->pos.x_pos -= 100 * phd_sin(coll->facing) >> 14;
-							item->pos.z_pos -= 100 * phd_cos(coll->facing) >> 14;
+							item->pos.x_pos -= 100 * phd_sin(coll->facing) >> W2V_SHIFT;
+							item->pos.z_pos -= 100 * phd_cos(coll->facing) >> W2V_SHIFT;
 							itemlist = (ITEM_INFO**)&tsv_buffer[0];
 							meshlist = (MESH_INFO**)&tsv_buffer[1024];
 							collided = GetCollidedObjects(item, 100, 1, itemlist, meshlist, 0);
@@ -1129,7 +1129,7 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 
 							if (!collided)
 							{
-								switch ((ushort)(item->pos.y_rot + 8192) >> 14)
+								switch ((ushort)(item->pos.y_rot + 8192) >> W2V_SHIFT)
 								{
 								case NORTH:
 									item->pos.y_rot = 0;
@@ -3930,7 +3930,7 @@ void lara_col_reach(ITEM_INFO* item, COLL_INFO* coll)
 					{
 						item->pos.y_pos += coll->front_floor - bounds[2];
 
-						switch ((ushort)(item->pos.y_rot + 0x2000) >> 14)
+						switch ((ushort)(item->pos.y_rot + 0x2000) >> W2V_SHIFT)
 						{
 						case NORTH:
 							item->pos.z_pos = (item->pos.z_pos | 0x3FF) - 100;
@@ -4044,8 +4044,8 @@ void lara_col_polestat(ITEM_INFO* item, COLL_INFO* coll)
 	else
 	{
 		item->goal_anim_state = AS_FASTFALL;
-		item->pos.x_pos -= (64 * phd_sin(item->pos.y_rot)) >> 14;
-		item->pos.z_pos -= (64 * phd_cos(item->pos.y_rot)) >> 14;
+		item->pos.x_pos -= (64 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
+		item->pos.z_pos -= (64 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
 	}
 }
 
@@ -4629,8 +4629,8 @@ void LaraDeflectEdgeJump(ITEM_INFO* item, COLL_INFO* coll)
 		break;
 
 	case CT_CLAMP:
-		item->pos.z_pos -= (100 * phd_cos(coll->facing)) >> 14;
-		item->pos.x_pos -= (100 * phd_sin(coll->facing)) >> 14;
+		item->pos.z_pos -= (100 * phd_cos(coll->facing)) >> W2V_SHIFT;
+		item->pos.x_pos -= (100 * phd_sin(coll->facing)) >> W2V_SHIFT;
 		item->speed = 0;
 		coll->mid_floor = 0;
 

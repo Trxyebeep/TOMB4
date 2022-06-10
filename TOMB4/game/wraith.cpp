@@ -149,9 +149,9 @@ void TriggerWraithEffect(long x, long y, long z, short vel, long objnum)
 		sptr->z = (GetRandomControl() & 0x1F) + z - 16;
 		rad = (GetRandomControl() & 0x3FF) + 1024;
 		ang = vel + GetRandomControl() - 0x4000;
-		sptr->Xvel = short((rad * phd_sin(ang)) >> 14);
+		sptr->Xvel = short((rad * phd_sin(ang)) >> W2V_SHIFT);
 		sptr->Yvel = (GetRandomControl() & 0x7F) - 64;
-		sptr->Zvel = short((rad * phd_cos(ang)) >> 14);
+		sptr->Zvel = short((rad * phd_cos(ang)) >> W2V_SHIFT);
 		sptr->Friction = 4;
 		sptr->Flags = 522;
 		sptr->MaxYvel = 0;
@@ -263,9 +263,9 @@ void WraithControl(short item_number)
 	x = item->pos.x_pos;
 	y = item->pos.y_pos;
 	z = item->pos.z_pos;
-	item->pos.x_pos += (item->speed * phd_sin(item->pos.y_rot)) >> 14;
-	item->pos.y_pos += (item->speed * phd_sin(item->pos.x_rot)) >> 14;
-	item->pos.z_pos += (item->speed * phd_cos(item->pos.y_rot)) >> 14;
+	item->pos.x_pos += (item->speed * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
+	item->pos.y_pos += (item->speed * phd_sin(item->pos.x_rot)) >> W2V_SHIFT;
+	item->pos.z_pos += (item->speed * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
 	IsRoomOutsideNo = 255;
 	IsRoomOutside(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 

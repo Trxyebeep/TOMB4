@@ -94,9 +94,9 @@ void ControlSmokeEmitter(short item_number)
 			if (item->item_flags[2] == 4096)
 				size = (GetRandomControl() & 0x7FF) + 2048;
 
-			sptr->Xvel = (short)((size * phd_sin(item->pos.y_rot - 32768)) >> 14);
+			sptr->Xvel = (short)((size * phd_sin(item->pos.y_rot - 32768)) >> W2V_SHIFT);
 			sptr->Yvel = -16 - (GetRandomControl() & 0xF);
-			sptr->Zvel = (short)((size * phd_cos(item->pos.y_rot - 32768)) >> 14);
+			sptr->Zvel = (short)((size * phd_cos(item->pos.y_rot - 32768)) >> W2V_SHIFT);
 			sptr->Friction = 4;
 			sptr->Flags = 538;
 

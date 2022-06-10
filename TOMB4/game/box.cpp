@@ -42,8 +42,8 @@ void CreatureDie(short item_number, long explode)
 
 		if (item->object_number == TROOPS && item->trigger_flags == 1)
 		{
-			pickup->pos.x_pos = ((item->pos.x_pos + ((1024 * phd_sin(item->pos.y_rot)) >> 14)) & -512) | 512;
-			pickup->pos.z_pos = ((item->pos.z_pos + ((1024 * phd_cos(item->pos.y_rot)) >> 14)) & -512) | 512;
+			pickup->pos.x_pos = ((item->pos.x_pos + ((1024 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT)) & -512) | 512;
+			pickup->pos.z_pos = ((item->pos.z_pos + ((1024 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT)) & -512) | 512;
 		}
 		else
 		{

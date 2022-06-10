@@ -23,9 +23,9 @@ void UpdateDebris()
 				dptr->Yvel = 4096;
 
 			dptr->Speed -= dptr->Speed >> 4;
-			dptr->x += dptr->Speed * phd_sin(dptr->Dir) >> 14;
+			dptr->x += dptr->Speed * phd_sin(dptr->Dir) >> W2V_SHIFT;
 			dptr->y += dptr->Yvel >> 4;
-			dptr->z += dptr->Speed * phd_cos(dptr->Dir) >> 14;
+			dptr->z += dptr->Speed * phd_cos(dptr->Dir) >> W2V_SHIFT;
 			floor = GetFloor(dptr->x, dptr->y, dptr->z, &dptr->RoomNumber);
 			height = GetHeight(floor, dptr->x, dptr->y, dptr->z);
 			ceiling = GetCeiling(floor, dptr->x, dptr->y, dptr->z);

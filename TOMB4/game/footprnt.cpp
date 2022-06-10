@@ -55,9 +55,9 @@ void AddFootPrint(ITEM_INFO* item)
 #ifdef FOOTPRINTS
 static void ProjectTriPoints(PHD_VECTOR* pos, long& x, long& y, long& z)
 {
-	x = (phd_mxptr[M00] * pos->x + phd_mxptr[M01] * pos->y + phd_mxptr[M02] * pos->z + phd_mxptr[M03]) >> 14;
-	y = (phd_mxptr[M10] * pos->x + phd_mxptr[M11] * pos->y + phd_mxptr[M12] * pos->z + phd_mxptr[M13]) >> 14;
-	z = (phd_mxptr[M20] * pos->x + phd_mxptr[M21] * pos->y + phd_mxptr[M22] * pos->z + phd_mxptr[M23]) >> 14;
+	x = (phd_mxptr[M00] * pos->x + phd_mxptr[M01] * pos->y + phd_mxptr[M02] * pos->z + phd_mxptr[M03]) >> W2V_SHIFT;
+	y = (phd_mxptr[M10] * pos->x + phd_mxptr[M11] * pos->y + phd_mxptr[M12] * pos->z + phd_mxptr[M13]) >> W2V_SHIFT;
+	z = (phd_mxptr[M20] * pos->x + phd_mxptr[M21] * pos->y + phd_mxptr[M22] * pos->z + phd_mxptr[M23]) >> W2V_SHIFT;
 }
 
 void S_DrawFootPrints()
@@ -103,8 +103,8 @@ void S_DrawFootPrints()
 
 			for (int j = 0; j < 3; j++)
 			{
-				x = (pos[j].x * phd_mxptr[M00] + pos[j].z * phd_mxptr[M02] + phd_mxptr[M03]) >> 14;
-				z = (pos[j].x * phd_mxptr[M20] + pos[j].z * phd_mxptr[M22] + phd_mxptr[M23]) >> 14;
+				x = (pos[j].x * phd_mxptr[M00] + pos[j].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+				z = (pos[j].x * phd_mxptr[M20] + pos[j].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
 				room_number = lara_item->room_number;
 				pos[j].y = GetHeight(GetFloor(x, print->y, z, &room_number), x, print->y, z) - print->y;
 
