@@ -1803,6 +1803,79 @@ void SubdivideQuad(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2, D3DTLVERTE
 	SubdivideQuad(&v[2], &v[4], &v[1], v3, &tex2, double_sided, steps - 1, bclip);
 }
 
+void SubdivideTri(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2, TEXTURESTRUCT* tex, long double_sided, long steps, short* c)
+{
+	D3DTLVERTEX v[3];
+	TEXTURESTRUCT tex2;
+	float uv[6];
+	short bclip[4];
+	short aclip[3];
+
+	if (!steps)
+	{
+		bclip[0] = clipflags[0];
+		bclip[1] = clipflags[1];
+		bclip[2] = clipflags[2];
+		clipflags[0] = c[0];
+		clipflags[1] = c[1];
+		clipflags[2] = c[2];
+		v[0] = *v0;
+		v[1] = *v1;
+		v[2] = *v2;
+		AddTriClippedSorted(v, 0, 1, 2, tex, double_sided);
+		clipflags[0] = bclip[0];
+		clipflags[1] = bclip[1];
+		clipflags[2] = bclip[2];
+		return;
+	}
+
+	tex2.drawtype = tex->drawtype;
+	tex2.tpage = tex->tpage;
+	tex2.flag = tex->flag;
+	SubdivideEdge(v0, v1, &v[0], &aclip[0], tex->u1, tex->v1, tex->u2, tex->v2, &uv[0], &uv[1]);
+	SubdivideEdge(v1, v2, &v[1], &aclip[1], tex->u2, tex->v2, tex->u3, tex->v3, &uv[2], &uv[3]);
+	SubdivideEdge(v2, v0, &v[2], &aclip[2], tex->u3, tex->v3, tex->u1, tex->v1, &uv[4], &uv[5]);
+
+	tex2.u1 = tex->u1;
+	tex2.v1 = tex->v1;
+	tex2.u2 = uv[0];
+	tex2.v2 = uv[1];
+	tex2.u3 = uv[4];
+	tex2.v3 = uv[5];
+
+	bclip[0] = c[0];
+	bclip[1] = aclip[0];
+	bclip[2] = aclip[2];
+	SubdivideTri(v0, &v[0], &v[2], &tex2, double_sided, steps - 1, bclip);
+
+	tex2.u1 = uv[0];
+	tex2.v1 = uv[1];
+	tex2.u2 = tex->u2;
+	tex2.v2 = tex->v2;
+	tex2.u3 = uv[2];
+	tex2.v3 = uv[3];
+
+	bclip[0] = aclip[0];
+	bclip[1] = c[1];
+	bclip[2] = aclip[1];
+	SubdivideTri(&v[0], v1, &v[1], &tex2, double_sided, steps - 1, bclip);
+
+	tex2.u2 = uv[0];
+	tex2.u1 = uv[4];
+	tex2.v1 = uv[5];
+	tex2.v3 = uv[3];
+	tex2.v2 = uv[1];
+	tex2.u3 = uv[2];
+	tex2.u4 = tex->u3;
+	tex2.v4 = tex->v3;
+
+	bclip[0] = aclip[2];
+	bclip[1] = aclip[0];
+	bclip[2] = aclip[1];
+	bclip[3] = c[2];
+	SubdivideQuad(&v[2], v, &v[1], v2, &tex2, double_sided, steps - 1, bclip);
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -1829,4 +1902,5 @@ void inject_polyinsert(bool replace)
 	INJECT(0x00482390, AddQuadClippedZBuffer, replace);
 	INJECT(0x00482F90, SubdivideEdge, replace);
 	INJECT(0x00483520, SubdivideQuad, replace);
+	INJECT(0x004831C0, SubdivideTri, replace);
 }
