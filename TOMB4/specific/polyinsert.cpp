@@ -1272,6 +1272,203 @@ void AddClippedPoly(D3DTLBUMPVERTEX* dest, long nPoints, D3DTLBUMPVERTEX* v, TEX
 	}
 }
 
+void AddTriClippedZBuffer(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided)
+{
+	D3DTLVERTEX* vtx;
+	D3DTLBUMPVERTEX* p;
+	D3DTLBUMPVERTEX* bp;
+	TEXTURESTRUCT tex2;
+	long* nVtx;
+	short* c;
+	long colBak[3];
+	long specBak[3];
+	long nPoints;
+	short swap;
+	bool clip, clipZ;
+
+	c = clipflags;
+	clipZ = 0;
+
+	if (c[v0] & c[v1] & c[v2])
+		return;
+
+	if ((c[v0] | c[v1] | c[v2]) < 0)
+	{
+		if (!visible_zclip(&v[v0], &v[v1], &v[v2]))
+		{
+			if (!double_sided)
+				return;
+
+			swap = v1;
+			v1 = v2;
+			v2 = swap;
+
+			if (!visible_zclip(&v[v0], &v[v1], &v[v2]))
+				return;
+
+			tex2.drawtype = tex->drawtype;
+			tex2.flag = tex->flag;
+			tex2.tpage = tex->tpage;
+			tex2.u1 = tex->u1;
+			tex2.v1 = tex->v1;
+			tex2.u2 = tex->u3;
+			tex2.v2 = tex->v3;
+			tex2.u3 = tex->u2;
+			tex2.v3 = tex->v2;
+			tex = &tex2;
+		}
+
+		clip = 1;
+		clipZ = 1;
+		p = zClipperBuffer;
+	}
+	else
+	{
+		if (IsVisible(&v[v0], &v[v1], &v[v2]))
+		{
+			if (!double_sided)
+				return;
+
+			swap = v1;
+			v1 = v2;
+			v2 = swap;
+			tex2.drawtype = tex->drawtype;
+			tex2.flag = tex->flag;
+			tex2.tpage = tex->tpage;
+			tex2.u1 = tex->u1;
+			tex2.v1 = tex->v1;
+			tex2.u2 = tex->u3;
+			tex2.v2 = tex->v3;
+			tex2.u3 = tex->u2;
+			tex2.v3 = tex->v2;
+			tex = &tex2;
+		}
+
+		if (c[v0] | c[v1] | c[v2])
+		{
+			p = XYUVClipperBuffer;
+			clip = 1;
+		}
+		else
+		{
+			clip = 0;
+			FindBucket(tex->tpage, &p, &nVtx);
+			*nVtx += 3;
+		}
+	}
+
+	colBak[0] = v[v0].color;
+	colBak[1] = v[v1].color;
+	colBak[2] = v[v2].color;
+	specBak[0] = v[v0].specular;
+	specBak[1] = v[v1].specular;
+	specBak[2] = v[v2].specular;
+
+	if (App.Volumetric)
+	{
+		OmniFog(&v[v0]);
+		OmniFog(&v[v1]);
+		OmniFog(&v[v2]);
+	}
+
+	bp = p;
+
+	vtx = &v[v0];
+	p->sx = vtx->sx;
+	p->sy = vtx->sy;
+	p->sz = vtx->sz;
+	p->rhw = vtx->rhw;
+	p->color = vtx->color;
+	p->specular = vtx->specular;
+	p->tx = vtx->tu;
+	p->ty = vtx->tv;
+	p->tu = tex->u1;
+	p->tv = tex->v1;
+
+	p++;
+	vtx = &v[v1];
+	p->sx = vtx->sx;
+	p->sy = vtx->sy;
+	p->sz = vtx->sz;
+	p->rhw = vtx->rhw;
+	p->color = vtx->color;
+	p->specular = vtx->specular;
+	p->tx = vtx->tu;
+	p->ty = vtx->tv;
+	p->tu = tex->u2;
+	p->tv = tex->v2;
+
+	p++;
+	vtx = &v[v2];
+	p->sx = vtx->sx;
+	p->sy = vtx->sy;
+	p->sz = vtx->sz;
+	p->rhw = vtx->rhw;
+	p->color = vtx->color;
+	p->specular = vtx->specular;
+	p->tx = vtx->tu;
+	p->ty = vtx->tv;
+	p->tu = tex->u3;
+	p->tv = tex->v3;
+
+	if (clip)
+	{
+		nPoints = 3;
+
+		if (clipZ)
+		{
+			nPoints = ZClipper(3, zClipperBuffer, XYUVClipperBuffer);
+
+			if (!nPoints)
+			{
+				v[v0].color = colBak[0];
+				v[v1].color = colBak[1];
+				v[v2].color = colBak[2];
+				v[v0].specular = specBak[0];
+				v[v1].specular = specBak[1];
+				v[v2].specular = specBak[2];
+				return;
+			}
+		}
+		else
+		{
+			p = XYUVClipperBuffer;
+
+			for (int i = 0; i < 3; i++, p++)
+			{
+				p->tu *= p->rhw;
+				p->tv *= p->rhw;
+			}
+		}
+
+		nPoints = XYUVGClipper(nPoints, XYUVClipperBuffer);
+
+		if (nPoints)
+		{
+			FindBucket(tex->tpage, &p, &nVtx);
+			*nVtx += 3 * nPoints - 6;
+			AddClippedPoly(p, nPoints, XYUVClipperBuffer, tex);
+		}
+	}
+	else
+	{
+		p = bp;
+		p->sz = f_a - f_boo * p->rhw;
+		p++;
+		p->sz = f_a - f_boo * p->rhw;
+		p++;
+		p->sz = f_a - f_boo * p->rhw;
+		nPolys++;
+	}
+
+	v[v0].color = colBak[0];
+	v[v1].color = colBak[1];
+	v[v2].color = colBak[2];
+	v[v0].specular = specBak[0];
+	v[v1].specular = specBak[1];
+	v[v2].specular = specBak[2];
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -1294,4 +1491,5 @@ void inject_polyinsert(bool replace)
 	INJECT(0x00481810, SortPolyList, replace);
 	INJECT(0x00481AE0, mD3DTransform, replace);
 	INJECT(0x00482E40, AddClippedPoly, replace);
+	INJECT(0x00482910, AddTriClippedZBuffer, replace);
 }
