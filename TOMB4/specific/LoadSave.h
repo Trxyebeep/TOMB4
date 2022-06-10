@@ -10,6 +10,8 @@ void S_InitLoadBar(long maxpos);
 void S_LoadBar();
 void DoBar(long x, long y, long width, long height, long pos, long clr1, long clr2);
 void DoOptions();
+void DoStatScreen();
+long S_DisplayPauseMenu(long reset);
 #ifdef GENERAL_FIXES
 long S_LoadSave(long load_or_save, long mono, long inv_active);
 #else
@@ -18,7 +20,6 @@ long S_LoadSave(long load_or_save, long mono);
 #ifdef IMPROVED_BARS
 void S_DrawEnemyBar(long pos);
 #endif
-void DoStatScreen();
 void S_DrawTile(long x, long y, long w, long h, IDirect3DTexture2* t, long tU, long tV, long tW, long tH, long c0, long c1, long c2, long c3);
 void S_DisplayMonoScreen();
 void CreateMonoScreen();

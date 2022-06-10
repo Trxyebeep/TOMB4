@@ -1294,6 +1294,85 @@ void DoStatScreen()
 	sprintf(buf, "%d / 70", savegame.Game.Secrets);
 	PrintString(phd_centerx + (phd_centerx >> 2), y + 7 * font_height, 6, buf, 0);
 }
+
+long S_DisplayPauseMenu(long reset)
+{
+	static long menu, selection = 1;
+	long y;
+
+	if (!menu)
+	{
+		if (reset)
+		{
+			selection = reset;
+			menu = 0;
+		}
+		else
+		{
+			y = phd_centery - font_height;
+			PrintString(phd_centerx, y - ((3 * font_height) >> 1), 6, SCRIPT_TEXT(TXT_Paused), FF_CENTER);
+			PrintString(phd_centerx, y, selection & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Statistics), FF_CENTER);
+			PrintString(phd_centerx, y + font_height, selection & 2 ? 1 : 2, SCRIPT_TEXT(TXT_Options), FF_CENTER);
+			PrintString(phd_centerx, y + 2 * font_height, selection & 4 ? 1 : 2, SCRIPT_TEXT(TXT_Exit_to_Title), FF_CENTER);
+
+			if (dbinput & IN_FORWARD)
+			{
+				if (selection > 1)
+					selection >>= 1;
+
+				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+			}
+
+			if (dbinput & IN_BACK)
+			{
+				if (selection < 4)
+					selection <<= 1;
+
+				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+			}
+
+			if (dbinput & IN_DESELECT)
+			{
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+				return 1;
+			}
+
+			if (dbinput & IN_SELECT && !keymap[DIK_LALT])
+			{
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_DEFAULT);
+
+				if (selection & 1)
+					menu = 2;
+				else if (selection & 2)
+					menu = 1;
+				else if (selection & 4)
+					return 8;
+			}
+		}
+	}
+	else if (menu == 1)
+	{
+		DoOptions();
+
+		if (dbinput & IN_DESELECT)
+		{
+			menu = 0;
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+		}
+	}
+	else if (menu == 2)
+	{
+		DoStatScreen();
+
+		if (dbinput & IN_DESELECT)
+		{
+			menu = 0;
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+		}
+	}
+
+	return 0;
+}
 #pragma warning(pop)
 
 #ifdef GENERAL_FIXES
@@ -2048,7 +2127,6 @@ void CheckKeyConflicts()
 	}
 }
 
-
 void inject_loadsave(bool replace)
 {
 	INJECT(0x0047D460, S_DrawHealthBar, replace);
@@ -2060,6 +2138,7 @@ void inject_loadsave(bool replace)
 	INJECT(0x0047B170, DoOptions, replace);
 	INJECT(0x0047CD20, S_LoadSave, replace);
 	INJECT(0x0047C6B0, DoStatScreen, replace);
+	INJECT(0x0047CA20, S_DisplayPauseMenu, replace);
 	INJECT(0x0047A220, S_DrawTile, replace);
 	INJECT(0x0047A500, S_DisplayMonoScreen, replace);
 	INJECT(0x00479F20, CreateMonoScreen, replace);
