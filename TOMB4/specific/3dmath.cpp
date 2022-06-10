@@ -478,6 +478,33 @@ void SetupZRange(long znear, long zfar)
 	f_boo = f_b / mone;
 }
 
+void InitWindow(long x, long y, long w, long h, long znear, long zfar, long fov, long a, long b)
+{
+	phd_winwidth = w;
+	phd_winxmax = short(w - 1);
+	phd_winxmin = (short)x;
+	phd_winheight = h;
+	phd_winymax = short(h - 1);
+	phd_winymin = (short)y;
+	phd_centerx = w / 2;
+	phd_centery = h / 2;
+	phd_znear = znear << W2V_SHIFT;
+	f_centerx = float(w / 2);
+	phd_zfar = zfar << W2V_SHIFT;
+	f_centery = float(h / 2);
+	AlterFOV(short(182 * fov));
+	SetupZRange(phd_znear, phd_zfar);
+	phd_right = phd_winxmax;
+	phd_bottom = phd_winymax;
+	phd_left = x;
+	phd_top = y;
+	f_right = float(phd_winxmax + 1);
+	f_bottom = float(phd_winymax + 1);
+	f_top = (float)phd_winymin;
+	f_left = (float)phd_winxmin;
+	phd_mxptr = matrix_stack;
+}
+
 void inject_3dmath(bool replace)
 {
 	INJECT(0x004902B0, phd_PushMatrix, replace);
@@ -496,4 +523,5 @@ void inject_3dmath(bool replace)
 	INJECT(0x00490280, phd_sqrt, replace);
 	INJECT(0x0048FB60, ScaleCurrentMatrix, replace);
 	INJECT(0x0048FA90, SetupZRange, replace);
+	INJECT(0x0048FC10, InitWindow, replace);
 }
