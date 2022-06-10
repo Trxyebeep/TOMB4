@@ -1469,6 +1469,170 @@ void AddTriClippedZBuffer(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURES
 	v[v2].specular = specBak[2];
 }
 
+void AddQuadClippedZBuffer(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided)
+{
+	D3DTLBUMPVERTEX* p;
+	D3DTLBUMPVERTEX* bp;
+	D3DTLVERTEX* vtx;
+	TEXTURESTRUCT tex2;
+	long* nVtx;
+	short* c;
+	long colBak[4];
+	long specBak[4];
+	short swap;
+
+	c = clipflags;
+
+	if (c[v0] & c[v1] & c[v2] & c[v3])
+		return;
+
+	if ((c[v0] | c[v1] | c[v2] | c[v3]) < 0)
+	{
+		AddTriClippedZBuffer(v, v0, v1, v2, tex, double_sided);
+		tex2.drawtype = tex->drawtype;
+		tex2.flag = tex->flag;
+		tex2.tpage = tex->tpage;
+		tex2.u1 = tex->u1;
+		tex2.v1 = tex->v1;
+		tex2.u2 = tex->u3;
+		tex2.v2 = tex->v3;
+		tex2.u3 = tex->u4;
+		tex2.v3 = tex->v4;
+		AddTriClippedZBuffer(v, v0, v2, v3, &tex2, double_sided);
+		return;
+	}
+
+	if (IsVisible(&v[v0], &v[v1], &v[v2]))
+	{
+		if (!double_sided)
+			return;
+
+		swap = v0;
+		v0 = v2;
+		v2 = swap;
+		tex2.drawtype = tex->drawtype;
+		tex2.flag = tex->flag;
+		tex2.tpage = tex->tpage;
+		tex2.u1 = tex->u3;
+		tex2.v1 = tex->v3;
+		tex2.u2 = tex->u2;
+		tex2.v2 = tex->v2;
+		tex2.u3 = tex->u1;
+		tex2.v3 = tex->v1;
+		tex2.u4 = tex->u4;
+		tex2.v4 = tex->v4;
+		tex = &tex2;
+	}
+
+	if (c[v0] | c[v1] | c[v2] | c[v3])
+	{
+		AddTriClippedZBuffer(v, v0, v1, v2, tex, double_sided);
+		tex2.drawtype = tex->drawtype;
+		tex2.flag = tex->flag;
+		tex2.tpage = tex->tpage;
+		tex2.u1 = tex->u1;
+		tex2.v1 = tex->v1;
+		tex2.u2 = tex->u3;
+		tex2.v2 = tex->v3;
+		tex2.u3 = tex->u4;
+		tex2.v3 = tex->v4;
+		AddTriClippedZBuffer(v, v0, v2, v3, &tex2, double_sided);
+		return;
+	}
+
+	FindBucket(tex->tpage, &p, &nVtx);
+	*nVtx += 6;
+	bp = p;
+
+	colBak[0] = v[v0].color;
+	colBak[1] = v[v1].color;
+	colBak[2] = v[v2].color;
+	colBak[3] = v[v3].color;
+	specBak[0] = v[v0].specular;
+	specBak[1] = v[v1].specular;
+	specBak[2] = v[v2].specular;
+	specBak[3] = v[v3].specular;
+
+	if (App.Volumetric)
+	{
+		OmniFog(&v[v0]);
+		OmniFog(&v[v1]);
+		OmniFog(&v[v2]);
+		OmniFog(&v[v3]);
+	}
+
+	vtx = &v[v0];
+	p->sx = vtx->sx;
+	p->sy = vtx->sy;
+	p->sz = f_a - f_boo * vtx->rhw;
+	p->rhw = vtx->rhw;
+	p->color = vtx->color;
+	p->specular = vtx->specular;
+	p->tu = tex->u1;
+	p->tv = tex->v1;
+
+	p[3].sx = p->sx;
+	p[3].sy = p->sy;
+	p[3].sz = p->sz;
+	p[3].rhw = p->rhw;
+	p[3].color = p->color;
+	p[3].specular = p->specular;
+	p[3].tu = p->tu;
+	p[3].tv = p->tv;
+	p++;
+
+	vtx = &v[v1];
+	p->sx = vtx->sx;
+	p->sy = vtx->sy;
+	p->sz = f_a - f_boo * vtx->rhw;
+	p->rhw = vtx->rhw;
+	p->color = vtx->color;
+	p->specular = vtx->specular;
+	p->tu = tex->u2;
+	p->tv = tex->v2;
+	p++;
+
+	vtx = &v[v2];
+	p->sx = vtx->sx;
+	p->sy = vtx->sy;
+	p->sz = f_a - f_boo * vtx->rhw;
+	p->rhw = vtx->rhw;
+	p->color = vtx->color;
+	p->specular = vtx->specular;
+	p->tu = tex->u3;
+	p->tv = tex->v3;
+
+	p[2].sx = p->sx;
+	p[2].sy = p->sy;
+	p[2].sz = p->sz;
+	p[2].rhw = p->rhw;
+	p[2].color = p->color;
+	p[2].specular = p->specular;
+	p[2].tu = p->tu;
+	p[2].tv = p->tv;
+
+	p += 3;
+	vtx = &v[v3];
+	p->sx = vtx->sx;
+	p->sy = vtx->sy;
+	p->sz = f_a - f_boo * vtx->rhw;
+	p->rhw = vtx->rhw;
+	p->color = vtx->color;
+	p->specular = vtx->specular;
+	p->tu = tex->u4;
+	p->tv = tex->v4;
+
+	nPolys += 2;
+	v[v0].color = colBak[0];
+	v[v1].color = colBak[1];
+	v[v2].color = colBak[2];
+	v[v3].color = colBak[3];
+	v[v0].specular = specBak[0];
+	v[v1].specular = specBak[1];
+	v[v2].specular = specBak[2];
+	v[v3].specular = specBak[3];
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -1492,4 +1656,5 @@ void inject_polyinsert(bool replace)
 	INJECT(0x00481AE0, mD3DTransform, replace);
 	INJECT(0x00482E40, AddClippedPoly, replace);
 	INJECT(0x00482910, AddTriClippedZBuffer, replace);
+	INJECT(0x00482390, AddQuadClippedZBuffer, replace);
 }

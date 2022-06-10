@@ -1758,7 +1758,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00481DF0	+	InitialiseFogBulbs
 0x00481E60	+	OmniEffect
 0x004820C0	+	OmniFog
-0x00482390		AddQuadClippedZBuffer
+0x00482390	+	AddQuadClippedZBuffer
 0x00482910	+	AddTriClippedZBuffer
 0x00482E40	+	AddClippedPoly
 0x00482F90		SubdivideEdge
