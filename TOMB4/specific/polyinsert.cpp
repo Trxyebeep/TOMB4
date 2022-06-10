@@ -1919,6 +1919,57 @@ void AddQuadSubdivide(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TE
 	}
 }
 
+void CalcColorSplit(D3DCOLOR s, D3DCOLOR* d)
+{
+	long r, g, b, sr, sg, sb;
+
+	sr = 0;
+	sg = 0;
+	sb = 0;
+	r = CLRR(s);
+	g = CLRG(s);
+	b = CLRB(s);
+	r -= 128;
+	g -= 128;
+	b -= 128;
+
+	if (r <= 0)
+		r = CLRR(s) << 1;
+	else
+	{
+		sr = r;
+		r = 255;
+	}
+
+	if (g <= 0)
+		g = CLRG(s) << 1;
+	else
+	{
+		sg = g;
+		g = 255;
+	}
+
+	if (b <= 0)
+		b = CLRB(s) << 1;
+	else
+	{
+		sb = b;
+		b = 255;
+	}
+
+	if (r > 255)
+		r = 255;
+
+	if (g > 255)
+		g = 255;
+
+	if (b > 255)
+		b = 255;
+
+	d[0] = (d[0] & 0xFF000000) | RGBONLY(r, g, b);		//color
+	d[1] = (d[1] & 0xFF000000) | RGBONLY(sr, sg, sb);	//specular
+}
+
 void inject_polyinsert(bool replace)
 {
 	INJECT(0x004812D0, HWR_DrawSortList, replace);
@@ -1948,4 +1999,5 @@ void inject_polyinsert(bool replace)
 	INJECT(0x004831C0, SubdivideTri, replace);
 	INJECT(0x00483A40, AddTriSubdivide, replace);
 	INJECT(0x00483B50, AddQuadSubdivide, replace);
+	INJECT(0x00484A20, CalcColorSplit, replace);
 }

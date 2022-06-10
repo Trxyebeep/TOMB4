@@ -1771,7 +1771,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00484850	+	AddLineClippedSorted
 0x00484920		CalcColorSplitMMX
 0x004849A0		AddPrelitMMX
-0x00484A20		CalcColorSplit
+0x00484A20	+	CalcColorSplit
 
 
 		specific/registry.cpp
