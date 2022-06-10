@@ -21,5 +21,4 @@ void ScaleCurrentMatrix(PHD_VECTOR* vec);
 void SetupZRange(long znear, long zfar);
 void InitWindow(long x, long y, long w, long h, long znear, long zfar, long fov, long a, long b);
 void phd_GenerateW2V(PHD_3DPOS* viewPos);
-
-#define phd_LookAt	( (void(__cdecl*)(long, long, long, long, long, long, short)) 0x00490110 )
+void phd_LookAt(long sx, long sy, long sz, long tx, long ty, long tz, short roll);

@@ -580,6 +580,39 @@ void phd_GenerateW2V(PHD_3DPOS* viewPos)
 	SetD3DMatrix(&D3DMW2VMatrix, w2v_matrix);
 }
 
+void phd_LookAt(long sx, long sy, long sz, long tx, long ty, long tz, short roll)
+{
+	PHD_3DPOS viewPos;
+	long dx, dy, dz, val;
+	short angles[2];
+
+	phd_GetVectorAngles(tx - sx, ty - sy, tz - sz, angles);
+	viewPos.x_pos = sx;
+	viewPos.y_pos = sy;
+	viewPos.z_pos = sz;
+	viewPos.x_rot = angles[1];
+	viewPos.y_rot = angles[0];
+	viewPos.z_rot = roll;
+	dx = sx - tx;
+	dy = sy - ty;
+	dz = sz - tz;
+
+#ifdef GENERAL_FIXES
+	val = phd_sqrt(SQUARE(dx) + SQUARE(dz));
+#else
+	val = (long)sqrt(SQUARE(dx) + SQUARE(dz));
+#endif
+
+	CamRot.x = (mGetAngle(0, 0, val, dy) >> 4) & 0xFFF;
+	CamRot.y = (mGetAngle(sz, sx, tz, tx) >> 4) & 0xFFF;
+	CamRot.z = 0;
+	CamPos.x = sx;
+	CamPos.y = sy;
+	CamPos.z = sz;
+	phd_GenerateW2V(&viewPos);
+	S_InitD3DMatrix();
+}
+
 void inject_3dmath(bool replace)
 {
 	INJECT(0x004902B0, phd_PushMatrix, replace);
@@ -600,4 +633,5 @@ void inject_3dmath(bool replace)
 	INJECT(0x0048FA90, SetupZRange, replace);
 	INJECT(0x0048FC10, InitWindow, replace);
 	INJECT(0x0048FDC0, phd_GenerateW2V, replace);
+	INJECT(0x00490110, phd_LookAt, replace);
 }
