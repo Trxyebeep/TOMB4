@@ -1642,13 +1642,13 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/function_table.cpp
 
-0x00476990		_NVisible
-0x004769D0		_Visible
-0x00476A10		SetCullCW
-0x00476A20		SetCullCCW
-0x00476A30		InitialiseFunctionTable
-0x00476AC0		HWBeginScene
-0x00476B10		HWEndScene
+0x00476990	+	_NVisible
+0x004769D0	+	_Visible
+0x00476A10	+	SetCullCW
+0x00476A20	+	SetCullCCW
+0x00476A30	+	InitialiseFunctionTable
+0x00476AC0	+	HWBeginScene
+0x00476B10	+	HWEndScene
 0x00476B30	+	HWInitialise
 0x00476E80	+	SetFogColor
 
