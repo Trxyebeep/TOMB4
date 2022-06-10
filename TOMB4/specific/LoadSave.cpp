@@ -2028,6 +2028,27 @@ void DoSlider(long x, long y, long width, long height, long pos, long clr1, long
 	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 }
 
+void CheckKeyConflicts()
+{
+	short key;
+
+	for (int i = 0; i < 18; i++)
+	{
+		key = layout[0][i];
+		conflict[i] = 0;
+
+		for (int j = 0; j < 18; j++)
+		{
+			if (key == layout[1][j])
+			{
+				conflict[i] = 1;
+				break;
+			}
+		}
+	}
+}
+
+
 void inject_loadsave(bool replace)
 {
 	INJECT(0x0047D460, S_DrawHealthBar, replace);
@@ -2047,4 +2068,5 @@ void inject_loadsave(bool replace)
 	INJECT(0x004797C0, MemBltSurf, replace);
 	INJECT(0x00479C10, ConvertSurfaceToTextures, replace);
 	INJECT(0x0047AB80, DoSlider, replace);
+	INJECT(0x0047B130, CheckKeyConflicts, replace);
 }
