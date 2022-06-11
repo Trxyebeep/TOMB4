@@ -1498,7 +1498,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0046FE40	+	CLSetup
 0x0046FE60	+	CLNoFMV
 0x0046FE80		DXSetupDialog
-0x0046FED0		InitDSDevice
+0x0046FED0	+	InitDSDevice
 0x0046FFA0		InitTFormats
 0x004701C0		InitResolution
 0x004705F0		InitD3DDevice
