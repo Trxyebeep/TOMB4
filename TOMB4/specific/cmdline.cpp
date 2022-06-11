@@ -210,6 +210,27 @@ void InitD3DDevice(HWND dlg, HWND hwnd)
 	InitResolution(dlg, GetDlgItem(dlg, 1004), 1);
 }
 
+void InitDDDevice(HWND dlg, HWND hwnd)
+{
+	DDDEVICEIDENTIFIER* id;
+	char buffer[256];
+
+	SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
+
+	for (int i = 0; i < App.DXInfo.nDDInfo; i++)
+	{
+		id = &App.DXInfo.DDInfo[i].DDIdentifier;
+		wsprintf(buffer, "%s - %s (%d.%d.%02d.%04d)", id->szDescription, id->szDriver,
+			(id->liDriverVersion.HighPart >> 16) & 0xFFFF, id->liDriverVersion.HighPart & 0xFFFF,
+			(id->liDriverVersion.LowPart >> 16) & 0xFFFF, id->liDriverVersion.LowPart & 0xFFFF);
+		SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)buffer);
+	}
+
+	nDDDevice = App.DXInfo.nDDInfo - 1;
+	SendMessage(hwnd, 0x14E, nDDDevice, 0);
+	InitD3DDevice(dlg, GetDlgItem(dlg, 1003));
+}
+
 void inject_cmdline(bool replace)
 {
 	INJECT(0x0046FE40, CLSetup, replace);
@@ -218,4 +239,5 @@ void inject_cmdline(bool replace)
 	INJECT(0x0046FFA0, InitTFormats, replace);
 	INJECT(0x004701C0, InitResolution, replace);
 	INJECT(0x004705F0, InitD3DDevice, replace);
+	INJECT(0x004706B0, InitDDDevice, replace);
 }

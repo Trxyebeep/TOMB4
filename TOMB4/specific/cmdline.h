@@ -9,3 +9,4 @@ void InitDSDevice(HWND dlg, HWND hwnd);
 void InitTFormats(HWND dlg, HWND hwnd);
 void InitResolution(HWND dlg, HWND hwnd, bool resetvms);
 void InitD3DDevice(HWND dlg, HWND hwnd);
+void InitDDDevice(HWND dlg, HWND hwnd);
