@@ -454,6 +454,10 @@
 #define nClippedPolys	VAR_U_(0x00753958, long)
 #define nDDDevice	VAR_U_(0x004BFE90, long)
 #define nD3DDevice	VAR_U_(0x004BFE7C, long)
+#define Filter	VAR_U_(0x004B253A, bool)
+#define volumetric_fx	VAR_U_(0x004BFE96, bool)
+#define BumpMap	VAR_U_(0x004BFE95, bool)
+#define TextLow	VAR_U_(0x004BFE94, bool)
 
 
 
