@@ -432,6 +432,7 @@
 #define SequenceResults	ARRAY_(0x007F5720, uchar, [3][3][3])
 #define Sequences	ARRAY_(0x007F573C, uchar, [3])
 #define REG_Setup	VAR_U_(0x00670E44, bool)
+#define start_setup	VAR_U_(0x004BFE84, bool)
 #define fmvs_disabled	VAR_U_(0x004BFE85, bool)
 #define KeyTriggerActive	VAR_U_(0x004BF3F8, char)
 #define G_dxptr	VAR_U_(0x007544F4, DXPTR*)

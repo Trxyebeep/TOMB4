@@ -1495,8 +1495,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/cmdline.cpp
 
-0x0046FE40		CLSetup
-0x0046FE60		CLNoFMV
+0x0046FE40	+	CLSetup
+0x0046FE60	+	CLNoFMV
 0x0046FE80		DXSetupDialog
 0x0046FED0		InitDSDevice
 0x0046FFA0		InitTFormats

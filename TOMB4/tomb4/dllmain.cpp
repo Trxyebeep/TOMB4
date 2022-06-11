@@ -69,6 +69,7 @@
 #include "../game/door.h"
 #include "../game/jean.h"
 #include "../specific/time.h"
+#include "../specific/cmdline.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -157,6 +158,7 @@ void inject_all(bool replace)
 	inject_door(replace);
 	inject_jean(replace);
 	inject_time(replace);
+	inject_cmdline(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
