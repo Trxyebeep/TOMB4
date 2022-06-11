@@ -3,6 +3,17 @@
 #include "function_stubs.h"
 #include "../game/gameflow.h"
 
+char ASCIIToANSITable[7][2] =
+{
+	{'‚', 'é'},
+	{'Š', 'è'},
+	{'ˆ', 'ê'},
+	{'”', 'ö'},
+	{'…', 'à'},
+	{' ', 'á'},
+	{'¢', 'ó'}
+};
+
 void CLSetup(char* cmd)
 {
 	Log(2, "CLSetup");
@@ -231,6 +242,45 @@ void InitDDDevice(HWND dlg, HWND hwnd)
 	InitD3DDevice(dlg, GetDlgItem(dlg, 1003));
 }
 
+char* MapASCIIToANSI(char* s, char* d)
+{
+	char* p;
+	long l;
+	char c;
+	bool found;
+
+	l = strlen(s);
+	p = d;
+
+	for (int i = 0; i < l; i++)
+	{
+		c = *s++;
+
+		if (c >= 0x80)
+		{
+			found = 0;
+
+			for (int i = 0; i < 7; i++)
+			{
+				if (c == ASCIIToANSITable[i][0])
+				{
+					c = ASCIIToANSITable[i][1];
+					found = 1;
+					break;
+				}
+			}
+
+			if (!found)
+				Log(1, "Reqd : %x", c);
+		}
+
+		*d++ = c;
+	}
+
+	*d = 0;
+	return p;
+}
+
 void inject_cmdline(bool replace)
 {
 	INJECT(0x0046FE40, CLSetup, replace);
@@ -240,4 +290,5 @@ void inject_cmdline(bool replace)
 	INJECT(0x004701C0, InitResolution, replace);
 	INJECT(0x004705F0, InitD3DDevice, replace);
 	INJECT(0x004706B0, InitDDDevice, replace);
+	INJECT(0x004707A0, MapASCIIToANSI, replace);
 }

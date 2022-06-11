@@ -1503,7 +1503,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004701C0	+	InitResolution
 0x004705F0	+	InitD3DDevice
 0x004706B0	+	InitDDDevice
-0x004707A0		MapASCIIToANSI
+0x004707A0	+	MapASCIIToANSI
 0x00470830		DXSetupDlgProc
 
 
