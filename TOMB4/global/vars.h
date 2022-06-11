@@ -452,6 +452,8 @@
 #define SaveCounter	VAR_U_(0x005355B4, long)
 #define D3DMW2VMatrix	VAR_U_(0x007540D8, D3DMATRIX)
 #define nClippedPolys	VAR_U_(0x00753958, long)
+#define nDDDevice	VAR_U_(0x004BFE90, long)
+#define nD3DDevice	VAR_U_(0x004BFE7C, long)
 
 
 
