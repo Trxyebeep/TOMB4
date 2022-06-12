@@ -5,6 +5,7 @@
 #include "registry.h"
 #include "dxshell.h"
 #include <time.h>
+#include "../game/text.h"
 
 COMMAND commands[] =
 {
@@ -165,10 +166,21 @@ float WinFrameRate()
 	return fps;
 }
 
+void WinDisplayString(long x, long y, char* string, ...)
+{
+	va_list list;
+	char buf[4096];
+
+	va_start(list, string);
+	vsprintf(buf, string, list);
+	PrintString((ushort)x, (ushort)y, 6, buf, 0);
+}
+
 void inject_winmain(bool replace)
 {
 	INJECT(0x0048F6A0, WinRunCheck, replace);
 	INJECT(0x0048F700, WinProcessCommandLine, replace);
 	INJECT(0x0048EF20, WinClose, replace);
 	INJECT(0x0048F840, WinFrameRate, replace);
+	INJECT(0x0048F8C0, WinDisplayString, replace);
 }
