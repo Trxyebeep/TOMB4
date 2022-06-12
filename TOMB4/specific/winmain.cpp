@@ -178,7 +178,7 @@ void WinDisplayString(long x, long y, char* string, ...)
 
 long CheckMMXTechnology()
 {
-#if 1	//original works but is dodgy as fuck
+#ifdef GENERAL_FIXES	//original works but is dodgy as fuck
 	return 0;
 #else
 	ulong _edx;
@@ -227,6 +227,24 @@ long CheckMMXTechnology()
 #endif
 }
 
+void WinProcMsg()
+{
+	MSG msg;
+
+	Log(2, "WinProcMsg");
+
+	do
+	{
+		GetMessage(&msg, 0, 0, 0);
+
+		if (!TranslateAccelerator(App.hWnd, App.hAccel, &msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	} while (!MainThread.ended && msg.message != WM_QUIT);
+}
+
 void inject_winmain(bool replace)
 {
 	INJECT(0x0048F6A0, WinRunCheck, replace);
@@ -235,4 +253,5 @@ void inject_winmain(bool replace)
 	INJECT(0x0048F840, WinFrameRate, replace);
 	INJECT(0x0048F8C0, WinDisplayString, replace);
 	INJECT(0x0048EE50, CheckMMXTechnology, replace);
+	INJECT(0x0048EF70, WinProcMsg, replace);
 }
