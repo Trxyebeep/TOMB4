@@ -609,7 +609,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	{
 		cutseqpakPtr = (char*)malloc(*(long*)buf);
 		Decompress(cutseqpakPtr, buf + 4, size - 4, *(long*)buf);
-		free(buf);
+		FREE(buf);
 	}
 
 	MainThread.active = 1;
@@ -645,5 +645,5 @@ void inject_winmain(bool replace)
 	INJECT(0x0048EFF0, WinProcessCommands, replace);
 	INJECT(0x0048F430, WinMainWndProc, replace);
 	INJECT(0x0048E8D0, ClearSurfaces, replace);
-	INJECT(0x0048E9C0, WinMain, 0);	//works fine but need to inject LoadFile before
+	INJECT(0x0048E9C0, WinMain, replace);
 }

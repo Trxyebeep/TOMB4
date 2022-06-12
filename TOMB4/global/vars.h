@@ -459,6 +459,9 @@
 #define BumpMap	VAR_U_(0x004BFE95, bool)
 #define TextLow	VAR_U_(0x004BFE94, bool)
 #define resChangeCounter	VAR_U_(0x00753BD8, long)
+#define level_fp	VAR_U_(0x00533A74, FILE*)
+#define CompressedData	VAR_U_(0x00533A58, char*)
+#define FileData	VAR_U_(0x005333A4, char*)
 
 
 
