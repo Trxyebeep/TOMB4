@@ -11,6 +11,7 @@
 #include "d3dmatrix.h"
 #include "3dmath.h"
 #include "audio.h"
+#include "output.h"
 
 COMMAND commands[] =
 {
@@ -453,6 +454,30 @@ LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
+void ClearSurfaces()
+{
+	D3DRECT r;
+
+	r.x1 = App.dx.rViewport.left;
+	r.y1 = App.dx.rViewport.top;
+	r.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
+	r.x2 = App.dx.rViewport.left + App.dx.rViewport.right;
+
+	if (App.dx.Flags & 0x80)
+		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
+	else
+		ClearFakeDevice(App.dx.lpD3DDevice, 1, &r, D3DCLEAR_TARGET, 0, 1.0F, 0);
+
+	S_DumpScreen();
+
+	if (App.dx.Flags & 0x80)
+		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
+	else
+		ClearFakeDevice(App.dx.lpD3DDevice, 1, &r, D3DCLEAR_TARGET, 0, 1.0F, 0);
+
+	S_DumpScreen();
+}
+
 void inject_winmain(bool replace)
 {
 	INJECT(0x0048F6A0, WinRunCheck, replace);
@@ -464,4 +489,5 @@ void inject_winmain(bool replace)
 	INJECT(0x0048EF70, WinProcMsg, replace);
 	INJECT(0x0048EFF0, WinProcessCommands, replace);
 	INJECT(0x0048F430, WinMainWndProc, replace);
+	INJECT(0x0048E8D0, ClearSurfaces, replace);
 }
