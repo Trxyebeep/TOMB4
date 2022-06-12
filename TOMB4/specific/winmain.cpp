@@ -4,6 +4,7 @@
 #include "cmdline.h"
 #include "registry.h"
 #include "dxshell.h"
+#include <time.h>
 
 COMMAND commands[] =
 {
@@ -136,9 +137,38 @@ void WinClose()
 		Log(1, "%s Attempt To Release NULL Ptr", "DirectInput");
 }
 
+float WinFrameRate()
+{
+	double t, time_now;
+	static float fps;
+	static long time, counter;
+	static char first_time;
+
+	if (!(first_time & 1))
+	{
+		first_time |= 1;
+		time = clock();
+	}
+
+	counter++;
+
+	if (counter == 10)
+	{
+		time_now = clock();
+		t = (time_now - time) / (double)CLOCKS_PER_SEC;
+		time = (long)time_now;
+		fps = float(counter / t);
+		counter = 0;
+	}
+
+	App.fps = fps;
+	return fps;
+}
+
 void inject_winmain(bool replace)
 {
 	INJECT(0x0048F6A0, WinRunCheck, replace);
 	INJECT(0x0048F700, WinProcessCommandLine, replace);
 	INJECT(0x0048EF20, WinClose, replace);
+	INJECT(0x0048F840, WinFrameRate, replace);
 }

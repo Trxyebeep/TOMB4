@@ -1856,7 +1856,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0048F430		WinMainWndProc
 0x0048F6A0	+	WinRunCheck
 0x0048F700	+	WinProcessCommandLine
-0x0048F840		WinFrameRate
+0x0048F840	+	WinFrameRate
 0x0048F8C0		WinDisplayString
 0x0048F910		MungeFPCW
 0x0048F960		RestoreFPCW
