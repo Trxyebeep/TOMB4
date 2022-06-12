@@ -1853,6 +1853,14 @@ struct SAVEFILE_INFO
 	long num;
 };
 
+struct COMMAND
+{
+	char command[20];
+	bool needs_parameter;
+	void (*code)(char*);
+	char parameter[20];
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {
