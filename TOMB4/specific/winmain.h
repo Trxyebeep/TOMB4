@@ -10,6 +10,8 @@ float WinFrameRate();
 void WinDisplayString(long x, long y, char* string, ...);
 long CheckMMXTechnology();
 void WinProcMsg();
+void WinProcessCommands(long cmd);
+LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 #define RestoreFPCW	( (void(__cdecl*)(short)) 0x0048F960 )
 #define MungeFPCW	( (long(__cdecl*)(short*)) 0x0048F910 )

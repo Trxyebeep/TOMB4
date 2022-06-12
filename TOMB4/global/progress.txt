@@ -1852,8 +1852,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x0048EE50	+	CheckMMXTechnology
 0x0048EF20	+	WinClose
 0x0048EF70	+	WinProcMsg
-0x0048EFF0		WinProcessCommands
-0x0048F430		WinMainWndProc
+0x0048EFF0	+	WinProcessCommands
+0x0048F430	+	WinMainWndProc
 0x0048F6A0	+	WinRunCheck
 0x0048F700	+	WinProcessCommandLine
 0x0048F840	+	WinFrameRate

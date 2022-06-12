@@ -458,6 +458,7 @@
 #define volumetric_fx	VAR_U_(0x004BFE96, bool)
 #define BumpMap	VAR_U_(0x004BFE95, bool)
 #define TextLow	VAR_U_(0x004BFE94, bool)
+#define resChangeCounter	VAR_U_(0x00753BD8, long)
 
 
 

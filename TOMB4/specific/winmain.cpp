@@ -6,6 +6,11 @@
 #include "dxshell.h"
 #include <time.h>
 #include "../game/text.h"
+#include "lighting.h"
+#include "function_table.h"
+#include "d3dmatrix.h"
+#include "3dmath.h"
+#include "audio.h"
 
 COMMAND commands[] =
 {
@@ -245,6 +250,209 @@ void WinProcMsg()
 	} while (!MainThread.ended && msg.message != WM_QUIT);
 }
 
+void WinProcessCommands(long cmd)
+{
+	DXDISPLAYMODE* dm;
+	long odm;
+
+	if (cmd == KA_ALTENTER)
+	{
+		if (App.fmv || !(G_dxinfo->DDInfo[G_dxinfo->nDD].DDCaps.dwCaps2 & DDCAPS2_CANRENDERWINDOWED) || LevelLoadingThread.active)
+			return;
+
+		Log(6, "KA_ALTENTER");
+		Log(5, "HangGameThread");
+		while (App.dx.InScene) {};
+		App.dx.WaitAtBeginScene = 1;
+		while (!App.dx.InScene) {};
+		SuspendThread((HANDLE)MainThread.handle);
+		Log(5, "Game Thread Suspended");
+
+		FreeD3DLights();
+		DXToggleFullScreen();
+		HWInitialise();
+		CreateD3DLights();
+		S_InitD3DMatrix();
+		SetD3DViewMatrix();
+		ResumeThread((HANDLE)MainThread.handle);
+		App.dx.WaitAtBeginScene = 0;
+		Log(5, "Game Thread Resumed");
+
+		if (App.dx.Flags & 1)
+		{
+			SetCursor(0);
+			ShowCursor(0);
+		}
+		else
+		{
+			SetCursor(LoadCursor(App.hInstance, MAKEINTRESOURCE(104)));
+			ShowCursor(1);
+		}
+	}
+	else if (cmd == KA_ALTP || cmd == KA_ALTM)
+	{
+		if (LevelLoadingThread.active || App.fmv)
+			return;
+
+		Log(5, "Change Video Mode");
+		Log(5, "HangGameThread");
+		while (App.dx.InScene) {};
+		App.dx.WaitAtBeginScene = 1;
+		while (!App.dx.InScene) {};
+		SuspendThread((HANDLE)MainThread.handle);
+		Log(5, "Game Thread Suspended");
+
+		odm = App.DXInfo.nDisplayMode;
+
+		if (cmd == KA_ALTP)
+		{
+			App.DXInfo.nDisplayMode++;
+
+			if (App.DXInfo.nDisplayMode >= G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].nDisplayModes)
+				App.DXInfo.nDisplayMode = G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].nDisplayModes - 1;
+
+			dm = G_dxinfo->DDInfo[App.DXInfo.nDD].D3DDevices[App.DXInfo.nD3D].DisplayModes;
+
+			while (dm[odm].bpp != dm[App.DXInfo.nDisplayMode].bpp)
+			{
+				App.DXInfo.nDisplayMode++;
+
+				if (App.DXInfo.nDisplayMode >= G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].nDisplayModes)
+				{
+					App.DXInfo.nDisplayMode = odm;
+					break;
+				}
+			}
+		}
+		else
+		{
+			App.DXInfo.nDisplayMode--;
+
+			if (App.DXInfo.nDisplayMode < 0)
+				App.DXInfo.nDisplayMode = 0;
+
+			dm = G_dxinfo->DDInfo[App.DXInfo.nDD].D3DDevices[App.DXInfo.nD3D].DisplayModes;
+
+			while (dm[odm].bpp != dm[App.DXInfo.nDisplayMode].bpp)
+			{
+				App.DXInfo.nDisplayMode--;
+
+				if (App.DXInfo.nDisplayMode < 0)
+				{
+					App.DXInfo.nDisplayMode = odm;
+					break;
+				}
+			}
+		}
+
+		if (odm != App.DXInfo.nDisplayMode)
+		{
+			FreeD3DLights();
+
+			if (!DXChangeVideoMode())
+			{
+				App.DXInfo.nDisplayMode = odm;
+				DXChangeVideoMode();
+			}
+
+			HWInitialise();
+			CreateD3DLights();
+			InitWindow(0, 0, App.dx.dwRenderWidth, App.dx.dwRenderHeight, 20, 20480, 80, App.dx.dwRenderWidth, App.dx.dwRenderHeight);
+			InitFont();
+			S_InitD3DMatrix();
+			SetD3DViewMatrix();
+		}
+
+		ResumeThread((HANDLE)MainThread.handle);
+		App.dx.WaitAtBeginScene = 0;
+		Log(5, "Game Thread Resumed");
+		resChangeCounter = 120;
+	}
+}
+
+LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	static long mouseX, mouseY, mouseB;
+	static bool closing;
+
+	switch (uMsg)
+	{
+	case WM_CREATE:
+		resChangeCounter = 0;
+		Log(6, "WM_CREATE");
+		break;
+
+	case WM_MOVE:
+		Log(6, "WM_MOVE");
+		DXMove(lParam & 0xFFFF, short((lParam >> 16) & 0xFFFF));
+		break;
+
+	case WM_ACTIVATE:
+
+		if (!closing)
+		{
+			if (App.fmv)
+				return 0;
+
+			switch (wParam & 0xFFFF)
+			{
+			case WA_INACTIVE:
+				Log(6, "WM_INACTIVE");
+
+				if (App.SetupComplete)
+				{
+					Log(5, "Change Video Mode");
+					Log(5, "HangGameThread");
+					while (App.dx.InScene) {};
+					App.dx.WaitAtBeginScene = 1;
+					while (!App.dx.InScene) {};
+					SuspendThread((HANDLE)MainThread.handle);
+					Log(5, "Game Thread Suspended");
+				}
+
+				return 0;
+
+			case WA_ACTIVE:
+			case WA_CLICKACTIVE:
+				Log(6, "WM_ACTIVE");
+
+				if (App.SetupComplete)
+				{
+					ResumeThread((HANDLE)MainThread.handle);
+					App.dx.WaitAtBeginScene = 0;
+					Log(5, "Game Thread Resumed");
+				}
+
+				return 0;
+			}
+		}
+
+		break;
+
+	case WM_CLOSE:
+		closing = 1;
+		PostQuitMessage(0);
+		break;
+
+	case WM_COMMAND:
+		Log(6, "WM_COMMAND");
+		WinProcessCommands(wParam & 0xFFFF);
+		break;
+
+	case WM_MOUSEMOVE:
+		mouseX = GET_X_LPARAM(lParam);
+		mouseY = GET_Y_LPARAM(lParam);
+		mouseB = wParam;
+		break;
+
+	case WM_APP:
+		FillADPCMBuffer((char*)lParam, wParam);
+		return 0;
+	}
+
+	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
 void inject_winmain(bool replace)
 {
 	INJECT(0x0048F6A0, WinRunCheck, replace);
@@ -254,4 +462,6 @@ void inject_winmain(bool replace)
 	INJECT(0x0048F8C0, WinDisplayString, replace);
 	INJECT(0x0048EE50, CheckMMXTechnology, replace);
 	INJECT(0x0048EF70, WinProcMsg, replace);
+	INJECT(0x0048EFF0, WinProcessCommands, replace);
+	INJECT(0x0048F430, WinMainWndProc, replace);
 }

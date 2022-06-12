@@ -6,3 +6,4 @@
 #define S_StartSyncedAudio	( (void(__cdecl*)(int)) 0x0046D790 )
 #define S_CDPlay	( (void(__cdecl*)(short, long)) 0x0046D610 )
 #define ACMClose	( (void(__cdecl*)()) 0x0046DD00 )
+#define FillADPCMBuffer	( (void(__cdecl*)(char*, long)) 0x0046DF50 )

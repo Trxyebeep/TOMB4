@@ -57,6 +57,13 @@ do \
 #define CLOSE	( (int(__cdecl*)(FILE*)) 0x004A07B4 )
 	/**********************************/
 
+enum win_commands
+{
+	KA_ALTENTER = 8,
+	KA_ALTP = 40001,
+	KA_ALTM = 40002
+};
+
 enum languages
 {
 	ENGLISH,
