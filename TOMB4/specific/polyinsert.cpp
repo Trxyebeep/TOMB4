@@ -1967,6 +1967,12 @@ void CalcColorSplit(D3DCOLOR s, D3DCOLOR* d)
 		b = 255;
 
 	d[0] = (d[0] & 0xFF000000) | RGBONLY(r, g, b);		//color
+	d[0] &= 0xFFFFFF;
+	d[0] |= GlobalAlpha;
+
+	sr >>= 1;
+	sg >>= 1;
+	sb >>= 1;
 	d[1] = (d[1] & 0xFF000000) | RGBONLY(sr, sg, sb);	//specular
 }
 
