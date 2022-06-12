@@ -2261,11 +2261,13 @@ long GetSaveLoadFiles()
 	static long nSaves;
 	char name[75];
 
+	SaveCounter = 0;
+
 	for (int i = 0; i < 15; i++)
 	{
 		pSave = &SaveGames[i];
 		wsprintf(name, "savegame.%d", i);
-		file = OPEN(name, "rb");
+		file = fopen(name, "rb");
 
 		if (!file)
 		{
@@ -2274,13 +2276,13 @@ long GetSaveLoadFiles()
 			continue;
 		}
 
-		READ(&pSave->name, sizeof(char), 75, file);
-		READ(&pSave->num, sizeof(long), 1, file);
-		READ(&pSave->days, sizeof(short), 1, file);
-		READ(&pSave->hours, sizeof(short), 1, file);
-		READ(&pSave->minutes, sizeof(short), 1, file);
-		READ(&pSave->seconds, sizeof(short), 1, file);
-		READ(&save_info, 1, sizeof(SAVEGAME_INFO), file);
+		fread(&pSave->name, sizeof(char), 75, file);
+		fread(&pSave->num, sizeof(long), 1, file);
+		fread(&pSave->days, sizeof(short), 1, file);
+		fread(&pSave->hours, sizeof(short), 1, file);
+		fread(&pSave->minutes, sizeof(short), 1, file);
+		fread(&pSave->seconds, sizeof(short), 1, file);
+		fread(&save_info, 1, sizeof(SAVEGAME_INFO), file);
 
 		if (!CheckSumValid((char*)&save_info))
 		{
@@ -2293,7 +2295,7 @@ long GetSaveLoadFiles()
 			SaveCounter = pSave->num;
 
 		pSave->valid = 1;
-		CLOSE(file);
+		fclose(file);
 		nSaves++;
 	}
 
