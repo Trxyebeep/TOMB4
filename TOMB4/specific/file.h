@@ -10,3 +10,5 @@ FILE* FileOpen(const char* name);
 void FileClose(FILE* file);
 long FileSize(FILE* file);
 long LoadFile(const char* name, char** dest);
+
+#define Decompress	( (void(__cdecl*)(char*, char*, long, long)) 0x00473E80 )

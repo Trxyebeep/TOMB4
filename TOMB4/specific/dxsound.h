@@ -6,3 +6,4 @@
 #define S_SoundStopAllSamples	( (void(__cdecl*)()) 0x00473AB0 )
 #define DXChangeOutputFormat	( (bool(__cdecl*)(long, bool)) 0x004732E0 )
 #define DXFreeSounds	( (void(__cdecl*)()) 0x00473B40 )
+#define DXDSCreate	( (bool(__cdecl*)()) 0x00473500 )

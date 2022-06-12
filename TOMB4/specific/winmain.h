@@ -13,6 +13,7 @@ void WinProcMsg();
 void WinProcessCommands(long cmd);
 LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void ClearSurfaces();
+int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd);
 
 #define RestoreFPCW	( (void(__cdecl*)(short)) 0x0048F960 )
 #define MungeFPCW	( (long(__cdecl*)(short*)) 0x0048F910 )
