@@ -176,6 +176,57 @@ void WinDisplayString(long x, long y, char* string, ...)
 	PrintString((ushort)x, (ushort)y, 6, buf, 0);
 }
 
+long CheckMMXTechnology()
+{
+#if 1	//original works but is dodgy as fuck
+	return 0;
+#else
+	ulong _edx;
+	long mmx;
+
+	mmx = 1;
+
+	__try
+	{
+		__asm
+		{
+			pusha
+			mov eax, 1
+			cpuid
+			mov _edx, edx
+			popa
+		}
+
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		mmx = 0;
+	}
+
+	if (!mmx)
+		mmx = 0;
+
+	if (_edx & 0x800000)
+	{
+		__try
+		{
+			__asm
+			{
+				emms
+			}
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			mmx = 0;
+		}
+	}
+	else
+		mmx = 0;
+
+	return mmx;
+#endif
+}
+
 void inject_winmain(bool replace)
 {
 	INJECT(0x0048F6A0, WinRunCheck, replace);
@@ -183,4 +234,5 @@ void inject_winmain(bool replace)
 	INJECT(0x0048EF20, WinClose, replace);
 	INJECT(0x0048F840, WinFrameRate, replace);
 	INJECT(0x0048F8C0, WinDisplayString, replace);
+	INJECT(0x0048EE50, CheckMMXTechnology, replace);
 }
