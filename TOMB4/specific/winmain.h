@@ -2,9 +2,10 @@
 #include "../global/vars.h"
 
 void inject_winmain(bool replace);
-void WinProcessCommandLine(LPSTR cmd);
 
 bool WinRunCheck(LPSTR WindowName, LPSTR ClassName, HANDLE* mutex);
+void WinProcessCommandLine(LPSTR cmd);
+void WinClose();
 
 #define RestoreFPCW	( (void(__cdecl*)(short)) 0x0048F960 )
 #define MungeFPCW	( (long(__cdecl*)(short*)) 0x0048F910 )

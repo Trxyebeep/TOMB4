@@ -2,6 +2,8 @@
 #include "winmain.h"
 #include "function_stubs.h"
 #include "cmdline.h"
+#include "registry.h"
+#include "dxshell.h"
 
 COMMAND commands[] =
 {
@@ -103,8 +105,40 @@ void WinProcessCommandLine(LPSTR cmd)
 	}
 }
 
+void WinClose()
+{
+	Log(2, "WinClose");
+	SaveSettings();
+	CloseHandle(App.mutex);
+	DXFreeInfo(&App.DXInfo);
+	DestroyAcceleratorTable(App.hAccel);
+	DXClose();
+
+	if (!G_dxptr)
+		return;
+
+	DXAttempt(G_dxptr->Keyboard->Unacquire());
+
+	if (G_dxptr->Keyboard)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Keyboard", G_dxptr->Keyboard, G_dxptr->Keyboard->Release());
+		G_dxptr->Keyboard = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Keyboard");
+
+	if (G_dxptr->lpDirectInput)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "DirectInput", G_dxptr->lpDirectInput, G_dxptr->lpDirectInput->Release());
+		G_dxptr->lpDirectInput = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "DirectInput");
+}
+
 void inject_winmain(bool replace)
 {
 	INJECT(0x0048F6A0, WinRunCheck, replace);
 	INJECT(0x0048F700, WinProcessCommandLine, replace);
+	INJECT(0x0048EF20, WinClose, replace);
 }
