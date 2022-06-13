@@ -844,6 +844,52 @@ bool LoadSoundEffects()
 	return 1;
 }
 
+bool LoadBoxes()
+{
+	BOX_INFO* box;
+	long size;
+
+	Log(2, "LoadBoxes");
+	num_boxes = *(long*)FileData;
+	FileData += sizeof(long);
+
+	boxes = (BOX_INFO*)game_malloc(sizeof(BOX_INFO) * num_boxes);
+	memcpy(boxes, FileData, sizeof(BOX_INFO) * num_boxes);
+	FileData += sizeof(BOX_INFO) * num_boxes;
+
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	overlap = (ushort*)game_malloc(sizeof(ushort) * size);
+	memcpy(overlap, FileData, sizeof(ushort) * size);
+	FileData += sizeof(ushort) * size;
+
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			ground_zone[j][i] = (short*)game_malloc(sizeof(short) * num_boxes);
+			memcpy(ground_zone[j][i], FileData, sizeof(short) * num_boxes);
+			FileData += sizeof(short) * num_boxes;
+		}
+
+		ground_zone[4][i] = (short*)game_malloc(sizeof(short) * num_boxes);
+		memcpy(ground_zone[4][i], FileData, sizeof(short) * num_boxes);
+		FileData += sizeof(short) * num_boxes;
+	}
+
+	for (int i = 0; i < num_boxes; i++)
+	{
+		box = &boxes[i];
+
+		if (box->overlap_index & 0x8000)
+			box->overlap_index |= 0x4000;
+		else if (gfLevelFlags & GF_TRAIN && box->height > -256)
+			box->overlap_index |= 0xC000;
+	}
+
+	return 1;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -861,4 +907,5 @@ void inject_file(bool replace)
 	INJECT(0x00475730, LoadSprites, replace);
 	INJECT(0x00475970, LoadCameras, replace);
 	INJECT(0x00475A30, LoadSoundEffects, replace);
+	INJECT(0x00475AC0, LoadBoxes, replace);
 }

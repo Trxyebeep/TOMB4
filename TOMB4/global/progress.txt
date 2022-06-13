@@ -1609,7 +1609,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00475730	+	LoadSprites
 0x00475970	+	LoadCameras
 0x00475A30	+	LoadSoundEffects
-0x00475AC0		LoadBoxes
+0x00475AC0	+	LoadBoxes
 0x00475C70		LoadAnimatedTextures
 0x00475CE0		LoadTextureInfos
 0x00475EE0		LoadItems
