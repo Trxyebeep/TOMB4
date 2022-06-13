@@ -478,6 +478,7 @@
 #define sample_lut	VAR_U_(0x007F76A0, short*)
 #define sample_infos	VAR_U_(0x007F76A4, SAMPLE_INFO*)
 #define samples_buffer	VAR_U_(0x0052AAAC, char*)
+#define acm_ready	VAR_U_(0x004BFE64, bool)
 
 
 
@@ -574,6 +575,8 @@
 #define SaveGames	ARRAY_(0x00536F28, SAVEFILE_INFO, [15])
 #define matrix_stack	ARRAY_(0x00753D04, long, [12])
 #define AnimatingTexturesV	ARRAY_(0x00532D9C, float, [16][8][3])
+#define AnimatingWaterfalls	ARRAY_(0x007FD1E0, TEXTURESTRUCT*, [3])
+#define AnimatingWaterfallsV	ARRAY_(0x007FD1F0, long, [3])
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)

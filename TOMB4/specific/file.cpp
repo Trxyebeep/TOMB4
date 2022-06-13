@@ -11,9 +11,127 @@
 #include "../game/objects.h"
 #include "../game/laraskin.h"
 #include "../game/items.h"
+#include "specificfx.h"
+#include "../game/tomb4fx.h"
 
 unsigned int __stdcall LoadLevel(void* name)
 {
+	OBJECT_INFO* obj;
+	TEXTURESTRUCT* tex;
+	char* pData;
+	long version, size, compressedSize;
+	short RTPages, OTPages, BTPages;
+
+	Log(2, "LoadLevel");
+	FreeLevel();
+	memset(malloc_ptr, 0, 5000000);
+	memset(&lara, 0, sizeof(LARA_INFO));
+
+	Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
+	nTextures = 1;
+	Textures[0].tex = 0;
+	Textures[0].surface = 0;
+	Textures[0].width = 0;
+	Textures[0].height = 0;
+	Textures[0].bump = 0;
+
+	S_InitLoadBar(20);
+	S_LoadBar();
+
+	CompressedData = 0;
+	FileData = 0;
+	level_fp = 0;
+	level_fp = FileOpen((const char*)name);
+
+	if (level_fp)
+	{
+		READ(&version, 1, 4, level_fp);
+		READ(&RTPages, 1, 2, level_fp);
+		READ(&OTPages, 1, 2, level_fp);
+		READ(&BTPages, 1, 2, level_fp);
+
+		Log(7, "Process Level Data");
+		LoadTextures(RTPages, OTPages, BTPages);
+		READ(&size, 1, 4, level_fp);
+		READ(&compressedSize, 1, 4, level_fp);
+		CompressedData = (char*)MALLOC(compressedSize);
+		FileData = (char*)MALLOC(size);
+		READ(CompressedData, compressedSize, 1u, level_fp);
+		Decompress(FileData, CompressedData, compressedSize, size);
+		FREE(CompressedData);
+
+		pData = FileData;
+		S_LoadBar();
+
+		LoadRooms();
+		S_LoadBar();
+
+		LoadObjects();
+		S_LoadBar();
+
+		LoadSprites();
+		S_LoadBar();
+
+		LoadCameras();
+		S_LoadBar();
+
+		LoadSoundEffects();
+		S_LoadBar();
+
+		LoadBoxes();
+		S_LoadBar();
+
+		LoadAnimatedTextures();
+		S_LoadBar();
+
+		LoadTextureInfos();
+		S_LoadBar();
+
+		LoadItems();
+		S_LoadBar();
+
+		LoadAIInfo();
+		S_LoadBar();
+
+		LoadCinematic();
+		S_LoadBar();
+
+		if (acm_ready && !App.SoundDisabled)
+			LoadSamples();
+
+		FREE(pData);
+		S_LoadBar();
+
+		for (int i = 0; i < 3; i++)
+		{
+			obj = &objects[WATERFALL1 + i];
+
+			if (obj->loaded)
+			{
+				tex = &textinfo[mesh_vtxbuf[obj->mesh_index]->gt4[4] & 0x7FFF];
+				AnimatingWaterfalls[i] = tex;
+				AnimatingWaterfallsV[i] = (long)tex->v1;
+			}
+		}
+
+		S_LoadBar();
+		S_GetUVRotateTextures();
+
+		InitTarget_2();
+		S_LoadBar();
+
+		MallocD3DLights();
+		CreateD3DLights();
+		SetupGame();
+		S_LoadBar();
+
+		SetFadeClip(0, 1);
+		reset_cutseq_vars();
+		FileClose(level_fp);
+	}
+
+	LevelLoadingThread.active = 0;
+	_endthreadex(1);
 	return 1;
 }
 
@@ -1132,7 +1250,7 @@ void S_GetUVRotateTextures()
 
 void inject_file(bool replace)
 {
-	INJECT(0x00476470, LoadLevel, 0);
+	INJECT(0x00476470, LoadLevel, replace);
 
 	INJECT(0x004768C0, S_LoadLevelFile, replace);
 	INJECT(0x00476790, FreeLevel, 0);
