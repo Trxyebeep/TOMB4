@@ -1029,6 +1029,29 @@ bool LoadItems()
 	return 1;
 }
 
+bool LoadCinematic()
+{
+	FileData += sizeof(short);
+	return 1;
+}
+
+bool LoadAIInfo()
+{
+	long num_ai;
+
+	num_ai = *(long*)FileData;
+	FileData += sizeof(long);
+
+	if (num_ai)
+	{
+		nAIObjects = (short)num_ai;
+		AIObjects = (AIOBJECT*)game_malloc(sizeof(AIOBJECT) * num_ai);
+		memcpy(AIObjects, FileData, sizeof(AIOBJECT) * num_ai);
+		FileData += sizeof(AIOBJECT) * num_ai;
+	}
+
+	return 1;
+}
 
 void inject_file(bool replace)
 {
@@ -1051,4 +1074,6 @@ void inject_file(bool replace)
 	INJECT(0x00475C70, LoadAnimatedTextures, replace);
 	INJECT(0x00475CE0, LoadTextureInfos, replace);
 	INJECT(0x00475EE0, LoadItems, replace);
+	INJECT(0x004761E0, LoadCinematic, replace);
+	INJECT(0x004761F0, LoadAIInfo, replace);
 }
