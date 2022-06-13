@@ -468,6 +468,8 @@
 #define commands	VAR_U_(0x00533A8C, short*)
 #define frames	VAR_U_(0x00533A84, short*)
 #define number_cameras	VAR_U_(0x007FE940, long)
+#define sound_effects	VAR_U_(0x008012EC, OBJECT_VECTOR*)
+#define number_sound_effects	VAR_U_(0x008012E4, long)
 
 
 

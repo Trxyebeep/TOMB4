@@ -827,6 +827,23 @@ bool LoadCameras()
 	return 1;
 }
 
+bool LoadSoundEffects()
+{
+	Log(2, "LoadSoundEffects");
+	number_sound_effects = *(long*)FileData;
+	FileData += sizeof(long);
+	Log(8, "Number of SFX %d", number_sound_effects);
+
+	if (number_sound_effects)
+	{
+		sound_effects = (OBJECT_VECTOR*)game_malloc(number_sound_effects * sizeof(OBJECT_VECTOR));
+		memcpy(sound_effects, FileData, number_sound_effects * sizeof(OBJECT_VECTOR));
+		FileData += number_sound_effects * sizeof(OBJECT_VECTOR);
+	}
+
+	return 1;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -843,4 +860,5 @@ void inject_file(bool replace)
 	INJECT(0x00474E10, LoadObjects, replace);
 	INJECT(0x00475730, LoadSprites, replace);
 	INJECT(0x00475970, LoadCameras, replace);
+	INJECT(0x00475A30, LoadSoundEffects, replace);
 }
