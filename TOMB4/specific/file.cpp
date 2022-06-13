@@ -904,6 +904,43 @@ bool LoadAnimatedTextures()
 	return 1;
 }
 
+bool LoadTextureInfos()
+{
+	TEXTURESTRUCT* t;
+	PHDTEXTURESTRUCT tex;
+	long val;
+
+	Log(2, "LoadTextureInfos");
+	FileData += 3;
+
+	val = *(long*)FileData;
+	FileData += sizeof(long);
+	Log(5, "Texture Infos : %d", val);
+	textinfo = (TEXTURESTRUCT*)game_malloc(val * sizeof(TEXTURESTRUCT));
+
+	for (int i = 0; i < val; i++)
+	{
+		t = &textinfo[i];
+		memcpy(&tex, FileData, sizeof(PHDTEXTURESTRUCT));
+		FileData += sizeof(PHDTEXTURESTRUCT);
+		t->drawtype = tex.drawtype;
+		t->tpage = tex.tpage & 0x7FFF;
+		t->flag = tex.tpage ^ (tex.tpage ^ tex.flag) & 0x7FFF;
+		t->u1 = float(tex.u1) * (1.0F / 65535.0F);
+		t->v1 = float(tex.v1) * (1.0f / 65535.0F);
+		t->u2 = float(tex.u2) * (1.0f / 65535.0F);
+		t->v2 = float(tex.v2) * (1.0f / 65535.0F);
+		t->u3 = float(tex.u3) * (1.0f / 65535.0F);
+		t->v3 = float(tex.v3) * (1.0f / 65535.0F);
+		t->u4 = float(tex.u4) * (1.0f / 65535.0F);
+		t->v4 = float(tex.v4) * (1.0f / 65535.0F);
+	}
+
+	AdjustUV(val);
+	Log(5, "Created %d Texture Pages", nTextures - 1);
+	return 1;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -923,4 +960,5 @@ void inject_file(bool replace)
 	INJECT(0x00475A30, LoadSoundEffects, replace);
 	INJECT(0x00475AC0, LoadBoxes, replace);
 	INJECT(0x00475C70, LoadAnimatedTextures, replace);
+	INJECT(0x00475CE0, LoadTextureInfos, replace);
 }

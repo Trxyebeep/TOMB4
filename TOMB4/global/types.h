@@ -1897,6 +1897,25 @@ struct PHDSPRITESTRUCT
 	short y2;
 };
 
+struct PHDTEXTURESTRUCT
+{
+	ushort drawtype;
+	ushort tpage;
+	ushort flag;
+	ushort u1;
+	ushort v1;
+	ushort u2;
+	ushort v2;
+	ushort u3;
+	ushort v3;
+	ushort u4;
+	ushort v4;
+	ulong xoff;
+	ulong yoff;
+	ulong width;
+	ulong height;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {
