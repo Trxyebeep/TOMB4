@@ -633,6 +633,51 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	return 0;
 }
 
+long MungeFPCW(short* fpcw)
+{
+#ifdef GENERAL_FIXES
+	return 0;
+#else
+	long ret;
+	short cw, temp;
+
+	ret = 0;
+
+	__asm
+	{
+		fstcw cw
+	}
+
+	if (cw & 0x300 || (cw & 0x3F) != 0x3F || cw & 0xC00)
+	{
+		__asm
+		{
+			mov ax, cw
+			and ax, not 0x300
+			or ax, 0x3F
+			and ax, not 0xC00
+			mov temp, ax
+			fldcw temp
+		}
+
+		ret = 1;
+	}
+
+	*fpcw = cw;
+	return ret;
+#endif
+}
+
+void RestoreFPCW(short fpcw)
+{
+#ifndef GENERAL_FIXES
+	__asm
+	{
+		fldcw fpcw
+	}
+#endif
+}
+
 void inject_winmain(bool replace)
 {
 	INJECT(0x0048F6A0, WinRunCheck, replace);
@@ -646,4 +691,6 @@ void inject_winmain(bool replace)
 	INJECT(0x0048F430, WinMainWndProc, replace);
 	INJECT(0x0048E8D0, ClearSurfaces, replace);
 	INJECT(0x0048E9C0, WinMain, replace);
+	INJECT(0x0048F910, MungeFPCW, replace);
+	INJECT(0x0048F960, RestoreFPCW, replace);
 }
