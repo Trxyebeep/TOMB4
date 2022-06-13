@@ -890,6 +890,20 @@ bool LoadBoxes()
 	return 1;
 }
 
+bool LoadAnimatedTextures()
+{
+	long num_anim_ranges;
+
+	num_anim_ranges = *(long*)FileData;
+	FileData += sizeof(long);
+	aranges = (short*)game_malloc(num_anim_ranges * 2);
+	memcpy(aranges, FileData, num_anim_ranges * 2);
+	FileData += num_anim_ranges * sizeof(short);
+	nAnimUVRanges = *(char*)FileData;
+	FileData += sizeof(char);
+	return 1;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -908,4 +922,5 @@ void inject_file(bool replace)
 	INJECT(0x00475970, LoadCameras, replace);
 	INJECT(0x00475A30, LoadSoundEffects, replace);
 	INJECT(0x00475AC0, LoadBoxes, replace);
+	INJECT(0x00475C70, LoadAnimatedTextures, replace);
 }

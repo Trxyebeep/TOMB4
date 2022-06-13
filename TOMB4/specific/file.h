@@ -17,5 +17,6 @@ bool LoadSprites();
 bool LoadCameras();
 bool LoadSoundEffects();
 bool LoadBoxes();
+bool LoadAnimatedTextures();
 
 #define Decompress	( (void(__cdecl*)(char*, char*, long, long)) 0x00473E80 )

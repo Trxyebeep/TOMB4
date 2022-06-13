@@ -472,6 +472,8 @@
 #define number_sound_effects	VAR_U_(0x008012E4, long)
 #define num_boxes	VAR_U_(0x007FE9B4, long)
 #define overlap	VAR_U_(0x007FE9A8, ushort*)
+#define aranges	VAR_U_(0x00753BDC, short*)
+#define nAnimUVRanges	VAR_U_(0x0053339C, long)
 
 
 
