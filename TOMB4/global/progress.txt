@@ -1834,7 +1834,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/texture.cpp
 
-0x0048E2F0		CreateTexturePage
+0x0048E2F0	+	CreateTexturePage
 0x0048E6E0		FreeTextures
 
 
