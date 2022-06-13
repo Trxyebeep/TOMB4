@@ -19,6 +19,7 @@ bool LoadSoundEffects();
 bool LoadBoxes();
 bool LoadAnimatedTextures();
 bool LoadTextureInfos();
+bool LoadItems();
 
 #define Decompress	( (void(__cdecl*)(char*, char*, long, long)) 0x00473E80 )
 #define AdjustUV	( (void(__cdecl*)(long)) 0x004752A0 )

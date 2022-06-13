@@ -10,6 +10,7 @@
 #include "../game/setup.h"
 #include "../game/objects.h"
 #include "../game/laraskin.h"
+#include "../game/items.h"
 
 unsigned int __stdcall LoadLevel(void* name)
 {
@@ -941,6 +942,94 @@ bool LoadTextureInfos()
 	return 1;
 }
 
+bool LoadItems()
+{
+	ITEM_INFO* item;
+	ROOM_INFO* r;
+	FLOOR_INFO* floor;
+	STATIC_INFO* stat;
+	long x, y, z;
+
+	Log(2, "LoadItems");
+	num_items = *(long*)FileData;
+	FileData += 4;
+
+	if (!num_items)
+		return 1;
+
+	items = (ITEM_INFO*)game_malloc(256 * sizeof(ITEM_INFO));
+	level_items = num_items;
+	InitialiseItemArray(256);
+
+	for (int i = 0; i < num_items; i++)
+	{
+		item = &items[i];
+
+		item->object_number = *(short*)FileData;
+		FileData += sizeof(short);
+
+		item->room_number = *(short*)FileData;
+		FileData += sizeof(short);
+
+		item->pos.x_pos = *(long*)FileData;
+		FileData += sizeof(long);
+
+		item->pos.y_pos = *(long*)FileData;
+		FileData += sizeof(long);
+
+		item->pos.z_pos = *(long*)FileData;
+		FileData += sizeof(long);
+
+		item->pos.y_rot = *(short*)FileData;
+		FileData += sizeof(short);
+
+		item->shade = *(short*)FileData;
+		FileData += sizeof(short);
+
+		item->trigger_flags = *(short*)FileData;
+		FileData += sizeof(short);
+
+		item->flags = *(short*)FileData;
+		FileData += sizeof(short);
+	}
+
+	for (int i = 0; i < num_items; i++)
+		InitialiseItem(i);
+
+	for (int i = 0; i < number_rooms; i++)
+	{
+		r = &room[i];
+
+		for (int j = 0; j < r->num_meshes; j++)
+		{
+			x = (r->mesh[j].x - r->x) >> 10;
+			z = (r->mesh[j].z - r->z) >> 10;
+
+			floor = &(r->floor[x * r->x_size + z]);
+
+			if (!(boxes[floor->box].overlap_index & 0x4000) && (gfCurrentLevel != 4 || i != 19 && i != 23 && i != 16))
+			{
+				stat = &static_objects[r->mesh[j].static_number];
+				y = floor->floor << 8;
+
+				if (y <= (r->mesh[j].y - stat->y_maxc + 512) && y < r->mesh[j].y - stat->y_minc)
+				{
+					if (!stat->x_maxc || !stat->x_minc || !stat->z_maxc || !stat->z_minc ||
+						(stat->x_maxc ^ stat->x_minc) & 0x8000 && (stat->z_maxc ^ stat->z_minc) & 0x8000)
+					{
+						x = (r->mesh[j].x - r->x) >> 10;
+						z = (r->mesh[j].z - r->z) >> 10;
+						r->floor[x * r->x_size + z].stopper = 1;
+					}
+				}
+			}
+		}
+	}
+
+	return 1;
+}
+
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -961,4 +1050,5 @@ void inject_file(bool replace)
 	INJECT(0x00475AC0, LoadBoxes, replace);
 	INJECT(0x00475C70, LoadAnimatedTextures, replace);
 	INJECT(0x00475CE0, LoadTextureInfos, replace);
+	INJECT(0x00475EE0, LoadItems, replace);
 }

@@ -474,6 +474,7 @@
 #define overlap	VAR_U_(0x007FE9A8, ushort*)
 #define aranges	VAR_U_(0x00753BDC, short*)
 #define nAnimUVRanges	VAR_U_(0x0053339C, long)
+#define num_items	VAR_U_(0x00532C90, long)
 
 
 

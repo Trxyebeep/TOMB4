@@ -10,3 +10,4 @@
 #define CreateItem	( (short(__cdecl*)()) 0x00454360 )
 #define InitialiseItem	( (void(__cdecl*)(short)) 0x004543B0 )
 #define RemoveDrawnItem	( (void(__cdecl*)(short)) 0x004546A0 )
+#define InitialiseItemArray	( (void(__cdecl*)(long)) 0x00454140 )
