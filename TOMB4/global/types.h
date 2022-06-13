@@ -1885,6 +1885,18 @@ struct RANGE_STRUCT
 	short link_frame_num;
 };
 
+struct PHDSPRITESTRUCT
+{
+	ushort tpage;
+	ushort offset;
+	ushort width;
+	ushort height;
+	short x1;
+	short y1;
+	short x2;
+	short y2;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

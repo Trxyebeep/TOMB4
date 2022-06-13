@@ -660,7 +660,7 @@ bool LoadObjects()
 	for (int i = 0; i < num; i++)
 	{
 		slot = *(long*)FileData;
-		FileData += 4;
+		FileData += sizeof(long);
 		obj = &objects[slot];
 
 		obj->nmeshes = *(short*)FileData;
@@ -703,7 +703,7 @@ bool LoadObjects()
 	InitialiseObjects();
 
 	num = *(long*)FileData;	//statics
-	FileData += 4;
+	FileData += sizeof(long);
 
 	for (int i = 0; i < num; i++)
 	{
@@ -734,6 +734,74 @@ bool LoadObjects()
 	return 1;
 }
 
+bool LoadSprites()
+{
+	STATIC_INFO* stat;
+	OBJECT_INFO* obj;
+	SPRITESTRUCT* sptr;
+	PHDSPRITESTRUCT sprite;
+	long num_sprites, num_slots, slot;
+
+	Log(2, "LoadSprites");
+	FileData += 3;
+	num_sprites = *(long*)FileData;
+	FileData += sizeof(long);
+	spriteinfo = (SPRITESTRUCT*)game_malloc(sizeof(SPRITESTRUCT) * num_sprites);
+
+	for (int i = 0; i < num_sprites; i++)
+	{
+		sptr = &spriteinfo[i];
+		memcpy(&sprite, FileData, sizeof(PHDSPRITESTRUCT));
+		FileData += sizeof(PHDSPRITESTRUCT);
+		sptr->height = sprite.height;
+		sptr->offset = sprite.offset;
+		sptr->tpage = sprite.tpage;
+		sptr->width = sprite.width;
+		sptr->x1 = float((sprite.x1) * (1.0F / 256.0F));
+		sptr->y1 = float((sprite.y1) * (1.0F / 256.0F));
+		sptr->x2 = float((sprite.x2) * (1.0F / 256.0F));
+		sptr->y2 = float((sprite.y2) * (1.0F / 256.0F));
+		sptr->x1 += (1.0F / 256.0F);
+		sptr->y1 += (1.0F / 256.0F);
+		sptr->x2 -= (1.0F / 256.0F);
+		sptr->y2 -= (1.0F / 256.0F);
+		sptr->tpage++;
+	}
+
+	num_slots = *(long*)FileData;
+	FileData += sizeof(long);
+
+	if (num_slots <= 0)
+		return 1;
+
+	for (int i = 0; i < num_slots; i++)
+	{
+		slot = *(long*)FileData;
+		FileData += sizeof(long);
+
+		if (slot >= NUMBER_OBJECTS)
+		{
+			slot -= NUMBER_OBJECTS;
+			stat = &static_objects[slot];
+			stat->mesh_number = *(short*)FileData;
+			FileData += sizeof(short);
+			stat->mesh_number = *(short*)FileData;	//what the hell
+			FileData += sizeof(short);
+		}
+		else
+		{
+			obj = &objects[slot];
+			obj->nmeshes = *(short*)FileData;
+			FileData += sizeof(short);
+			obj->mesh_index = *(short*)FileData;
+			FileData += sizeof(short);
+			obj->loaded = 1;
+		}
+	}
+
+	return 1;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -748,4 +816,5 @@ void inject_file(bool replace)
 	INJECT(0x00473F20, LoadTextures, replace);
 	INJECT(0x004749C0, LoadRooms, replace);
 	INJECT(0x00474E10, LoadObjects, replace);
+	INJECT(0x00475730, LoadSprites, replace);
 }
