@@ -497,6 +497,7 @@ void PrelightVertsNonMMX(long nVerts, D3DTLVERTEX* v, ROOM_INFO* r)
 
 		v->specular &= 0xFF000000;
 		v->color = (v->color & 0xFF000000) | cR | cG | cB;
+		v++;
 	}
 
 	for (int i = r->nWaterVerts; i < r->nVerts; i++)
