@@ -1916,6 +1916,16 @@ struct PHDTEXTURESTRUCT
 	ulong height;
 };
 
+struct SAMPLE_INFO
+{
+	short number;
+	uchar volume;
+	char radius;
+	char randomness;
+	char pitch;
+	short flags;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

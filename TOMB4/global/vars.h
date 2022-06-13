@@ -475,6 +475,9 @@
 #define aranges	VAR_U_(0x00753BDC, short*)
 #define nAnimUVRanges	VAR_U_(0x0053339C, long)
 #define num_items	VAR_U_(0x00532C90, long)
+#define sample_lut	VAR_U_(0x007F76A0, short*)
+#define sample_infos	VAR_U_(0x007F76A4, SAMPLE_INFO*)
+#define samples_buffer	VAR_U_(0x0052AAAC, char*)
 
 
 
@@ -608,6 +611,7 @@
 #define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
 #define W2V_SHIFT	14
+#define MAX_SAMPLES	370
 #ifdef GENERAL_FIXES
 #define MAX_DYNAMICS	64
 #else

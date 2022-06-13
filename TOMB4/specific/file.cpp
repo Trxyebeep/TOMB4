@@ -1053,6 +1053,64 @@ bool LoadAIInfo()
 	return 1;
 }
 
+bool LoadSamples()
+{
+	long num_samples, uncomp_size, comp_size;
+	static long num_sample_infos;
+
+	Log(2, "LoadSamples");
+	sample_lut = (short*)game_malloc(MAX_SAMPLES * sizeof(short));
+	memcpy(sample_lut, FileData, MAX_SAMPLES * sizeof(short));
+	FileData += MAX_SAMPLES * sizeof(short);
+	num_sample_infos = *(long*)FileData;
+	FileData += sizeof(long);
+	Log(8, "Number Of Sample Infos %d", num_sample_infos);
+
+	if (!num_sample_infos)
+	{
+		Log(1, "No Sample Infos");
+		return 0;
+	}
+
+	sample_infos = (SAMPLE_INFO*)game_malloc(sizeof(SAMPLE_INFO) * num_sample_infos);
+	memcpy(sample_infos, FileData, sizeof(SAMPLE_INFO) * num_sample_infos);
+	FileData += sizeof(SAMPLE_INFO) * num_sample_infos;
+	num_samples = *(long*)FileData;
+	FileData += sizeof(long);
+
+	if (!num_samples)
+	{
+		Log(1, "No Samples");
+		return 0;
+	}
+
+	Log(8, "Number Of Samples %d", num_samples);
+	READ(&num_samples, 1, 4, level_fp);
+	InitSampleDecompress();
+
+	if (num_samples <= 0)
+	{
+		FreeSampleDecompress();
+		return 1;
+	}
+
+	for (int i = 0; i < num_samples; i++)
+	{
+		READ(&uncomp_size, 1, 4, level_fp);
+		READ(&comp_size, 1, 4, level_fp);
+		READ(samples_buffer, comp_size, 1, level_fp);
+
+		if (!DXCreateSampleADPCM(samples_buffer, comp_size, uncomp_size, i))
+		{
+			FreeSampleDecompress();
+			return 0;
+		}
+	}
+
+	FreeSampleDecompress();
+	return 1;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -1076,4 +1134,5 @@ void inject_file(bool replace)
 	INJECT(0x00475EE0, LoadItems, replace);
 	INJECT(0x004761E0, LoadCinematic, replace);
 	INJECT(0x004761F0, LoadAIInfo, replace);
+	INJECT(0x00476260, LoadSamples, replace);
 }

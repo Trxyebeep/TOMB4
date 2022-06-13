@@ -7,3 +7,6 @@
 #define DXChangeOutputFormat	( (bool(__cdecl*)(long, bool)) 0x004732E0 )
 #define DXFreeSounds	( (void(__cdecl*)()) 0x00473B40 )
 #define DXDSCreate	( (bool(__cdecl*)()) 0x00473500 )
+#define	InitSampleDecompress	( (bool(__cdecl*)()) 0x00473570 )
+#define	FreeSampleDecompress	( (bool(__cdecl*)()) 0x00473690 )
+#define	DXCreateSampleADPCM	( (bool(__cdecl*)(char*, long, long, long)) 0x00473710 )
