@@ -802,6 +802,31 @@ bool LoadSprites()
 	return 1;
 }
 
+bool LoadCameras()
+{
+	Log(2, "LoadCameras");
+	number_cameras = *(long*)FileData;
+	FileData += sizeof(long);
+
+	if (number_cameras)
+	{
+		camera.fixed = (OBJECT_VECTOR*)game_malloc(number_cameras * sizeof(OBJECT_VECTOR));
+		memcpy(camera.fixed, FileData, number_cameras * sizeof(OBJECT_VECTOR));
+		FileData += number_cameras * sizeof(OBJECT_VECTOR);
+	}
+
+	number_spotcams = *(short*)FileData;
+	FileData += sizeof(long);				//<<---- look at me
+
+	if (number_spotcams)
+	{
+		memcpy(SpotCam, FileData, number_spotcams * sizeof(SPOTCAM));
+		FileData += number_spotcams * sizeof(SPOTCAM);
+	}
+
+	return 1;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -817,4 +842,5 @@ void inject_file(bool replace)
 	INJECT(0x004749C0, LoadRooms, replace);
 	INJECT(0x00474E10, LoadObjects, replace);
 	INJECT(0x00475730, LoadSprites, replace);
+	INJECT(0x00475970, LoadCameras, replace);
 }

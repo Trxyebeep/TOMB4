@@ -467,6 +467,7 @@
 #define ranges	VAR_U_(0x00533A70, RANGE_STRUCT*)
 #define commands	VAR_U_(0x00533A8C, short*)
 #define frames	VAR_U_(0x00533A84, short*)
+#define number_cameras	VAR_U_(0x007FE940, long)
 
 
 

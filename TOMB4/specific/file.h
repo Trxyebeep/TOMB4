@@ -14,5 +14,6 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages);
 bool LoadRooms();
 bool LoadObjects();
 bool LoadSprites();
+bool LoadCameras();
 
 #define Decompress	( (void(__cdecl*)(char*, char*, long, long)) 0x00473E80 )
