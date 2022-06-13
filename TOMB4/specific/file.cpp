@@ -1111,6 +1111,25 @@ bool LoadSamples()
 	return 1;
 }
 
+void S_GetUVRotateTextures()
+{
+	TEXTURESTRUCT* tex;
+	short* pRange;
+
+	pRange = aranges + 1;
+
+	for (int i = 0; i < nAnimUVRanges; i++, pRange++)
+	{
+		for (int j = (int)*(pRange++); j >= 0; j--, pRange++)
+		{
+			tex = &textinfo[*pRange];
+			AnimatingTexturesV[i][j][0] = tex->v1;
+		}
+
+		pRange--;
+	}
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -1135,4 +1154,5 @@ void inject_file(bool replace)
 	INJECT(0x004761E0, LoadCinematic, replace);
 	INJECT(0x004761F0, LoadAIInfo, replace);
 	INJECT(0x00476260, LoadSamples, replace);
+	INJECT(0x00476410, S_GetUVRotateTextures, replace);
 }

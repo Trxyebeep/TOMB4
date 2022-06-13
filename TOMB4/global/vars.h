@@ -573,6 +573,7 @@
 #define conflict	ARRAY_(0x005355B8, long, [18])
 #define SaveGames	ARRAY_(0x00536F28, SAVEFILE_INFO, [15])
 #define matrix_stack	ARRAY_(0x00753D04, long, [12])
+#define AnimatingTexturesV	ARRAY_(0x00532D9C, float, [16][8][3])
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)
