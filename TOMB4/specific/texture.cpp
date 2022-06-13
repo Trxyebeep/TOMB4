@@ -1,6 +1,7 @@
 #include "../tomb4/pch.h"
 #include "texture.h"
 #include "dxshell.h"
+#include "function_stubs.h"
 
 LPDIRECTDRAWSURFACE4 CreateTexturePage(long w, long h, long MipMapCount, long* pSrc, rgbfunc RGBM, long format)
 {
@@ -102,7 +103,40 @@ LPDIRECTDRAWSURFACE4 CreateTexturePage(long w, long h, long MipMapCount, long* p
 	return tSurf;
 }
 
+void FreeTextures()
+{
+	TEXTURE* tex;
+
+	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, 0));
+	DXAttempt(App.dx.lpD3D->EvictManagedTextures());
+
+	for (int i = 0; i < nTextures; i++)
+	{
+		tex = &Textures[i];
+
+		if (tex->tex)
+		{
+			Log(4, "Released %s @ %x - RefCnt = %d", "Texture", tex->tex, tex->tex->Release());
+			tex->tex = 0;
+		}
+		else
+			Log(1, "%s Attempt To Release NULL Ptr", "Texture");
+
+		if (tex->surface)
+		{
+			Log(4, "Released %s @ %x - RefCnt = %d", "Surface", tex->surface, tex->surface->Release());
+			tex->surface = 0;
+		}
+		else
+			Log(1, "%s Attempt To Release NULL Ptr", "Surface");
+	}
+
+	FREE(Textures);
+	Textures = 0;
+}
+
 void inject_texture(bool replace)
 {
 	INJECT(0x0048E2F0, CreateTexturePage, replace);
+	INJECT(0x0048E6E0, FreeTextures, replace);
 }
