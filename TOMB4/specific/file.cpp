@@ -8,6 +8,8 @@
 #include "dxshell.h"
 #include "drawroom.h"
 #include "../game/setup.h"
+#include "../game/objects.h"
+#include "../game/laraskin.h"
 
 unsigned int __stdcall LoadLevel(void* name)
 {
@@ -583,6 +585,155 @@ bool LoadRooms()
 	return 1;
 }
 
+bool LoadObjects()
+{
+	OBJECT_INFO* obj;
+	STATIC_INFO* stat;
+	short** mesh;
+	short** mesh_size;
+	long size, num, slot;
+	static long num_meshes, num_anims;
+
+	Log(2, "LoadObjects");
+	memset(objects, 0, sizeof(objects));
+	memset(static_objects, 0, sizeof(static_objects));
+
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	mesh_base = (short*)game_malloc(size * sizeof(short));
+	memcpy(mesh_base, FileData, size * sizeof(short));
+	FileData += size * sizeof(short);
+
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	meshes = (short**)game_malloc(2 * size * sizeof(short*));
+	memcpy(meshes, FileData, size * sizeof(short*));
+	FileData += size * sizeof(short*);
+
+	for (int i=0;i<size;i++)
+		meshes[i] = mesh_base + (long)meshes[i] / 2;
+
+	num_meshes = size;
+
+	num_anims = *(long*)FileData;
+	FileData += sizeof(long);
+	anims = (ANIM_STRUCT*)game_malloc(sizeof(ANIM_STRUCT) * num_anims);
+	memcpy(anims, FileData, sizeof(ANIM_STRUCT) * num_anims);
+	FileData += sizeof(ANIM_STRUCT) * num_anims;
+
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	changes = (CHANGE_STRUCT*)game_malloc(sizeof(CHANGE_STRUCT) * size);
+	memcpy(changes, FileData, sizeof(CHANGE_STRUCT) * size);
+	FileData += sizeof(CHANGE_STRUCT) * size;
+
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	ranges = (RANGE_STRUCT*)game_malloc(sizeof(RANGE_STRUCT) * size);
+	memcpy(ranges, FileData, sizeof(RANGE_STRUCT) * size);
+	FileData += sizeof(RANGE_STRUCT) * size;
+
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	commands = (short*)game_malloc(sizeof(short) * size);
+	memcpy(commands, FileData, sizeof(short) * size);
+	FileData += sizeof(short) * size;
+
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	bones = (long*)game_malloc(sizeof(long) * size);
+	memcpy(bones, FileData, sizeof(long) * size);
+	FileData += sizeof(long) * size;
+
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	frames = (short*)game_malloc(sizeof(short) * size);
+	memcpy(frames, FileData, sizeof(short) * size);
+	FileData += sizeof(short) * size;
+
+	for (int i = 0; i < num_anims; i++)
+		anims[i].frame_ptr = (short*)((long)anims[i].frame_ptr + (long)frames);
+
+	num = *(long*)FileData;
+	FileData += sizeof(long);
+
+	for (int i = 0; i < num; i++)
+	{
+		slot = *(long*)FileData;
+		FileData += 4;
+		obj = &objects[slot];
+
+		obj->nmeshes = *(short*)FileData;
+		FileData += sizeof(short);
+
+		obj->mesh_index = *(short*)FileData;
+		FileData += sizeof(short);
+
+		obj->bone_index = *(long*)FileData;
+		FileData += sizeof(long);
+
+		obj->frame_base = (short*)(*(short**)FileData);
+		FileData += sizeof(short*);
+
+		obj->anim_index = *(short*)FileData;
+		FileData += sizeof(short);
+
+		obj->loaded = 1;
+	}
+
+	CreateSkinningData();
+
+	for (int i = 0; i < NUMBER_OBJECTS; i++)
+	{
+		obj = &objects[i];
+		obj->mesh_index *= 2;
+	}
+
+	mesh = meshes;
+	mesh_size = &meshes[num_meshes];
+	memcpy(mesh_size, mesh, num_meshes * 4);
+
+	for (int i = 0; i < num_meshes; i++)
+	{
+		*mesh++ = *mesh_size;
+		*mesh++ = *mesh_size;
+		mesh_size++;
+	}
+
+	InitialiseObjects();
+
+	num = *(long*)FileData;	//statics
+	FileData += 4;
+
+	for (int i = 0; i < num; i++)
+	{
+		slot = *(long*)FileData;
+		FileData += sizeof(long);
+		stat = &static_objects[slot];
+
+		stat->mesh_number = *(short*)FileData;
+		FileData += sizeof(short);
+
+		memcpy(&stat->x_minp, FileData, 6 * sizeof(short));
+		FileData += 6 * sizeof(short);
+
+		memcpy(&stat->x_minc, FileData, 6 * sizeof(short));
+		FileData += 6 * sizeof(short);
+
+		stat->flags = *(short*)FileData;
+		FileData += sizeof(short);
+	}
+
+	for (int i = 0; i < NUMBER_STATIC_OBJECTS; i++)
+	{
+		stat = &static_objects[i];
+		stat->mesh_number *= 2;
+	}
+
+	ProcessMeshData(num_meshes * 2);
+	return 1;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -596,4 +747,5 @@ void inject_file(bool replace)
 	INJECT(0x00473DD0, LoadFile, 0);
 	INJECT(0x00473F20, LoadTextures, replace);
 	INJECT(0x004749C0, LoadRooms, replace);
+	INJECT(0x00474E10, LoadObjects, replace);
 }

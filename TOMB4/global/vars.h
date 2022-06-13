@@ -463,6 +463,10 @@
 #define CompressedData	VAR_U_(0x00533A58, char*)
 #define FileData	VAR_U_(0x005333A4, char*)
 #define floor_data	VAR_U_(0x00533A78, short*)
+#define changes	VAR_U_(0x00533A6C, CHANGE_STRUCT*)
+#define ranges	VAR_U_(0x00533A70, RANGE_STRUCT*)
+#define commands	VAR_U_(0x00533A8C, short*)
+#define frames	VAR_U_(0x00533A84, short*)
 
 
 

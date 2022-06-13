@@ -7,4 +7,5 @@ void ObjectObjects();
 void TrapObjects();
 
 #define BuildOutsideTable	( (void(__cdecl*)()) 0x0045ED30 )
+#define InitialiseObjects	( (void(__cdecl*)()) 0x0045C0D0 )
 

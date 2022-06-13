@@ -123,7 +123,7 @@ void DrawBikeBeam(ITEM_INFO* item)
 	OBJECT_INFO* obj;
 	short** meshpp;
 	long* bone;
-	short* frames[2];
+	short* frm[2];
 	short* rot;
 	long rate, bounds, r, g, b;
 #ifdef GENERAL_FIXES
@@ -139,15 +139,15 @@ void DrawBikeBeam(ITEM_INFO* item)
 #ifdef GENERAL_FIXES
 	frac = 
 #endif
-		GetFrames(item, frames, &rate);
+		GetFrames(item, frm, &rate);
 	phd_PushMatrix();
 	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
-	bounds = S_GetObjectBounds(frames[0]);
+	bounds = S_GetObjectBounds(frm[0]);
 
 	if (bounds)
 	{
-		CalculateObjectLighting(item, frames[0]);
+		CalculateObjectLighting(item, frm[0]);
 		bounds = 1;
 		obj = &objects[item->object_number];
 		meshpp = &meshes[obj->mesh_index];
@@ -158,10 +158,10 @@ void DrawBikeBeam(ITEM_INFO* item)
 		if (frac)
 		{
 			InitInterpolate(frac, rate);
-			phd_TranslateRel_ID(frames[0][6], frames[0][7], frames[0][8], frames[1][6], frames[1][7], frames[1][8]);
+			phd_TranslateRel_ID(frm[0][6], frm[0][7], frm[0][8], frm[1][6], frm[1][7], frm[1][8]);
 
-			rot = frames[0] + 9;
-			rot2 = frames[1] + 9;
+			rot = frm[0] + 9;
+			rot2 = frm[1] + 9;
 			gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 
 			for (int i = 0; i < obj->nmeshes - 1; i++)
@@ -199,8 +199,8 @@ void DrawBikeBeam(ITEM_INFO* item)
 		else
 #endif
 		{
-			phd_TranslateRel(frames[0][6], frames[0][7], frames[0][8]);
-			rot = frames[0] + 9;
+			phd_TranslateRel(frm[0][6], frm[0][7], frm[0][8]);
+			rot = frm[0] + 9;
 			gar_RotYXZsuperpack(&rot, 0);
 
 			for (int i = 0; i < obj->nmeshes - 1; i++)

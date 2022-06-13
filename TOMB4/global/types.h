@@ -1862,12 +1862,27 @@ struct SAVEFILE_INFO
 	long num;
 };
 
-struct COMMAND
+struct COMMANDLINES
 {
 	char command[20];
 	bool needs_parameter;
 	void (*code)(char*);
 	char parameter[20];
+};
+
+struct CHANGE_STRUCT
+{
+	short goal_anim_state;
+	short number_ranges;
+	short range_index;
+};
+
+struct RANGE_STRUCT
+{
+	short start_frame;
+	short end_frame;
+	short link_anim_num;
+	short link_frame_num;
 };
 
 #ifdef IMPROVED_BARS

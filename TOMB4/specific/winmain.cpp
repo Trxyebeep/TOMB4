@@ -17,7 +17,7 @@
 #include "dxsound.h"
 #include "gamemain.h"
 
-COMMAND commands[] =
+static COMMANDLINES commandlines[] =
 {
 	{ "SETUP", 0, &CLSetup },
 	{ "NOFMV", 0, &CLNoFMV }
@@ -45,7 +45,7 @@ bool WinRunCheck(LPSTR WindowName, LPSTR ClassName, HANDLE* mutex)
 
 void WinProcessCommandLine(LPSTR cmd)
 {
-	COMMAND* command;
+	COMMANDLINES* command;
 	char* pCommand;
 	char* p;
 	char* last;
@@ -55,11 +55,11 @@ void WinProcessCommandLine(LPSTR cmd)
 
 	Log(2, "WinProcessCommandLine");
 
-	num = sizeof(commands) / sizeof(commands[0]);
+	num = sizeof(commandlines) / sizeof(commandlines[0]);
 	
 	for (int i = 0; i < num; i++)
 	{
-		command = &commands[i];
+		command = &commandlines[i];
 		command->code((char*)"_INIT");
 	}
 
@@ -71,7 +71,7 @@ void WinProcessCommandLine(LPSTR cmd)
 
 	for (int i = 0; i < num; i++)
 	{
-		command = &commands[i];
+		command = &commandlines[i];
 		memset(parameter, 0, sizeof(parameter));
 		pCommand = strstr(cmd, command->command);
 
