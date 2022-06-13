@@ -56,6 +56,7 @@ do \
 #define TELL	( (int(__cdecl*)(FILE*)) 0x004A0B5F )
 #define CLOSE	( (int(__cdecl*)(FILE*)) 0x004A07B4 )
 #define MALLOC	( (void*(__cdecl*)(size_t)) 0x004A0558 )
+#define REALLOC	( (void*(__cdecl*)(void*, size_t)) 0x004A1453 )
 #define FREE	( (void(__cdecl*)(void*)) 0x004A0A01 )
 	/**********************************/
 

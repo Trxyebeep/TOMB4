@@ -28,17 +28,17 @@ void GameClose()
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Dest VB");
 
-	free(clipflags);
+	FREE(clipflags);
 
 	if (wav_file_buffer)
-		free(wav_file_buffer);
+		FREE(wav_file_buffer);
 
 	if (ADPCMBuffer)
-		free(ADPCMBuffer);
+		FREE(ADPCMBuffer);
 
-	free(malloc_buffer);
-	free(gfScriptFile);
-	free(gfLanguageFile);
+	FREE(malloc_buffer);
+	FREE(gfScriptFile);
+	FREE(gfLanguageFile);
 }
 
 unsigned int __stdcall GameMain(void* ptr)
@@ -87,6 +87,6 @@ unsigned int __stdcall GameMain(void* ptr)
 
 void inject_gamemain(bool replace)
 {
-	INJECT(0x004770C0, GameClose, 0);
+	INJECT(0x004770C0, GameClose, replace);
 	INJECT(0x00476EC0, GameMain, replace);
 }

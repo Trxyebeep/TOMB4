@@ -190,8 +190,8 @@ void FreeLevel()
 	Log(5, "Free Lights");
 	FreeD3DLights();
 	DXFreeSounds();
-	free(OutsideRoomTable);
-	free(OutsideRoomOffsets);
+	FREE(OutsideRoomTable);
+	FREE(OutsideRoomOffsets);
 	malloc_ptr = malloc_buffer;
 	malloc_free = malloc_size;
 }
@@ -288,7 +288,7 @@ long LoadFile(const char* name, char** dest)
 	size = FileSize(file);
 
 	if (!*dest)
-		*dest = (char*)malloc(size);
+		*dest = (char*)MALLOC(size);
 
 	count = READ(*dest, 1, size, file); //fread(*dest, 1, size, file);
 	Log(5, "Read - %d FileSize - %d", count, size);
@@ -297,7 +297,7 @@ long LoadFile(const char* name, char** dest)
 	{
 		Log(1, "Error Reading File");
 		FileClose(file);
-		free(*dest);
+		FREE(*dest);
 		return 0;
 	}
 
@@ -1253,12 +1253,12 @@ void inject_file(bool replace)
 	INJECT(0x00476470, LoadLevel, replace);
 
 	INJECT(0x004768C0, S_LoadLevelFile, replace);
-	INJECT(0x00476790, FreeLevel, 0);
+	INJECT(0x00476790, FreeLevel, 1);
 	INJECT(0x00473C10, FindCDDrive, replace);
 	INJECT(0x00473CE0, FileOpen, replace);
 	INJECT(0x00473D80, FileClose, replace);
 	INJECT(0x00473DA0, FileSize, replace);
-	INJECT(0x00473DD0, LoadFile, 0);
+	INJECT(0x00473DD0, LoadFile, 1);
 	INJECT(0x00473F20, LoadTextures, replace);
 	INJECT(0x004749C0, LoadRooms, replace);
 	INJECT(0x00474E10, LoadObjects, replace);
