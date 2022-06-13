@@ -6,6 +6,8 @@
 #include "dxsound.h"
 #include "LoadSave.h"
 #include "dxshell.h"
+#include "drawroom.h"
+#include "../game/setup.h"
 
 unsigned int __stdcall LoadLevel(void* name)
 {
@@ -222,16 +224,16 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 
 		READ(&size, 1, 4, level_fp);
 		READ(&compressedSize, 1, 4, level_fp);
-		SEEK(level_fp, compressedSize, 1);
+		SEEK(level_fp, compressedSize, SEEK_CUR);
 		FREE(CompressedData);
 	}
 	else
 	{
 		READ(&size, 1, 4, level_fp);
 		READ(&compressedSize, 1, 4, level_fp);
-		SEEK(level_fp, compressedSize, 1);
+		SEEK(level_fp, compressedSize, SEEK_CUR);
 
-		READ(&size, 1u, 4u, level_fp);
+		READ(&size, 1, 4, level_fp);
 		READ(&compressedSize, 1, 4, level_fp);
 
 		CompressedData = (char*)MALLOC(compressedSize);
@@ -441,6 +443,146 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	return 1;
 }
 
+bool LoadRooms()
+{
+	ROOM_INFO* r;
+	long size, nDoors;
+
+	Log(2, "LoadRooms");
+	wibble = 0;
+	MaxRoomLights = 0;
+	NumLevelFogBulbs = 0;
+	FileData += sizeof(long);
+	number_rooms = *(short*)FileData;
+	FileData += sizeof(short);
+	Log(7, "Number Of Rooms %d", number_rooms);
+
+	if (number_rooms < 0 || number_rooms > 1024)
+	{
+		Log(1, "Incorrect Number Of Rooms");
+		return 0;
+	}
+
+	room = (ROOM_INFO*)game_malloc(number_rooms * sizeof(ROOM_INFO));
+
+	if (!room)
+		return 0;
+
+	for (int i = 0; i < number_rooms; i++)
+	{
+		r = &room[i];
+
+		r->x = *(long*)FileData;
+		FileData += sizeof(long);
+
+		r->y = 0;
+
+		r->z = *(long*)FileData;
+		FileData += sizeof(long);
+
+		r->minfloor = *(long*)FileData;
+		FileData += sizeof(long);
+
+		r->maxceiling = *(long*)FileData;
+		FileData += sizeof(long);
+
+		size = *(long*)FileData;
+		FileData += sizeof(long);
+		r->data = (short*)game_malloc(size * sizeof(short));
+		memcpy(r->data, FileData, size * sizeof(short));
+		FileData += size * sizeof(short);
+
+		nDoors = *(short*)FileData;
+		FileData += sizeof(short);
+
+		if (nDoors)
+		{
+			r->door = (short*)game_malloc((16 * nDoors + 1) * sizeof(short));
+			r->door[0] = (short)nDoors;
+			memcpy(r->door + 1, FileData, 16 * nDoors * sizeof(short));
+			FileData += 16 * nDoors * sizeof(short);
+		}
+		else
+			r->door = 0;
+
+		r->x_size = *(short*)FileData;
+		FileData += sizeof(short);
+
+		r->y_size = *(short*)FileData;
+		FileData += sizeof(short);
+
+		size = r->x_size * r->y_size * sizeof(FLOOR_INFO);
+		r->floor = (FLOOR_INFO*)game_malloc(size);
+		memcpy(r->floor, FileData, size);
+		FileData += size;
+
+		r->ambient = *(long*)FileData;
+		FileData += sizeof(long);
+
+		r->num_lights = *(short*)FileData;
+		FileData += sizeof(short);
+
+		if (r->num_lights)
+		{
+			size = sizeof(LIGHTINFO) * r->num_lights;
+			r->light = (LIGHTINFO*)game_malloc(size);
+			memcpy(r->light, FileData, size);
+			FileData += size;
+		}
+		else
+			r->light = 0;
+
+		r->num_meshes = *(short*)FileData;
+		FileData += sizeof(short);
+
+		if (r->num_meshes)
+		{
+			size = sizeof(MESH_INFO) * r->num_meshes;
+			r->mesh = (MESH_INFO*)game_malloc(size);
+			memcpy(r->mesh, FileData, size);
+			FileData += size;
+
+			for (int j = 0; j < r->num_meshes; j++)
+				r->mesh[j].Flags = 1;
+		}
+		else
+			r->mesh = 0;
+
+		r->flipped_room = *(short*)FileData;
+		FileData += sizeof(short);
+
+		r->flags = *(short*)FileData;
+		FileData += sizeof(short);
+
+		r->MeshEffect = *(char*)FileData;
+		FileData += sizeof(char);
+
+		r->ReverbType = *(char*)FileData;
+		FileData += sizeof(char);
+
+		r->FlipNumber = *(char*)FileData;
+		FileData += sizeof(char);
+
+		r->left = 0x7FFF;
+		r->top = 0x7FFF;
+		r->bound_active = 0;
+		r->right = 0;
+		r->bottom = 0;
+		r->item_number = NO_ITEM;
+		r->fx_number = NO_ITEM;
+		ProcessRoomData(r);
+	}
+
+	BuildOutsideTable();
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	floor_data = (short*)game_malloc(2 * size);
+	memcpy(floor_data, FileData, 2 * size);
+	FileData += sizeof(short) * size;
+	Log(0, "Floor Data Size %d @ %x", size, floor_data);
+	return 1;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, 0);
@@ -453,4 +595,5 @@ void inject_file(bool replace)
 	INJECT(0x00473DA0, FileSize, replace);
 	INJECT(0x00473DD0, LoadFile, 0);
 	INJECT(0x00473F20, LoadTextures, replace);
+	INJECT(0x004749C0, LoadRooms, replace);
 }

@@ -462,6 +462,7 @@
 #define level_fp	VAR_U_(0x00533A74, FILE*)
 #define CompressedData	VAR_U_(0x00533A58, char*)
 #define FileData	VAR_U_(0x005333A4, char*)
+#define floor_data	VAR_U_(0x00533A78, short*)
 
 
 
