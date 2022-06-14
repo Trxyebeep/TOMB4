@@ -240,6 +240,48 @@ BOOL __stdcall ACMEnumCallBack(HACMDRIVERID hadid, DWORD_PTR dwInstance, DWORD f
 	return 0;
 }
 
+long ACMSetupNotifications()
+{
+	DSBPOSITIONNOTIFY posNotif[5];
+	ulong ThreadId;
+	long result;
+
+	NotifyEventHandles[0] = CreateEvent(0, 0, 0, 0);
+	NotifyEventHandles[1] = CreateEvent(0, 0, 0, 0);
+	posNotif[0].dwOffset = NotifySize;
+	posNotif[0].hEventNotify = NotifyEventHandles[0];
+	Log(8, "Set notifies for position %lu", posNotif[0].dwOffset);
+
+	for (int i = 1; i < 4; i++)
+	{
+		posNotif[i].dwOffset = NotifySize + posNotif[i - 1].dwOffset;
+		posNotif[i].hEventNotify = NotifyEventHandles[0];
+		Log(8, "Set notifies for positions %lu", posNotif[i].dwOffset);
+	}
+
+	posNotif[3].dwOffset--;
+	posNotif[4].dwOffset = -1;
+	posNotif[4].hEventNotify = NotifyEventHandles[1];
+	NotificationThreadHandle = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)ACMHandleNotifications, 0, 0, &ThreadId);
+
+	if (!NotificationThreadHandle)
+		Log(1, "Create Notification Thread failed");
+
+	result = G_DSNotify->SetNotificationPositions(5, posNotif);
+
+	if (result != DS_OK)
+	{
+		CloseHandle(NotifyEventHandles[0]);
+		CloseHandle(NotifyEventHandles[1]);
+		NotifyEventHandles[1] = 0;
+		NotifyEventHandles[0] = 0;
+	}
+	else
+		Log(8, "Setup Notifications OK");
+
+	return result;
+}
+
 void inject_audio(bool replace)
 {
 	INJECT(0x0046DE50, OpenStreamFile, replace);
@@ -247,4 +289,5 @@ void inject_audio(bool replace)
 	INJECT(0x0046D7B0, ACMSetVolume, replace);
 	INJECT(0x0046E180, ACMEmulateCDPlay, replace);
 	INJECT(0x0046D800, ACMEnumCallBack, replace);
+	INJECT(0x0046D890, ACMSetupNotifications, replace);
 }

@@ -8,6 +8,7 @@ void GetADPCMData();
 void ACMSetVolume();
 void ACMEmulateCDPlay(long track, long mode);
 BOOL __stdcall ACMEnumCallBack(HACMDRIVERID hadid, DWORD_PTR dwInstance, DWORD fdwSupport);
+long ACMSetupNotifications();
 
 #define	S_CDStop	( (void(__cdecl*)()) 0x0046D6B0 )
 #define S_StartSyncedAudio	( (void(__cdecl*)(int)) 0x0046D790 )
@@ -15,3 +16,4 @@ BOOL __stdcall ACMEnumCallBack(HACMDRIVERID hadid, DWORD_PTR dwInstance, DWORD f
 #define ACMClose	( (void(__cdecl*)()) 0x0046DD00 )
 #define FillADPCMBuffer	( (void(__cdecl*)(char*, long)) 0x0046DF50 )
 #define ACMInit	( (void(__cdecl*)()) 0x0046D9C0 )
+#define ACMHandleNotifications	( (long(__cdecl*)()) 0x0046E340 )

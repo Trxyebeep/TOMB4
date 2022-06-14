@@ -494,6 +494,8 @@
 #define NextWriteOffset	VAR_U_(0x004BFE30, long)
 #define NotifySize	VAR_U_(0x004BFE28, long)
 #define hACMDriverID	VAR_U_(0x004BFE24, HACMDRIVERID)
+#define NotificationThreadHandle	VAR_U_(0x004BFE00, HANDLE)
+#define G_DSNotify	VAR_U_(0x004BFE58, LPDIRECTSOUNDNOTIFY)
 
 
 
@@ -593,6 +595,7 @@
 #define AnimatingWaterfalls	ARRAY_(0x007FD1E0, TEXTURESTRUCT*, [3])
 #define AnimatingWaterfallsV	ARRAY_(0x007FD1F0, long, [3])
 #define StreamHeaders	ARRAY_(0x004BFCA8, ACMSTREAMHEADER, [4])
+#define NotifyEventHandles	ARRAY_(0x004BFDF8, HANDLE, [2])
 
 
 /*Fog stuff*/

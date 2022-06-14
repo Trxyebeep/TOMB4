@@ -1476,7 +1476,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0046D790		S_StartSyncedAudio
 0x0046D7B0	+	ACMSetVolume
 0x0046D800	+	ACMEnumCallBack
-0x0046D890		ACMSetupNotifications
+0x0046D890	+	ACMSetupNotifications
 0x0046D9C0		ACMInit
 0x0046DD00		ACMClose
 0x0046DE50	+	OpenStreamFile
