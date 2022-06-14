@@ -545,6 +545,12 @@ void S_CDStop()
 	}
 }
 
+void S_StartSyncedAudio(long track)
+{
+	S_CDStop();
+	S_CDPlay(track, 2);
+}
+
 void inject_audio(bool replace)
 {
 	INJECT(0x0046DE50, OpenStreamFile, replace);
@@ -559,4 +565,5 @@ void inject_audio(bool replace)
 	INJECT(0x0046DD00, ACMClose, replace);
 	INJECT(0x0046D610, S_CDPlay, replace);
 	INJECT(0x0046D6B0, S_CDStop, replace);
+	INJECT(0x0046D790, S_StartSyncedAudio, replace);
 }

@@ -15,5 +15,4 @@ bool ACMInit();
 void ACMClose();
 void S_CDPlay(long track, long mode);
 void S_CDStop();
-
-#define S_StartSyncedAudio	( (void(__cdecl*)(int)) 0x0046D790 )
+void S_StartSyncedAudio(long track);
