@@ -465,6 +465,41 @@ bool ACMInit()
 	return 1;
 }
 
+void ACMClose()
+{
+	if (!acm_ready)
+		return;
+
+	EnterCriticalSection(&audio_cs);
+	S_CDStop();
+	CloseHandle(NotifyEventHandles[0]);
+	CloseHandle(NotifyEventHandles[1]);
+	acmStreamUnprepareHeader(hACMStream, &StreamHeaders[0], 0);
+	acmStreamUnprepareHeader(hACMStream, &StreamHeaders[1], 0);
+	acmStreamUnprepareHeader(hACMStream, &StreamHeaders[2], 0);
+	acmStreamUnprepareHeader(hACMStream, &StreamHeaders[3], 0);
+	acmStreamClose(hACMStream, 0);
+	acmDriverClose(hACMDriver, 0);
+
+	if (G_DSNotify)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Notification", G_DSNotify, G_DSNotify->Release());
+		G_DSNotify = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Notification");
+
+	if (G_DSBuffer)
+	{
+		Log(4, "Released %s @ %x - RefCnt = %d", "Stream Buffer", G_DSBuffer, G_DSBuffer->Release());
+		G_DSBuffer = 0;
+	}
+	else
+		Log(1, "%s Attempt To Release NULL Ptr", "Stream Buffer");
+
+	LeaveCriticalSection(&audio_cs);
+}
+
 void inject_audio(bool replace)
 {
 	INJECT(0x0046DE50, OpenStreamFile, replace);
@@ -476,4 +511,5 @@ void inject_audio(bool replace)
 	INJECT(0x0046DF50, FillADPCMBuffer, 0);	//inject me when FILE* stuff are moved to dll
 	INJECT(0x0046E340, ACMHandleNotifications, replace);
 	INJECT(0x0046D9C0, ACMInit, replace);
+	INJECT(0x0046DD00, ACMClose, replace);
 }
