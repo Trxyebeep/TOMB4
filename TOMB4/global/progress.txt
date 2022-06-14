@@ -1731,7 +1731,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0047FA10		S_OutputPolyList
 0x0047FCA0		S_DumpScreen
 0x0047FCF0	+	S_GetObjectBounds
-0x00480070		S_AnimateTextures
+0x00480070	+	S_AnimateTextures
 0x00480220	+	ProjectTrainVerts
 0x00480310	+	phd_PutPolygons_train
 0x00480570	+	RenderLoadPic

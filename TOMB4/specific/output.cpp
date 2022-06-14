@@ -1104,6 +1104,74 @@ void do_boot_screen(long language)
 	}
 }
 
+void S_AnimateTextures(long n)
+{
+	TEXTURESTRUCT* tex;
+	TEXTURESTRUCT tex2;
+	short* range;
+	float voff;
+	static long comp;
+	short nRanges, nRangeFrames;
+
+	for (comp += n; comp > 5; comp -= 5)
+	{
+		nRanges = *aranges;
+		range = aranges + 1;
+
+		for (int i = 0; i < nRanges; i++)
+		{
+			nRangeFrames = *range++;
+
+			if (i < nAnimUVRanges && gfUVRotate)
+			{
+				while (nRangeFrames > 0)
+				{
+					range++;
+					nRangeFrames--;
+				}
+			}
+			else
+			{
+				tex2 = textinfo[*range];
+
+				while (nRangeFrames > 0)
+				{
+					textinfo[range[0]] = textinfo[range[1]];
+					range++;
+					nRangeFrames--;
+				}
+
+				textinfo[*range] = tex2;
+			}
+
+			range++;
+		}
+	}
+
+	if (gfUVRotate)
+	{
+		range = aranges + 1;
+		AnimatingTexturesVOffset = (AnimatingTexturesVOffset - gfUVRotate * (n >> 1)) & 0x1F;
+
+		for (int i = 0; i < nAnimUVRanges; i++)
+		{
+			nRangeFrames = *range++;
+
+			while (nRangeFrames >= 0)
+			{
+				tex = &textinfo[range[0]];
+				voff = AnimatingTexturesVOffset * (1.0F / 256.0F);
+				tex->v1 = voff + AnimatingTexturesV[i][nRangeFrames][0];
+				tex->v2 = voff + AnimatingTexturesV[i][nRangeFrames][0];
+				tex->v3 = voff + AnimatingTexturesV[i][nRangeFrames][0] + 0.125F;
+				tex->v4 = voff + AnimatingTexturesV[i][nRangeFrames][0] + 0.125F;
+				range++;
+				nRangeFrames--;
+			}
+		}
+	}
+}
+
 void inject_output(bool replace)
 {
 	INJECT(0x0047DA60, phd_PutPolygons, replace);
@@ -1120,4 +1188,5 @@ void inject_output(bool replace)
 	INJECT(0x00480700, DDCopyBitmap, replace);
 	INJECT(0x00480850, _LoadBitmap, replace);
 	INJECT(0x004808E0, do_boot_screen, replace);
+	INJECT(0x00480070, S_AnimateTextures, replace);
 }

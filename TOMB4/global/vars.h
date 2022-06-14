@@ -479,6 +479,7 @@
 #define sample_infos	VAR_U_(0x007F76A4, SAMPLE_INFO*)
 #define samples_buffer	VAR_U_(0x0052AAAC, char*)
 #define acm_ready	VAR_U_(0x004BFE64, bool)
+#define AnimatingTexturesVOffset	VAR_U_(0x00533AC8, short)
 
 
 
