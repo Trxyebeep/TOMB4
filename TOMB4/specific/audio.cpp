@@ -357,6 +357,52 @@ void FillADPCMBuffer(char* p, long track)
 	continue_reading_audio_file = 1;
 }
 
+long ACMHandleNotifications()
+{
+	char* write;
+	ulong wait, bytes;
+
+	while ((wait = WaitForMultipleObjects(2, NotifyEventHandles, 0, INFINITE)) != WAIT_FAILED)
+	{
+		EnterCriticalSection(&audio_cs);
+
+		if (!wait && G_DSBuffer)
+		{
+			memcpy(ADPCMBuffer, audio_fp_write_ptr, 0x5800);
+
+			if (XATrack == -1)
+				memset(ADPCMBuffer, 0, 0x5800);
+			else
+				FillADPCMBuffer((char*)audio_fp_write_ptr, XATrack);
+
+			if (continue_reading_audio_file)
+			{
+				audio_fp_write_ptr += 0x5800;
+
+				if ((long)audio_fp_write_ptr >= long(wav_file_buffer + 0x37000))
+					audio_fp_write_ptr = wav_file_buffer;
+
+				G_DSBuffer->Lock(NextWriteOffset, NotifySize, (LPVOID*)&write, &bytes, 0, 0, 0);
+				acmStreamConvert(hACMStream, &StreamHeaders[CurrentNotify], ACM_STREAMCONVERTF_BLOCKALIGN);
+				G_DSBuffer->Unlock(&write, bytes, 0, 0);
+				NextWriteOffset += bytes;
+
+				if (NextWriteOffset >= audio_buffer_size)
+					NextWriteOffset -= audio_buffer_size;
+
+				CurrentNotify = (CurrentNotify + 1) & 3;
+			}
+		}
+
+		LeaveCriticalSection(&audio_cs);
+
+		if (!G_DSBuffer)
+			break;
+	}
+
+	return DS_OK;
+}
+
 void inject_audio(bool replace)
 {
 	INJECT(0x0046DE50, OpenStreamFile, replace);
@@ -366,4 +412,5 @@ void inject_audio(bool replace)
 	INJECT(0x0046D800, ACMEnumCallBack, replace);
 	INJECT(0x0046D890, ACMSetupNotifications, replace);
 	INJECT(0x0046DF50, FillADPCMBuffer, 0);	//inject me when FILE* stuff are moved to dll
+	INJECT(0x0046E340, ACMHandleNotifications, replace);
 }
