@@ -18,6 +18,7 @@
 #include "../game/gameflow.h"
 #include "../tomb4/tomb4.h"
 #endif
+#include "time.h"
 
 void phd_PutPolygons(short* objptr, long clip)	//whore
 {
@@ -1172,6 +1173,25 @@ void S_AnimateTextures(long n)
 	}
 }
 
+long S_DumpScreen()
+{
+	long n;
+
+	n = Sync();
+
+	while (n < 2)
+	{
+		while (!Sync());	//wait for sync
+		n++;
+	}
+
+	GnFrameCounter++;
+	_EndScene();
+	DXShowFrame();
+	App.dx.DoneBlit = 1;
+	return n;
+}
+
 void inject_output(bool replace)
 {
 	INJECT(0x0047DA60, phd_PutPolygons, replace);
@@ -1189,4 +1209,5 @@ void inject_output(bool replace)
 	INJECT(0x00480850, _LoadBitmap, replace);
 	INJECT(0x004808E0, do_boot_screen, replace);
 	INJECT(0x00480070, S_AnimateTextures, replace);
+	INJECT(0x0047FCA0, S_DumpScreen, replace);
 }
