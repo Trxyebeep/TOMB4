@@ -19,8 +19,8 @@ HRESULT _LoadBitmap(LPDIRECTDRAWSURFACE4 surf, LPCSTR name);
 void do_boot_screen(long language);
 void S_AnimateTextures(long n);
 long S_DumpScreen();
+void S_OutputPolyList();
 
 #define CalcVertsColorSplitMMX ( (void(__cdecl*)(long, D3DTLVERTEX*)) 0x0047D810 )
 #define StashSkinVertices	( (void(__cdecl*)(long)) 0x0047D6B0 )
 #define SkinVerticesToScratch	( (void(__cdecl*)(long)) 0x0047D760 )
-#define S_OutputPolyList	( (void(__cdecl*)()) 0x0047FA10 )

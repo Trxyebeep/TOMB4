@@ -19,6 +19,8 @@
 #include "../tomb4/tomb4.h"
 #endif
 #include "time.h"
+#include "winmain.h"
+#include "../game/tomb4fx.h"
 
 void phd_PutPolygons(short* objptr, long clip)	//whore
 {
@@ -1192,6 +1194,102 @@ long S_DumpScreen()
 	return n;
 }
 
+void S_OutputPolyList()
+{
+	D3DRECT r;
+	long h;
+
+	RestoreFPCW(FPCW);
+	WinFrameRate();
+	nPolys = 0;
+	nClippedPolys = 0;
+	DrawPrimitiveCnt = 0;
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+
+	if (resChangeCounter)
+	{
+		WinDisplayString(8, App.dx.dwRenderHeight - 8, (char*)"%dx%d", App.dx.dwRenderWidth, App.dx.dwRenderHeight);
+		resChangeCounter -= long(30 / App.fps);
+
+		if (resChangeCounter < 0)
+			resChangeCounter = 0;
+	}
+
+	if (App.dx.lpZBuffer)
+		DrawBuckets();
+
+	if (!gfCurrentLevel)
+	{
+		Fade();
+
+		if (App.dx.lpZBuffer)
+			DrawSortList();
+	}
+
+	SortPolyList(SortCount, SortList);
+	DrawSortList();
+
+	if (App.dx.lpZBuffer)
+	{
+		r.x1 = App.dx.rViewport.left;
+		r.y1 = App.dx.rViewport.top;
+		r.x2 = App.dx.rViewport.left + App.dx.rViewport.right;
+		r.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
+		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
+	}
+
+	if (BinocularRange && !MonoScreenOn)
+	{
+		InitialiseSortList();
+		DrawBinoculars();
+		DrawSortList();
+	}
+
+	if (pickups[CurrentPickup].life != -1 && !MonoScreenOn && !GLOBAL_playing_cutseq)
+	{
+		bWaterEffect = 0;
+		InitialiseSortList();
+		S_DrawPickup(pickups[CurrentPickup].object_number);
+		SortPolyList(SortCount, SortList);
+		DrawSortList();
+	}
+
+	InitialiseSortList();
+
+	if (FadeScreenHeight)
+	{
+		h = long((float)phd_winymax / 256.0F) * FadeScreenHeight;
+		DrawPsxTile(0, phd_winwidth | (h << 16), 0x62FFFFFF, 0, 0);
+		DrawPsxTile(phd_winheight - h, phd_winwidth | (h << 16), 0x62FFFFFF, 0, 0);
+	}
+
+	if (gfCurrentLevel)
+	{
+		Fade();
+
+		if (FlashFader)
+		{
+			DrawFlash();
+
+			if (FlashFader)
+				FlashFader -= 2;
+		}
+
+		DrawSortList();
+	}
+
+	if (DoFade == 1)
+	{
+		InitialiseSortList();
+		DoScreenFade();
+		DrawSortList();
+	}
+
+	MungeFPCW(&FPCW);
+}
+
 void inject_output(bool replace)
 {
 	INJECT(0x0047DA60, phd_PutPolygons, replace);
@@ -1210,4 +1308,5 @@ void inject_output(bool replace)
 	INJECT(0x004808E0, do_boot_screen, replace);
 	INJECT(0x00480070, S_AnimateTextures, replace);
 	INJECT(0x0047FCA0, S_DumpScreen, replace);
+	INJECT(0x0047FA10, S_OutputPolyList, replace);
 }

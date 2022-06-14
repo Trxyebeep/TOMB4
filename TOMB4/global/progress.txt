@@ -1728,7 +1728,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0047F620	+	phd_PutPolygonSkyMesh
 0x0047F950	+	_InsertRoom
 0x0047F970	+	S_DrawPickup
-0x0047FA10		S_OutputPolyList
+0x0047FA10	+	S_OutputPolyList
 0x0047FCA0	+	S_DumpScreen
 0x0047FCF0	+	S_GetObjectBounds
 0x00480070	+	S_AnimateTextures
