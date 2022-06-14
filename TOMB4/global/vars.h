@@ -496,6 +496,9 @@
 #define hACMDriverID	VAR_U_(0x004BFE24, HACMDRIVERID)
 #define NotificationThreadHandle	VAR_U_(0x004BFE00, HANDLE)
 #define G_DSNotify	VAR_U_(0x004BFE58, LPDIRECTSOUNDNOTIFY)
+#define reading_audio_file	VAR_U_(0x004BFE74, bool)
+#define continue_reading_audio_file	VAR_U_(0x004BFE3C, bool)
+#define audio_counter	VAR_U_(0x004BFE70, long)
 
 
 
