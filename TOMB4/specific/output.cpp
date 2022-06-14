@@ -1247,7 +1247,11 @@ void S_OutputPolyList()
 		DrawSortList();
 	}
 
+#ifdef GENERAL_FIXES
+	if (pickups[CurrentPickup].life != -1 && !MonoScreenOn && !GLOBAL_playing_cutseq && !bDisableLaraControl)
+#else
 	if (pickups[CurrentPickup].life != -1 && !MonoScreenOn && !GLOBAL_playing_cutseq)
+#endif
 	{
 		bWaterEffect = 0;
 		InitialiseSortList();
