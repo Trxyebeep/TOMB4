@@ -520,6 +520,31 @@ void S_CDPlay(long track, long mode)
 	}
 }
 
+void S_CDStop()
+{
+	if (acm_ready && audio_stream_fp)
+	{
+		__try
+		{
+			EnterCriticalSection(&audio_cs);
+		}
+		__finally
+		{
+			LeaveCriticalSection(&audio_cs);
+		}
+
+		memset(wav_file_buffer, 0, 0x37000);
+		G_DSBuffer->Stop();
+		G_DSBuffer->SetCurrentPosition(0);
+		while (reading_audio_file) {};
+		CLOSE(audio_stream_fp);
+		audio_stream_fp = 0;
+		audio_counter = 0;
+		XAFlag = 7;
+		XATrack = -1;
+	}
+}
+
 void inject_audio(bool replace)
 {
 	INJECT(0x0046DE50, OpenStreamFile, replace);
@@ -533,4 +558,5 @@ void inject_audio(bool replace)
 	INJECT(0x0046D9C0, ACMInit, replace);
 	INJECT(0x0046DD00, ACMClose, replace);
 	INJECT(0x0046D610, S_CDPlay, replace);
+	INJECT(0x0046D6B0, S_CDStop, replace);
 }

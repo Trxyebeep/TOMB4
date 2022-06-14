@@ -14,6 +14,6 @@ long ACMHandleNotifications();
 bool ACMInit();
 void ACMClose();
 void S_CDPlay(long track, long mode);
+void S_CDStop();
 
-#define	S_CDStop	( (void(__cdecl*)()) 0x0046D6B0 )
 #define S_StartSyncedAudio	( (void(__cdecl*)(int)) 0x0046D790 )

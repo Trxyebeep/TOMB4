@@ -1472,7 +1472,7 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/audio.cpp
 
 0x0046D610	+	S_CDPlay
-0x0046D6B0		S_CDStop
+0x0046D6B0	+	S_CDStop
 0x0046D790		S_StartSyncedAudio
 0x0046D7B0	+	ACMSetVolume
 0x0046D800	+	ACMEnumCallBack
