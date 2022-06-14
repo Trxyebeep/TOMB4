@@ -480,6 +480,10 @@
 #define samples_buffer	VAR_U_(0x0052AAAC, char*)
 #define acm_ready	VAR_U_(0x004BFE64, bool)
 #define AnimatingTexturesVOffset	VAR_U_(0x00533AC8, short)
+#define audio_cs	VAR_U_(0x004BFE08, CRITICAL_SECTION)
+#define audio_stream_fp	VAR_U_(0x004BFE68, FILE*)
+#define audio_fp_write_ptr	VAR_U_(0x004BFE2C, uchar*)
+#define auido_play_mode	VAR_U_(0x004BFC88, long)
 
 
 
