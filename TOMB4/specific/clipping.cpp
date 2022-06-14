@@ -94,7 +94,15 @@ long ZClipper(long n, D3DTLBUMPVERTEX* in, D3DTLBUMPVERTEX* out)
 	return nPoints;
 }
 
+long visible_zclip(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2)
+{
+	return (v2->tu * v0->sz - v2->sz * v0->tu) * v1->tv
+		+ (v2->sz * v0->tv - v2->tv * v0->sz) * v1->tu
+		+ (v2->tv * v0->tu - v2->tu * v0->tv) * v1->sz < 0;
+}
+
 void inject_clipping(bool replace)
 {
 	INJECT(0x0046E4D0, ZClipper, replace);
+	INJECT(0x0046FDE0, visible_zclip, replace);
 }
