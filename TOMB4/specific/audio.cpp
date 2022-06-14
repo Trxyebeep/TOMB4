@@ -500,6 +500,26 @@ void ACMClose()
 	LeaveCriticalSection(&audio_cs);
 }
 
+void S_CDPlay(long track, long mode)
+{
+	if (acm_ready)
+	{
+		__try
+		{
+			EnterCriticalSection(&audio_cs);
+		}
+		__finally
+		{
+			LeaveCriticalSection(&audio_cs);
+		}
+
+		IsAtmospherePlaying = track == CurrentAtmosphere;
+		audio_counter = 0;
+		S_CDStop();
+		ACMEmulateCDPlay(track, mode);
+	}
+}
+
 void inject_audio(bool replace)
 {
 	INJECT(0x0046DE50, OpenStreamFile, replace);
@@ -512,4 +532,5 @@ void inject_audio(bool replace)
 	INJECT(0x0046E340, ACMHandleNotifications, replace);
 	INJECT(0x0046D9C0, ACMInit, replace);
 	INJECT(0x0046DD00, ACMClose, replace);
+	INJECT(0x0046D610, S_CDPlay, replace);
 }

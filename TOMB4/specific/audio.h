@@ -13,7 +13,7 @@ void FillADPCMBuffer(char* p, long track);
 long ACMHandleNotifications();
 bool ACMInit();
 void ACMClose();
+void S_CDPlay(long track, long mode);
 
 #define	S_CDStop	( (void(__cdecl*)()) 0x0046D6B0 )
 #define S_StartSyncedAudio	( (void(__cdecl*)(int)) 0x0046D790 )
-#define S_CDPlay	( (void(__cdecl*)(short, long)) 0x0046D610 )
