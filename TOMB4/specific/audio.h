@@ -6,6 +6,7 @@ void inject_audio(bool replace);
 void OpenStreamFile(char* name);
 void GetADPCMData();
 void ACMSetVolume();
+void ACMEmulateCDPlay(long track, long mode);
 
 #define	S_CDStop	( (void(__cdecl*)()) 0x0046D6B0 )
 #define S_StartSyncedAudio	( (void(__cdecl*)(int)) 0x0046D790 )

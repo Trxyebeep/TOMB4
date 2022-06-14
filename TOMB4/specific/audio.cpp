@@ -2,6 +2,7 @@
 #include "audio.h"
 #include "file.h"
 #include "function_stubs.h"
+#include "dxshell.h"
 
 const char* TrackFileNames[112] =
 {
@@ -181,9 +182,53 @@ void ACMSetVolume()
 		G_DSBuffer->SetVolume(volume);
 }
 
+void ACMEmulateCDPlay(long track, long mode)
+{
+	char name[256];
+
+	__try
+	{
+		EnterCriticalSection(&audio_cs);
+	}
+	__finally
+	{
+		LeaveCriticalSection(&audio_cs);
+	}
+
+	wsprintf(name, "audio\\%s", TrackFileNames[track]);
+
+	if (mode)
+		Log(8, "Playing %s %s %d", name, "Looped", track);
+	else
+		Log(8, "Playing %s %s %d", name, "", track);
+
+	XATrack = track;
+	XAReqTrack = track;
+	XAFlag = 6;
+	auido_play_mode = mode;
+	OpenStreamFile(name);
+
+	if (!audio_stream_fp)
+		return;
+
+	memcpy(ADPCMBuffer, audio_fp_write_ptr, 0x5800);
+	GetADPCMData();
+	DXAttempt(G_DSBuffer->Lock(0, audio_buffer_size, (LPVOID*)&pAudioWrite, &AudioBytes, 0, 0, 0));
+	acmStreamConvert(hACMStream, &StreamHeaders[0], ACM_STREAMCONVERTF_BLOCKALIGN | ACM_STREAMCONVERTF_START);
+	memcpy(ADPCMBuffer, audio_fp_write_ptr, 0x5800);
+	GetADPCMData();
+	acmStreamConvert(hACMStream, &StreamHeaders[1], ACM_STREAMCONVERTF_BLOCKALIGN);
+	DXAttempt(G_DSBuffer->Unlock(pAudioWrite, audio_buffer_size, 0, 0));
+	CurrentNotify = 2;
+	NextWriteOffset = 2 * NotifySize;
+	ACMSetVolume();
+	G_DSBuffer->Play(0, 0, DSBPLAY_LOOPING);
+}
+
 void inject_audio(bool replace)
 {
 	INJECT(0x0046DE50, OpenStreamFile, replace);
 	INJECT(0x0046E0F0, GetADPCMData, replace);
 	INJECT(0x0046D7B0, ACMSetVolume, replace);
+	INJECT(0x0046E180, ACMEmulateCDPlay, replace);
 }

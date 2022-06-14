@@ -406,6 +406,7 @@
 #define MonoScreenOn	VAR_U_(0x00536F1C, char)
 #define nAIObjects	VAR_U_(0x007FD200, short)
 #define XATrack	VAR_U_(0x004B22F4, long)
+#define XAReqTrack	VAR_U_(0x004BFE6C, long)
 #define XAFlag	VAR_U_(0x004B22F8, long)
 #define pSortBuffer	VAR_U_(0x00660C8C, char*)
 #define pSortList	VAR_U_(0x005C07A8, SORTLIST**)
@@ -484,7 +485,14 @@
 #define audio_stream_fp	VAR_U_(0x004BFE68, FILE*)
 #define audio_fp_write_ptr	VAR_U_(0x004BFE2C, uchar*)
 #define auido_play_mode	VAR_U_(0x004BFC88, long)
+#define audio_buffer_size	VAR_U_(0x004BFE50, long)
 #define G_DSBuffer	VAR_U_(0x004BFE54, LPDIRECTSOUNDBUFFER)
+#define pAudioWrite	VAR_U_(0x004BFE38, uchar*)
+#define AudioBytes	VAR_U_(0x004BFE40, ulong)
+#define hACMStream	VAR_U_(0x004BFE48, HACMSTREAM)
+#define CurrentNotify	VAR_U_(0x004BFCA4, long)
+#define NextWriteOffset	VAR_U_(0x004BFE30, long)
+#define NotifySize	VAR_U_(0x004BFE28, long)
 
 
 
@@ -583,6 +591,8 @@
 #define AnimatingTexturesV	ARRAY_(0x00532D9C, float, [16][8][3])
 #define AnimatingWaterfalls	ARRAY_(0x007FD1E0, TEXTURESTRUCT*, [3])
 #define AnimatingWaterfallsV	ARRAY_(0x007FD1F0, long, [3])
+#define StreamHeaders	ARRAY_(0x004BFCA8, ACMSTREAMHEADER, [2])
+
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)

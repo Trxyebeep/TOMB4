@@ -9,3 +9,5 @@
 #define DIRECTINPUT_VERSION 0x0500
 #include <dinput.h>
 #include <dsound.h>
+#include <mmreg.h>
+#include <MSAcm.h>
