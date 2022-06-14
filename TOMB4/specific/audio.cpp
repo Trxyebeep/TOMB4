@@ -52,8 +52,22 @@ void GetADPCMData()
 		audio_fp_write_ptr = wav_file_buffer;
 }
 
+void ACMSetVolume()
+{
+	long volume;
+
+	if (!MusicVolume)
+		volume = -10000;
+	else
+		volume = -4000 * (100 - MusicVolume) / 100;
+
+	if (G_DSBuffer)
+		G_DSBuffer->SetVolume(volume);
+}
+
 void inject_audio(bool replace)
 {
 	INJECT(0x0046DE50, OpenStreamFile, replace);
 	INJECT(0x0046E0F0, GetADPCMData, replace);
+	INJECT(0x0046D7B0, ACMSetVolume, replace);
 }

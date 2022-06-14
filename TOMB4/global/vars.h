@@ -484,6 +484,7 @@
 #define audio_stream_fp	VAR_U_(0x004BFE68, FILE*)
 #define audio_fp_write_ptr	VAR_U_(0x004BFE2C, uchar*)
 #define auido_play_mode	VAR_U_(0x004BFC88, long)
+#define G_DSBuffer	VAR_U_(0x004BFE54, LPDIRECTSOUNDBUFFER)
 
 
 
