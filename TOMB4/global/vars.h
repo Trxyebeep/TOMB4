@@ -493,6 +493,7 @@
 #define CurrentNotify	VAR_U_(0x004BFCA4, long)
 #define NextWriteOffset	VAR_U_(0x004BFE30, long)
 #define NotifySize	VAR_U_(0x004BFE28, long)
+#define hACMDriverID	VAR_U_(0x004BFE24, HACMDRIVERID)
 
 
 
@@ -591,7 +592,7 @@
 #define AnimatingTexturesV	ARRAY_(0x00532D9C, float, [16][8][3])
 #define AnimatingWaterfalls	ARRAY_(0x007FD1E0, TEXTURESTRUCT*, [3])
 #define AnimatingWaterfallsV	ARRAY_(0x007FD1F0, long, [3])
-#define StreamHeaders	ARRAY_(0x004BFCA8, ACMSTREAMHEADER, [2])
+#define StreamHeaders	ARRAY_(0x004BFCA8, ACMSTREAMHEADER, [4])
 
 
 /*Fog stuff*/

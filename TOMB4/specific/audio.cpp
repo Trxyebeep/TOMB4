@@ -225,10 +225,26 @@ void ACMEmulateCDPlay(long track, long mode)
 	G_DSBuffer->Play(0, 0, DSBPLAY_LOOPING);
 }
 
+BOOL __stdcall ACMEnumCallBack(HACMDRIVERID hadid, DWORD_PTR dwInstance, DWORD fdwSupport)
+{
+	ACMDRIVERDETAILS driver;
+
+	memset(&driver, 0, sizeof(driver));
+	driver.cbStruct = sizeof(ACMDRIVERDETAILS);
+	acmDriverDetailsA(hadid, &driver, 0);
+
+	if (strcmp(driver.szShortName, "MS-ADPCM"))
+		return 1;
+
+	hACMDriverID = hadid;
+	return 0;
+}
+
 void inject_audio(bool replace)
 {
 	INJECT(0x0046DE50, OpenStreamFile, replace);
 	INJECT(0x0046E0F0, GetADPCMData, replace);
 	INJECT(0x0046D7B0, ACMSetVolume, replace);
 	INJECT(0x0046E180, ACMEmulateCDPlay, replace);
+	INJECT(0x0046D800, ACMEnumCallBack, replace);
 }

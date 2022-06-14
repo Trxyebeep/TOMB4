@@ -7,6 +7,7 @@ void OpenStreamFile(char* name);
 void GetADPCMData();
 void ACMSetVolume();
 void ACMEmulateCDPlay(long track, long mode);
+BOOL __stdcall ACMEnumCallBack(HACMDRIVERID hadid, DWORD_PTR dwInstance, DWORD fdwSupport);
 
 #define	S_CDStop	( (void(__cdecl*)()) 0x0046D6B0 )
 #define S_StartSyncedAudio	( (void(__cdecl*)(int)) 0x0046D790 )
