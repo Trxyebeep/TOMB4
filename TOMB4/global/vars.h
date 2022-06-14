@@ -494,11 +494,15 @@
 #define NextWriteOffset	VAR_U_(0x004BFE30, long)
 #define NotifySize	VAR_U_(0x004BFE28, long)
 #define hACMDriverID	VAR_U_(0x004BFE24, HACMDRIVERID)
+#define hACMDriver	VAR_U_(0x004BFE4C, HACMDRIVER)
 #define NotificationThreadHandle	VAR_U_(0x004BFE00, HANDLE)
 #define G_DSNotify	VAR_U_(0x004BFE58, LPDIRECTSOUNDNOTIFY)
 #define reading_audio_file	VAR_U_(0x004BFE74, bool)
 #define continue_reading_audio_file	VAR_U_(0x004BFE3C, bool)
 #define audio_counter	VAR_U_(0x004BFE70, long)
+#define source_wav_format	VAR_U_(0x004B22C0, WAVEFORMATEX)
+#define wav_format	VAR_U_(0x004BFC90, WAVEFORMATEX)
+#define StreamSize	VAR_U_(0x004BFE20, long)
 
 
 

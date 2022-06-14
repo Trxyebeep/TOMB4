@@ -403,6 +403,68 @@ long ACMHandleNotifications()
 	return DS_OK;
 }
 
+bool ACMInit()
+{
+	DSBUFFERDESC desc;
+	ulong version, pMetric;
+
+	version = acmGetVersion();
+	InitializeCriticalSection(&audio_cs);
+	acm_ready = 0;
+	Log(8, "ACM Version %u.%.02u", ((version >> 16) & 0xFFFF) >> 8, (version >> 16) & 0xFF);
+	acmDriverEnum(ACMEnumCallBack, 0, 0);
+
+	if (!hACMDriverID)
+	{
+		Log(1, "*** Unable To Locate MS-ADPCM Driver ***");
+		return 0;
+	}
+
+	if (acmDriverOpen(&hACMDriver, hACMDriverID, 0))
+	{
+		Log(1, "*** Failed To Open Driver MS-ADPCM Driver ***");
+		return 0;
+	}
+
+	ADPCMBuffer = (uchar*)MALLOC(0x5800);
+	wav_file_buffer = (uchar*)MALLOC(0x37000);
+	wav_format.wFormatTag = WAVE_FORMAT_PCM;
+	acmMetrics(0, 0x32u, &pMetric);
+	acmFormatSuggest(hACMDriver, &source_wav_format, &wav_format, pMetric, 0x10000u);
+	audio_buffer_size = 0x577C0;
+	NotifySize = 0x15DF0;
+
+	memset(&desc, 0, sizeof(desc));
+	desc.dwBufferBytes = 0x577C0;
+	desc.dwReserved = 0;
+	desc.dwSize = 20;
+	desc.dwFlags = DSBCAPS_LOCSOFTWARE | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLPOSITIONNOTIFY | DSBCAPS_GETCURRENTPOSITION2;
+	desc.lpwfxFormat = &wav_format;
+	App.dx.lpDS->CreateSoundBuffer(&desc, &G_DSBuffer, 0);
+	G_DSBuffer->QueryInterface(IID_IDirectSoundNotify, (LPVOID*)&G_DSNotify);
+
+	ACMSetupNotifications();
+	acmStreamOpen(&hACMStream, hACMDriver, &source_wav_format, &wav_format, 0, 0, 0, 0);
+	acmStreamSize(hACMStream, 0x5800u, (ulong*)&StreamSize, 0);
+	DXAttempt(G_DSBuffer->Lock(0, audio_buffer_size, (LPVOID*)&pAudioWrite, &AudioBytes, 0, 0, 0));
+	memset(pAudioWrite, 0, audio_buffer_size);
+
+	for (int i = 0; i < 4; i++)
+	{
+		memset(&StreamHeaders[i], 0, sizeof(ACMSTREAMHEADER));
+		StreamHeaders[i].cbStruct = sizeof(ACMSTREAMHEADER);
+		StreamHeaders[i].pbSrc = ADPCMBuffer;
+		StreamHeaders[i].cbSrcLength = 0x5800;
+		StreamHeaders[i].cbDstLength = StreamSize;
+		StreamHeaders[i].pbDst = &pAudioWrite[NotifySize * i];
+		acmStreamPrepareHeader(hACMStream, &StreamHeaders[i], 0);
+	}
+
+	DXAttempt(G_DSBuffer->Unlock(pAudioWrite, audio_buffer_size, 0, 0));
+	acm_ready = 1;
+	return 1;
+}
+
 void inject_audio(bool replace)
 {
 	INJECT(0x0046DE50, OpenStreamFile, replace);
@@ -413,4 +475,5 @@ void inject_audio(bool replace)
 	INJECT(0x0046D890, ACMSetupNotifications, replace);
 	INJECT(0x0046DF50, FillADPCMBuffer, 0);	//inject me when FILE* stuff are moved to dll
 	INJECT(0x0046E340, ACMHandleNotifications, replace);
+	INJECT(0x0046D9C0, ACMInit, replace);
 }
