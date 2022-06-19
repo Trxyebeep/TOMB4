@@ -198,6 +198,17 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 	return 1;
 }
 
+void DXStopSample(long num)
+{
+	if (num >= 0 && DS_Samples[num].buffer)
+	{
+		DXAttempt(DS_Samples[num].buffer->Stop());
+		DXAttempt(DS_Samples[num].buffer->Release());
+		DS_Samples[num].playing = 0;
+		DS_Samples[num].buffer = 0;
+	}
+}
+
 void inject_dxsound(bool replace)
 {
 	INJECT(0x004732E0, DXChangeOutputFormat, replace);
@@ -209,4 +220,5 @@ void inject_dxsound(bool replace)
 	INJECT(0x00473570, InitSampleDecompress, replace);
 	INJECT(0x00473690, FreeSampleDecompress, replace);
 	INJECT(0x00473710, DXCreateSampleADPCM, replace);
+	INJECT(0x004738B0, DXStopSample, replace);
 }
