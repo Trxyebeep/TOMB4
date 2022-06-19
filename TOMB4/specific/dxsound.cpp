@@ -92,11 +92,42 @@ bool DXSetOutputFormat()
 
 bool DXDSCreate()
 {
+	sizeof(WAVEFORMATEX);
 	Log(2, "DXDSCreate");
 	DXAttempt(DirectSoundCreate(G_dxinfo->DSInfo[G_dxinfo->nDS].lpGuid, &App.dx.lpDS, 0));
 	DXAttempt(App.dx.lpDS->SetCooperativeLevel(App.hWnd, DSSCL_EXCLUSIVE));
 	DXSetOutputFormat();
 	sound_active = 1;
+	return 1;
+}
+
+bool InitSampleDecompress()
+{
+	pcm_format.wFormatTag = WAVE_FORMAT_PCM;
+	pcm_format.cbSize = 0;
+	pcm_format.nChannels = 1;
+	pcm_format.nAvgBytesPerSec = 44100;
+	pcm_format.nSamplesPerSec = 22050;
+	pcm_format.nBlockAlign = 2;
+	pcm_format.wBitsPerSample = 16;
+	DS_mmresult = acmStreamOpen(&DS_hACMStream, hACMDriver, (LPWAVEFORMATEX)source_pcm_format, &pcm_format, 0, 0, 0, 0);
+
+	if (DS_mmresult != DS_OK)
+		Log(1, "Stream Open %d", DS_mmresult);
+
+	decompressed_samples_buffer = (char*)MALLOC(0x40000);
+	samples_buffer = (char*)MALLOC(0x4005A);
+	memset(&ACMStreamHeader, 0, sizeof(ACMStreamHeader));
+	ACMStreamHeader.pbSrc = (uchar*)(samples_buffer + 90);
+	ACMStreamHeader.cbStruct = 84;
+	ACMStreamHeader.cbSrcLength = 0x40000;
+	ACMStreamHeader.cbDstLength = 0x40000;
+	ACMStreamHeader.pbDst = (uchar*)decompressed_samples_buffer;
+	DS_mmresult = acmStreamPrepareHeader(DS_hACMStream, &ACMStreamHeader, 0);
+
+	if (DS_mmresult != DS_OK)
+		Log(1, "Prepare Stream %d", DS_mmresult);
+
 	return 1;
 }
 
@@ -108,4 +139,5 @@ void inject_dxsound(bool replace)
 	INJECT(0x00473400, DSAdjustPan, replace);
 	INJECT(0x00473460, DXSetOutputFormat, replace);
 	INJECT(0x00473500, DXDSCreate, replace);
+	INJECT(0x00473570, InitSampleDecompress, replace);
 }

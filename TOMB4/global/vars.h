@@ -479,6 +479,7 @@
 #define sample_lut	VAR_U_(0x007F76A0, short*)
 #define sample_infos	VAR_U_(0x007F76A4, SAMPLE_INFO*)
 #define samples_buffer	VAR_U_(0x0052AAAC, char*)
+#define decompressed_samples_buffer	VAR_U_(0x0052B848, char*)
 #define acm_ready	VAR_U_(0x004BFE64, bool)
 #define AnimatingTexturesVOffset	VAR_U_(0x00533AC8, short)
 #define audio_cs	VAR_U_(0x004BFE08, CRITICAL_SECTION)
@@ -490,6 +491,7 @@
 #define pAudioWrite	VAR_U_(0x004BFE38, uchar*)
 #define AudioBytes	VAR_U_(0x004BFE40, ulong)
 #define hACMStream	VAR_U_(0x004BFE48, HACMSTREAM)
+#define DS_hACMStream	VAR_U_(0x0052AABC, HACMSTREAM)
 #define CurrentNotify	VAR_U_(0x004BFCA4, long)
 #define NextWriteOffset	VAR_U_(0x004BFE30, long)
 #define NotifySize	VAR_U_(0x004BFE28, long)
@@ -505,6 +507,9 @@
 #define StreamSize	VAR_U_(0x004BFE20, long)
 #define G_DSPrimary	VAR_U_(0x0052B6C0, LPDIRECTSOUNDBUFFER)
 #define sound_active	VAR_U_(0x004BF6DC, long)
+#define pcm_format	VAR_U_(0x0052AA98, WAVEFORMATEX)
+#define DS_mmresult	VAR_U_(0x0052AA94, MMRESULT)
+#define ACMStreamHeader	VAR_U_(0x0052AA40, ACMSTREAMHEADER)
 
 
 
@@ -606,6 +611,7 @@
 #define StreamHeaders	ARRAY_(0x004BFCA8, ACMSTREAMHEADER, [4])
 #define NotifyEventHandles	ARRAY_(0x004BFDF8, HANDLE, [2])
 #define DS_Samples	ARRAY_(0x0052B6C8, DS_SAMPLE, [32])
+#define source_pcm_format	ARRAY_(0x004B263C, char, [50])
 
 
 /*Fog stuff*/
