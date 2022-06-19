@@ -14,6 +14,7 @@ bool FreeSampleDecompress();
 bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num);
 void DXStopSample(long num);
 bool DSIsChannelPlaying(long num);
+long DSGetFreeChannel();
 
 #define S_SoundStopAllSamples	( (void(__cdecl*)()) 0x00473AB0 )
 #define DXFreeSounds	( (void(__cdecl*)()) 0x00473B40 )

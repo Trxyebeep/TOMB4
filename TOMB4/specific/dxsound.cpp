@@ -227,6 +227,17 @@ bool DSIsChannelPlaying(long num)
 	return 0;
 }
 
+long DSGetFreeChannel()
+{
+	for (int i = 0; i < 32; i++)
+	{
+		if (!DSIsChannelPlaying(i))
+			return i;
+	}
+
+	return -1;
+}
+
 void inject_dxsound(bool replace)
 {
 	INJECT(0x004732E0, DXChangeOutputFormat, replace);
@@ -240,4 +251,5 @@ void inject_dxsound(bool replace)
 	INJECT(0x00473710, DXCreateSampleADPCM, replace);
 	INJECT(0x004738B0, DXStopSample, replace);
 	INJECT(0x00473900, DSIsChannelPlaying, replace);
+	INJECT(0x00473950, DSGetFreeChannel, replace);
 }
