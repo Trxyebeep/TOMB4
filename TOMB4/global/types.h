@@ -1930,7 +1930,7 @@ struct SAMPLE_INFO
 struct DS_SAMPLE
 {
 	LPDIRECTSOUNDBUFFER buffer;
-	long unk;
+	long frequency;
 	long playing;
 };
 

@@ -149,6 +149,55 @@ bool FreeSampleDecompress()
 	return 1;
 }
 
+bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
+{
+	LPWAVEFORMATEX format;
+	LPDIRECTSOUNDBUFFER buffer;
+	LPVOID dest;
+	DSBUFFERDESC desc;
+	ulong bytes;
+
+	Log(8, "DXCreateSampleADPCM");
+
+	if (!App.dx.lpDS)
+		return 0;
+
+	format = (LPWAVEFORMATEX)(data + 20);
+
+	if (format->nSamplesPerSec != 22050)
+		Log(1, "Incorrect SamplesPerSec");
+
+	ACMStreamHeader.cbSrcLength = comp_size - (sizeof(WAVEFORMATEX) + format->cbSize + 40);
+	DS_mmresult = acmStreamConvert(DS_hACMStream, &ACMStreamHeader, ACM_STREAMCONVERTF_BLOCKALIGN | ACM_STREAMCONVERTF_START);
+
+	if (DS_mmresult != DS_OK)
+		Log(1, "Stream Convert %d", DS_mmresult);
+
+	desc.dwSize = 20;
+	desc.dwFlags = 226;
+	desc.dwReserved = 0;
+	desc.dwBufferBytes = uncomp_size - 32;
+	desc.lpwfxFormat = &pcm_format;
+	
+	if (DXAttempt(App.dx.lpDS->CreateSoundBuffer(&desc, &buffer, 0)) != DS_OK)
+	{
+		Log(1, "Unable To Create Sound Buffer");
+		return 0;
+	}
+
+	if (DXAttempt(buffer->Lock(0, uncomp_size - 32, &dest, &bytes, 0, 0, 0)) != DS_OK)
+	{
+		Log(1, "Unable To Lock Sound Buffer");
+		return 0;
+	}
+
+	memcpy(dest, decompressed_samples_buffer, uncomp_size - 32);
+	DXAttempt(buffer->Unlock(dest, bytes, 0, 0));
+	DS_Buffers[num].frequency = pcm_format.nSamplesPerSec;
+	DS_Buffers[num].buffer = buffer;
+	return 1;
+}
+
 void inject_dxsound(bool replace)
 {
 	INJECT(0x004732E0, DXChangeOutputFormat, replace);
@@ -159,4 +208,5 @@ void inject_dxsound(bool replace)
 	INJECT(0x00473500, DXDSCreate, replace);
 	INJECT(0x00473570, InitSampleDecompress, replace);
 	INJECT(0x00473690, FreeSampleDecompress, replace);
+	INJECT(0x00473710, DXCreateSampleADPCM, replace);
 }

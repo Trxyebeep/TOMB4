@@ -611,6 +611,7 @@
 #define StreamHeaders	ARRAY_(0x004BFCA8, ACMSTREAMHEADER, [4])
 #define NotifyEventHandles	ARRAY_(0x004BFDF8, HANDLE, [2])
 #define DS_Samples	ARRAY_(0x0052B6C8, DS_SAMPLE, [32])
+#define DS_Buffers	ARRAY_(0x0052AAC0, DS_SAMPLE, [256])
 #define source_pcm_format	ARRAY_(0x004B263C, char, [50])
 
 
