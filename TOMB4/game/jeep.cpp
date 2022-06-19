@@ -214,8 +214,8 @@ static long JeepCheckGetOut()
 		lara_item->frame_number = anims[ANIM_STOP].frame_base;
 		lara_item->current_anim_state = AS_STOP;
 		lara_item->goal_anim_state = AS_STOP;
-		lara_item->pos.x_pos -= 512 * phd_sin(lara_item->pos.y_rot) >> 14;
-		lara_item->pos.z_pos -= 512 * phd_cos(lara_item->pos.y_rot) >> 14;
+		lara_item->pos.x_pos -= 512 * phd_sin(lara_item->pos.y_rot) >> W2V_SHIFT;
+		lara_item->pos.z_pos -= 512 * phd_cos(lara_item->pos.y_rot) >> W2V_SHIFT;
 		lara_item->pos.x_rot = 0;
 		lara_item->pos.z_rot = 0;
 		lara.vehicle = NO_ITEM;
@@ -283,9 +283,9 @@ static long CanGetOff(short num)
 
 	item = &items[lara.vehicle];
 	yrot = item->pos.y_rot + 0x4000;
-	x = item->pos.x_pos - (512 * phd_sin(yrot) >> 14);
+	x = item->pos.x_pos - (512 * phd_sin(yrot) >> W2V_SHIFT);
 	y = item->pos.y_pos;
-	z = item->pos.z_pos - (512 * phd_cos(yrot) >> 14);
+	z = item->pos.z_pos - (512 * phd_cos(yrot) >> W2V_SHIFT);
 	room_number = item->room_number;
 	floor = GetFloor(x, y, z, &room_number);
 	h = GetHeight(floor, x, y, z);
@@ -388,8 +388,8 @@ long GetCollisionAnim(ITEM_INFO* item, PHD_VECTOR* pos, BIKEINFO* vehicle)
 
 	sin = phd_sin(item->pos.y_rot);
 	cos = phd_cos(item->pos.y_rot);
-	fb = (sin * pos->x + cos * pos->z) >> 14;
-	lr = (cos * pos->x - sin * pos->z) >> 14;
+	fb = (sin * pos->x + cos * pos->z) >> W2V_SHIFT;
+	lr = (cos * pos->x - sin * pos->z) >> W2V_SHIFT;
 
 	if (ABS(fb) <= ABS(lr))
 	{
@@ -1344,14 +1344,14 @@ long JeepDynamics(ITEM_INFO* item)
 	if (item->pos.y_pos < h)
 		speed = item->speed;
 	else
-		speed = (item->speed * phd_cos(item->pos.x_rot)) >> 14;
+		speed = (item->speed * phd_cos(item->pos.x_rot)) >> W2V_SHIFT;
 
-	item->pos.x_pos += (speed * phd_sin(jeep->move_angle)) >> 14;
-	item->pos.z_pos += (speed * phd_cos(jeep->move_angle)) >> 14;
+	item->pos.x_pos += (speed * phd_sin(jeep->move_angle)) >> W2V_SHIFT;
+	item->pos.z_pos += (speed * phd_cos(jeep->move_angle)) >> W2V_SHIFT;
 
 	if (item->pos.y_pos >= h)
 	{
-		ang = (100 * phd_sin(item->pos.x_rot)) >> 14;
+		ang = (100 * phd_sin(item->pos.x_rot)) >> W2V_SHIFT;
 
 		if (ABS(ang) > 16)
 		{
@@ -1363,7 +1363,7 @@ long JeepDynamics(ITEM_INFO* item)
 				jeep->velocity -= SQUARE(ang - 16) >> 1;
 		}
 
-		ang = (128 * phd_sin(item->pos.z_rot)) >> 14;
+		ang = (128 * phd_sin(item->pos.z_rot)) >> W2V_SHIFT;
 
 		if (ABS(ang) > 32)
 		{
@@ -1374,7 +1374,7 @@ long JeepDynamics(ITEM_INFO* item)
 			else
 				ang2 = item->pos.y_rot + 0x4000;
 
-			item->pos.x_pos += ((ABS(ang) - 24) * phd_sin(ang2)) >> 14;
+			item->pos.x_pos += ((ABS(ang) - 24) * phd_sin(ang2)) >> W2V_SHIFT;
 			item->pos.z_pos += ((ABS(ang) - 24) * phd_cos(ang2)) >> 14;
 		}
 	}
@@ -1459,7 +1459,7 @@ long JeepDynamics(ITEM_INFO* item)
 	{
 		dx = item->pos.x_pos - pos.x;
 		dz = item->pos.z_pos - pos.z;
-		speed = (dx * phd_sin(jeep->move_angle) + dz * phd_cos(jeep->move_angle)) >> 14;
+		speed = (dx * phd_sin(jeep->move_angle) + dz * phd_cos(jeep->move_angle)) >> W2V_SHIFT;
 		speed <<= 8;
 
 		if (&items[lara.vehicle] == item && jeep->velocity == 0x8000 && speed < 0x7FF6)
@@ -1691,9 +1691,9 @@ void JeepFireGrenade(ITEM_INFO* item)
 		grenade->pos.x_rot = item->pos.x_rot;
 		grenade->pos.z_rot = 0;
 		grenade->pos.y_rot= item->pos.y_rot + 0x8000;
-		grenade->pos.x_pos = item->pos.x_pos + (1024 * phd_sin(grenade->pos.y_rot) >> 14);
+		grenade->pos.x_pos = item->pos.x_pos + (1024 * phd_sin(grenade->pos.y_rot) >> W2V_SHIFT);
 		grenade->pos.y_pos = item->pos.y_pos - 768;
-		grenade->pos.z_pos = item->pos.z_pos + (1024 * phd_cos(grenade->pos.y_rot) >> 14);
+		grenade->pos.z_pos = item->pos.z_pos + (1024 * phd_cos(grenade->pos.y_rot) >> W2V_SHIFT);
 		SmokeCountL = 32;
 		SmokeWeapon = 5;
 
@@ -1706,7 +1706,7 @@ void JeepFireGrenade(ITEM_INFO* item)
 			grenade->item_flags[0] = 2;
 
 		grenade->speed = 32;
-		grenade->fallspeed = -32 * phd_sin(grenade->pos.x_rot) >> 14;
+		grenade->fallspeed = -32 * phd_sin(grenade->pos.x_rot) >> W2V_SHIFT;
 		grenade->current_anim_state = grenade->pos.x_rot;
 		grenade->goal_anim_state = grenade->pos.y_rot;
 		grenade->required_anim_state = 0;
@@ -1745,8 +1745,8 @@ void EnemyJeepControl(short item_number)
 
 	item = &items[item_number];
 	jeep = (CREATURE_INFO*)item->data;
-	Xoffset = 682 * phd_sin(item->pos.y_rot) >> 14;
-	Zoffset = 682 * phd_cos(item->pos.y_rot) >> 14;
+	Xoffset = 682 * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
+	Zoffset = 682 * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
 	x = item->pos.x_pos - Zoffset;
 	y = item->pos.y_pos;
 	z = item->pos.z_pos + Xoffset;
@@ -1975,8 +1975,8 @@ void EnemyJeepControl(short item_number)
 
 					if (!(jeep->enemy->flags & 0x20))
 					{
-						jeep->enemy->pos.x_pos += 256 * phd_sin(jeep->enemy->pos.y_rot) >> 14;
-						jeep->enemy->pos.z_pos += 256 * phd_cos(jeep->enemy->pos.y_rot) >> 14;
+						jeep->enemy->pos.x_pos += 256 * phd_sin(jeep->enemy->pos.y_rot) >> W2V_SHIFT;
+						jeep->enemy->pos.z_pos += 256 * phd_cos(jeep->enemy->pos.y_rot) >> W2V_SHIFT;
 					}
 
 					break;
@@ -2009,8 +2009,8 @@ void EnemyJeepControl(short item_number)
 	if (item->item_flags[0] < 0)
 		item->item_flags[0] = 0;
 
-	x = item->item_flags[0] * phd_sin(item->pos.y_rot) >> 14;
-	z = item->item_flags[0] * phd_cos(item->pos.y_rot) >> 14;
+	x = item->item_flags[0] * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
+	z = item->item_flags[0] * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
 
 	for (int i = 0; i < 4; i++)
 		jeep->joint_rotation[i] -= item->item_flags[0];

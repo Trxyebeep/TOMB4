@@ -110,8 +110,8 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 
 	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++)
 	{
-		cp[i].x = x * phd_sin(65536 * i / CIRCUMFERENCE_POINTS) >> 14;
-		cp[i].z = z * phd_cos(65536 * i / CIRCUMFERENCE_POINTS) >> 14;
+		cp[i].x = x * phd_sin(65536 * i / CIRCUMFERENCE_POINTS) >> W2V_SHIFT;
+		cp[i].z = z * phd_cos(65536 * i / CIRCUMFERENCE_POINTS) >> W2V_SHIFT;
 		cv[i].x = cp[i].x;
 		cv[i].z = cp[i].z;
 	}
@@ -145,12 +145,12 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 	{
 		x = cp[i].x;
 		z = cp[i].z;
-		cp[i].x = (x * phd_mxptr[M00] + z * phd_mxptr[M02] + phd_mxptr[M03]) >> 14;
-		cp[i].z = (x * phd_mxptr[M20] + z * phd_mxptr[M22] + phd_mxptr[M23]) >> 14;
+		cp[i].x = (x * phd_mxptr[M00] + z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+		cp[i].z = (x * phd_mxptr[M20] + z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
 	}
 
-	ccp.x = phd_mxptr[M03] >> 14;
-	ccp.z = phd_mxptr[M23] >> 14;
+	ccp.x = phd_mxptr[M03] >> W2V_SHIFT;
+	ccp.z = phd_mxptr[M23] >> W2V_SHIFT;
 	phd_PopMatrix();
 
 	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++)
@@ -177,15 +177,15 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 		fx = cv[i].x;
 		fy = (cp[i].y - item->floor);
 		fz = cv[i].z;
-		cv[i].x = (phd_mxptr[M00] * fx + phd_mxptr[M01] * fy + phd_mxptr[M02] * fz + phd_mxptr[M03]) >> 14;
-		cv[i].y = (phd_mxptr[M10] * fx + phd_mxptr[M11] * fy + phd_mxptr[M12] * fz + phd_mxptr[M13]) >> 14;
-		cv[i].z = (phd_mxptr[M20] * fx + phd_mxptr[M21] * fy + phd_mxptr[M22] * fz + phd_mxptr[M23]) >> 14;
+		cv[i].x = (phd_mxptr[M00] * fx + phd_mxptr[M01] * fy + phd_mxptr[M02] * fz + phd_mxptr[M03]) >> W2V_SHIFT;
+		cv[i].y = (phd_mxptr[M10] * fx + phd_mxptr[M11] * fy + phd_mxptr[M12] * fz + phd_mxptr[M13]) >> W2V_SHIFT;
+		cv[i].z = (phd_mxptr[M20] * fx + phd_mxptr[M21] * fy + phd_mxptr[M22] * fz + phd_mxptr[M23]) >> W2V_SHIFT;
 	}
 
 	fy = (ccp.y - item->floor);
-	ccv.x = (phd_mxptr[M01] * fy + phd_mxptr[M03]) >> 14;
-	ccv.y = (phd_mxptr[M11] * fy + phd_mxptr[M13]) >> 14;
-	ccv.z = (phd_mxptr[M21] * fy + phd_mxptr[M23]) >> 14;
+	ccv.x = (phd_mxptr[M01] * fy + phd_mxptr[M03]) >> W2V_SHIFT;
+	ccv.y = (phd_mxptr[M11] * fy + phd_mxptr[M13]) >> W2V_SHIFT;
+	ccv.z = (phd_mxptr[M21] * fy + phd_mxptr[M23]) >> W2V_SHIFT;
 	phd_PopMatrix();
 
 	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++) // Draw the pizza
@@ -260,30 +260,30 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 	pos.x = -xSize;
 	pos.y = -16;
 	pos.z = zSize;
-	x1 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
-	y1 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
-	z1 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+	x1 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> W2V_SHIFT;
+	y1 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> W2V_SHIFT;
+	z1 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> W2V_SHIFT;
 
 	pos.x = xSize;
 	pos.y = -16;
 	pos.z = zSize;
-	x2 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
-	y2 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
-	z2 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+	x2 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> W2V_SHIFT;
+	y2 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> W2V_SHIFT;
+	z2 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> W2V_SHIFT;
 
 	pos.x = xSize;
 	pos.y = -16;
 	pos.z = -zSize;
-	x3 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
-	y3 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
-	z3 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+	x3 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> W2V_SHIFT;
+	y3 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> W2V_SHIFT;
+	z3 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> W2V_SHIFT;
 
 	pos.x = -xSize;
 	pos.y = -16;
 	pos.z = -zSize;
-	x4 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> 14;
-	y4 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> 14;
-	z4 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> 14;
+	x4 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> W2V_SHIFT;
+	y4 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> W2V_SHIFT;
+	z4 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> W2V_SHIFT;
 	phd_PopMatrix();
 
 	setXYZ4(v, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, clipflags);
@@ -391,8 +391,8 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 	{
 		x = hXZ[0];
 		z = hXZ[1];
-		hXZ[0] = (x * phd_mxptr[M00] + z * phd_mxptr[M02] + phd_mxptr[M03]) >> 14;
-		hXZ[1] = (x * phd_mxptr[M20] + z * phd_mxptr[M22] + phd_mxptr[M23]) >> 14;
+		hXZ[0] = (x * phd_mxptr[M00] + z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+		hXZ[1] = (x * phd_mxptr[M20] + z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
 	}
 
 	phd_PopMatrix();
@@ -420,9 +420,9 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 		x = sXYZ[0];
 		y = *hY - item->floor;
 		z = sXYZ[2];
-		sXYZ[0] = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> 14;
-		sXYZ[1] = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> 14;
-		sXYZ[2] = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> 14;
+		sXYZ[0] = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> W2V_SHIFT;
+		sXYZ[1] = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> W2V_SHIFT;
+		sXYZ[2] = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> W2V_SHIFT;
 	}
 
 	phd_PopMatrix();
@@ -669,7 +669,7 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 
 	if (rVel)
 	{
-		rVel += (((rVel - 4096) >> 5) * phd_sin((GlobalCounter & 7) << 13)) >> 14;
+		rVel += (((rVel - 4096) >> 5) * phd_sin((GlobalCounter & 7) << (W2V_SHIFT - 1))) >> W2V_SHIFT;
 
 		if (rVel < 0)
 			rVel = 0;
@@ -681,10 +681,10 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 
 	for (int i = 0; i <= rTVel; i += 2048)
 	{
-		x0 = ((rSize * (phd_sin(angle + i)) >> 13) - ((rSize * phd_sin(angle + i)) >> 15)) * ((float)phd_winxmax / 512.0F);
-		y0 = (-(rSize * phd_cos(angle + i)) >> 14) * (float)phd_winymax / 240.0F;
-		x1 = ((size * (phd_sin(angle + i)) >> 13) - ((size * phd_sin(angle + i)) >> 15)) * ((float)phd_winxmax / 512.0F);
-		y1 = (-(size * phd_cos(angle + i)) >> 14) * (float)phd_winymax / 240.0F;
+		x0 = ((rSize * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((rSize * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
+		y0 = (-(rSize * phd_cos(angle + i)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
+		x1 = ((size * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
+		y1 = (-(size * phd_cos(angle + i)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
 
 		v[0].sx = x + x0;
 		v[0].sy = y + y0;
@@ -716,10 +716,10 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	}
 
 	size -= size >> 4;
-	x0 = ((-4 * (phd_sin(angle + rVel)) >> 13) - ((-4 * phd_sin(angle + rVel)) >> 15)) * ((float)phd_winxmax / 512.0F);
-	y0 = (-(-4 * phd_cos(angle + rVel)) >> 14) * (float)phd_winymax / 240.0F;
-	x1 = ((size * (phd_sin(angle + rVel)) >> 13) - ((size * phd_sin(angle + rVel)) >> 15)) * ((float)phd_winxmax / 512.0F);
-	y1 = (-(size * phd_cos(angle + rVel)) >> 14) * (float)phd_winymax / 240.0F;
+	x0 = ((-4 * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((-4 * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
+	y0 = (-(-4 * phd_cos(angle + rVel)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
+	x1 = ((size * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
+	y1 = (-(size * phd_cos(angle + rVel)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
 
 	v[0].sx = x + x0;
 	v[0].sy = y + y0;
@@ -807,7 +807,7 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 
 	if (rVel)
 	{
-		rVel += (((rVel - 4096) >> 5) * phd_sin((GlobalCounter & 7) << 13)) >> 14;
+		rVel += (((rVel - 4096) >> 5) * phd_sin((GlobalCounter & 7) << (W2V_SHIFT - 1))) >> W2V_SHIFT;
 
 		if (rVel < 0)
 			rVel = 0;
@@ -826,10 +826,10 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	for (int i = 0; i <= rTVel; i += 2048)
 #endif
 	{
-		x0 = ((rSize * (phd_sin(angle + i)) >> 13) - ((rSize * phd_sin(angle + i)) >> 15)) * ((float)phd_winxmax / 512.0F);
-		y0 = (-(rSize * phd_cos(angle + i)) >> 14) * (float)phd_winymax / 240.0F;
-		x1 = ((size * (phd_sin(angle + i)) >> 13) - ((size * phd_sin(angle + i)) >> 15)) * ((float)phd_winxmax / 512.0F);
-		y1 = (-(size * phd_cos(angle + i)) >> 14) * (float)phd_winymax / 240.0F;
+		x0 = ((rSize * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((rSize * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
+		y0 = (-(rSize * phd_cos(angle + i)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
+		x1 = ((size * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
+		y1 = (-(size * phd_cos(angle + i)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
 
 		v[0].sx = x + x0;
 		v[0].sy = y + y0;
@@ -861,10 +861,10 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	}
 
 	size -= size >> 4;
-	x0 = ((-4 * (phd_sin(angle + rVel)) >> 13) - ((-4 * phd_sin(angle + rVel)) >> 15)) * ((float)phd_winxmax / 512.0F);
-	y0 = (-(-4 * phd_cos(angle + rVel)) >> 14) * (float)phd_winymax / 240.0F;
-	x1 = ((size * (phd_sin(angle + rVel)) >> 13) - ((size * phd_sin(angle + rVel)) >> 15)) * ((float)phd_winxmax / 512.0F);
-	y1 = (-(size * phd_cos(angle + rVel)) >> 14) * (float)phd_winymax / 240.0F;
+	x0 = ((-4 * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((-4 * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
+	y0 = (-(-4 * phd_cos(angle + rVel)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
+	x1 = ((size * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
+	y1 = (-(size * phd_cos(angle + rVel)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
 
 	v[0].sx = x + x0;
 	v[0].sy = y + y0;
@@ -924,23 +924,23 @@ void DrawDebris()
 		offsets[0] = dptr->XYZOffsets1[0];
 		offsets[1] = dptr->XYZOffsets1[1];
 		offsets[2] = dptr->XYZOffsets1[2];
-		XY[0] = short((phd_mxptr[M03] + phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2]) >> 14);
-		XY[1] = short((phd_mxptr[M13] + phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2]) >> 14);
-		Z[0] = (phd_mxptr[M23] + phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2]) >> 14;
+		XY[0] = short((phd_mxptr[M03] + phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2]) >> W2V_SHIFT);
+		XY[1] = short((phd_mxptr[M13] + phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2]) >> W2V_SHIFT);
+		Z[0] = (phd_mxptr[M23] + phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2]) >> W2V_SHIFT;
 
 		offsets[0] = dptr->XYZOffsets2[0];
 		offsets[1] = dptr->XYZOffsets2[1];
 		offsets[2] = dptr->XYZOffsets2[2];
-		XY[2] = short((phd_mxptr[M03] + phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2]) >> 14);
-		XY[3] = short((phd_mxptr[M13] + phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2]) >> 14);
-		Z[1] = (phd_mxptr[M23] + phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2]) >> 14;
+		XY[2] = short((phd_mxptr[M03] + phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2]) >> W2V_SHIFT);
+		XY[3] = short((phd_mxptr[M13] + phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2]) >> W2V_SHIFT);
+		Z[1] = (phd_mxptr[M23] + phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2]) >> W2V_SHIFT;
 
 		offsets[0] = dptr->XYZOffsets3[0];
 		offsets[1] = dptr->XYZOffsets3[1];
 		offsets[2] = dptr->XYZOffsets3[2];
-		XY[4] = short((phd_mxptr[M03] + phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2]) >> 14);
-		XY[5] = short((phd_mxptr[M13] + phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2]) >> 14);
-		Z[2] = (phd_mxptr[M23] + phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2]) >> 14;
+		XY[4] = short((phd_mxptr[M03] + phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2]) >> W2V_SHIFT);
+		XY[5] = short((phd_mxptr[M13] + phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2]) >> W2V_SHIFT);
+		Z[2] = (phd_mxptr[M23] + phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2]) >> W2V_SHIFT;
 
 		setXYZ3(v, XY[0], XY[1], Z[0], XY[2], XY[3], Z[1], XY[4], XY[5], Z[2], clipflags);
 		phd_PopMatrix();
@@ -1169,18 +1169,18 @@ void S_DrawDarts(ITEM_INFO* item)
 	zv = f_persp / (float)phd_mxptr[M23];
 	x1 = short(float(phd_mxptr[M03] * zv + f_centerx));
 	y1 = short(float(phd_mxptr[M13] * zv + f_centery));
-	z1 = phd_mxptr[M23] >> 14;
-	num = (-96 * phd_cos(item->pos.x_rot)) >> 14;
-	mxx = (num * phd_sin(item->pos.y_rot)) >> 14;
-	mxy = (96 * phd_sin(item->pos.x_rot)) >> 14;
-	mxz = (num * phd_cos(item->pos.y_rot)) >> 14;
+	z1 = phd_mxptr[M23] >> W2V_SHIFT;
+	num = (-96 * phd_cos(item->pos.x_rot)) >> W2V_SHIFT;
+	mxx = (num * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
+	mxy = (96 * phd_sin(item->pos.x_rot)) >> W2V_SHIFT;
+	mxz = (num * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
 	xx = phd_mxptr[M00] * mxx + phd_mxptr[M01] * mxy + phd_mxptr[M02] * mxz + phd_mxptr[M03];
 	yy = phd_mxptr[M10] * mxx + phd_mxptr[M11] * mxy + phd_mxptr[M12] * mxz + phd_mxptr[M13];
 	zz = phd_mxptr[M20] * mxx + phd_mxptr[M21] * mxy + phd_mxptr[M22] * mxz + phd_mxptr[M23];
 	zv = f_persp / (float)zz;
 	x2 = short(float(xx * zv + f_centerx));
 	y2 = short(float(yy * zv + f_centery));
-	z2 = zz >> 14;
+	z2 = zz >> W2V_SHIFT;
 
 	if (ClipLine(x1, y1, z1, x2, y2, z2, phd_winxmin, phd_winymin, phd_winxmax, phd_winymax))
 	{
@@ -1272,9 +1272,9 @@ void DrawFlatSky(ulong color, long zpos, long ypos, long drawtype)
 		x = vec[i].x;
 		y = vec[i].y;
 		z = vec[i].z;
-		vec[i].x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> 14;
-		vec[i].y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> 14;
-		vec[i].z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> 14;
+		vec[i].x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> W2V_SHIFT;
+		vec[i].y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> W2V_SHIFT;
+		vec[i].z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> W2V_SHIFT;
 		v[i].color = color | 0xFF000000;
 		v[i].specular = 0xFF000000;
 		CalcColorSplit(color, &v[i].color);
@@ -1320,9 +1320,9 @@ void DrawFlatSky(ulong color, long zpos, long ypos, long drawtype)
 		x = vec[i].x;
 		y = vec[i].y;
 		z = vec[i].z;
-		vec[i].x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> 14;
-		vec[i].y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> 14;
-		vec[i].z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> 14;
+		vec[i].x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> W2V_SHIFT;
+		vec[i].y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> W2V_SHIFT;
+		vec[i].z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> W2V_SHIFT;
 		v[i].color |= 0xFF000000;
 		v[i].specular = 0xFF000000;
 		CalcColorSplit(color, &v[i].color);
@@ -1784,7 +1784,7 @@ void DrawLaserSightSprite()
 	perspz = f_persp / (float)vec.z;
 	XY[0] = short(float(vec.x * perspz + f_centerx));
 	XY[1] = short(float(vec.y * perspz + f_centery));
-	Z[0] = vec.z >> 14;
+	Z[0] = vec.z >> W2V_SHIFT;
 	phd_PopMatrix();
 
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 14];
@@ -2082,7 +2082,7 @@ void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj)
 	perspz = f_persp / (float)pos.z;
 	XY[0] = short(float(pos.x * perspz + f_centerx));
 	XY[1] = short(float(pos.y * perspz + f_centery));
-	Z[0] = pos.z >> 14;
+	Z[0] = pos.z >> W2V_SHIFT;
 	phd_PopMatrix();
 	num = 0;
 
@@ -2369,7 +2369,7 @@ void DrawWraithTrail(ITEM_INFO* item)
 			perspz = f_persp / (float)pos.z;
 			XY[0] = short(float(pos.x * perspz + f_centerx));
 			XY[1] = short(float(pos.y * perspz + f_centery));
-			Z[0] = pos.z >> 14;
+			Z[0] = pos.z >> W2V_SHIFT;
 
 			if (!j || j == 7)
 				Z[1] = 0;
@@ -2471,7 +2471,7 @@ void DrawDrips()
 		perspz = f_persp / (float)vec.z;
 		XY[0] = short(float(vec.x * perspz + f_centerx));
 		XY[1] = short(float(vec.y * perspz + f_centery));
-		Z[0] = vec.z >> 14;
+		Z[0] = vec.z >> W2V_SHIFT;
 
 		pos[1] -= drip->Yvel >> 6;
 
@@ -2488,7 +2488,7 @@ void DrawDrips()
 		perspz = f_persp / (float)vec.z;
 		XY[2] = short(float(vec.x * perspz + f_centerx));
 		XY[3] = short(float(vec.y * perspz + f_centery));
-		Z[1] = vec.z >> 14;
+		Z[1] = vec.z >> W2V_SHIFT;
 
 		if (!Z[0])
 			continue;

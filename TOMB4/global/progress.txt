@@ -406,9 +406,9 @@ x for functions decompiled but not injected, for one reason or another.
 0x00436040		KillAllCurrentItems
 0x00436050		KillEverything
 0x00436060		TriggerExplosionBubble
-0x004361A0		TriggerDynamic
-0x00436250		TriggerDynamic_MIRROR
-0x00436320		ClearDynamics
+0x004361A0	+	TriggerDynamic
+0x00436250	+	TriggerDynamic_MIRROR
+0x00436320	+	ClearDynamics
 0x00436340	+	ControlSmokeEmitter
 0x00436900		ControlColouredLights
 0x004369B0		ControlEnemyMissile
@@ -1449,14 +1449,14 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/3dmath.cpp
 
 0x0048F9D0	+	AlterFOV
-0x0048FA90		SetupZRange
-0x0048FB60		ScaleCurrentMatrix
-0x0048FC10		InitWindow
+0x0048FA90	+	SetupZRange
+0x0048FB60	+	ScaleCurrentMatrix
+0x0048FC10	+	InitWindow
 0x0048FD40	+	mGetAngle
-0x0048FDC0		phd_GenerateW2V
-0x00490110		phd_LookAt
-0x00490210		phd_atan
-0x00490280		phd_sqrt
+0x0048FDC0	+	phd_GenerateW2V
+0x00490110	+	phd_LookAt
+0x00490210	+	phd_atan
+0x00490280	+	phd_sqrt
 0x004902B0	+	phd_PushMatrix
 0x00490310	+	phd_PushUnitMatrix
 0x00490350	+	phd_TranslateRel
@@ -1471,40 +1471,40 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/audio.cpp
 
-0x0046D610		S_CDPlay
-0x0046D6B0		S_CDStop
-0x0046D790		S_StartSyncedAudio
-0x0046D7B0		ACMSetVolume
-0x0046D800		ACMEnumCallBack
-0x0046D890		ACMSetupNotifications
-0x0046D9C0		ACMInit
-0x0046DD00		ACMClose
-0x0046DE50		OpenStreamFile
-0x0046DF50		FillADPCMBuffer
-0x0046E0F0		GetADPCMData
-0x0046E180		ACMEmulateCDPlay
-0x0046E340		ACMHandleNotifications
+0x0046D610	+	S_CDPlay
+0x0046D6B0	+	S_CDStop
+0x0046D790	+	S_StartSyncedAudio
+0x0046D7B0	+	ACMSetVolume
+0x0046D800	+	ACMEnumCallBack
+0x0046D890	+	ACMSetupNotifications
+0x0046D9C0	+	ACMInit
+0x0046DD00	+	ACMClose
+0x0046DE50	+	OpenStreamFile
+0x0046DF50	x	FillADPCMBuffer
+0x0046E0F0	+	GetADPCMData
+0x0046E180	+	ACMEmulateCDPlay
+0x0046E340	+	ACMHandleNotifications
 
 
 		specific/clipping.cpp
 
-0x0046E4D0		ZClipper
+0x0046E4D0	+	ZClipper
 0x0046E8D0		XYUVGClipper
-0x0046FDE0		visible_zclip
+0x0046FDE0	+	visible_zclip
 
 
 		specific/cmdline.cpp
 
-0x0046FE40		CLSetup
-0x0046FE60		CLNoFMV
-0x0046FE80		DXSetupDialog
-0x0046FED0		InitDSDevice
-0x0046FFA0		InitTFormats
-0x004701C0		InitResolution
-0x004705F0		InitD3DDevice
-0x004706B0		InitDDDevice
-0x004707A0		MapASCIIToANSI
-0x00470830		DXSetupDlgProc
+0x0046FE40	+	CLSetup
+0x0046FE60	+	CLNoFMV
+0x0046FE80	+	DXSetupDialog
+0x0046FED0	+	InitDSDevice
+0x0046FFA0	+	InitTFormats
+0x004701C0	+	InitResolution
+0x004705F0	+	InitD3DDevice
+0x004706B0	+	InitDDDevice
+0x004707A0	+	MapASCIIToANSI
+0x00470830	+	DXSetupDlgProc
 
 
 		specific/d3dmatrix.cpp
@@ -1570,28 +1570,28 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/dxsound.cpp
 
-0x004732E0		DXChangeOutputFormat
-0x00473390		DSChangeVolume
-0x004733B0		DSAdjustPitch
-0x00473400		DSAdjustPan
-0x00473460		DXSetOutputFormat
-0x00473500		DXDSCreate
-0x00473570		InitSampleDecompress
-0x00473690		FreeSampleDecompress
-0x00473710		DXCreateSampleADPCM
-0x004738B0		DXStopSample
-0x00473900		DSIsChannelPlaying
-0x00473950		DSGetFreeChannel
-0x00473970		DXStartSample
-0x00473A50		CalcVolume
-0x00473AB0		S_SoundStopAllSamples
-0x00473AD0		S_SoundStopSample
-0x00473AE0		S_SoundPlaySample
-0x00473B10		S_SoundPlaySampleLooped
-0x00473B40		DXFreeSounds
-0x00473B90		S_SoundSampleIsPlaying
-0x00473BB0		S_SoundSetPanAndVolume
-0x00473BF0		S_SoundSetPitch
+0x004732E0	+	DXChangeOutputFormat
+0x00473390	+	DSChangeVolume
+0x004733B0	+	DSAdjustPitch
+0x00473400	+	DSAdjustPan
+0x00473460	+	DXSetOutputFormat
+0x00473500	+	DXDSCreate
+0x00473570	+	InitSampleDecompress
+0x00473690	+	FreeSampleDecompress
+0x00473710	+	DXCreateSampleADPCM
+0x004738B0	+	DXStopSample
+0x00473900	+	DSIsChannelPlaying
+0x00473950	+	DSGetFreeChannel
+0x00473970	+	DXStartSample
+0x00473A50	+	CalcVolume
+0x00473AB0	+	S_SoundStopAllSamples
+0x00473AD0	+	S_SoundStopSample
+0x00473AE0	+	S_SoundPlaySample
+0x00473B10	+	S_SoundPlaySampleLooped
+0x00473B40	+	DXFreeSounds
+0x00473B90	+	S_SoundSampleIsPlaying
+0x00473BB0	+	S_SoundSetPanAndVolume
+0x00473BF0	+	S_SoundSetPitch
 
 
 		specific/file.cpp
@@ -1602,22 +1602,22 @@ x for functions decompiled but not injected, for one reason or another.
 0x00473DA0	+	FileSize
 0x00473DD0	+	LoadFile
 0x00473E80		Decompress
-0x00473F20		LoadTextures
-0x004749C0		LoadRooms
-0x00474E10		LoadObjects
+0x00473F20	+	LoadTextures
+0x004749C0	+	LoadRooms
+0x00474E10	+	LoadObjects
 0x004752A0		AdjustUV
-0x00475730		LoadSprites
-0x00475970		LoadCameras
-0x00475A30		LoadSoundEffects
-0x00475AC0		LoadBoxes
-0x00475C70		LoadAnimatedTextures
-0x00475CE0		LoadTextureInfos
-0x00475EE0		LoadItems
-0x004761E0		LoadCinematic
-0x004761F0		LoadAIInfo
-0x00476260		LoadSamples
-0x00476410		S_GetUVRotateTextures
-0x00476470		LoadLevel
+0x00475730	+	LoadSprites
+0x00475970	+	LoadCameras
+0x00475A30	+	LoadSoundEffects
+0x00475AC0	+	LoadBoxes
+0x00475C70	+	LoadAnimatedTextures
+0x00475CE0	+	LoadTextureInfos
+0x00475EE0	+	LoadItems
+0x004761E0	+	LoadCinematic
+0x004761F0	+	LoadAIInfo
+0x00476260	+	LoadSamples
+0x00476410	+	S_GetUVRotateTextures
+0x00476470	+	LoadLevel
 0x00476790	+	FreeLevel
 0x004768C0	+	S_LoadLevelFile
 
@@ -1642,13 +1642,13 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/function_table.cpp
 
-0x00476990		_NVisible
-0x004769D0		_Visible
-0x00476A10		SetCullCW
-0x00476A20		SetCullCCW
-0x00476A30		InitialiseFunctionTable
-0x00476AC0		HWBeginScene
-0x00476B10		HWEndScene
+0x00476990	+	_NVisible
+0x004769D0	+	_Visible
+0x00476A10	+	SetCullCW
+0x00476A20	+	SetCullCCW
+0x00476A30	+	InitialiseFunctionTable
+0x00476AC0	+	HWBeginScene
+0x00476B10	+	HWEndScene
 0x00476B30	+	HWInitialise
 0x00476E80	+	SetFogColor
 
@@ -1699,14 +1699,14 @@ x for functions decompiled but not injected, for one reason or another.
 0x00479F40	+	FreeMonoScreen
 0x0047A220	+	S_DrawTile
 0x0047A500	+	S_DisplayMonoScreen
-0x0047A6F0		GetSaveLoadFiles
-0x0047A880		DoLoadSave
+0x0047A6F0	+	GetSaveLoadFiles
+0x0047A880	+	DoLoadSave
 0x0047AB80	+	DoSlider
-0x0047B130		CheckKeyConflicts
+0x0047B130	+	CheckKeyConflicts
 0x0047B170	+	DoOptions
 0x0047C6B0	+	DoStatScreen
-0x0047CA20		S_DisplayPauseMenu
-0x0047CC60		S_PauseMenu
+0x0047CA20	+	S_DisplayPauseMenu
+0x0047CC60	+	S_PauseMenu
 0x0047CD20	+	S_LoadSave
 0x0047CE10	+	DoBar
 0x0047D3E0	+	S_DrawDashBar
@@ -1728,16 +1728,16 @@ x for functions decompiled but not injected, for one reason or another.
 0x0047F620	+	phd_PutPolygonSkyMesh
 0x0047F950	+	_InsertRoom
 0x0047F970	+	S_DrawPickup
-0x0047FA10		S_OutputPolyList
-0x0047FCA0		S_DumpScreen
+0x0047FA10	+	S_OutputPolyList
+0x0047FCA0	+	S_DumpScreen
 0x0047FCF0	+	S_GetObjectBounds
-0x00480070		S_AnimateTextures
+0x00480070	+	S_AnimateTextures
 0x00480220	+	ProjectTrainVerts
 0x00480310	+	phd_PutPolygons_train
 0x00480570	+	RenderLoadPic
-0x00480700		DDCopyBitmap
-0x00480850		LoadBitmap
-0x004808E0		do_boot_screen
+0x00480700	+	DDCopyBitmap
+0x00480850	+	LoadBitmap
+0x004808E0	+	do_boot_screen
 
 
 		specific/polyinsert.cpp
@@ -1758,20 +1758,20 @@ x for functions decompiled but not injected, for one reason or another.
 0x00481DF0	+	InitialiseFogBulbs
 0x00481E60	+	OmniEffect
 0x004820C0	+	OmniFog
-0x00482390		AddQuadClippedZBuffer
-0x00482910		AddTriClippedZBuffer
-0x00482E40		AddClippedPoly
-0x00482F90		SubdivideEdge
-0x004831C0		SubdivideTri
-0x00483520		SubdivideQuad
-0x00483A40		AddTriSubdivide
-0x00483B50		AddQuadSubdivide
+0x00482390	+	AddQuadClippedZBuffer
+0x00482910	+	AddTriClippedZBuffer
+0x00482E40	+	AddClippedPoly
+0x00482F90	+	SubdivideEdge
+0x004831C0	+	SubdivideTri
+0x00483520	+	SubdivideQuad
+0x00483A40	+	AddTriSubdivide
+0x00483B50	+	AddQuadSubdivide
 0x00483C80	+	AddTriClippedSorted
 0x004842A0	+	AddQuadClippedSorted
 0x00484850	+	AddLineClippedSorted
 0x00484920		CalcColorSplitMMX
 0x004849A0		AddPrelitMMX
-0x00484A20		CalcColorSplit
+0x00484A20	+	CalcColorSplit
 
 
 		specific/registry.cpp
@@ -1785,7 +1785,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00484C70	+	OpenRegistry
 0x00484CC0	+	CloseRegistry
 0x00484CD0	+	LoadSettings
-0x00485190		SaveSetup
+0x00485190	+	SaveSetup
 0x004853F0	+	SaveSettings
 
 
@@ -1834,32 +1834,32 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/texture.cpp
 
-0x0048E2F0		CreateTexturePage
-0x0048E6E0		FreeTextures
+0x0048E2F0	+	CreateTexturePage
+0x0048E6E0	+	FreeTextures
 
 
 		specific/time.cpp
 
-0x0048E800		TIME_Reset
-0x0048E810		TIME_Init
-0x0048E860		Sync
+0x0048E800	+	TIME_Reset
+0x0048E810	+	TIME_Init
+0x0048E860	+	Sync
 
 
 		specific/winmain.cpp
 
-0x0048E8D0		ClearSurfaces
-0x0048E9C0		WinMain
-0x0048EE50		CheckMMXTechnology
-0x0048EF20		WinClose
-0x0048EF70		WinProcMsg
-0x0048EFF0		WinProcessCommands
-0x0048F430		WinMainWndProc
-0x0048F6A0		WinRunCheck
-0x0048F700		WinProcessCommandLine
-0x0048F840		WinFrameRate
-0x0048F8C0		WinDisplayString
-0x0048F910		MungeFPCW
-0x0048F960		RestoreFPCW
+0x0048E8D0	+	ClearSurfaces
+0x0048E9C0	+	WinMain
+0x0048EE50	+	CheckMMXTechnology
+0x0048EF20	+	WinClose
+0x0048EF70	+	WinProcMsg
+0x0048EFF0	+	WinProcessCommands
+0x0048F430	+	WinMainWndProc
+0x0048F6A0	+	WinRunCheck
+0x0048F700	+	WinProcessCommandLine
+0x0048F840	+	WinFrameRate
+0x0048F8C0	+	WinDisplayString
+0x0048F910	+	MungeFPCW
+0x0048F960	+	RestoreFPCW
 
 // ======================================
 // SOFTWARE RENDERER

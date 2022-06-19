@@ -18,6 +18,9 @@
 #include "../game/gameflow.h"
 #include "../tomb4/tomb4.h"
 #endif
+#include "time.h"
+#include "winmain.h"
+#include "../game/tomb4fx.h"
 
 void phd_PutPolygons(short* objptr, long clip)	//whore
 {
@@ -390,9 +393,9 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 
 	if (tomb4.static_lighting)
 	{
-		u.x = phd_mxptr[M03] >> 14;
-		u.y = phd_mxptr[M13] >> 14;
-		u.z = phd_mxptr[M23] >> 14;
+		u.x = phd_mxptr[M03] >> W2V_SHIFT;
+		u.y = phd_mxptr[M13] >> W2V_SHIFT;
+		u.z = phd_mxptr[M23] >> W2V_SHIFT;
 		ApplyTransposeMatrix(w2v_matrix, &u, &t);
 		t.x += w2v_matrix[M03];
 		t.y += w2v_matrix[M13];
@@ -410,7 +413,7 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 #ifdef GENERAL_FIXES
 		if (tomb4.static_lighting)
 		{
-			for (int j = 0; j < 32; j++)
+			for (int j = 0; j < MAX_DYNAMICS; j++)
 			{
 				dptr = &dynamics[j];
 
@@ -972,6 +975,325 @@ long S_GetObjectBounds(short* bounds)
 		return 0;
 }
 
+HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACE4 surf, HBITMAP hbm, long x, long y, long dx, long dy)
+{
+	HDC hdc;
+	HDC hdc2;
+	BITMAP bitmap;
+	DDSURFACEDESC2 desc;
+	HRESULT result;
+	long l, t;
+
+	if (!hbm || !surf)
+		return E_FAIL;
+
+	surf->Restore();
+	hdc = CreateCompatibleDC(0);
+
+	if (!hdc)
+		OutputDebugString("createcompatible dc failed\n");
+
+	SelectObject(hdc, hbm);
+	GetObject(hbm, sizeof(BITMAP), &bitmap);
+
+	if (!dx)
+		dx = bitmap.bmWidth;
+
+	if (!dy)
+		dy = bitmap.bmHeight;
+
+	desc.dwSize = sizeof(DDSURFACEDESC2);
+	desc.dwFlags = DDSD_WIDTH | DDSD_HEIGHT;
+	surf->GetSurfaceDesc(&desc);
+	l = 0;
+	t = 0;
+
+	if (!(App.dx.Flags & 0x80))
+	{
+		surf = App.dx.lpPrimaryBuffer;
+
+		if (App.dx.Flags & 2)
+		{
+			l = App.dx.rScreen.left;
+			t = App.dx.rScreen.top;
+		}
+	}
+
+	result = surf->GetDC(&hdc2);
+
+	if (!result)
+	{
+		StretchBlt(hdc2, l, t, desc.dwWidth, desc.dwHeight, hdc, x, y, dx, dy, SRCCOPY);
+		surf->ReleaseDC(hdc2);
+	}
+
+	DeleteDC(hdc);
+	return result;
+}
+
+HRESULT _LoadBitmap(LPDIRECTDRAWSURFACE4 surf, LPCSTR name)
+{
+	HBITMAP hBitmap;
+	HRESULT result;
+
+	hBitmap = (HBITMAP)LoadImage(GetModuleHandle(0), name, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
+
+	if (!hBitmap)
+		hBitmap = (HBITMAP)LoadImage(0, name, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_LOADFROMFILE);
+
+	if (!hBitmap)
+	{
+		OutputDebugString("handle is null\n");
+		return E_FAIL;
+	}
+
+	result = DDCopyBitmap(surf, hBitmap, 0, 0, 0, 0);
+
+	if (result != DD_OK)
+		OutputDebugString("ddcopybitmap failed\n");
+
+	DeleteObject(hBitmap);
+	return result;
+}
+
+void do_boot_screen(long language)
+{
+	Log(2, "do_boot_screen");
+
+	switch (language)
+	{
+		case ENGLISH:
+		case DUTCH:
+			_LoadBitmap(App.dx.lpBackBuffer, "uk.bmp");
+			S_DumpScreen();
+			_LoadBitmap(App.dx.lpBackBuffer, "uk.bmp");
+			break;
+
+		case FRENCH:
+			_LoadBitmap(App.dx.lpBackBuffer, "france.bmp");
+			S_DumpScreen();
+			_LoadBitmap(App.dx.lpBackBuffer, "france.bmp");
+			break;
+
+		case GERMAN:
+			_LoadBitmap(App.dx.lpBackBuffer, "germany.bmp");
+			S_DumpScreen();
+			_LoadBitmap(App.dx.lpBackBuffer, "germany.bmp");
+			break;
+
+		case ITALIAN:
+			_LoadBitmap(App.dx.lpBackBuffer, "italy.bmp");
+			S_DumpScreen();
+			_LoadBitmap(App.dx.lpBackBuffer, "italy.bmp");
+			break;
+
+		case SPANISH:
+			_LoadBitmap(App.dx.lpBackBuffer, "spain.bmp");
+			S_DumpScreen();
+			_LoadBitmap(App.dx.lpBackBuffer, "spain.bmp");
+			break;
+
+		case US:
+			_LoadBitmap(App.dx.lpBackBuffer, "usa.bmp");
+			S_DumpScreen();
+			_LoadBitmap(App.dx.lpBackBuffer, "usa.bmp");
+			break;
+
+		case JAPAN:
+			_LoadBitmap(App.dx.lpBackBuffer, "japan.bmp");
+			S_DumpScreen();
+			_LoadBitmap(App.dx.lpBackBuffer, "japan.bmp");
+			break;
+	}
+}
+
+void S_AnimateTextures(long n)
+{
+	TEXTURESTRUCT* tex;
+	TEXTURESTRUCT tex2;
+	short* range;
+	float voff;
+	static long comp;
+	short nRanges, nRangeFrames;
+
+	for (comp += n; comp > 5; comp -= 5)
+	{
+		nRanges = *aranges;
+		range = aranges + 1;
+
+		for (int i = 0; i < nRanges; i++)
+		{
+			nRangeFrames = *range++;
+
+			if (i < nAnimUVRanges && gfUVRotate)
+			{
+				while (nRangeFrames > 0)
+				{
+					range++;
+					nRangeFrames--;
+				}
+			}
+			else
+			{
+				tex2 = textinfo[*range];
+
+				while (nRangeFrames > 0)
+				{
+					textinfo[range[0]] = textinfo[range[1]];
+					range++;
+					nRangeFrames--;
+				}
+
+				textinfo[*range] = tex2;
+			}
+
+			range++;
+		}
+	}
+
+	if (gfUVRotate)
+	{
+		range = aranges + 1;
+		AnimatingTexturesVOffset = (AnimatingTexturesVOffset - gfUVRotate * (n >> 1)) & 0x1F;
+
+		for (int i = 0; i < nAnimUVRanges; i++)
+		{
+			nRangeFrames = *range++;
+
+			while (nRangeFrames >= 0)
+			{
+				tex = &textinfo[range[0]];
+				voff = AnimatingTexturesVOffset * (1.0F / 256.0F);
+				tex->v1 = voff + AnimatingTexturesV[i][nRangeFrames][0];
+				tex->v2 = voff + AnimatingTexturesV[i][nRangeFrames][0];
+				tex->v3 = voff + AnimatingTexturesV[i][nRangeFrames][0] + 0.125F;
+				tex->v4 = voff + AnimatingTexturesV[i][nRangeFrames][0] + 0.125F;
+				range++;
+				nRangeFrames--;
+			}
+		}
+	}
+}
+
+long S_DumpScreen()
+{
+	long n;
+
+	n = Sync();
+
+	while (n < 2)
+	{
+		while (!Sync());	//wait for sync
+		n++;
+	}
+
+	GnFrameCounter++;
+	_EndScene();
+	DXShowFrame();
+	App.dx.DoneBlit = 1;
+	return n;
+}
+
+void S_OutputPolyList()
+{
+	D3DRECT r;
+	long h;
+
+	RestoreFPCW(FPCW);
+	WinFrameRate();
+	nPolys = 0;
+	nClippedPolys = 0;
+	DrawPrimitiveCnt = 0;
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+
+	if (resChangeCounter)
+	{
+		WinDisplayString(8, App.dx.dwRenderHeight - 8, (char*)"%dx%d", App.dx.dwRenderWidth, App.dx.dwRenderHeight);
+		resChangeCounter -= long(30 / App.fps);
+
+		if (resChangeCounter < 0)
+			resChangeCounter = 0;
+	}
+
+	if (App.dx.lpZBuffer)
+		DrawBuckets();
+
+	if (!gfCurrentLevel)
+	{
+		Fade();
+
+		if (App.dx.lpZBuffer)
+			DrawSortList();
+	}
+
+	SortPolyList(SortCount, SortList);
+	DrawSortList();
+
+	if (App.dx.lpZBuffer)
+	{
+		r.x1 = App.dx.rViewport.left;
+		r.y1 = App.dx.rViewport.top;
+		r.x2 = App.dx.rViewport.left + App.dx.rViewport.right;
+		r.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
+		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
+	}
+
+	if (BinocularRange && !MonoScreenOn)
+	{
+		InitialiseSortList();
+		DrawBinoculars();
+		DrawSortList();
+	}
+
+#ifdef GENERAL_FIXES
+	if (pickups[CurrentPickup].life != -1 && !MonoScreenOn && !GLOBAL_playing_cutseq && !bDisableLaraControl)
+#else
+	if (pickups[CurrentPickup].life != -1 && !MonoScreenOn && !GLOBAL_playing_cutseq)
+#endif
+	{
+		bWaterEffect = 0;
+		InitialiseSortList();
+		S_DrawPickup(pickups[CurrentPickup].object_number);
+		SortPolyList(SortCount, SortList);
+		DrawSortList();
+	}
+
+	InitialiseSortList();
+
+	if (FadeScreenHeight)
+	{
+		h = long((float)phd_winymax / 256.0F) * FadeScreenHeight;
+		DrawPsxTile(0, phd_winwidth | (h << 16), 0x62FFFFFF, 0, 0);
+		DrawPsxTile(phd_winheight - h, phd_winwidth | (h << 16), 0x62FFFFFF, 0, 0);
+	}
+
+	if (gfCurrentLevel)
+	{
+		Fade();
+
+		if (FlashFader)
+		{
+			DrawFlash();
+
+			if (FlashFader)
+				FlashFader -= 2;
+		}
+
+		DrawSortList();
+	}
+
+	if (DoFade == 1)
+	{
+		InitialiseSortList();
+		DoScreenFade();
+		DrawSortList();
+	}
+
+	MungeFPCW(&FPCW);
+}
+
 void inject_output(bool replace)
 {
 	INJECT(0x0047DA60, phd_PutPolygons, replace);
@@ -985,4 +1307,10 @@ void inject_output(bool replace)
 	INJECT(0x0047F620, phd_PutPolygonSkyMesh, replace);
 	INJECT(0x0047F970, S_DrawPickup, replace);
 	INJECT(0x0047FCF0, S_GetObjectBounds, replace);
+	INJECT(0x00480700, DDCopyBitmap, replace);
+	INJECT(0x00480850, _LoadBitmap, replace);
+	INJECT(0x004808E0, do_boot_screen, replace);
+	INJECT(0x00480070, S_AnimateTextures, replace);
+	INJECT(0x0047FCA0, S_DumpScreen, replace);
+	INJECT(0x0047FA10, S_OutputPolyList, replace);
 }

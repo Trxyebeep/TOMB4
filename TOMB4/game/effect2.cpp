@@ -94,9 +94,9 @@ void ControlSmokeEmitter(short item_number)
 			if (item->item_flags[2] == 4096)
 				size = (GetRandomControl() & 0x7FF) + 2048;
 
-			sptr->Xvel = (short)((size * phd_sin(item->pos.y_rot - 32768)) >> 14);
+			sptr->Xvel = (short)((size * phd_sin(item->pos.y_rot - 32768)) >> W2V_SHIFT);
 			sptr->Yvel = -16 - (GetRandomControl() & 0xF);
-			sptr->Zvel = (short)((size * phd_cos(item->pos.y_rot - 32768)) >> 14);
+			sptr->Zvel = (short)((size * phd_cos(item->pos.y_rot - 32768)) >> W2V_SHIFT);
 			sptr->Friction = 4;
 			sptr->Flags = 538;
 
@@ -449,10 +449,87 @@ void TriggerFlareSparks(long x, long y, long z, long xvel, long yvel, long zvel,
 	}
 }
 
+void TriggerDynamic(long x, long y, long z, long falloff, long r, long g, long b)
+{
+	DYNAMIC* dl;
+
+	if (number_dynamics == MAX_DYNAMICS || !falloff)
+		return;
+
+	dl = &dynamics[number_dynamics];
+	dl->on = 1;
+	dl->x = x;
+	dl->y = y;
+	dl->z = z;
+	dl->falloff = ushort(falloff << 8);
+
+	if (falloff < 8)
+	{
+		dl->r = uchar((r * falloff) >> 3);
+		dl->g = uchar((g * falloff) >> 3);
+		dl->b = uchar((b * falloff) >> 3);
+	}
+	else
+	{
+		dl->r = (uchar)r;
+		dl->g = (uchar)g;
+		dl->b = (uchar)b;
+	}
+
+	dl->FalloffScale = 0x200000 / (falloff << 8);
+	number_dynamics++;
+}
+
+void TriggerDynamic_MIRROR(long x, long y, long z, long falloff, long r, long g, long b)
+{
+	DYNAMIC* dl;
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (number_dynamics == MAX_DYNAMICS || !falloff)
+			return;
+
+		dl = &dynamics[number_dynamics];
+		dl->on = 1;
+		dl->x = x;
+		dl->y = y;
+		dl->z = z;
+		dl->falloff = ushort(falloff << 8);
+
+		if (falloff < 8)
+		{
+			dl->r = uchar((r * falloff) >> 3);
+			dl->g = uchar((g * falloff) >> 3);
+			dl->b = uchar((b * falloff) >> 3);
+		}
+		else
+		{
+			dl->r = (uchar)r;
+			dl->g = (uchar)g;
+			dl->b = (uchar)b;
+		}
+
+		dl->FalloffScale = 0x200000 / (falloff << 8);
+		number_dynamics++;
+		z = 2 * gfMirrorZPlane - z;
+	}
+}
+
+void ClearDynamics()
+{
+	number_dynamics = 0;
+
+	for (int i = 0; i < MAX_DYNAMICS; i++)
+		dynamics[i].on = 0;
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
 	INJECT(0x00434DC0, TriggerExplosionSmokeEnd, replace);
 	INJECT(0x00434FA0, TriggerExplosionSmoke, replace);
 	INJECT(0x00434770, TriggerFlareSparks, replace);
+	INJECT(0x004361A0, TriggerDynamic, replace);
+	INJECT(0x00436250, TriggerDynamic_MIRROR, replace);
+	INJECT(0x00436320, ClearDynamics, replace);
 }

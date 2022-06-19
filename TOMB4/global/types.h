@@ -37,6 +37,7 @@ do \
 #define phd_PopMatrix()		phd_mxptr -= 12
 #define RGBONLY(r, g, b) ((b) | (((g) | ((r) << 8)) << 8))
 #define RGBA(r, g, b, a) (RGBONLY(r, g, b) | ((a) << 24))
+#define	CLRA(clr)	((clr >> 24) & 0xFF)	//shift r, g, and b out of the way and 0xFF
 #define	CLRR(clr)	((clr >> 16) & 0xFF)	//shift g and b out of the way and 0xFF
 #define	CLRG(clr)	((clr >> 8) & 0xFF)		//shift b out of the way and 0xFF
 #define	CLRB(clr)	((clr) & 0xFF)			//and 0xFF
@@ -45,6 +46,8 @@ do \
 #define SetCutPlayed(num)	(CutSceneTriggered |= 1 << (num))
 #define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
 #define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
+#define	TRIGMULT2(a,b)		(((a) * (b)) >> W2V_SHIFT)
+#define	TRIGMULT3(a,b,c)	(TRIGMULT2((TRIGMULT2(a, b)), c))
 
 	/**********************************/
 #define OPEN	( (FILE*(__cdecl*)(const char*, const char*)) 0x004A0B4C )
@@ -52,7 +55,29 @@ do \
 #define READ	( (size_t(__cdecl*)(void*, size_t, size_t, FILE*)) 0x004A0860 )
 #define TELL	( (int(__cdecl*)(FILE*)) 0x004A0B5F )
 #define CLOSE	( (int(__cdecl*)(FILE*)) 0x004A07B4 )
+#define MALLOC	( (void*(__cdecl*)(size_t)) 0x004A0558 )
+#define REALLOC	( (void*(__cdecl*)(void*, size_t)) 0x004A1453 )
+#define FREE	( (void(__cdecl*)(void*)) 0x004A0A01 )
 	/**********************************/
+
+enum win_commands
+{
+	KA_ALTENTER = 8,
+	KA_ALTP = 40001,
+	KA_ALTM = 40002
+};
+
+enum languages
+{
+	ENGLISH,
+	FRENCH,
+	GERMAN,
+	ITALIAN,
+	SPANISH,
+	US,
+	JAPAN,
+	DUTCH
+};
 
 enum font_flags
 {
@@ -1825,6 +1850,88 @@ struct BINK_STRUCT
 	long num;
 	char padfuck[8];
 	long num2;
+};
+
+struct SAVEFILE_INFO
+{
+	char name[75];
+	char valid;
+	short hours;
+	short minutes;
+	short seconds;
+	short days;
+	long num;
+};
+
+struct COMMANDLINES
+{
+	char command[20];
+	bool needs_parameter;
+	void (*code)(char*);
+	char parameter[20];
+};
+
+struct CHANGE_STRUCT
+{
+	short goal_anim_state;
+	short number_ranges;
+	short range_index;
+};
+
+struct RANGE_STRUCT
+{
+	short start_frame;
+	short end_frame;
+	short link_anim_num;
+	short link_frame_num;
+};
+
+struct PHDSPRITESTRUCT
+{
+	ushort tpage;
+	ushort offset;
+	ushort width;
+	ushort height;
+	short x1;
+	short y1;
+	short x2;
+	short y2;
+};
+
+struct PHDTEXTURESTRUCT
+{
+	ushort drawtype;
+	ushort tpage;
+	ushort flag;
+	ushort u1;
+	ushort v1;
+	ushort u2;
+	ushort v2;
+	ushort u3;
+	ushort v3;
+	ushort u4;
+	ushort v4;
+	ulong xoff;
+	ulong yoff;
+	ulong width;
+	ulong height;
+};
+
+struct SAMPLE_INFO
+{
+	short number;
+	uchar volume;
+	char radius;
+	char randomness;
+	char pitch;
+	short flags;
+};
+
+struct DS_SAMPLE
+{
+	LPDIRECTSOUNDBUFFER buffer;
+	long frequency;
+	long playing;
 };
 
 #ifdef IMPROVED_BARS

@@ -279,8 +279,8 @@ void InitialiseSlicerDicer(short item_number)
 	ITEM_INFO* item;
 
 	item = &items[item_number];
-	item->pos.x_pos += 512 * phd_sin(item->pos.y_rot + 0x4000) >> 14;
-	item->pos.z_pos += 512 * phd_cos(item->pos.y_rot + 0x4000) >> 14;
+	item->pos.x_pos += 512 * phd_sin(item->pos.y_rot + 0x4000) >> W2V_SHIFT;
+	item->pos.z_pos += 512 * phd_cos(item->pos.y_rot + 0x4000) >> W2V_SHIFT;
 	item->item_flags[3] = 50;
 	item->item_flags[0] = short(item->pos.x_pos >> 8);
 	item->item_flags[1] = short((item->pos.y_pos - 4608) >> 8);

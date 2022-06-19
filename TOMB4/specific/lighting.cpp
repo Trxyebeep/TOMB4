@@ -32,7 +32,7 @@ void InitItemDynamicLighting(ITEM_INFO* item)
 	last_off = -1;	//uninitialized var
 #endif
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
 		dptr = &dynamics[i];
 
@@ -112,7 +112,7 @@ void InitDynamicLighting()
 	ClearObjectLighting();
 	App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_AMBIENT, 0);
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
 		dptr = &dynamics[i];
 
@@ -294,7 +294,7 @@ void ClearDynamicLighting()
 {
 	App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_AMBIENT, 0);
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
 		if (D3DDynamics[i].D3DLight2.dwFlags & D3DLIGHT_ACTIVE)
 		{
@@ -307,16 +307,16 @@ void ClearDynamicLighting()
 
 void ApplyMatrix(long* matrix, PHD_VECTOR* start, PHD_VECTOR* dest)
 {
-	dest->x = (start->x * matrix[M00] + start->y * matrix[M01] + start->z * matrix[M02]) >> 14;
-	dest->y = (start->x * matrix[M10] + start->y * matrix[M11] + start->z * matrix[M12]) >> 14;
-	dest->z = (start->x * matrix[M20] + start->y * matrix[M21] + start->z * matrix[M22]) >> 14;
+	dest->x = (start->x * matrix[M00] + start->y * matrix[M01] + start->z * matrix[M02]) >> W2V_SHIFT;
+	dest->y = (start->x * matrix[M10] + start->y * matrix[M11] + start->z * matrix[M12]) >> W2V_SHIFT;
+	dest->z = (start->x * matrix[M20] + start->y * matrix[M21] + start->z * matrix[M22]) >> W2V_SHIFT;
 }
 
 void ApplyTransposeMatrix(long* matrix, PHD_VECTOR* start, PHD_VECTOR* dest)
 {
-	dest->x = (start->x * matrix[M00] + start->y * matrix[M10] + start->z * matrix[M20]) >> 14;
-	dest->y = (start->x * matrix[M01] + start->y * matrix[M11] + start->z * matrix[M21]) >> 14;
-	dest->z = (start->x * matrix[M02] + start->y * matrix[M12] + start->z * matrix[M22]) >> 14;
+	dest->x = (start->x * matrix[M00] + start->y * matrix[M10] + start->z * matrix[M20]) >> W2V_SHIFT;
+	dest->y = (start->x * matrix[M01] + start->y * matrix[M11] + start->z * matrix[M21]) >> W2V_SHIFT;
+	dest->z = (start->x * matrix[M02] + start->y * matrix[M12] + start->z * matrix[M22]) >> W2V_SHIFT;
 }
 
 void MallocD3DLights()
@@ -326,7 +326,7 @@ void MallocD3DLights()
 
 	MaxRoomLights *= 2;
 	D3DLights = (D3DLIGHT_STRUCT*)game_malloc(sizeof(D3DLIGHT_STRUCT) * MaxRoomLights);
-	D3DDynamics = (D3DLIGHT_STRUCT*)game_malloc(sizeof(D3DLIGHT_STRUCT) * 32);
+	D3DDynamics = (D3DLIGHT_STRUCT*)game_malloc(sizeof(D3DLIGHT_STRUCT) * MAX_DYNAMICS);
 }
 
 void CreateD3DLights()
@@ -349,7 +349,7 @@ void CreateD3DLights()
 
 	if (D3DDynamics)
 	{
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < MAX_DYNAMICS; i++)
 		{
 			DXAttempt(App.dx.lpD3D->CreateLight(&D3DDynamics[i].D3DLight, 0));
 			memset(&D3DDynamics[i].D3DLight2, 0, sizeof(D3DDynamics[i].D3DLight2));
@@ -397,7 +397,7 @@ void FreeD3DLights()
 
 	if (D3DDynamics)
 	{
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < MAX_DYNAMICS; i++)
 		{
 			DXAttempt(App.dx.lpViewport->DeleteLight(D3DDynamics[i].D3DLight));
 

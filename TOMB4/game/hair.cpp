@@ -111,9 +111,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	}
 
 	phd_PushUnitMatrix();
-	phd_mxptr[M03] = lara_item->pos.x_pos << 14;
-	phd_mxptr[M13] = lara_item->pos.y_pos << 14;
-	phd_mxptr[M23] = lara_item->pos.z_pos << 14;
+	phd_mxptr[M03] = lara_item->pos.x_pos << W2V_SHIFT;
+	phd_mxptr[M13] = lara_item->pos.y_pos << W2V_SHIFT;
+	phd_mxptr[M23] = lara_item->pos.z_pos << W2V_SHIFT;
 	phd_RotYXZ(lara_item->pos.y_rot, lara_item->pos.x_rot, lara_item->pos.z_rot);
 
 	if (frac)
@@ -129,9 +129,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		objptr = lara.mesh_ptrs[LM_HIPS];
 		phd_TranslateRel_I(*objptr, objptr[1], objptr[2]);
 		InterpolateMatrix();
-		sphere[0].x = phd_mxptr[M03] >> 14;
-		sphere[0].y = phd_mxptr[M13] >> 14;
-		sphere[0].z = phd_mxptr[M23] >> 14;
+		sphere[0].x = phd_mxptr[M03] >> W2V_SHIFT;
+		sphere[0].y = phd_mxptr[M13] >> W2V_SHIFT;
+		sphere[0].z = phd_mxptr[M23] >> W2V_SHIFT;
 		sphere[0].r = objptr[3];
 		phd_PopMatrix_I();
 
@@ -143,9 +143,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		objptr = lara.mesh_ptrs[LM_TORSO];
 		phd_TranslateRel_I(*objptr - 9, objptr[1], objptr[2] + 25);//repositioned to avoid floaty hair
 		InterpolateMatrix();
-		sphere[1].x = phd_mxptr[M03] >> 14;
-		sphere[1].y = phd_mxptr[M13] >> 14;
-		sphere[1].z = phd_mxptr[M23] >> 14;
+		sphere[1].x = phd_mxptr[M03] >> W2V_SHIFT;
+		sphere[1].y = phd_mxptr[M13] >> W2V_SHIFT;
+		sphere[1].z = phd_mxptr[M23] >> W2V_SHIFT;
 		sphere[1].r = objptr[3];
 
 		if (gfLevelFlags & GF_YOUNGLARA)
@@ -159,9 +159,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		objptr = lara.mesh_ptrs[LM_RINARM];
 		phd_TranslateRel_I(*objptr, objptr[1], objptr[2]);
 		InterpolateMatrix();
-		sphere[3].x = phd_mxptr[M03] >> 14;
-		sphere[3].y = phd_mxptr[M13] >> 14;
-		sphere[3].z = phd_mxptr[M23] >> 14;
+		sphere[3].x = phd_mxptr[M03] >> W2V_SHIFT;
+		sphere[3].y = phd_mxptr[M13] >> W2V_SHIFT;
+		sphere[3].z = phd_mxptr[M23] >> W2V_SHIFT;
 		sphere[3].r = 4 * objptr[3] / 3;	//limited rad to avoid floating hair when crawling with the new neck sphere
 		phd_PopMatrix_I();
 
@@ -171,9 +171,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		objptr = lara.mesh_ptrs[LM_LINARM];
 		phd_TranslateRel_I(*objptr, objptr[1], objptr[2]);
 		InterpolateMatrix();
-		sphere[4].x = phd_mxptr[M03] >> 14;
-		sphere[4].y = phd_mxptr[M13] >> 14;
-		sphere[4].z = phd_mxptr[M23] >> 14;
+		sphere[4].x = phd_mxptr[M03] >> W2V_SHIFT;
+		sphere[4].y = phd_mxptr[M13] >> W2V_SHIFT;
+		sphere[4].z = phd_mxptr[M23] >> W2V_SHIFT;
 		sphere[4].r = 4 * objptr[3] / 3;	//limited rad to avoid floating hair when crawling with the new neck sphere
 		phd_PopMatrix_I();
 		phd_TranslateRel_I(bone[53], bone[54], bone[55]);
@@ -184,9 +184,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		objptr = lara.mesh_ptrs[LM_HEAD];
 		phd_TranslateRel_I(*objptr - 2, objptr[1], objptr[2]);//repositioned to avoid floaty hair
 		InterpolateMatrix();
-		sphere[2].x = phd_mxptr[M03] >> 14;
-		sphere[2].y = phd_mxptr[M13] >> 14;
-		sphere[2].z = phd_mxptr[M23] >> 14;
+		sphere[2].x = phd_mxptr[M03] >> W2V_SHIFT;
+		sphere[2].y = phd_mxptr[M13] >> W2V_SHIFT;
+		sphere[2].z = phd_mxptr[M23] >> W2V_SHIFT;
 		sphere[2].r = objptr[3];
 		phd_PopMatrix_I();
 
@@ -213,9 +213,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		}
 
 		InterpolateMatrix();
-		pos.x = phd_mxptr[M03] >> 14;
-		pos.y = phd_mxptr[M13] >> 14;
-		pos.z = phd_mxptr[M23] >> 14;
+		pos.x = phd_mxptr[M03] >> W2V_SHIFT;
+		pos.y = phd_mxptr[M13] >> W2V_SHIFT;
+		pos.z = phd_mxptr[M23] >> W2V_SHIFT;
 	}
 	else
 	{
@@ -227,9 +227,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		phd_PushMatrix();
 		objptr = lara.mesh_ptrs[LM_HIPS];
 		phd_TranslateRel(*objptr, objptr[1], objptr[2]);
-		sphere[0].x = phd_mxptr[M03] >> 14;
-		sphere[0].y = phd_mxptr[M13] >> 14;
-		sphere[0].z = phd_mxptr[M23] >> 14;
+		sphere[0].x = phd_mxptr[M03] >> W2V_SHIFT;
+		sphere[0].y = phd_mxptr[M13] >> W2V_SHIFT;
+		sphere[0].z = phd_mxptr[M23] >> W2V_SHIFT;
 		sphere[0].r = objptr[3];
 		phd_PopMatrix();
 
@@ -240,9 +240,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		phd_PushMatrix();
 		objptr = lara.mesh_ptrs[LM_TORSO];
 		phd_TranslateRel(*objptr - 9, objptr[1], objptr[2] + 25);//repositioned to avoid floaty hair
-		sphere[1].x = phd_mxptr[M03] >> 14;
-		sphere[1].y = phd_mxptr[M13] >> 14;
-		sphere[1].z = phd_mxptr[M23] >> 14;
+		sphere[1].x = phd_mxptr[M03] >> W2V_SHIFT;
+		sphere[1].y = phd_mxptr[M13] >> W2V_SHIFT;
+		sphere[1].z = phd_mxptr[M23] >> W2V_SHIFT;
 		sphere[1].r = objptr[3];
 
 		if (gfLevelFlags & GF_YOUNGLARA)
@@ -255,9 +255,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		gar_RotYXZsuperpack(&rot[0], 0);
 		objptr = lara.mesh_ptrs[LM_RINARM];
 		phd_TranslateRel(*objptr, objptr[1], objptr[2]);
-		sphere[3].x = phd_mxptr[M03] >> 14;
-		sphere[3].y = phd_mxptr[M13] >> 14;
-		sphere[3].z = phd_mxptr[M23] >> 14;
+		sphere[3].x = phd_mxptr[M03] >> W2V_SHIFT;
+		sphere[3].y = phd_mxptr[M13] >> W2V_SHIFT;
+		sphere[3].z = phd_mxptr[M23] >> W2V_SHIFT;
 		sphere[3].r = 4 * objptr[3] / 3;	//limited rad to avoid floating hair when crawling with the new neck sphere
 		phd_PopMatrix();
 
@@ -266,9 +266,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		gar_RotYXZsuperpack(&rot[0], 2);
 		objptr = lara.mesh_ptrs[LM_LINARM];
 		phd_TranslateRel(*objptr, objptr[1], objptr[2]);
-		sphere[4].x = phd_mxptr[M03] >> 14;
-		sphere[4].y = phd_mxptr[M13] >> 14;
-		sphere[4].z = phd_mxptr[M23] >> 14;
+		sphere[4].x = phd_mxptr[M03] >> W2V_SHIFT;
+		sphere[4].y = phd_mxptr[M13] >> W2V_SHIFT;
+		sphere[4].z = phd_mxptr[M23] >> W2V_SHIFT;
 		sphere[4].r = 4 * objptr[3] / 3;	//limited rad to avoid floating hair when crawling with the new neck sphere
 		phd_PopMatrix();
 		phd_TranslateRel(bone[53], bone[54], bone[55]);
@@ -278,9 +278,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		phd_PushMatrix();
 		objptr = lara.mesh_ptrs[LM_HEAD];
 		phd_TranslateRel(*objptr - 2, objptr[1], objptr[2]);//repositioned to avoid floaty hair
-		sphere[2].x = phd_mxptr[M03] >> 14;
-		sphere[2].y = phd_mxptr[M13] >> 14;
-		sphere[2].z = phd_mxptr[M23] >> 14;
+		sphere[2].x = phd_mxptr[M03] >> W2V_SHIFT;
+		sphere[2].y = phd_mxptr[M13] >> W2V_SHIFT;
+		sphere[2].z = phd_mxptr[M23] >> W2V_SHIFT;
 		sphere[2].r = objptr[3];
 		phd_PopMatrix();
 
@@ -306,9 +306,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 				phd_TranslateRel(-4, -4, -48);
 		}
 
-		pos.x = phd_mxptr[M03] >> 14;
-		pos.y = phd_mxptr[M13] >> 14;
-		pos.z = phd_mxptr[M23] >> 14;
+		pos.x = phd_mxptr[M03] >> W2V_SHIFT;
+		pos.y = phd_mxptr[M13] >> W2V_SHIFT;
+		pos.z = phd_mxptr[M23] >> W2V_SHIFT;
 	}
 
 	phd_PopMatrix();
@@ -326,14 +326,14 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		for (int i = 0; i < 6; i++, bone += 4)
 		{
 			phd_PushUnitMatrix();
-			phd_mxptr[M03] = hair->pos.x_pos << 14;
-			phd_mxptr[M13] = hair->pos.y_pos << 14;
-			phd_mxptr[M23] = hair->pos.z_pos << 14;
+			phd_mxptr[M03] = hair->pos.x_pos << W2V_SHIFT;
+			phd_mxptr[M13] = hair->pos.y_pos << W2V_SHIFT;
+			phd_mxptr[M23] = hair->pos.z_pos << W2V_SHIFT;
 			phd_RotYXZ(hair->pos.y_rot, hair->pos.x_rot, 0);
 			phd_TranslateRel(bone[1], bone[2], bone[3]);
-			(hair + 1)->pos.x_pos = phd_mxptr[M03] >> 14;
-			(hair + 1)->pos.y_pos = phd_mxptr[M13] >> 14;
-			(hair + 1)->pos.z_pos = phd_mxptr[M23] >> 14;
+			(hair + 1)->pos.x_pos = phd_mxptr[M03] >> W2V_SHIFT;
+			(hair + 1)->pos.y_pos = phd_mxptr[M13] >> W2V_SHIFT;
+			(hair + 1)->pos.z_pos = phd_mxptr[M23] >> W2V_SHIFT;
 			phd_PopMatrix();
 			hair++;
 		}
@@ -463,9 +463,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 			(hair - 1)->pos.x_rot = (short)-phd_atan(dist, dy);
 
 			phd_PushUnitMatrix();
-			phd_mxptr[M03] = (hair - 1)->pos.x_pos << 14;
-			phd_mxptr[M13] = (hair - 1)->pos.y_pos << 14;
-			phd_mxptr[M23] = (hair - 1)->pos.z_pos << 14;
+			phd_mxptr[M03] = (hair - 1)->pos.x_pos << W2V_SHIFT;
+			phd_mxptr[M13] = (hair - 1)->pos.y_pos << W2V_SHIFT;
+			phd_mxptr[M23] = (hair - 1)->pos.z_pos << W2V_SHIFT;
 			phd_RotYXZ((hair - 1)->pos.y_rot, (hair - 1)->pos.x_rot, 0);
 
 			if (i == 6)
@@ -473,9 +473,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 			else
 				phd_TranslateRel(bone[1], bone[2], bone[3]);
 
-			hair->pos.x_pos = phd_mxptr[M03] >> 14;
-			hair->pos.y_pos = phd_mxptr[M13] >> 14;
-			hair->pos.z_pos = phd_mxptr[M23] >> 14;
+			hair->pos.x_pos = phd_mxptr[M03] >> W2V_SHIFT;
+			hair->pos.y_pos = phd_mxptr[M13] >> W2V_SHIFT;
+			hair->pos.z_pos = phd_mxptr[M23] >> W2V_SHIFT;
 			hair->vel.x = hair->pos.x_pos - pos.x;
 			hair->vel.y = hair->pos.y_pos - pos.y;
 			hair->vel.z = hair->pos.z_pos - pos.z;
@@ -545,9 +545,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		frame = cutscenething;
 
 	phd_PushUnitMatrix();
-	phd_mxptr[M03] = lara_item->pos.x_pos << 14;
-	phd_mxptr[M13] = lara_item->pos.y_pos << 14;
-	phd_mxptr[M23] = lara_item->pos.z_pos << 14;
+	phd_mxptr[M03] = lara_item->pos.x_pos << W2V_SHIFT;
+	phd_mxptr[M13] = lara_item->pos.y_pos << W2V_SHIFT;
+	phd_mxptr[M23] = lara_item->pos.z_pos << W2V_SHIFT;
 	phd_RotYXZ(lara_item->pos.y_rot, lara_item->pos.x_rot, lara_item->pos.z_rot);
 	rot = frame + 9;
 	bone = &bones[obj->bone_index];
@@ -557,9 +557,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	phd_PushMatrix();
 	objptr = lara.mesh_ptrs[LM_HIPS];
 	phd_TranslateRel(objptr[0], objptr[1], objptr[2]);
-	sphere[0].x = phd_mxptr[M03] >> 14;
-	sphere[0].y = phd_mxptr[M13] >> 14;
-	sphere[0].z = phd_mxptr[M23] >> 14;
+	sphere[0].x = phd_mxptr[M03] >> W2V_SHIFT;
+	sphere[0].y = phd_mxptr[M13] >> W2V_SHIFT;
+	sphere[0].z = phd_mxptr[M23] >> W2V_SHIFT;
 	sphere[0].r = objptr[3];
 	phd_PopMatrix();
 
@@ -570,9 +570,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	phd_PushMatrix();
 	objptr = lara.mesh_ptrs[LM_TORSO];
 	phd_TranslateRel(objptr[0], objptr[1], objptr[2]);
-	sphere[1].x = phd_mxptr[M03] >> 14;
-	sphere[1].y = phd_mxptr[M13] >> 14;
-	sphere[1].z = phd_mxptr[M23] >> 14;
+	sphere[1].x = phd_mxptr[M03] >> W2V_SHIFT;
+	sphere[1].y = phd_mxptr[M13] >> W2V_SHIFT;
+	sphere[1].z = phd_mxptr[M23] >> W2V_SHIFT;
 	sphere[1].r = objptr[3];
 
 	if (gfLevelFlags & GF_YOUNGLARA)
@@ -585,9 +585,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	gar_RotYXZsuperpack(&rot, 0);
 	objptr = lara.mesh_ptrs[LM_RINARM];
 	phd_TranslateRel(objptr[0], objptr[1], objptr[2]);
-	sphere[3].x = phd_mxptr[M03] >> 14;
-	sphere[3].y = phd_mxptr[M13] >> 14;
-	sphere[3].z = phd_mxptr[M23] >> 14;
+	sphere[3].x = phd_mxptr[M03] >> W2V_SHIFT;
+	sphere[3].y = phd_mxptr[M13] >> W2V_SHIFT;
+	sphere[3].z = phd_mxptr[M23] >> W2V_SHIFT;
 	sphere[3].r = 3 * objptr[3] / 2;
 	phd_PopMatrix();
 
@@ -596,9 +596,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	gar_RotYXZsuperpack(&rot, 2);
 	objptr = lara.mesh_ptrs[LM_LINARM];
 	phd_TranslateRel(objptr[0], objptr[1], objptr[2]);
-	sphere[4].x = phd_mxptr[M03] >> 14;
-	sphere[4].y = phd_mxptr[M13] >> 14;
-	sphere[4].z = phd_mxptr[M23] >> 14;
+	sphere[4].x = phd_mxptr[M03] >> W2V_SHIFT;
+	sphere[4].y = phd_mxptr[M13] >> W2V_SHIFT;
+	sphere[4].z = phd_mxptr[M23] >> W2V_SHIFT;
 	sphere[4].r = 3 * objptr[3] / 2;
 	phd_PopMatrix();
 	phd_TranslateRel(bone[53], bone[54], bone[55]);
@@ -608,9 +608,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	phd_PushMatrix();
 	objptr = lara.mesh_ptrs[LM_HEAD];
 	phd_TranslateRel(objptr[0], objptr[1], objptr[2]);
-	sphere[2].x = phd_mxptr[M03] >> 14;
-	sphere[2].y = phd_mxptr[M13] >> 14;
-	sphere[2].z = phd_mxptr[M23] >> 14;
+	sphere[2].x = phd_mxptr[M03] >> W2V_SHIFT;
+	sphere[2].y = phd_mxptr[M13] >> W2V_SHIFT;
+	sphere[2].z = phd_mxptr[M23] >> W2V_SHIFT;
 	sphere[2].r = objptr[3];
 	phd_PopMatrix();
 
@@ -628,9 +628,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	else
 		phd_TranslateRel(-4, -4, -48);
 
-	pos.x = phd_mxptr[M03] >> 14;
-	pos.y = phd_mxptr[M13] >> 14;
-	pos.z = phd_mxptr[M23] >> 14;
+	pos.x = phd_mxptr[M03] >> W2V_SHIFT;
+	pos.y = phd_mxptr[M13] >> W2V_SHIFT;
+	pos.z = phd_mxptr[M23] >> W2V_SHIFT;
 	phd_PopMatrix();
 	obj = &objects[HAIR];
 	bone = &bones[obj->bone_index];
@@ -646,14 +646,14 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		for (int i = 0; i < 6; i++, bone += 4)
 		{
 			phd_PushUnitMatrix();
-			phd_mxptr[M03] = hair->pos.x_pos << 14;
-			phd_mxptr[M13] = hair->pos.y_pos << 14;
-			phd_mxptr[M23] = hair->pos.z_pos << 14;
+			phd_mxptr[M03] = hair->pos.x_pos << W2V_SHIFT;
+			phd_mxptr[M13] = hair->pos.y_pos << W2V_SHIFT;
+			phd_mxptr[M23] = hair->pos.z_pos << W2V_SHIFT;
 			phd_RotYXZ(hair->pos.y_rot, hair->pos.x_rot, 0);
 			phd_TranslateRel(bone[1], bone[2], bone[3]);
-			(hair + 1)->pos.x_pos = phd_mxptr[M03] >> 14;
-			(hair + 1)->pos.y_pos = phd_mxptr[M13] >> 14;
-			(hair + 1)->pos.z_pos = phd_mxptr[M23] >> 14;
+			(hair + 1)->pos.x_pos = phd_mxptr[M03] >> W2V_SHIFT;
+			(hair + 1)->pos.y_pos = phd_mxptr[M13] >> W2V_SHIFT;
+			(hair + 1)->pos.z_pos = phd_mxptr[M23] >> W2V_SHIFT;
 			phd_PopMatrix();
 			hair++;
 		}
@@ -779,9 +779,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 			(hair - 1)->pos.x_rot = (short)-phd_atan(dist, dy);
 
 			phd_PushUnitMatrix();
-			phd_mxptr[M03] = (hair - 1)->pos.x_pos << 14;
-			phd_mxptr[M13] = (hair - 1)->pos.y_pos << 14;
-			phd_mxptr[M23] = (hair - 1)->pos.z_pos << 14;
+			phd_mxptr[M03] = (hair - 1)->pos.x_pos << W2V_SHIFT;
+			phd_mxptr[M13] = (hair - 1)->pos.y_pos << W2V_SHIFT;
+			phd_mxptr[M23] = (hair - 1)->pos.z_pos << W2V_SHIFT;
 			phd_RotYXZ((hair - 1)->pos.y_rot, (hair - 1)->pos.x_rot, 0);
 
 			if (i == 6)
@@ -789,9 +789,9 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 			else
 				phd_TranslateRel(bone[1], bone[2], bone[3]);
 
-			hair->pos.x_pos = phd_mxptr[M03] >> 14;
-			hair->pos.y_pos = phd_mxptr[M13] >> 14;
-			hair->pos.z_pos = phd_mxptr[M23] >> 14;
+			hair->pos.x_pos = phd_mxptr[M03] >> W2V_SHIFT;
+			hair->pos.y_pos = phd_mxptr[M13] >> W2V_SHIFT;
+			hair->pos.z_pos = phd_mxptr[M23] >> W2V_SHIFT;
 			hair->vel.x = hair->pos.x_pos - pos.x;
 			hair->vel.y = hair->pos.y_pos - pos.y;
 			hair->vel.z = hair->pos.z_pos - pos.z;

@@ -1,6 +1,8 @@
 #pragma once
 #include "../global/vars.h"
 
+void inject_texture(bool replace);
+
 typedef void(__cdecl* rgbfunc)(uchar*, uchar*, uchar*);
-#define CreateTexturePage	( (LPDIRECTDRAWSURFACE4(__cdecl*)(long, long, long, long*, rgbfunc, long)) 0x0048E2F0 )
-#define FreeTextures	( (void(__cdecl*)()) 0x0048E6E0 )
+LPDIRECTDRAWSURFACE4 CreateTexturePage(long w, long h, long MipMapCount, long* pSrc, rgbfunc RGBM, long format);
+void FreeTextures();

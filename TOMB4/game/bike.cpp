@@ -123,7 +123,7 @@ void DrawBikeBeam(ITEM_INFO* item)
 	OBJECT_INFO* obj;
 	short** meshpp;
 	long* bone;
-	short* frames[2];
+	short* frm[2];
 	short* rot;
 	long rate, bounds, r, g, b;
 #ifdef GENERAL_FIXES
@@ -139,15 +139,15 @@ void DrawBikeBeam(ITEM_INFO* item)
 #ifdef GENERAL_FIXES
 	frac = 
 #endif
-		GetFrames(item, frames, &rate);
+		GetFrames(item, frm, &rate);
 	phd_PushMatrix();
 	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
-	bounds = S_GetObjectBounds(frames[0]);
+	bounds = S_GetObjectBounds(frm[0]);
 
 	if (bounds)
 	{
-		CalculateObjectLighting(item, frames[0]);
+		CalculateObjectLighting(item, frm[0]);
 		bounds = 1;
 		obj = &objects[item->object_number];
 		meshpp = &meshes[obj->mesh_index];
@@ -158,10 +158,10 @@ void DrawBikeBeam(ITEM_INFO* item)
 		if (frac)
 		{
 			InitInterpolate(frac, rate);
-			phd_TranslateRel_ID(frames[0][6], frames[0][7], frames[0][8], frames[1][6], frames[1][7], frames[1][8]);
+			phd_TranslateRel_ID(frm[0][6], frm[0][7], frm[0][8], frm[1][6], frm[1][7], frm[1][8]);
 
-			rot = frames[0] + 9;
-			rot2 = frames[1] + 9;
+			rot = frm[0] + 9;
+			rot2 = frm[1] + 9;
 			gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 
 			for (int i = 0; i < obj->nmeshes - 1; i++)
@@ -199,8 +199,8 @@ void DrawBikeBeam(ITEM_INFO* item)
 		else
 #endif
 		{
-			phd_TranslateRel(frames[0][6], frames[0][7], frames[0][8]);
-			rot = frames[0] + 9;
+			phd_TranslateRel(frm[0][6], frm[0][7], frm[0][8]);
+			rot = frm[0] + 9;
 			gar_RotYXZsuperpack(&rot, 0);
 
 			for (int i = 0; i < obj->nmeshes - 1; i++)
@@ -311,9 +311,9 @@ static long CanGetOff(short num)	//always called with num = 1
 
 	item = &items[lara.vehicle];
 	yrot = item->pos.y_rot + 16384;	//right side
-	x = item->pos.x_pos + (512 * phd_sin(yrot) >> 14);
+	x = item->pos.x_pos + (512 * phd_sin(yrot) >> W2V_SHIFT);
 	y = item->pos.y_pos;
-	z = item->pos.z_pos + (512 * phd_cos(yrot) >> 14);
+	z = item->pos.z_pos + (512 * phd_cos(yrot) >> W2V_SHIFT);
 	room_number = item->room_number;
 	floor = GetFloor(x, y, z, &room_number);
 	h = GetHeight(floor, x, y, z);
@@ -329,9 +329,9 @@ static long CanGetOff(short num)	//always called with num = 1
 	if (c - item->pos.y_pos > -762 || h - c < 762)
 		return 0;
 
-	x = item->pos.x_pos + (128 * phd_sin(yrot) >> 14);
+	x = item->pos.x_pos + (128 * phd_sin(yrot) >> W2V_SHIFT);
 	y = item->pos.y_pos;
-	z = item->pos.z_pos + (128 * phd_sin(yrot) >> 14);
+	z = item->pos.z_pos + (128 * phd_sin(yrot) >> W2V_SHIFT);
 	floor = GetFloor(x, y, z, &room_number);
 	h = GetHeight(floor, x, y, z);
 
@@ -586,13 +586,13 @@ long TestHeight(ITEM_INFO* item, long z, long x, PHD_VECTOR* pos)
 	long sx, sz, sy, cy, c, h;
 	short room_number;
 
-	sz = z * phd_sin(item->pos.x_rot) >> 14;
-	sx = x * phd_sin(item->pos.z_rot) >> 14;
+	sz = z * phd_sin(item->pos.x_rot) >> W2V_SHIFT;
+	sx = x * phd_sin(item->pos.z_rot) >> W2V_SHIFT;
 	pos->y = item->pos.y_pos + sx - sz;
 	sy = phd_sin(item->pos.y_rot);
 	cy = phd_cos(item->pos.y_rot);
-	pos->z = item->pos.z_pos + ((z * cy - x * sy) >> 14);
-	pos->x = item->pos.x_pos + ((x * cy + z * sy) >> 14);
+	pos->z = item->pos.z_pos + ((z * cy - x * sy) >> W2V_SHIFT);
+	pos->x = item->pos.x_pos + ((x * cy + z * sy) >> W2V_SHIFT);
 	room_number = item->room_number;
 	floor = GetFloor(pos->x, pos->y, pos->z, &room_number);
 	c = GetCeiling(floor, pos->x, pos->y, pos->z);
@@ -626,8 +626,8 @@ static long BikeCheckGetOff()
 		lara_item->frame_number = anims[ANIM_STOP].frame_base;
 		lara_item->goal_anim_state = AS_STOP;
 		lara_item->current_anim_state = AS_STOP;
-		lara_item->pos.x_pos -= 512 * phd_sin(lara_item->pos.y_rot) >> 14;
-		lara_item->pos.z_pos -= 512 * phd_cos(lara_item->pos.y_rot) >> 14;
+		lara_item->pos.x_pos -= 512 * phd_sin(lara_item->pos.y_rot) >> W2V_SHIFT;
+		lara_item->pos.z_pos -= 512 * phd_cos(lara_item->pos.y_rot) >> W2V_SHIFT;
 		lara_item->pos.z_rot = 0;
 		lara_item->pos.x_rot = 0;
 		lara.vehicle = NO_ITEM;
@@ -998,7 +998,7 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 		if (bike->velocity > 0x4000)
 			turn = 910;
 		else
-			turn = (910 * bike->velocity) >> 14;
+			turn = (910 * bike->velocity) >> W2V_SHIFT;
 
 		if (!bike->velocity && input & IN_LOOK)
 			LookUpDown();
@@ -1010,7 +1010,7 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 				if (bike->velocity > 0x4000)
 					bike->bike_turn -= 273;
 				else
-					bike->bike_turn -= 182 + ((91 * bike->velocity) >> 14);
+					bike->bike_turn -= 182 + ((91 * bike->velocity) >> W2V_SHIFT);
 
 				if (bike->bike_turn < -turn)
 					bike->bike_turn = -turn;
@@ -1020,7 +1020,7 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 				if (bike->velocity > 0x4000)
 					bike->bike_turn += 273;
 				else
-					bike->bike_turn += 182 + ((91 * bike->velocity) >> 14);
+					bike->bike_turn += 182 + ((91 * bike->velocity) >> W2V_SHIFT);
 
 				if (bike->bike_turn > turn)
 					bike->bike_turn = turn;
@@ -1223,18 +1223,18 @@ long BikeDynamics(ITEM_INFO* item)
 	if (item->pos.y_pos < h)
 		speed = item->speed;
 	else
-		speed = (item->speed * phd_cos(item->pos.x_rot)) >> 14;
+		speed = (item->speed * phd_cos(item->pos.x_rot)) >> W2V_SHIFT;
 
-	item->pos.x_pos += (speed * phd_sin(bike->move_angle)) >> 14;
-	item->pos.z_pos += (speed * phd_cos(bike->move_angle)) >> 14;
+	item->pos.x_pos += (speed * phd_sin(bike->move_angle)) >> W2V_SHIFT;
+	item->pos.z_pos += (speed * phd_cos(bike->move_angle)) >> W2V_SHIFT;
 
 	if (item->pos.y_pos >= h)
 	{
-		ang = (100 * phd_sin(item->pos.x_rot)) >> 14;
+		ang = (100 * phd_sin(item->pos.x_rot)) >> W2V_SHIFT;
 
 		if (ABS(ang) > 16)
 		{
-			ang2 = (100 * phd_sin(item->pos.x_rot)) >> 14;
+			ang2 = (100 * phd_sin(item->pos.x_rot)) >> W2V_SHIFT;
 
 			if (ang < 0)
 				ang2 = -ang;
@@ -1246,7 +1246,7 @@ long BikeDynamics(ITEM_INFO* item)
 			bike->velocity -= ang;
 		}
 
-		ang = (128 * phd_sin(item->pos.z_rot)) >> 14;
+		ang = (128 * phd_sin(item->pos.z_rot)) >> W2V_SHIFT;
 
 		if (ABS(ang) > 32)
 		{
@@ -1257,8 +1257,8 @@ long BikeDynamics(ITEM_INFO* item)
 			else
 				ang2 = item->pos.y_rot + 0x4000;
 
-			item->pos.x_pos += ((ABS(ang) - 24) * phd_sin(ang2)) >> 14;
-			item->pos.z_pos += ((ABS(ang) - 24) * phd_cos(ang2)) >> 14;
+			item->pos.x_pos += ((ABS(ang) - 24) * phd_sin(ang2)) >> W2V_SHIFT;
+			item->pos.z_pos += ((ABS(ang) - 24) * phd_cos(ang2)) >> W2V_SHIFT;
 		}
 	}
 
@@ -1349,7 +1349,7 @@ long BikeDynamics(ITEM_INFO* item)
 	{
 		dx = item->pos.x_pos - pos.x;
 		dz = item->pos.z_pos - pos.z;
-		speed = (dx * phd_sin(bike->move_angle) + dz * phd_cos(bike->move_angle)) >> 14;
+		speed = (dx * phd_sin(bike->move_angle) + dz * phd_cos(bike->move_angle)) >> W2V_SHIFT;
 		speed <<= 8;
 
 		if (&items[lara.vehicle] == item && bike->velocity >= 0x8000 && speed < bike->velocity - 10)	//did we just stop randomly (i.e hit a wall)

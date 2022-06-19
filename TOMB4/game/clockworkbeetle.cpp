@@ -160,7 +160,7 @@ void ControlClockworkBeetle(short item_number)
 
 	if (item->item_flags[0])
 	{
-		item->pos.z_rot = (0x1000 * phd_sin(0x1000 * (GlobalCounter & 15))) >> 14;
+		item->pos.z_rot = (0x1000 * phd_sin(0x1000 * (GlobalCounter & 15))) >> W2V_SHIFT;
 
 		switch (item->item_flags[2])
 		{
@@ -248,8 +248,8 @@ void ControlClockworkBeetle(short item_number)
 				else if (item->speed < 4)
 					item->speed++;
 
-				item->pos.x_pos += item->speed * phd_sin(item->pos.y_rot) >> 14;
-				item->pos.z_pos += item->speed * phd_cos(item->pos.y_rot) >> 14;
+				item->pos.x_pos += item->speed * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
+				item->pos.z_pos += item->speed * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
 			}
 
 			break;
@@ -277,8 +277,8 @@ void ControlClockworkBeetle(short item_number)
 			if (item->speed < 32)
 				item->speed++;
 
-			item->pos.x_pos += item->speed * phd_sin(item->pos.y_rot) >> 14;
-			item->pos.z_pos += item->speed * phd_cos(item->pos.y_rot) >> 14;
+			item->pos.x_pos += item->speed * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
+			item->pos.z_pos += item->speed * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
 
 			if (!lara.OnBeetleFloor)
 				item->item_flags[3] = 1;
@@ -290,7 +290,7 @@ void ControlClockworkBeetle(short item_number)
 	}
 	else
 	{
-		item->pos.z_rot = (0x2000 * phd_sin(0x2000 * (GlobalCounter & 7))) >> 14;
+		item->pos.z_rot = (0x2000 * phd_sin(0x2000 * (GlobalCounter & 7))) >> W2V_SHIFT;
 
 		if (item->item_flags[3])
 			item->item_flags[3]--;

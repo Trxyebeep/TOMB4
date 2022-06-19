@@ -68,6 +68,13 @@
 #include "../specific/d3dmatrix.h"
 #include "../game/door.h"
 #include "../game/jean.h"
+#include "../specific/time.h"
+#include "../specific/cmdline.h"
+#include "../specific/winmain.h"
+#include "../specific/texture.h"
+#include "../specific/clipping.h"
+#include "../specific/audio.h"
+#include "../specific/dxsound.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -155,6 +162,13 @@ void inject_all(bool replace)
 	inject_d3dmatrix(replace);
 	inject_door(replace);
 	inject_jean(replace);
+	inject_time(replace);
+	inject_cmdline(replace);
+	inject_winmain(replace);
+	inject_texture(replace);
+	inject_clipping(replace);
+	inject_audio(replace);
+	inject_dxsound(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

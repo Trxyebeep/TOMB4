@@ -348,7 +348,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 
 		if (item->object_number == COMPASS_ITEM)
 		{
-			compass = (compass_settle_thang * phd_sin(1024 * (GnFrameCounter & 0x3F))) >> 14;
+			compass = (compass_settle_thang * phd_sin(1024 * (GnFrameCounter & 0x3F))) >> W2V_SHIFT;
 			compass += lara_item->pos.y_rot;
 			phd_RotY((short)(compass - 0x8000));
 

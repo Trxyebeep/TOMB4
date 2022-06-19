@@ -8,6 +8,7 @@ void DoLevel(uchar Name, uchar Audio);
 void DoTitle(uchar Name, uchar Audio);
 
 #define DoCredits	( (long(__cdecl*)()) 0x00452B80 )
+#define LoadGameflow	( (void(__cdecl*)()) 0x00451510 )
 
 enum gf_commands
 {

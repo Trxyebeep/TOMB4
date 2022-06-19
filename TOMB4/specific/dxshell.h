@@ -33,3 +33,4 @@ long DXToggleFullScreen();
 HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC lpHWDesc, LPD3DDEVICEDESC lpHELDesc, LPVOID lpContext);
 
 #define DXGetErrorString	( (const char*(__cdecl*)(HRESULT)) 0x00490FF0 )
+#define DXInitKeyboard	( (void(__cdecl*)(HWND, HINSTANCE)) 0x00494270 )

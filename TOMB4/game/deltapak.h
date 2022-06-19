@@ -87,7 +87,7 @@ void init_voncroy_meshbits(long num);
 void DelsHandyTeleportLara(long x, long y, long z, long yrot);
 void nail_intelligent_object(short num);
 void handle_lara_chatting(short* _ranges);
-void handle_actor_chatting(long speechslot, long node, long slot, long objslot, short* ranges);
+void handle_actor_chatting(long speechslot, long node, long slot, long objslot, short* _ranges);
 void trigger_item_in_room(long room_number, long object_number);
 void untrigger_item_in_room(long room_number, long object_number);
 ITEM_INFO* find_a_fucking_item(long object_number);
