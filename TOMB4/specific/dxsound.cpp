@@ -131,6 +131,24 @@ bool InitSampleDecompress()
 	return 1;
 }
 
+bool FreeSampleDecompress()
+{
+	ACMStreamHeader.cbSrcLength = 0x40000;
+	DS_mmresult = acmStreamUnprepareHeader(DS_hACMStream, &ACMStreamHeader, 0);
+
+	if (DS_mmresult != DS_OK)
+		Log(1, "UnPrepare Stream %d", DS_mmresult);
+
+	DS_mmresult = acmStreamClose(DS_hACMStream, 0);
+
+	if (DS_mmresult != DS_OK)
+		Log(1, "Stream Close %d", DS_mmresult);
+
+	FREE(decompressed_samples_buffer);
+	FREE(samples_buffer);
+	return 1;
+}
+
 void inject_dxsound(bool replace)
 {
 	INJECT(0x004732E0, DXChangeOutputFormat, replace);
@@ -140,4 +158,5 @@ void inject_dxsound(bool replace)
 	INJECT(0x00473460, DXSetOutputFormat, replace);
 	INJECT(0x00473500, DXDSCreate, replace);
 	INJECT(0x00473570, InitSampleDecompress, replace);
+	INJECT(0x00473690, FreeSampleDecompress, replace);
 }
