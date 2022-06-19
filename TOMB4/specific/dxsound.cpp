@@ -30,7 +30,50 @@ bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 	return 1;
 }
 
+void DSChangeVolume(long num, long volume)
+{
+	if (DS_Samples[num].buffer)
+		DS_Samples[num].buffer->SetVolume(volume);
+}
+
+void DSAdjustPitch(long num, long pitch)
+{
+	ulong frequency;
+
+	if (DS_Samples[num].buffer)
+	{
+		frequency = ulong((float)pitch / 65536.0F * 22050.0F);
+
+		if (frequency < 100)
+			frequency = 100;
+		else if (frequency > 100000)
+			frequency = 100000;
+
+		DS_Samples[num].buffer->SetFrequency(frequency);
+	}
+}
+
+void DSAdjustPan(long num, long pan)
+{
+	if (DS_Samples[num].buffer)
+	{
+		if (pan < 0)
+		{
+			if (pan < -0x4000)
+				pan = -0x4000 - pan;
+		}
+		else if (pan > 0 && pan > 0x4000)
+			pan = 0x8000 - pan;
+
+		pan >>= 4;
+		DS_Samples[num].buffer->SetPan(pan);
+	}
+}
+
 void inject_dxsound(bool replace)
 {
 	INJECT(0x004732E0, DXChangeOutputFormat, replace);
+	INJECT(0x00473390, DSChangeVolume, replace);
+	INJECT(0x004733B0, DSAdjustPitch, replace);
+	INJECT(0x00473400, DSAdjustPan, replace);
 }

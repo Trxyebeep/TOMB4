@@ -1927,6 +1927,13 @@ struct SAMPLE_INFO
 	short flags;
 };
 
+struct DS_SAMPLE
+{
+	LPDIRECTSOUNDBUFFER buffer;
+	long unk;
+	long playing;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

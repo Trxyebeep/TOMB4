@@ -604,6 +604,7 @@
 #define AnimatingWaterfallsV	ARRAY_(0x007FD1F0, long, [3])
 #define StreamHeaders	ARRAY_(0x004BFCA8, ACMSTREAMHEADER, [4])
 #define NotifyEventHandles	ARRAY_(0x004BFDF8, HANDLE, [2])
+#define DS_Samples	ARRAY_(0x0052B6C8, DS_SAMPLE, [32])
 
 
 /*Fog stuff*/
