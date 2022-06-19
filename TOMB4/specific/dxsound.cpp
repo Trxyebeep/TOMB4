@@ -70,10 +70,31 @@ void DSAdjustPan(long num, long pan)
 	}
 }
 
+bool DXSetOutputFormat()
+{
+	DSBUFFERDESC desc;
+
+	Log(2, "DXSetOutputFormat");
+	memset(&desc, 0, sizeof(desc));
+	desc.dwSize = sizeof(desc);
+	desc.dwFlags = DSBCAPS_PRIMARYBUFFER;
+
+	if (DXAttempt(App.dx.lpDS->CreateSoundBuffer(&desc, &G_DSPrimary, 0)) == DS_OK)
+	{
+		DXChangeOutputFormat(sfx_frequencies[SoundQuality], 0);
+		G_DSPrimary->Play(0, 0, DSBPLAY_LOOPING);
+		return 1;
+	}
+
+	Log(1, "Can't Get Primary Sound Buffer");
+	return 0;
+}
+
 void inject_dxsound(bool replace)
 {
 	INJECT(0x004732E0, DXChangeOutputFormat, replace);
 	INJECT(0x00473390, DSChangeVolume, replace);
 	INJECT(0x004733B0, DSAdjustPitch, replace);
 	INJECT(0x00473400, DSAdjustPan, replace);
+	INJECT(0x00473460, DXSetOutputFormat, replace);
 }
