@@ -90,6 +90,16 @@ bool DXSetOutputFormat()
 	return 0;
 }
 
+bool DXDSCreate()
+{
+	Log(2, "DXDSCreate");
+	DXAttempt(DirectSoundCreate(G_dxinfo->DSInfo[G_dxinfo->nDS].lpGuid, &App.dx.lpDS, 0));
+	DXAttempt(App.dx.lpDS->SetCooperativeLevel(App.hWnd, DSSCL_EXCLUSIVE));
+	DXSetOutputFormat();
+	sound_active = 1;
+	return 1;
+}
+
 void inject_dxsound(bool replace)
 {
 	INJECT(0x004732E0, DXChangeOutputFormat, replace);
@@ -97,4 +107,5 @@ void inject_dxsound(bool replace)
 	INJECT(0x004733B0, DSAdjustPitch, replace);
 	INJECT(0x00473400, DSAdjustPan, replace);
 	INJECT(0x00473460, DXSetOutputFormat, replace);
+	INJECT(0x00473500, DXDSCreate, replace);
 }

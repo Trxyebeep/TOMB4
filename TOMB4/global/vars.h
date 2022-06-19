@@ -504,6 +504,7 @@
 #define wav_format	VAR_U_(0x004BFC90, WAVEFORMATEX)
 #define StreamSize	VAR_U_(0x004BFE20, long)
 #define G_DSPrimary	VAR_U_(0x0052B6C0, LPDIRECTSOUNDBUFFER)
+#define sound_active	VAR_U_(0x004BF6DC, long)
 
 
 
