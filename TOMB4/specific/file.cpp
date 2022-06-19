@@ -1253,12 +1253,12 @@ void inject_file(bool replace)
 	INJECT(0x00476470, LoadLevel, replace);
 
 	INJECT(0x004768C0, S_LoadLevelFile, replace);
-	INJECT(0x00476790, FreeLevel, 1);
+	INJECT(0x00476790, FreeLevel, replace);
 	INJECT(0x00473C10, FindCDDrive, replace);
 	INJECT(0x00473CE0, FileOpen, replace);
 	INJECT(0x00473D80, FileClose, replace);
 	INJECT(0x00473DA0, FileSize, replace);
-	INJECT(0x00473DD0, LoadFile, 1);
+	INJECT(0x00473DD0, LoadFile, replace);
 	INJECT(0x00473F20, LoadTextures, replace);
 	INJECT(0x004749C0, LoadRooms, replace);
 	INJECT(0x00474E10, LoadObjects, replace);

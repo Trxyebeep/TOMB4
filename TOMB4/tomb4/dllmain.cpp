@@ -74,6 +74,7 @@
 #include "../specific/texture.h"
 #include "../specific/clipping.h"
 #include "../specific/audio.h"
+#include "../specific/dxsound.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -167,6 +168,7 @@ void inject_all(bool replace)
 	inject_texture(replace);
 	inject_clipping(replace);
 	inject_audio(replace);
+	inject_dxsound(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

@@ -1570,7 +1570,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		specific/dxsound.cpp
 
-0x004732E0		DXChangeOutputFormat
+0x004732E0	+	DXChangeOutputFormat
 0x00473390		DSChangeVolume
 0x004733B0		DSAdjustPitch
 0x00473400		DSAdjustPan
