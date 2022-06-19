@@ -1580,7 +1580,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00473690	+	FreeSampleDecompress
 0x00473710	+	DXCreateSampleADPCM
 0x004738B0	+	DXStopSample
-0x00473900		DSIsChannelPlaying
+0x00473900	+	DSIsChannelPlaying
 0x00473950		DSGetFreeChannel
 0x00473970		DXStartSample
 0x00473A50		CalcVolume

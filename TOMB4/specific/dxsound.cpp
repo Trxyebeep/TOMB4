@@ -209,6 +209,24 @@ void DXStopSample(long num)
 	}
 }
 
+bool DSIsChannelPlaying(long num)
+{
+	ulong status;
+
+	if (DS_Samples[num].buffer)
+	{
+		if (DXAttempt(DS_Samples[num].buffer->GetStatus(&status)) == DS_OK)
+		{
+			if (status & DSBSTATUS_PLAYING)
+				return 1;
+
+			DXStopSample(num);
+		}
+	}
+
+	return 0;
+}
+
 void inject_dxsound(bool replace)
 {
 	INJECT(0x004732E0, DXChangeOutputFormat, replace);
@@ -221,4 +239,5 @@ void inject_dxsound(bool replace)
 	INJECT(0x00473690, FreeSampleDecompress, replace);
 	INJECT(0x00473710, DXCreateSampleADPCM, replace);
 	INJECT(0x004738B0, DXStopSample, replace);
+	INJECT(0x00473900, DSIsChannelPlaying, replace);
 }
