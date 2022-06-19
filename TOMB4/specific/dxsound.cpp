@@ -238,6 +238,28 @@ long DSGetFreeChannel()
 	return -1;
 }
 
+long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
+{
+	LPDIRECTSOUNDBUFFER buffer;
+	long channel;
+
+	channel = DSGetFreeChannel();
+
+	if (channel < 0 || DXAttempt(App.dx.lpDS->DuplicateSoundBuffer(DS_Buffers[num].buffer, &buffer)) != DS_OK)
+		return -1;
+
+	if (DXAttempt(buffer->SetVolume(volume)) != DS_OK || DXAttempt(buffer->SetCurrentPosition(0)) != DS_OK)
+		return -1;
+
+	DS_Samples[channel].buffer = buffer;
+	DS_Samples[channel].playing = num;
+	DSAdjustPitch(channel, pitch);
+	DSAdjustPan(channel, pan);
+	buffer->Stop();
+	DXAttempt(buffer->Play(0, 0, flags));
+	return channel;
+}
+
 void inject_dxsound(bool replace)
 {
 	INJECT(0x004732E0, DXChangeOutputFormat, replace);
@@ -252,4 +274,5 @@ void inject_dxsound(bool replace)
 	INJECT(0x004738B0, DXStopSample, replace);
 	INJECT(0x00473900, DSIsChannelPlaying, replace);
 	INJECT(0x00473950, DSGetFreeChannel, replace);
+	INJECT(0x00473970, DXStartSample, replace);
 }
