@@ -282,6 +282,64 @@ long CalcVolume(long volume)
 	return result;
 }
 
+void S_SoundStopAllSamples()
+{
+	for (int i = 0; i < 32; i++)
+		DXStopSample(i);
+}
+
+void S_SoundStopSample(long num)
+{
+	DXStopSample(num);
+}
+
+long S_SoundPlaySample(long num, ushort volume, long pitch, short pan)
+{
+	return DXStartSample(num, CalcVolume(volume), pitch, pan, 0);
+}
+
+long S_SoundPlaySampleLooped(long num, ushort volume, long pitch, short pan)
+{
+	return DXStartSample(num, CalcVolume(volume), pitch, pan, DSBPLAY_LOOPING);
+}
+
+void DXFreeSounds()
+{
+	S_SoundStopAllSamples();
+
+	for (int i = 0; i < 256; i++)
+	{
+		if (DS_Buffers[i].buffer)
+		{
+			Log(4, "Released %s @ %x - RefCnt = %d", "SoundBuffer", DS_Buffers[i].buffer, DS_Buffers[i].buffer->Release());
+			DS_Buffers[i].buffer = 0;
+		}
+	}
+}
+
+long S_SoundSampleIsPlaying(long num)
+{
+	if (sound_active && DSIsChannelPlaying(num))
+		return 1;
+
+	return 0;
+}
+
+void S_SoundSetPanAndVolume(long num, short pan, ushort volume)
+{
+	if (sound_active)
+	{
+		DSChangeVolume(num, CalcVolume(volume));
+		DSAdjustPan(num, pan);
+	}
+}
+
+void S_SoundSetPitch(long num, long pitch)
+{
+	if (sound_active)
+		DSAdjustPitch(num, pitch);
+}
+
 void inject_dxsound(bool replace)
 {
 	INJECT(0x004732E0, DXChangeOutputFormat, replace);
@@ -298,4 +356,12 @@ void inject_dxsound(bool replace)
 	INJECT(0x00473950, DSGetFreeChannel, replace);
 	INJECT(0x00473970, DXStartSample, replace);
 	INJECT(0x00473A50, CalcVolume, replace);
+	INJECT(0x00473AB0, S_SoundStopAllSamples, replace);
+	INJECT(0x00473AD0, S_SoundStopSample, replace);
+	INJECT(0x00473AE0, S_SoundPlaySample, replace);
+	INJECT(0x00473B10, S_SoundPlaySampleLooped, replace);
+	INJECT(0x00473B40, DXFreeSounds, replace);
+	INJECT(0x00473B90, S_SoundSampleIsPlaying, replace);
+	INJECT(0x00473BB0, S_SoundSetPanAndVolume, replace);
+	INJECT(0x00473BF0, S_SoundSetPitch, replace);
 }
