@@ -16,6 +16,7 @@ void DXStopSample(long num);
 bool DSIsChannelPlaying(long num);
 long DSGetFreeChannel();
 long DXStartSample(long num, long volume, long pitch, long pan, ulong flags);
+long CalcVolume(long volume);
 
 #define S_SoundStopAllSamples	( (void(__cdecl*)()) 0x00473AB0 )
 #define DXFreeSounds	( (void(__cdecl*)()) 0x00473B40 )

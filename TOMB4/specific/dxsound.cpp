@@ -260,6 +260,28 @@ long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 	return channel;
 }
 
+long CalcVolume(long volume)
+{
+	long result;
+
+	result = 8000 - long(float(0x7FFF - volume) * 0.30518511F);
+
+	if (result > 0)
+		result = 0;
+	else if (result < -10000)
+		result = -10000;
+
+	result -= (100 - SFXVolume) * 50;
+
+	if (result > 0)
+		result = 0;
+
+	if (result < -10000)
+		result = -10000;
+
+	return result;
+}
+
 void inject_dxsound(bool replace)
 {
 	INJECT(0x004732E0, DXChangeOutputFormat, replace);
@@ -275,4 +297,5 @@ void inject_dxsound(bool replace)
 	INJECT(0x00473900, DSIsChannelPlaying, replace);
 	INJECT(0x00473950, DSGetFreeChannel, replace);
 	INJECT(0x00473970, DXStartSample, replace);
+	INJECT(0x00473A50, CalcVolume, replace);
 }
