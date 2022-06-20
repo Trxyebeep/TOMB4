@@ -921,6 +921,101 @@ void DrawBuckets()
 	}
 }
 
+void CreateVertexNormals(ROOM_INFO* r)
+{
+	D3DVECTOR p1;
+	D3DVECTOR p2;
+	D3DVECTOR p3;
+	D3DVECTOR n1;
+	D3DVECTOR n2;
+	short* data;
+	short nQuads;
+	short nTris;
+
+	data = r->FaceData;
+	r->fnormals = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * (r->gt3cnt + r->gt4cnt));
+	nQuads = *data++;
+
+	for (int i = 0; i < nQuads; i++)
+	{
+		p1 = r->verts[data[0]];
+		p2 = r->verts[data[1]];
+		p3 = r->verts[data[2]];
+		CalcTriFaceNormal(&p1, &p2, &p3, &n1);
+
+		p1 = r->verts[data[0]];
+		p2 = r->verts[data[2]];
+		p3 = r->verts[data[3]];
+		CalcTriFaceNormal(&p1, &p2, &p3, &n2);
+
+		n1.x += n2.x;
+		n1.y += n2.y;
+		n1.z += n2.z;
+		D3DNormalise(&n1);
+		r->fnormals[i] = n1;
+		data += 5;
+	}
+
+	nTris = *data++;
+
+	for (int i = 0; i < nTris; i++)
+	{
+		p1 = r->verts[data[0]];
+		p2 = r->verts[data[1]];
+		p3 = r->verts[data[2]];
+		CalcTriFaceNormal(&p1, &p2, &p3, &n1);
+		D3DNormalise(&n1);
+		r->fnormals[nQuads + i] = n1;
+		data += 4;
+	}
+
+	r->vnormals = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * r->nVerts);
+
+	data = r->FaceData;
+	nQuads = *data++;
+
+	data += nQuads * 5;
+	nTris = *data;
+
+	for (int i = 0; i < r->nVerts; i++)
+	{
+		n1.x = 0;
+		n1.y = 0;
+		n1.z = 0;
+
+		data = r->FaceData + 1;
+
+		for (int j = 0; j < nQuads; j++)
+		{
+			if (data[0] == i || data[1] == i || data[2] == i || data[3] == i)
+			{
+				n1.x += r->fnormals[j].x;
+				n1.y += r->fnormals[j].y;
+				n1.z += r->fnormals[j].z;
+			}
+
+			data += 5;
+		}
+
+		data++;
+
+		for (int j = 0; j < nTris; j++)
+		{
+			if (data[0] == i || data[1] == i || data[2] == i)
+			{
+				n1.x += r->fnormals[nQuads + j].x;
+				n1.y += r->fnormals[nQuads + j].y;
+				n1.z += r->fnormals[nQuads + j].z;
+			}
+
+			data += 4;
+		}
+
+		D3DNormalise(&n1);
+		r->vnormals[i] = n1;
+	}
+}
+
 void inject_drawroom(bool replace)
 {
 	INJECT(0x00471E00, ProjectVerts, replace);
@@ -935,4 +1030,5 @@ void inject_drawroom(bool replace)
 	INJECT(0x004729E0, DrawBucket, replace);
 	INJECT(0x004728D0, FindBucket, replace);
 	INJECT(0x00472C10, DrawBuckets, replace);
+	INJECT(0x00472F50, CreateVertexNormals, replace);
 }

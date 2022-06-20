@@ -15,6 +15,6 @@ void InitBuckets();
 void DrawBucket(TEXTUREBUCKET* bucket);
 void FindBucket(long tpage, D3DTLBUMPVERTEX** Vpp, long** nVtxpp);
 void DrawBuckets();
+void CreateVertexNormals(ROOM_INFO* r);
 
-#define CreateVertexNormals	( (void(__cdecl*)(ROOM_INFO*)) 0x00472F50 )
 #define PrelightVertsMMX	( (void(__cdecl*)(long, D3DTLVERTEX*, ROOM_INFO*)) 0x00472400 )
