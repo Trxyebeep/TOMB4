@@ -1667,7 +1667,7 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/input.cpp
 
 0x004776C0	+	Key
-0x004777E0		ReadJoystick
+0x004777E0	+	ReadJoystick
 0x004778B0	+	S_UpdateInput
 
 

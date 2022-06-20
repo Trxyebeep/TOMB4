@@ -640,8 +640,43 @@ long S_UpdateInput()
 	return 1;
 }
 
+long ReadJoystick(long& x, long& y)
+{
+	JOYINFOEX joystick;
+	static JOYCAPS caps;
+	static long unavailable = 1;
+
+	joystick.dwSize = sizeof(JOYINFOEX);
+	joystick.dwFlags = JOY_RETURNX | JOY_RETURNY | JOY_RETURNBUTTONS;
+
+	if (joyGetPosEx(0, &joystick) != JOYERR_NOERROR)
+	{
+		unavailable = 1;
+		x = 0;
+		y = 0;
+		return 0;
+	}
+
+	if (unavailable)
+	{
+		if (joyGetDevCaps(JOYSTICKID1, &caps, sizeof(caps)) != JOYERR_NOERROR)
+		{
+			x = 0;
+			y = 0;
+			return 0;
+		}
+		else
+			unavailable = 0;
+	}
+
+	x = (joystick.dwXpos << 5) / (caps.wXmax - caps.wXmin) - 16;
+	y = (joystick.dwYpos << 5) / (caps.wYmax - caps.wYmin) - 16;
+	return joystick.dwButtons;
+}
+
 void inject_input(bool replace)
 {
 	INJECT(0x004776C0, Key, replace);
 	INJECT(0x004778B0, S_UpdateInput, replace);
+	INJECT(0x004777E0, ReadJoystick, replace);
 }
