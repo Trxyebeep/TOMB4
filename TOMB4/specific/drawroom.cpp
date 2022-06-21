@@ -267,7 +267,7 @@ void ProcessRoomData(ROOM_INFO* r)
 			r->verts[nWaterVerts].y = (float)data_ptr[1];
 			r->verts[nWaterVerts].z = (float)data_ptr[2];
 			prelight[nWaterVerts] = data_ptr[5];
-			faces[i] = (short)(nWaterVerts | 0x8000);
+			faces[i] = short(nWaterVerts | 0x8000);
 			nWaterVerts++;
 		}
 
@@ -285,7 +285,7 @@ void ProcessRoomData(ROOM_INFO* r)
 			r->verts[nShoreVerts + nWaterVerts].y = (float)data_ptr[1];
 			r->verts[nShoreVerts + nWaterVerts].z = (float)data_ptr[2];
 			prelight[nShoreVerts + nWaterVerts] = data_ptr[5];
-			faces[i] = (short)(nShoreVerts + nWaterVerts);
+			faces[i] = short(nShoreVerts + nWaterVerts);
 			nShoreVerts++;
 		}
 
@@ -303,7 +303,7 @@ void ProcessRoomData(ROOM_INFO* r)
 			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].y = (float)data_ptr[1];
 			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].z = (float)data_ptr[2];
 			prelight[nRestOfVerts + nShoreVerts + nWaterVerts] = data_ptr[5];
-			faces[i] = (short)(nRestOfVerts + nShoreVerts + nWaterVerts);
+			faces[i] = short(nRestOfVerts + nShoreVerts + nWaterVerts);
 			nRestOfVerts++;
 		}
 
@@ -364,9 +364,9 @@ void ProcessRoomData(ROOM_INFO* r)
 		cG = ((prelight[i] & 0x3E0) >> 5) << 3;
 		cB = (prelight[i] & 0x1F) << 3;
 		r->prelight[i] = RGBA(cR, cG, cB, 0xFF);
-		cR = (ushort)((cR * water_color_R) >> 8);
-		cG = (ushort)((cR * water_color_G) >> 8);
-		cB = (ushort)((cR * water_color_B) >> 8);
+		cR = ushort((cR * water_color_R) >> 8);
+		cG = ushort((cG * water_color_G) >> 8);
+		cB = ushort((cB * water_color_B) >> 8);
 		r->prelightwater[i] = RGBA(cR, cG, cB, 0xFF);
 		vptr++;
 		data_ptr += 6;
@@ -412,21 +412,21 @@ void ProcessRoomData(ROOM_INFO* r)
 					continue;
 
 				pclight = &r->pclight[nLights];
-				pclight->r = light->r * 0.0039215689F;
-				pclight->g = light->g * 0.0039215689F;
-				pclight->b = light->b * 0.0039215689F;
+				pclight->r = light->r * (1.0F / 255.0F);
+				pclight->g = light->g * (1.0F / 255.0F);
+				pclight->b = light->b * (1.0F / 255.0F);
 				intensity = r->light[nLights].Intensity;
 
 				if (intensity < 0)
 					intensity = -intensity;
 
-				intensity *= 0.00012208521F;
+				intensity *= 1.0F / 8191.0F;
 				pclight->r *= intensity;
 				pclight->g *= intensity;
 				pclight->b *= intensity;
 
 				if (r->light[nLights].Type)
-					pclight->shadow = (long)(intensity * 255);
+					pclight->shadow = long(intensity * 255);
 
 				pclight->x = (float)light->x;
 				pclight->y = (float)light->y;
@@ -437,9 +437,9 @@ void ProcessRoomData(ROOM_INFO* r)
 				pclight->nx = -light->nx;
 				pclight->ny = -light->ny;
 				pclight->nz = -light->nz;
-				pclight->inx = (long)(light->nx * -16384.0F);
-				pclight->iny = (long)(light->ny * -16384.0F);
-				pclight->inz = (long)(light->nz * -16384.0F);
+				pclight->inx = long(light->nx * -16384.0F);
+				pclight->iny = long(light->ny * -16384.0F);
+				pclight->inz = long(light->nz * -16384.0F);
 				pclight->Inner = light->Inner;
 				pclight->Outer = light->Outer;
 				pclight->InnerAngle = 2 * acos(light->Inner);
