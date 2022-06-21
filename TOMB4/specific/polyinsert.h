@@ -31,5 +31,5 @@ void SubdivideTri(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2, TEXTURESTRU
 void AddTriSubdivide(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);
 void AddQuadSubdivide(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
 void CalcColorSplit(D3DCOLOR s, D3DCOLOR* r);
-
-#define AddPrelitMMX	( (void(__cdecl*)(long, D3DCOLOR*)) 0x004849A0 )
+void AddPrelitMMX(long prelight, D3DCOLOR* color);
+void CalcColorSplitMMX(D3DCOLOR s, D3DCOLOR* d);
