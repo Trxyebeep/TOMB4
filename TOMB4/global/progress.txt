@@ -1524,7 +1524,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00471E00	+	ProjectVerts
 0x00471F40	+	ProjectWaterVerts
 0x00472190	+	ProjectShoreVerts
-0x00472400		PrelightVertsMMX
+0x00472400	+	PrelightVertsMMX
 0x004724C0	+	PrelightVertsNonMMX
 0x00472650	+	InsertRoom
 0x004728B0	+	InitBuckets

@@ -527,6 +527,47 @@ void PrelightVertsNonMMX(long nVerts, D3DTLVERTEX* v, ROOM_INFO* r)
 	}
 }
 
+void PrelightVertsMMX(long nVerts, D3DTLVERTEX* v, ROOM_INFO* r)
+{
+	long* prelight;
+	long p, c;
+
+	if (bWaterEffect && !(r->flags & ROOM_UNDERWATER))
+		prelight = r->prelightwater;
+	else
+		prelight = r->prelight;
+
+	for (int i = 0; i < r->nWaterVerts; i++)
+	{
+		p = r->prelight[i];
+		c = v->color;
+
+		__asm
+		{
+			movd mm0, p
+			movd mm1, c
+			paddusb mm1, mm0
+			mov edx, v
+			add edx, 0x10
+			movd [edx], mm1
+		}
+
+		v->specular &= 0xFF000000;
+		v++;
+	}
+
+	for (int i = r->nWaterVerts; i < r->nVerts; i++)
+	{
+		AddPrelitMMX(prelight[i], &v->color);
+		v++;
+	}
+
+	__asm
+	{
+		emms
+	}
+}
+
 void InsertRoom(ROOM_INFO* r)
 {
 	TEXTURESTRUCT* pTex;
@@ -1023,6 +1064,7 @@ void inject_drawroom(bool replace)
 	INJECT(0x00472190, ProjectShoreVerts, replace);
 	INJECT(0x00471420, ProcessRoomData, replace);
 	INJECT(0x004724C0, PrelightVertsNonMMX, replace);
+	INJECT(0x00472400, PrelightVertsMMX, replace);
 	INJECT(0x00472650, InsertRoom, replace);
 	INJECT(0x00472EE0, CalcTriFaceNormal, replace);
 	INJECT(0x00471040, ProcessMeshData, replace);
