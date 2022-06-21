@@ -1294,6 +1294,42 @@ void S_OutputPolyList()
 	MungeFPCW(&FPCW);
 }
 
+void CalcVertsColorSplitMMX(long nVerts, D3DTLVERTEX* v)
+{
+	D3DTLVERTEX* waterVtx;
+	short r, g, b;
+
+	if (bWaterEffect && !(room[current_item->room_number].flags & ROOM_UNDERWATER))
+	{
+		waterVtx = v;
+
+		for (int i = 0; i < nVerts; i++, waterVtx++)
+		{
+			r = short(water_color_R * CLRR(waterVtx->color) >> 8);
+			g = short(water_color_G * CLRG(waterVtx->color) >> 8);
+			b = short(water_color_B * CLRB(waterVtx->color) >> 8);
+			waterVtx->color &= 0xFF000000;
+			waterVtx->color |= RGBONLY(r, g, b);
+		}
+	}
+
+	if (App.mmx)
+	{
+		for (int i = 0; i < nVerts; i++, v++)
+			CalcColorSplitMMX(v->color, &v->color);
+
+		__asm
+		{
+			emms
+		}
+	}
+	else
+	{
+		for (int i = 0; i < nVerts; i++, v++)
+			CalcColorSplit(v->color, &v->color);
+	}
+}
+
 void inject_output(bool replace)
 {
 	INJECT(0x0047DA60, phd_PutPolygons, replace);
@@ -1313,4 +1349,5 @@ void inject_output(bool replace)
 	INJECT(0x00480070, S_AnimateTextures, replace);
 	INJECT(0x0047FCA0, S_DumpScreen, replace);
 	INJECT(0x0047FA10, S_OutputPolyList, replace);
+	INJECT(0x0047D810, CalcVertsColorSplitMMX, replace);
 }
