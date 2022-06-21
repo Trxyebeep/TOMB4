@@ -553,6 +553,7 @@
 #define HairRotScratchVertNums	ARRAY_(0x004AD6D4, char, [5][12])
 #define IMstack	ARRAY_(0x007FD320, long, [768])
 #define vert_wibble_table	ARRAY_(0x00535520, float, [32])
+#define unused_vert_wibble_table	ARRAY_(0x0053511C, float, [256])
 #define WaterTable	ARRAY_(0x00533B1C, WATERTAB, [22][64])
 #define no_rotation	ARRAY_(0x004BF630, short, [12])
 #define rings	ARRAY_(0x007FEA20, RINGME*, [2])
