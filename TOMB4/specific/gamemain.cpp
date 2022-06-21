@@ -85,8 +85,27 @@ unsigned int __stdcall GameMain(void* ptr)
 	return 1;
 }
 
+ushort GetRandom(WATERTAB* wt, long lp)
+{
+	long loop;
+	ushort ret;
+
+	do
+	{
+		ret = rand() & 0xFC;
+
+		for (loop = 0; loop < lp; loop++)
+			if (wt[loop].random == ret)
+				break;
+
+	} while (loop != lp);
+
+	return ret;
+}
+
 void inject_gamemain(bool replace)
 {
 	INJECT(0x004770C0, GameClose, replace);
 	INJECT(0x00476EC0, GameMain, replace);
+	INJECT(0x004773F0, GetRandom, replace);
 }
