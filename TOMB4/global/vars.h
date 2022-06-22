@@ -614,6 +614,8 @@
 #define DS_Samples	ARRAY_(0x0052B6C8, DS_SAMPLE, [32])
 #define DS_Buffers	ARRAY_(0x0052AAC0, DS_SAMPLE, [256])
 #define source_pcm_format	ARRAY_(0x004B263C, char, [50])
+#define SkinVertNums	ARRAY_(0x0080E520, char, [40][12])
+#define ScratchVertNums	ARRAY_(0x0080E320, char, [40][12])
 
 
 /*Fog stuff*/

@@ -1719,8 +1719,8 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/output.cpp
 
 0x0047D5B0	+	S_InitialisePolyList
-0x0047D6B0		StashSkinVertices
-0x0047D760		SkinVerticesToScratch
+0x0047D6B0	+	StashSkinVertices
+0x0047D760	+	SkinVerticesToScratch
 0x0047D810	+	CalcVertsColorSplitMMX
 0x0047D900	+	PrelightVerts
 0x0047DA60	+	phd_PutPolygons

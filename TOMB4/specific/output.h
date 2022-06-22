@@ -21,6 +21,5 @@ void S_AnimateTextures(long n);
 long S_DumpScreen();
 void S_OutputPolyList();
 void CalcVertsColorSplitMMX(long nVerts, D3DTLVERTEX* v);
-
-#define StashSkinVertices	( (void(__cdecl*)(long)) 0x0047D6B0 )
-#define SkinVerticesToScratch	( (void(__cdecl*)(long)) 0x0047D760 )
+void StashSkinVertices(long node);
+void SkinVerticesToScratch(long node);
