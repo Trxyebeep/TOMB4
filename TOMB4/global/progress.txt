@@ -1660,8 +1660,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x004770C0	+	GameClose
 0x00477180	+	init_water_table
 0x004773F0	+	GetRandom
-0x00477430		S_SaveGame
-0x00477600		S_LoadGame
+0x00477430	+	S_SaveGame
+0x00477600	+	S_LoadGame
 
 
 		specific/input.cpp
