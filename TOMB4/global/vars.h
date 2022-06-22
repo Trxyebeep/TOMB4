@@ -616,6 +616,7 @@
 #define source_pcm_format	ARRAY_(0x004B263C, char, [50])
 #define SkinVertNums	ARRAY_(0x0080E520, char, [40][12])
 #define ScratchVertNums	ARRAY_(0x0080E320, char, [40][12])
+#define Bubbles	ARRAY_(0x00800920, BUBBLE_STRUCT, [40])
 
 
 /*Fog stuff*/

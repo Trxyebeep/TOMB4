@@ -1934,6 +1934,18 @@ struct DS_SAMPLE
 	long playing;
 };
 
+struct BUBBLE_STRUCT
+{
+	PHD_VECTOR pos;
+	short room_number;
+	short speed;
+	short size;
+	short dsize;
+	uchar shade;
+	uchar vel;
+	short pad;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

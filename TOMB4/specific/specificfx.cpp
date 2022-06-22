@@ -2537,6 +2537,122 @@ void DrawDrips()
 	phd_PopMatrix();
 }
 
+void DrawBubbles()
+{
+	BUBBLE_STRUCT* bubble;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR pos;
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	long dx, dy, dz, size, x1, y1, x2, y2;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	bubble = Bubbles;
+
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+
+	for (int i = 0; i < 40; i++)
+	{
+		if (!bubble->size)
+		{
+			bubble++;
+			continue;
+		}
+
+		dx = bubble->pos.x - lara_item->pos.x_pos;
+		dy = bubble->pos.y - lara_item->pos.y_pos;
+		dz = bubble->pos.z - lara_item->pos.z_pos;
+
+		if (dx < -0x5000 || dx > 0x5000 || dy < -0x5000 || dy > 0x5000 || dz < -0x5000 || dz > 0x5000)
+		{
+			bubble->size = 0;
+			bubble++;
+			continue;
+		}
+
+		offsets[0] = (short)dx;
+		offsets[1] = (short)dy;
+		offsets[2] = (short)dz;
+		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
+		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
+		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
+		perspz = f_persp / (float)pos.z;
+		XY[0] = short(float(pos.x * perspz + f_centerx));
+		XY[1] = short(float(pos.y * perspz + f_centery));
+		Z[0] = pos.z >> W2V_SHIFT;
+
+		if (Z[0] < 32)
+		{
+			bubble++;
+			continue;
+		}
+
+		if (Z[0] > 0x5000)
+		{
+			bubble->size = 0;
+			bubble++;
+			continue;
+		}
+
+		size = phd_persp * (bubble->size >> 1) / Z[0];
+
+		if (size > 128)
+		{
+			bubble->size = 0;
+			continue;
+		}
+
+		if (size < 4)
+			size = 4;
+
+		size >>= 1;
+
+		x1 = XY[0] - size;
+		y1 = XY[1] - size;
+		x2 = XY[0] + size;
+		y2 = XY[1] + size;
+
+		if (x2 < phd_winxmin || x1 >= phd_winxmax || y2 < phd_winymin || y1 >= phd_winymax)
+		{
+			bubble++;
+			continue;
+		}
+
+		sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 13];
+		setXY4(v, x1, y1, x2, y1, x2, y2, x1, y2, Z[0], clipflags);
+		v[0].color = RGBA(bubble->shade, bubble->shade, bubble->shade, 0xFF);
+		v[1].color = RGBA(bubble->shade, bubble->shade, bubble->shade, 0xFF);
+		v[2].color = RGBA(bubble->shade, bubble->shade, bubble->shade, 0xFF);
+		v[3].color = RGBA(bubble->shade, bubble->shade, bubble->shade, 0xFF);
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		v[3].specular = 0xFF000000;
+		tex.drawtype = 2;
+		tex.flag = 0;
+		tex.tpage = sprite->tpage;
+		tex.u1 = sprite->x1;
+		tex.v1 = sprite->y1;
+		tex.u2 = sprite->x2;
+		tex.v3 = sprite->y2;
+		tex.v2 = sprite->y1;
+		tex.u3 = sprite->x2;
+		tex.u4 = sprite->x1;
+		tex.v4 = sprite->y2;
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+		bubble++;
+	}
+
+	phd_PopMatrix();
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -2567,4 +2683,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x00487D00, DrawBinoculars, replace);
 	INJECT(0x0048AD60, DrawWraithTrail, replace);
 	INJECT(0x0048A430, DrawDrips, replace);
+	INJECT(0x004860D0, DrawBubbles, replace);
 }

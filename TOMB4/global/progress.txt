@@ -1795,7 +1795,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004857E0	+	setXY3
 0x00485950	+	setXYZ4
 0x00485D90	+	setXYZ3
-0x004860D0		DrawBubbles
+0x004860D0	+	DrawBubbles
 0x00486430		S_DrawSplashes
 0x00486DD0		S_DrawFireSparks
 0x00487260		S_DrawSmokeSparks
