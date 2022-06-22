@@ -13,6 +13,7 @@
 #ifdef DISCORD_RPC
 #include "../tomb4/tomb4.h"
 #endif
+#include "dxshell.h"
 
 static uchar water_abs[4] = { 4, 8, 12, 16 };
 static short water_shimmer[4] = { 31, 63, 95, 127 };
@@ -169,10 +170,26 @@ void init_water_table()
 	}
 }
 
+bool GameInitialise()
+{
+	D3DVERTEXBUFFERDESC desc;
+
+	desc.dwCaps = 0;
+	desc.dwSize = sizeof(desc);
+	desc.dwFVF = D3DFVF_TLVERTEX;
+	desc.dwNumVertices = 0x2000;
+	DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&desc, &DestVB, D3DDP_DONOTCLIP, 0));
+	init_game_malloc();
+	clipflags = (short*)MALLOC(0x4000);
+	init_water_table();
+	return 1;
+}
+
 void inject_gamemain(bool replace)
 {
 	INJECT(0x004770C0, GameClose, replace);
 	INJECT(0x00476EC0, GameMain, replace);
 	INJECT(0x004773F0, GetRandom, replace);
 	INJECT(0x00477180, init_water_table, replace);
+	INJECT(0x00476FA0, GameInitialise, replace);
 }
