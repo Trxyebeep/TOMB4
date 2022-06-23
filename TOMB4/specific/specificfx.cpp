@@ -2653,6 +2653,146 @@ void DrawBubbles()
 	phd_PopMatrix();
 }
 
+void DrawShockwaves()
+{
+	SHOCKWAVE_STRUCT* wave;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX vtx[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR p1, p2, p3;
+	long* Z;
+	short* XY;
+	short* offsets;
+	long v, x1, y1, x2, y2, x3, y3, x4, y4, r, g, b, c;
+	short rad;
+
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 8];
+	offsets = (short*)&scratchpad[768];
+
+	for (int i = 0; i < 16; i++)
+	{
+		wave = &ShockWaves[i];
+
+		if (!wave->life)
+			continue;
+
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[256];
+		phd_PushMatrix();
+		phd_TranslateAbs(wave->x, wave->y, wave->z);
+		phd_RotX(wave->XRot);
+		offsets[1] = 0;
+		offsets[5] = 0;
+		offsets[9] = 0;
+		rad = wave->OuterRad;
+
+		for (int j = 0; j < 2; j++)
+		{
+			offsets[0] = (rad * phd_sin(0)) >> W2V_SHIFT;
+			offsets[2] = (rad * phd_cos(0)) >> W2V_SHIFT;
+			offsets[4] = (rad * phd_sin(0x1000)) >> W2V_SHIFT;
+			offsets[6] = (rad * phd_cos(0x1000)) >> W2V_SHIFT;
+			offsets[8] = (rad * phd_sin(0x2000)) >> W2V_SHIFT;
+			offsets[10] = (rad * phd_cos(0x2000)) >> W2V_SHIFT;
+
+			for (int k = 1; k < 7; k++)
+			{
+				v = k * 0x3000;
+
+				p1.x = (offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+				p1.y = (offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+				p1.z = (offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+				p2.x = (offsets[4] * phd_mxptr[M00] + offsets[5] * phd_mxptr[M01] + offsets[6] * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+				p2.y = (offsets[4] * phd_mxptr[M10] + offsets[5] * phd_mxptr[M11] + offsets[6] * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+				p2.z = (offsets[4] * phd_mxptr[M20] + offsets[5] * phd_mxptr[M21] + offsets[6] * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+				p3.x = (offsets[8] * phd_mxptr[M00] + offsets[9] * phd_mxptr[M01] + offsets[10] * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+				p3.y = (offsets[8] * phd_mxptr[M10] + offsets[9] * phd_mxptr[M11] + offsets[10] * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+				p3.z = (offsets[8] * phd_mxptr[M20] + offsets[9] * phd_mxptr[M21] + offsets[10] * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+				offsets[0] = (rad * phd_sin(v)) >> W2V_SHIFT;
+				offsets[2] = (rad * phd_cos(v)) >> W2V_SHIFT;
+				offsets[4] = (rad * phd_sin(v + 0x1000)) >> W2V_SHIFT;
+				offsets[6] = (rad * phd_cos(v + 0x1000)) >> W2V_SHIFT;
+				offsets[8] = (rad * phd_sin(v + 0x2000)) >> W2V_SHIFT;
+				offsets[10] = (rad * phd_cos(v + 0x2000)) >> W2V_SHIFT;
+
+				XY[0] = (short)p1.x;
+				XY[1] = (short)p1.y;
+				Z[0] = p1.z;
+
+				XY[2] = (short)p2.x;
+				XY[3] = (short)p2.y;
+				Z[1] = p2.z;
+
+				XY[4] = (short)p3.x;
+				XY[5] = (short)p3.y;
+				Z[2] = p3.z;
+
+				XY += 6;
+				Z += 3;
+			}
+
+			rad = wave->InnerRad;
+		}
+
+		phd_PopMatrix();
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[256];
+
+		for (int j = 0; j < 16; j++)
+		{
+			x1 = XY[0];
+			y1 = XY[1];
+			x2 = XY[2];
+			y2 = XY[3];
+			x3 = XY[36];
+			y3 = XY[37];
+			x4 = XY[38];
+			y4 = XY[39];
+			setXYZ4(vtx, x1, y1, Z[0], x2, y2, Z[1], x4, y4, Z[19], x3, y3, Z[18], clipflags);
+
+			r = wave->r;
+			g = wave->g;
+			b = wave->b;
+
+			if (wave->life < 8)
+			{
+				r = (r * wave->life) >> 3;
+				g = (g * wave->life) >> 3;
+				b = (b * wave->life) >> 3;
+			}
+
+			c = RGBA(b, g, r, 0xFF);
+			vtx[0].color = c;
+			vtx[1].color = c;
+			vtx[2].color = c;
+			vtx[3].color = c;
+			vtx[0].specular = 0xFF000000;
+			vtx[1].specular = 0xFF000000;
+			vtx[2].specular = 0xFF000000;
+			vtx[3].specular = 0xFF000000;
+
+			tex.drawtype = 2;
+			tex.flag = 0;
+			tex.tpage = sprite->tpage;
+			tex.u1 = sprite->x1;
+			tex.v1 = sprite->y2;
+			tex.u2 = sprite->x2;
+			tex.v2 = sprite->y2;
+			tex.u3 = sprite->x2;
+			tex.v3 = sprite->y1;
+			tex.u4 = sprite->x1;
+			tex.v4 = sprite->y1;
+			AddQuadSorted(vtx, 0, 1, 2, 3, &tex, 1);
+
+			XY += 2;
+			Z++;
+		}
+	}
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -2684,4 +2824,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048AD60, DrawWraithTrail, replace);
 	INJECT(0x0048A430, DrawDrips, replace);
 	INJECT(0x004860D0, DrawBubbles, replace);
+	INJECT(0x0048CAA0, DrawShockwaves, replace);
 }

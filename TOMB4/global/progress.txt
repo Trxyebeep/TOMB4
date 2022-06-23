@@ -1825,7 +1825,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0048C400	+	DrawPsxTile
 0x0048C5F0	+	DrawFlash
 0x0048C6C0	+	DrawBikeSpeedo
-0x0048CAA0		DrawShockwaves
+0x0048CAA0	+	DrawShockwaves
 0x0048D160	+	S_DrawDarts
 0x0048D3D0	+	Draw2DSprite
 0x0048D580	+	DrawJeepSpeedo

@@ -1946,6 +1946,23 @@ struct BUBBLE_STRUCT
 	short pad;
 };
 
+struct SHOCKWAVE_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	short InnerRad;
+	short OuterRad;
+	short XRot;
+	short Flags;
+	uchar r;
+	uchar g;
+	uchar b;
+	uchar life;
+	short Speed;
+	short Temp;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {
