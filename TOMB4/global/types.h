@@ -428,9 +428,9 @@ struct FVECTOR
 
 struct SVECTOR
 {
-	short vx;
-	short vy;
-	short vz;
+	short x;
+	short y;
+	short z;
 	short pad;
 };
 

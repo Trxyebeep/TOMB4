@@ -33,8 +33,8 @@ void DrawWraithTrail(ITEM_INFO* item);
 void DrawDrips();
 void DrawBubbles();
 void DrawShockwaves();
+void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags);
 
-#define DrawTrainFloorStrip	( (void(__cdecl*)(long, long, TEXTURESTRUCT*, long)) 0x0048B480 )
 #define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )
 #define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )
 #define DoUwEffect	( (void(__cdecl*)()) 0x0048A840 )

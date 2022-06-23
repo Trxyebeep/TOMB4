@@ -2793,6 +2793,125 @@ void DrawShockwaves()
 	}
 }
 
+void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags)
+{
+	SVECTOR* offsets;
+	D3DTLVERTEX v[4];
+	PHD_VECTOR p1, p2, p3;
+	long* Z;
+	short* XY;
+	long num, z1, z2, z3, z4, spec;
+	short x1, y1, x2, y2, x3, y3, x4, y4;
+
+	num = 0;
+	offsets = (SVECTOR*)&scratchpad[984];
+	offsets[0].z = (short)z;
+	offsets[1].z = short(z + 512);
+	offsets[2].z = short(z + 1024);
+
+	if (y_and_flags & 0x1000000)
+	{
+		offsets[1].z += 1024;
+		offsets[2].z += 2048;
+	}
+
+	offsets[0].y = ((y_and_flags >> 16) & 0xFF) << 4;
+	offsets[1].y = ((y_and_flags >> 8) & 0xFF) << 4;
+	offsets[2].y = (y_and_flags & 0xFF) << 4;
+	
+	offsets[0].x = (short)x;
+	offsets[1].x = (short)x;
+	offsets[2].x = (short)x;
+
+	for (int i = 0; i < 2; i++)
+	{
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[492];
+		XY -= 6;
+		Z -= 3;
+
+		for (int j = 0; j < 41; j++)
+		{
+			p1.x = (offsets[0].x * phd_mxptr[M00] + offsets[0].y * phd_mxptr[M01] + offsets[0].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+			p1.y = (offsets[0].x * phd_mxptr[M10] + offsets[0].y * phd_mxptr[M11] + offsets[0].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+			p1.z = (offsets[0].x * phd_mxptr[M20] + offsets[0].y * phd_mxptr[M21] + offsets[0].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+			p2.x = (offsets[1].x * phd_mxptr[M00] + offsets[1].y * phd_mxptr[M01] + offsets[1].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+			p2.y = (offsets[1].x * phd_mxptr[M10] + offsets[1].y * phd_mxptr[M11] + offsets[1].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+			p2.z = (offsets[1].x * phd_mxptr[M20] + offsets[1].y * phd_mxptr[M21] + offsets[1].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+			p3.x = (offsets[2].x * phd_mxptr[M00] + offsets[2].y * phd_mxptr[M01] + offsets[2].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+			p3.y = (offsets[2].x * phd_mxptr[M10] + offsets[2].y * phd_mxptr[M11] + offsets[2].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+			p3.z = (offsets[2].x * phd_mxptr[M20] + offsets[2].y * phd_mxptr[M21] + offsets[2].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+			offsets[0].x += 512;
+			offsets[1].x += 512;
+			offsets[2].x += 512;
+			XY += 6;
+			Z += 3;
+
+			XY[0] = (short)p1.x;
+			XY[1] = (short)p1.y;
+			Z[0] = p1.z;
+
+			XY[2] = (short)p2.x;
+			XY[3] = (short)p2.y;
+			Z[1] = p2.z;
+
+			XY[4] = (short)p3.x;
+			XY[5] = (short)p3.y;
+			Z[2] = p3.z;
+		}
+
+		offsets[0].x -= 512;
+		offsets[1].x -= 512;
+		offsets[2].x -= 512;
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[492];
+
+		for (int j = num; j < num + 20; j++, XY += 12, Z += 6)
+		{
+			z1 = Z[0];
+			z2 = Z[2];
+			z3 = Z[6];
+			z4 = Z[8];
+
+			if (!(z1 | z2 | z3 | z4))
+				continue;
+
+			x1 = XY[0];
+			y1 = XY[1];
+			x2 = XY[4];
+			y2 = XY[5];
+			x3 = XY[12];
+			y3 = XY[13];
+			x4 = XY[16];
+			y4 = XY[17];
+
+			if (j < 7)
+				spec = (j + 1) * 0x101010;
+			else if (j >= 33)
+				spec = (40 - j) * 0x101010;
+			else
+				spec = 0x808080;
+
+			setXYZ4(v, x1, y1, z1, x2, y2, z2, x4, y4, z4, x3, y3, z3, clipflags);
+			spec = ((spec & 0xFF) - 1) << 25;
+			v[0].color = 0xFFFFFFFF;
+			v[1].color = 0xFFFFFFFF;
+			v[2].color = 0xFFFFFFFF;
+			v[3].color = 0xFFFFFFFF;
+			v[0].specular = spec;
+			v[1].specular = spec;
+			v[2].specular = spec;
+			v[3].specular = spec;
+			AddQuadSorted(v, 0, 1, 2, 3, tex, 0);
+		}
+
+		num += 20;
+	}
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -2825,4 +2944,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048A430, DrawDrips, replace);
 	INJECT(0x004860D0, DrawBubbles, replace);
 	INJECT(0x0048CAA0, DrawShockwaves, replace);
+	INJECT(0x0048B480, DrawTrainFloorStrip, replace);
 }
