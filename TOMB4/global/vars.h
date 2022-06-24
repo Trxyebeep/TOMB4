@@ -618,6 +618,8 @@
 #define ScratchVertNums	ARRAY_(0x0080E320, char, [40][12])
 #define Bubbles	ARRAY_(0x00800920, BUBBLE_STRUCT, [40])
 #define ShockWaves	ARRAY_(0x007FF960, SHOCKWAVE_STRUCT, [16])
+#define splashes	ARRAY_(0x00804E80, SPLASH_STRUCT, [4])
+#define ripples	ARRAY_(0x00801300, RIPPLE_STRUCT, [16])
 
 
 /*Fog stuff*/

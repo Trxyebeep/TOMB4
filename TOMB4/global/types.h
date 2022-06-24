@@ -1963,6 +1963,39 @@ struct SHOCKWAVE_STRUCT
 	short Temp;
 };
 
+struct SPLASH_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	short InnerRad;
+	short InnerSize;
+	short InnerRadVel;
+	short InnerYVel;
+	short InnerY;
+	short MiddleRad;
+	short MiddleSize;
+	short MiddleRadVel;
+	short MiddleYVel;
+	short MiddleY;
+	short OuterRad;
+	short OuterSize;
+	short OuterRadVel;
+	char flags;
+	uchar life;
+};
+
+struct RIPPLE_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	char flags;
+	uchar life;
+	uchar size;
+	uchar init;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {
