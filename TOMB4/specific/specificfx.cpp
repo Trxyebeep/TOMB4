@@ -3385,6 +3385,139 @@ bool ClipLine(long& x1, long& y1, long z1, long& x2, long& y2, long z2, long xMi
 	return 1;
 }
 
+void S_DrawFireSparks(long size, long life)
+{
+	FIRE_SPARKS* sptr;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR pos;
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	ulong r, g, b, col;
+	long newSize, s, c, sx1, cx1, sx2, cx2;
+	long dx, dy, dz, x1, y1, x2, y2, x3, y3, x4, y4;
+	short ang;
+
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+
+	for (int i = 0; i < 20; i++)
+	{
+		sptr = &fire_spark[i];
+
+		if (!sptr->On)
+			continue;
+
+		dx = sptr->x >> (2 - size);
+		dy = sptr->y >> (2 - size);
+		dz = sptr->z >> (2 - size);
+
+		if (dx < -0x5000 || dx > 0x5000 || dy < -0x5000 || dy > 0x5000 || dz < -0x5000 || dz > 0x5000)
+			continue;
+
+		offsets[0] = (short)dx;
+		offsets[1] = (short)dy;
+		offsets[2] = (short)dz;
+		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
+		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
+		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
+		perspz = f_persp / (float)pos.z;
+		XY[0] = short(float(pos.x * perspz + f_centerx));
+		XY[1] = short(float(pos.y * perspz + f_centery));
+		Z[0] = pos.z >> W2V_SHIFT;
+
+
+		if (Z[0] <= 0 || Z[0] >= 0x5000)
+			continue;
+
+		newSize = (((phd_persp * sptr->Size) << 2) / Z[0]) >> (2 - size);
+
+		if (newSize > (sptr->Size << 2))
+			newSize = (sptr->Size << 2);
+		else if (newSize < 4)
+			newSize = 4;
+
+		newSize >>= 1;
+
+		if (XY[0] + newSize < phd_winxmin || XY[0] - newSize >= phd_winxmax || XY[1] + newSize < phd_winymin || XY[1] - newSize >= phd_winymax)
+			continue;
+
+		if (sptr->Flags & 0x10)
+		{
+			ang = sptr->RotAng << 1;
+			s = rcossin_tbl[ang];
+			c = rcossin_tbl[ang + 1];
+			sx1 = (-newSize * s) >> (W2V_SHIFT - 2);
+			cx1 = (-newSize * c) >> (W2V_SHIFT - 2);
+			sx2 = (newSize * s) >> (W2V_SHIFT - 2);
+			cx2 = (newSize * c) >> (W2V_SHIFT - 2);
+			x1 = XY[0] + (sx1 - cx1);
+			y1 = XY[1] + sx1 + cx1;
+			x2 = XY[0] + (sx2 - cx1);
+			y2 = XY[1] + sx1 + cx2;
+			x3 = XY[0] + (sx2 - cx2);
+			y3 = XY[1] + sx2 + cx2;
+			x4 = XY[0] + (sx1 - cx2);
+			y4 = XY[1] + sx2 + cx1;
+			setXY4(v, x1, y1, x2, y2, x3, y3, x4, y4, Z[0], clipflags);
+		}
+		else
+		{
+			x1 = XY[0] - newSize;
+			x2 = XY[0] + newSize;
+			y1 = XY[1] - newSize;
+			y2 = XY[1] + newSize;
+			setXY4(v, x1, y1, x2, y1, x2, y2, x1, y2, Z[0], clipflags);
+		}
+
+		sprite = &spriteinfo[sptr->Def];
+
+		if (Z[0] <= 0x3000)
+		{
+			r = sptr->R;
+			g = sptr->G;
+			b = sptr->B;
+		}
+		else
+		{
+			r = ((0x5000 - Z[0]) * sptr->R) >> 13;
+			g = ((0x5000 - Z[0]) * sptr->G) >> 13;
+			b = ((0x5000 - Z[0]) * sptr->B) >> 13;
+		}
+
+		r = (r * life) >> 8;
+		g = (g * life) >> 8;
+		b = (b * life) >> 8;
+		col = RGBA(r, g, b, 0xFF);
+
+		v[0].color = col;
+		v[1].color = col;
+		v[2].color = col;
+		v[3].color = col;
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		v[3].specular = 0xFF000000;
+		tex.drawtype = 2;
+		tex.flag = 0;
+		tex.tpage = sprite->tpage;
+		tex.u1 = sprite->x1;
+		tex.v1 = sprite->y1;
+		tex.u2 = sprite->x2;
+		tex.v2 = sprite->y1;
+		tex.u3 = sprite->x2;
+		tex.v3 = sprite->y2;
+		tex.u4 = sprite->x1;
+		tex.v4 = sprite->y2;
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+	}
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -3420,4 +3553,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048B480, DrawTrainFloorStrip, replace);
 	INJECT(0x00486430, S_DrawSplashes, replace);
 	INJECT(0x00488690, ClipLine, replace);
+	INJECT(0x00486DD0, S_DrawFireSparks, replace);
 }

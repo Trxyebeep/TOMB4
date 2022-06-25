@@ -36,6 +36,7 @@ void DrawShockwaves();
 void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags);
 void S_DrawSplashes();
 bool ClipLine(long& x1, long& y1, long z1, long& x2, long& y2, long z2, long xMin, long yMin, long w, long h);
+void S_DrawFireSparks(long size, long life);
 
 #define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )
 #define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )

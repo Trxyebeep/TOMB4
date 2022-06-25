@@ -620,6 +620,7 @@
 #define ShockWaves	ARRAY_(0x007FF960, SHOCKWAVE_STRUCT, [16])
 #define splashes	ARRAY_(0x00804E80, SPLASH_STRUCT, [4])
 #define ripples	ARRAY_(0x00801300, RIPPLE_STRUCT, [16])
+#define fire_spark	ARRAY_(0x00800600, FIRE_SPARKS, [20])
 
 
 /*Fog stuff*/

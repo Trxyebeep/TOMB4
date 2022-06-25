@@ -1996,6 +1996,41 @@ struct RIPPLE_STRUCT
 	uchar init;
 };
 
+struct FIRE_SPARKS
+{
+	short x;
+	short y;
+	short z;
+	short Xvel;
+	short Yvel;
+	short Zvel;
+	short Gravity;
+	short RotAng;
+	short Flags;
+	uchar sSize;
+	uchar dSize;
+	uchar Size;
+	uchar Friction;
+	uchar Scalar;
+	uchar Def;
+	char RotAdd;
+	char MaxYvel;
+	uchar On;
+	uchar sR;
+	uchar sG;
+	uchar sB;
+	uchar dR;
+	uchar dG;
+	uchar dB;
+	uchar R;
+	uchar G;
+	uchar B;
+	uchar ColFadeSpeed;
+	uchar FadeToBlack;
+	uchar sLife;
+	uchar Life;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {
