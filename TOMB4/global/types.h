@@ -2030,6 +2030,32 @@ struct FIRE_SPARKS
 	uchar Life;
 };
 
+struct BLOOD_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	short Xvel;
+	short Yvel;
+	short Zvel;
+	short Gravity;
+	short RotAng;
+	uchar sSize;
+	uchar dSize;
+	uchar Size;
+	uchar Friction;
+	char RotAdd;
+	uchar On;
+	uchar sShade;
+	uchar dShade;
+	uchar Shade;
+	uchar ColFadeSpeed;
+	uchar FadeToBlack;
+	char sLife;
+	char Life;
+	char Pad;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

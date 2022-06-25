@@ -36,3 +36,4 @@ void UpdateDrips();
 #define TriggerFlashSmoke	( (void(__cdecl*)(long, long, long, long)) 0x0043B420 )
 #define TriggerShatterSmoke	( (void(__cdecl*)(long, long, long)) 0x00438BA0 )
 #define Fade	( (void(__cdecl*)()) 0x00439E40 )
+#define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )

@@ -630,14 +630,14 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr
 			{
 				sin = rcossin_tbl[sptr->RotAng << 1];
 				cos = rcossin_tbl[(sptr->RotAng << 1) + 1];
-				sx1 = (-s1h * sin) >> 12;
-				sx2 = (s1h * sin) >> 12;
-				sy1 = (-s2h * sin) >> 12;
-				sy2 = (s2h * sin) >> 12;
-				cx1 = (-s1h * cos) >> 12;
-				cx2 = (s1h * cos) >> 12;
-				cy1 = (-s2h * cos) >> 12;
-				cy2 = (s2h * cos) >> 12;
+				sx1 = (-s1h * sin) >> (W2V_SHIFT - 2);
+				sx2 = (s1h * sin) >> (W2V_SHIFT - 2);
+				sy1 = (-s2h * sin) >> (W2V_SHIFT - 2);
+				sy2 = (s2h * sin) >> (W2V_SHIFT - 2);
+				cx1 = (-s1h * cos) >> (W2V_SHIFT - 2);
+				cx2 = (s1h * cos) >> (W2V_SHIFT - 2);
+				cy1 = (-s2h * cos) >> (W2V_SHIFT - 2);
+				cy2 = (s2h * cos) >> (W2V_SHIFT - 2);
 				x1 = sx1 - cy1 + xyptr[0];
 				x2 = sx2 - cy1 + xyptr[0];
 				x3 = sx2 - cy2 + xyptr[0];
@@ -3642,6 +3642,111 @@ void DrawRope(ROPE_STRUCT* rope)
 	}
 }
 
+void DrawBlood()
+{
+	BLOOD_STRUCT* bptr;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR pos;
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	ulong r, col;
+	long size, s, c;
+	long dx, dy, dz, x1, y1, x2, y2, x3, y3, x4, y4;
+	short ang;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 15];
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+
+	for (int i = 0; i < 32; i++)
+	{
+		bptr = &blood[i];
+
+		if (!bptr->On)
+			continue;
+
+		dx = bptr->x - lara_item->pos.x_pos;
+		dy = bptr->y - lara_item->pos.y_pos;
+		dz = bptr->z - lara_item->pos.z_pos;
+
+		if (dx < -0x5000 || dx > 0x5000 || dy < -0x5000 || dy > 0x5000 || dz < -0x5000 || dz > 0x5000)
+			continue;
+
+		offsets[0] = (short)dx;
+		offsets[1] = (short)dy;
+		offsets[2] = (short)dz;
+		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
+		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
+		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
+		perspz = f_persp / (float)pos.z;
+		XY[0] = short(float(pos.x * perspz + f_centerx));
+		XY[1] = short(float(pos.y * perspz + f_centery));
+		Z[0] = pos.z >> W2V_SHIFT;
+
+		if (Z[0] <= 0 || Z[0] >= 0x5000)
+			continue;
+
+		size = ((phd_persp * bptr->Size) << 1) / Z[0];
+
+		if (size > (bptr->Size << 1))
+			size = (bptr->Size << 1);
+		else if (size < 4)
+			size = 4;
+
+		size <<= 1;
+		ang = bptr->RotAng << 1;
+		s = (size * rcossin_tbl[ang]) >> (W2V_SHIFT - 2);
+		c = (size * rcossin_tbl[ang + 1]) >> (W2V_SHIFT - 2);
+		x1 = c + XY[0] - s;
+		y1 = XY[1] - c - s;
+		x2 = s + c + XY[0];
+		y2 = c + XY[1] - s;
+		x3 = s + XY[0] - c;
+		y3 = s + XY[1] + c;
+		x4 = XY[0] - c - s;
+		y4 = XY[1] - c + s;
+		setXY4(v, x1, y1, x2, y2, x3, y3, x4, y4, Z[0], clipflags);
+
+		if (Z[0] <= 0x3000)
+			col = RGBA(bptr->Shade, 0, 0, 0xFF);
+		else
+		{
+			r = ((0x5000 - Z[0]) * bptr->Shade) >> 13;
+			col = RGBA(r, 0, 0, 0xFF);
+		}
+
+		v[0].color = col;
+		v[1].color = col;
+		v[2].color = col;
+		v[3].color = col;
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		v[3].specular = 0xFF000000;
+		tex.drawtype = 2;
+		tex.flag = 0;
+		tex.tpage = sprite->tpage;
+		tex.u1 = sprite->x1;
+		tex.v1 = sprite->y1;
+		tex.u2 = sprite->x2;
+		tex.v2 = sprite->y1;
+		tex.u3 = sprite->x2;
+		tex.v3 = sprite->y2;
+		tex.u4 = sprite->x1;
+		tex.v4 = sprite->y2;
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+	}
+
+	phd_PopMatrix();
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -3679,4 +3784,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x00488690, ClipLine, replace);
 	INJECT(0x00486DD0, S_DrawFireSparks, replace);
 	INJECT(0x00489540, DrawRope, replace);
+	INJECT(0x0048A0C0, DrawBlood, replace);
 }

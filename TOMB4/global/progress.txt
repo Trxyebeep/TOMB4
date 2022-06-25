@@ -1811,7 +1811,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00489540	+	DrawRope
 0x00489950	+	DrawLaserSightSprite
 0x00489B90	+	DrawDebris
-0x0048A0C0		DrawBlood
+0x0048A0C0	+	DrawBlood
 0x0048A430	+	DrawDrips
 0x0048A840		DoUwEffect
 0x0048AD60	+	DrawWraithTrail
