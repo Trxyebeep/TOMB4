@@ -1041,8 +1041,7 @@ struct ROPE_STRUCT
 	PHD_VECTOR Position;
 	long Coords[24][3];
 	long SegmentLength;
-	short Active;
-	short Coiled;
+	long Active;
 };
 
 struct STATS
