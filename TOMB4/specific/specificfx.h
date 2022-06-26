@@ -39,8 +39,8 @@ bool ClipLine(long& x1, long& y1, long z1, long& x2, long& y2, long z2, long xMi
 void S_DrawFireSparks(long size, long life);
 void DrawRope(ROPE_STRUCT* rope);
 void DrawBlood();
+void S_DrawSmokeSparks();
 
 #define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )
 #define DoUwEffect	( (void(__cdecl*)()) 0x0048A840 )
-#define S_DrawSmokeSparks	( (void(__cdecl*)()) 0x00487260 )
 #define DrawLightning	( (void(__cdecl*)()) 0x0048D9B0 )

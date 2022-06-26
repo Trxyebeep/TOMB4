@@ -3747,6 +3747,158 @@ void DrawBlood()
 	phd_PopMatrix();
 }
 
+void S_DrawSmokeSparks()
+{
+	SMOKE_SPARKS* sptr;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR pos;
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	long is_mirror, size, col, s, c, ss, cs, sm, cm;
+	long dx, dy, dz, x1, y1, x2, y2, x3, y3, x4, y4;
+	short ang;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+	is_mirror = 0;
+	sptr = &smoke_spark[0];
+
+	for (int i = 0; i < 32; i++)
+	{
+		if (!sptr->On)
+		{
+			sptr++;
+			continue;
+		}
+
+		if (sptr->mirror && !is_mirror)
+			is_mirror = 1;
+		else
+			is_mirror = 0;
+
+		dx = sptr->x - lara_item->pos.x_pos;
+		dy = sptr->y - lara_item->pos.y_pos;
+		dz = sptr->z - lara_item->pos.z_pos;
+
+		if (is_mirror)
+			dz = 2 * gfMirrorZPlane - lara_item->pos.z_pos - sptr->z;
+
+		if (dx < -0x5000 || dx > 0x5000 || dy < -0x5000 || dy > 0x5000 || dz < -0x5000 || dz > 0x5000)
+		{
+			if (!is_mirror)
+				sptr++;
+
+			continue;
+		}
+
+		offsets[0] = (short)dx;
+		offsets[1] = (short)dy;
+		offsets[2] = (short)dz;
+		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
+		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
+		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
+		perspz = f_persp / (float)pos.z;
+		XY[0] = short(float(pos.x * perspz + f_centerx));
+		XY[1] = short(float(pos.y * perspz + f_centery));
+		Z[0] = pos.z >> W2V_SHIFT;
+
+		if (Z[0] <= 0 || Z[0] >= 0x5000)
+		{
+			if (!is_mirror)
+				sptr++;
+
+			continue;
+		}
+
+		size = ((phd_persp * sptr->Size) << 2) / Z[0];
+
+		if (size > (sptr->Size << 2))
+			size = (sptr->Size << 2);
+		else if (size < 4)
+			size = 4;
+
+		size >>= 1;
+
+		if (XY[0] + size < phd_winxmin || XY[0] - size >= phd_winxmax || XY[1] + size < phd_winymin || XY[1] - size >= phd_winymax)
+		{
+			if (!is_mirror)
+				sptr++;
+
+			continue;
+		}
+
+		if (sptr->Flags & 0x10)
+		{
+			ang = sptr->RotAng << 1;
+			s = rcossin_tbl[ang];
+			c = rcossin_tbl[ang + 1];
+			ss = (s * size) >> (W2V_SHIFT - 2);
+			cs = (c * size) >> (W2V_SHIFT - 2);
+			sm = (s * -size) >> (W2V_SHIFT - 2);
+			cm = (c * -size) >> (W2V_SHIFT - 2);
+
+			x1 = sm + XY[0] - cm;
+			y1 = sm + XY[1] + cm;
+			x2 = XY[0] - cm + ss;
+			y2 = sm + XY[1] + cs;
+			x3 = ss + XY[0] - cs;
+			y3 = cs + XY[1] + ss;
+			x4 = sm + XY[0] - cs;
+			y4 = ss + XY[1] + cm;
+
+			setXY4(v, x1, y1, x2, y2, x3, y3, x4, y4, Z[0], clipflags);
+		}
+		else
+		{
+			x1 = XY[0] - size;
+			y1 = XY[1] - size;
+			x2 = XY[0] + size;
+			y2 = XY[1] + size;
+			setXY4(v, x1, y1, x2, y1, x2, y2, x1, y2, Z[0], clipflags);
+		}
+
+		sprite = &spriteinfo[sptr->Def];
+
+		if (Z[0] <= 0x3000)
+			col = sptr->Shade;
+		else
+			col = ((0x5000 - Z[0]) * sptr->Shade) >> 13;
+
+		v[0].color = RGBA(col, col, col, 0xFF);
+		v[1].color = RGBA(col, col, col, 0xFF);
+		v[2].color = RGBA(col, col, col, 0xFF);
+		v[3].color = RGBA(col, col, col, 0xFF);
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		v[3].specular = 0xFF000000;
+		tex.drawtype = 2;
+		tex.flag = 0;
+		tex.tpage = sprite->tpage;
+		tex.u1 = sprite->x1;
+		tex.v1 = sprite->y1;
+		tex.u2 = sprite->x2;
+		tex.v3 = sprite->y2;
+		tex.v2 = sprite->y1;
+		tex.u3 = sprite->x2;
+		tex.u4 = sprite->x1;
+		tex.v4 = sprite->y2;
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+
+		if (!is_mirror)
+			sptr++;
+	}
+
+	phd_PopMatrix();
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -3785,4 +3937,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x00486DD0, S_DrawFireSparks, replace);
 	INJECT(0x00489540, DrawRope, replace);
 	INJECT(0x0048A0C0, DrawBlood, replace);
+	INJECT(0x00487260, S_DrawSmokeSparks, replace);
 }
