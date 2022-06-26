@@ -4265,6 +4265,8 @@ void DrawLightning()
 			Z++;
 		}
 	}
+
+	phd_PopMatrix();
 }
 
 void inject_specificfx(bool replace)
