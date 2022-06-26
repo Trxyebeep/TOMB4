@@ -17,6 +17,7 @@
 #define CIRCUMFERENCE_POINTS 32 // Number of points in the circumference
 #endif
 #include "../game/rope.h"
+#include "../game/tomb4fx.h"
 
 #define LINE_POINTS	4	//number of points in each grid line
 #define POINT_HEIGHT_CORRECTION	196	//if the difference between the floor below Lara and the floor height below the point is greater than this value, point height is corrected to lara's floor level.
@@ -4051,6 +4052,221 @@ void DoUwEffect()
 	phd_PopMatrix();
 }
 
+void DrawLightning()
+{
+	LIGHTNING_STRUCT* pL;
+	SPRITESTRUCT* sprite;
+	PHD_VECTOR* vec;
+	SVECTOR* offsets;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR p1, p2, p3;
+	long* Z;
+	short* XY;
+	float perspz;
+	long c, xsize, ysize, r, g, b;
+	long x1, y1, z1, x2, y2, z2, z;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 28];
+
+	for (int i = 0; i < 16; i++)
+	{
+		pL = &Lightning[i];
+
+		if (!pL->Life)
+			continue;
+
+		vec = (PHD_VECTOR*)&scratchpad[128];
+		memcpy(&vec[0], &pL->Point[0], sizeof(PHD_VECTOR));
+		memcpy(&vec[1], &pL->Point[0], 4 * sizeof(PHD_VECTOR));
+		memcpy(&vec[5], &pL->Point[3], sizeof(PHD_VECTOR));
+
+		for (int j = 0; j < 6; j++)
+		{
+			vec[j].x -= lara_item->pos.x_pos;
+			vec[j].y -= lara_item->pos.y_pos;
+			vec[j].z -= lara_item->pos.z_pos;
+		}
+
+		offsets = (SVECTOR*)&scratchpad[0];
+		XY = (short*)&scratchpad[256];
+		Z = (long*)&scratchpad[512];
+		CalcLightningSpline(vec, offsets, pL);
+
+		if (vec[0].x > 0x6000 || vec[0].y > 0x6000 || vec[0].z > 0x6000)
+			continue;
+
+		for (int j = 0; j < pL->Segments; j++)
+		{
+			p1.x = (offsets[0].x * phd_mxptr[M00] + offsets[0].y * phd_mxptr[M01] + offsets[0].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+			p1.y = (offsets[0].x * phd_mxptr[M10] + offsets[0].y * phd_mxptr[M11] + offsets[0].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+			p1.z = (offsets[0].x * phd_mxptr[M20] + offsets[0].y * phd_mxptr[M21] + offsets[0].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+			p2.x = (offsets[1].x * phd_mxptr[M00] + offsets[1].y * phd_mxptr[M01] + offsets[1].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+			p2.y = (offsets[1].x * phd_mxptr[M10] + offsets[1].y * phd_mxptr[M11] + offsets[1].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+			p2.z = (offsets[1].x * phd_mxptr[M20] + offsets[1].y * phd_mxptr[M21] + offsets[1].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+			p3.x = (offsets[2].x * phd_mxptr[M00] + offsets[2].y * phd_mxptr[M01] + offsets[2].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+			p3.y = (offsets[2].x * phd_mxptr[M10] + offsets[2].y * phd_mxptr[M11] + offsets[2].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+			p3.z = (offsets[2].x * phd_mxptr[M20] + offsets[2].y * phd_mxptr[M21] + offsets[2].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+			XY[0] = (short)p1.x;
+			XY[1] = (short)p1.y;
+			Z[0] = p1.z;
+
+			XY[2] = (short)p2.x;
+			XY[3] = (short)p2.y;
+			Z[1] = p2.z;
+
+			XY[4] = (short)p3.x;
+			XY[5] = (short)p3.y;
+			Z[2] = p3.z;
+
+			offsets += 3;
+			XY += 6;
+			Z += 3;
+		}
+
+		XY = (short*)&scratchpad[256];
+		Z = (long*)&scratchpad[512];
+
+		for (int j = 0; j < 3 * pL->Segments - 1; j++)
+		{
+			if (pL->Life < 16)
+				c = pL->Life << 2;
+			else
+				c = 64;
+
+			if (Z[0] > 0x3000)
+				c = (c * (0x5000 - *Z)) >> 13;
+
+			c = RGBA(c, c, c, 66);
+
+			x1 = XY[0];
+			y1 = XY[1];
+			z1 = Z[0];
+			x2 = XY[2];
+			y2 = XY[3];
+			z2 = Z[1];
+			setXYZ4(v, x1, y1, z1, x2, y2, z2, x1, y1, z1, x2, y2, z2, clipflags);
+			x1 = (long)v[0].sx;
+			y1 = (long)v[0].sy;
+			z1 = (long)v[0].sz;
+			x2 = (long)v[1].sx;
+			y2 = (long)v[1].sy;
+			z2 = (long)v[1].sz;
+
+			if (ClipLine(x1, y1, z1, x2, y2, z2, phd_winxmin, phd_winymin, phd_winxmax, phd_winymax))
+			{
+				perspz = f_mpersp / Z[0] * f_moneopersp;
+
+				v[0].sx = (float)x1;
+				v[0].sy = (float)y1;
+				v[0].sz = f_a - perspz * f_boo;
+				v[0].rhw = perspz;
+				v[0].color = c;
+				v[0].specular = 0xFF000000;
+
+				v[1].sx = (float)x2;
+				v[1].sy = (float)y2;
+				v[1].sz = f_a - perspz * f_boo;
+				v[1].rhw = perspz;
+				v[1].color = c;
+				v[1].specular = 0xFF000000;
+
+				AddLineSorted(&v[0], &v[1], 6);
+
+				if (Z[0] > 0x4000)
+					xsize = 1;
+				else
+					xsize = ((0x4000 - Z[0]) * pL->Size) >> 16;
+
+				if (xsize < 4)
+					xsize = 4;
+
+				if (pL->Life < 16)
+				{
+					r = (pL->Life * pL->r) >> 4;
+					g = (pL->Life * pL->g) >> 4;
+					b = (pL->Life * pL->b) >> 4;
+				}
+				else
+				{
+					r = pL->r;
+					g = pL->g;
+					b = pL->b;
+				}
+
+				if (Z[0] > 0x3000)
+				{
+					r = (r * (0x5000 - Z[0])) >> 13;
+					g = (g * (0x5000 - Z[0])) >> 13;
+					b = (b * (0x5000 - Z[0])) >> 13;
+				}
+
+				x1 = XY[0];
+				y1 = XY[1];
+				z1 = Z[0];
+				x2 = XY[2];
+				y2 = XY[3];
+				z2 = Z[1];
+				setXYZ4(v, x1, y1, z1, x2, y2, z2, x1, y1, z1, x2, y2, z2, clipflags);
+				x1 = (long)v[0].sx;
+				y1 = (long)v[0].sy;
+				z1 = (long)v[0].sz;
+				x2 = (long)v[1].sx;
+				y2 = (long)v[1].sy;
+				z2 = (long)v[1].sz;
+
+				vec[0].x = (x1 - x2) << 8;
+				vec[0].y = (y1 - y2) << 8;
+				vec[0].z = 0;
+				Normalise(vec);
+				vec[0].z = vec[0].x;
+				vec[0].x = -vec[0].y;
+				vec[0].y = vec[0].z;
+
+				ysize = (vec[0].y * xsize) >> 12;
+				xsize = (vec[0].x * xsize) >> 12;
+				z = (z1 + z2) >> 1;
+
+				if (z > 64)
+				{
+					setXY4(v, x1 + xsize, y1 + ysize, x2 + xsize, y2 + ysize, x1 - xsize, y1 - ysize, x2 - xsize, y2 - ysize, z, clipflags);
+
+					c = RGBA(b, g, r, 0xFF);
+
+					v[0].color = c;
+					v[1].color = c;
+					v[2].color = c;
+					v[3].color = c;
+					v[0].specular = 0xFF000000;
+					v[1].specular = 0xFF000000;
+					v[2].specular = 0xFF000000;
+					v[3].specular = 0xFF000000;
+					tex.drawtype = 2;
+					tex.flag = 0;
+					tex.tpage = sprite->tpage;
+					tex.u1 = sprite->x1;
+					tex.v1 = sprite->y2;
+					tex.u2 = sprite->x2;
+					tex.v2 = sprite->y2;
+					tex.u3 = sprite->x2;
+					tex.v3 = sprite->y1;
+					tex.u4 = sprite->x1;
+					tex.v4 = sprite->y1;
+					AddQuadClippedSorted(v, 0, 1, 3, 2, &tex, 0);
+				}
+			}
+
+			XY += 2;
+			Z++;
+		}
+	}
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -4091,4 +4307,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x0048A0C0, DrawBlood, replace);
 	INJECT(0x00487260, S_DrawSmokeSparks, replace);
 	INJECT(0x0048A840, DoUwEffect, replace);
+	INJECT(0x0048D9B0, DrawLightning, replace);
 }

@@ -41,5 +41,4 @@ void DrawRope(ROPE_STRUCT* rope);
 void DrawBlood();
 void S_DrawSmokeSparks();
 void DoUwEffect();
-
-#define DrawLightning	( (void(__cdecl*)()) 0x0048D9B0 )
+void DrawLightning();
