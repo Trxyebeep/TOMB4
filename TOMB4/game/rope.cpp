@@ -38,8 +38,29 @@ void ProjectRopePoints(ROPE_STRUCT* Rope)
 	phd_PopMatrix();
 }
 
+PHD_VECTOR* Normalise(PHD_VECTOR* v)
+{
+	long mod, a, b, c, d, e;
+
+	a = v->x >> 16;
+	b = v->y >> 16;
+	c = v->z >> 16;
+
+	if (!a && !b && !c)
+		return v;
+
+	d = ABS(SQUARE(a) + SQUARE(b) + SQUARE(c));
+	e = phd_sqrt(d);
+	mod = 65536 / e;
+	v->x = (long long)mod * v->x >> 16;
+	v->y = (long long)mod * v->y >> 16;
+	v->z = (long long)mod * v->z >> 16;
+	return v;
+}
+
 void inject_rope(bool replace)
 {
 	INJECT(0x00459410, DrawRopeList, replace);
 	INJECT(0x00459F90, ProjectRopePoints, replace);
+	INJECT(0x00459450, Normalise, replace);
 }
