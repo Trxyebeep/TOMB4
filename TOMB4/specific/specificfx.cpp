@@ -3899,6 +3899,158 @@ void S_DrawSmokeSparks()
 	phd_PopMatrix();
 }
 
+void DoUwEffect()
+{
+	WATER_DUST* p;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[3];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR pos;
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	long num_alive, rad, ang, x, y, z, size, col, yv;
+
+	num_alive = 0;
+
+	for (int i = 0; i < 256; i++)
+	{
+		p = &uwdust[i];
+
+		if (!p->pos.x && num_alive < 16)
+		{
+			num_alive++;
+			rad = GetRandomDraw() & 0xFFF;
+			ang = GetRandomDraw() & 0x1FFE;
+			x = (rad * rcossin_tbl[ang]) >> (W2V_SHIFT - 2);
+			y = (GetRandomDraw() & 0x7FF) - 1024;
+			z = (rad * rcossin_tbl[ang + 1]) >> (W2V_SHIFT - 2);
+			p->pos.x = lara_item->pos.x_pos + x;
+			p->pos.y = lara_item->pos.y_pos + y;
+			p->pos.z = lara_item->pos.z_pos + z;
+
+			if (IsRoomOutside(p->pos.x, p->pos.y, p->pos.z) < 0 || !(room[IsRoomOutsideNo].flags & ROOM_UNDERWATER))
+			{
+				p->pos.x = 0;
+				continue;
+			}
+
+			p->life = (GetRandomDraw() & 7) + 16;
+			p->xvel = GetRandomDraw() & 3;
+
+			if (p->xvel == 2)
+				p->xvel = -1;
+
+			p->yvel = ((GetRandomDraw() & 7) + 8) << 3;
+			p->zvel = GetRandomDraw() & 3;
+
+			if (p->zvel == 2)
+				p->zvel = -1;
+		}
+
+		p->pos.x += p->xvel;
+		p->pos.y += (p->yvel & ~7) >> 6;
+		p->pos.z += p->zvel;
+
+		if (!p->life)
+		{
+			p->pos.x = 0;
+			continue;
+		}
+
+		p->life--;
+
+		if ((p->yvel & 7) < 7)
+			p->yvel++;
+	}
+
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 10];
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+
+	for (int i = 0; i < 256; i++)
+	{
+		p = &uwdust[i];
+
+		if (!p->pos.x)
+			continue;
+
+		x = p->pos.x - lara_item->pos.x_pos;
+		y = p->pos.y - lara_item->pos.y_pos;
+		z = p->pos.z - lara_item->pos.z_pos;
+		offsets[0] = (short)x;
+		offsets[1] = (short)y;
+		offsets[2] = (short)z;
+		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
+		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
+		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
+		perspz = f_persp / (float)pos.z;
+		XY[0] = short(float(pos.x * perspz + f_centerx));
+		XY[1] = short(float(pos.y * perspz + f_centery));
+		Z[0] = pos.z >> W2V_SHIFT;
+
+		if (Z[0] < 32)
+		{
+			if (p->life > 16)
+				p->life = 16;
+
+			continue;
+		}
+
+		if (XY[0] < phd_winxmin || XY[0] > phd_winxmax || XY[1] < phd_winymin || XY[1] > phd_winymax)
+			continue;
+
+		size = (phd_persp * (p->yvel >> 3)) / (Z[0] >> 4);
+
+		if (size < 1)
+			size = 6;
+		else if (size > 12)
+			size = 12;
+
+		size = (0x5556 * size) >> 16;
+
+		if (phd_winwidth > 512)
+			size = long(float(phd_winwidth / 512.0F) * (float)size);
+
+		if ((p->yvel & 7) == 7)
+		{
+			if (p->life > 18)
+				col = 0xFF404040;
+			else
+				col = (p->life | ((p->life | ((p->life | 0xFFFFFFC0) << 8)) << 8)) << 2;	//decipher me
+		}
+		else
+		{
+			yv = (p->yvel & 7) << 2;
+			col = (yv | ((yv | ((yv | 0xFFFFFF80) << 8)) << 8)) << 1;	//decipher me
+		}
+
+		setXY3(v, XY[0] + size, XY[1] - (size << 1), XY[0] + size, XY[1] + size, XY[0] - (size << 1), XY[1] + size, Z[0], clipflags);
+		v[0].color = col;
+		v[1].color = col;
+		v[2].color = col;
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		tex.drawtype = 2;
+		tex.flag = 0;
+		tex.tpage = sprite->tpage;
+		tex.u1 = sprite->x2;
+		tex.v1 = sprite->y1;
+		tex.u2 = sprite->x2;
+		tex.v2 = sprite->y2;
+		tex.u3 = sprite->x1;
+		tex.v3 = sprite->y2;
+		AddTriSorted(v, 0, 1, 2, &tex, 0);
+	}
+
+	phd_PopMatrix();
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -3938,4 +4090,5 @@ void inject_specificfx(bool replace)
 	INJECT(0x00489540, DrawRope, replace);
 	INJECT(0x0048A0C0, DrawBlood, replace);
 	INJECT(0x00487260, S_DrawSmokeSparks, replace);
+	INJECT(0x0048A840, DoUwEffect, replace);
 }

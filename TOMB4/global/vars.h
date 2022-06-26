@@ -622,6 +622,7 @@
 #define ripples	ARRAY_(0x00801300, RIPPLE_STRUCT, [16])
 #define fire_spark	ARRAY_(0x00800600, FIRE_SPARKS, [20])
 #define blood	ARRAY_(0x00800180, BLOOD_STRUCT, [32])
+#define uwdust	ARRAY_(0x00670E58, WATER_DUST, [256])
 
 
 /*Fog stuff*/

@@ -2056,6 +2056,15 @@ struct BLOOD_STRUCT
 	char Pad;
 };
 
+struct WATER_DUST
+{
+	PHD_VECTOR pos;
+	char xvel;
+	uchar yvel;
+	char zvel;
+	uchar life;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

@@ -40,7 +40,6 @@ void S_DrawFireSparks(long size, long life);
 void DrawRope(ROPE_STRUCT* rope);
 void DrawBlood();
 void S_DrawSmokeSparks();
+void DoUwEffect();
 
-#define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )
-#define DoUwEffect	( (void(__cdecl*)()) 0x0048A840 )
 #define DrawLightning	( (void(__cdecl*)()) 0x0048D9B0 )
