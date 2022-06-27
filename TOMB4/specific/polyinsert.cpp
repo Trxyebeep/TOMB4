@@ -440,7 +440,11 @@ void TriggerFXFogBulb(long x, long y, long z, long FXRad, long density, long r, 
 	FogBulb->WorldPos.z = (float)z;
 	FogBulb->rad = 0;
 	FogBulb->sqrad = 0;
-	FogBulb->inv_sqrad = 1 / FogBulb->sqrad;	//how does this not crash
+#ifdef GENERAL_FIXES
+	FogBulb->inv_sqrad = 0;
+#else
+	FogBulb->inv_sqrad = 1 / FogBulb->sqrad;
+#endif
 	FogBulb->timer = 50;
 	FogBulb->active = 1;
 	FogBulb->FXRad = FXRad;
