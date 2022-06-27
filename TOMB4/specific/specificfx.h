@@ -31,15 +31,14 @@ void InitBinoculars();
 void DrawBinoculars();
 void DrawWraithTrail(ITEM_INFO* item);
 void DrawDrips();
-
-#define DrawTrainFloorStrip	( (void(__cdecl*)(long, long, TEXTURESTRUCT*, long)) 0x0048B480 )
-#define DrawRope	( (void(__cdecl*)(ROPE_STRUCT*)) 0x00489540 )
-#define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )
-#define DoUwEffect	( (void(__cdecl*)()) 0x0048A840 )
-#define S_DrawSmokeSparks	( (void(__cdecl*)()) 0x00487260 )
-#define S_DrawSplashes	( (void(__cdecl*)()) 0x00486430 )
-#define DrawBubbles	( (void(__cdecl*)()) 0x004860D0 )
-#define DrawBlood	( (void(__cdecl*)()) 0x0048A0C0 )
-#define DrawShockwaves	( (void(__cdecl*)()) 0x0048CAA0 )
-#define DrawLightning	( (void(__cdecl*)()) 0x0048D9B0 )
-#define ClipLine	( (long(__cdecl*)(long&, long&, long, long&, long&, long, long, long, long, long)) 0x00488690 )
+void DrawBubbles();
+void DrawShockwaves();
+void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags);
+void S_DrawSplashes();
+bool ClipLine(long& x1, long& y1, long z1, long& x2, long& y2, long z2, long xMin, long yMin, long w, long h);
+void S_DrawFireSparks(long size, long life);
+void DrawRope(ROPE_STRUCT* rope);
+void DrawBlood();
+void S_DrawSmokeSparks();
+void DoUwEffect();
+void DrawLightning();

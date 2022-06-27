@@ -553,6 +553,7 @@
 #define HairRotScratchVertNums	ARRAY_(0x004AD6D4, char, [5][12])
 #define IMstack	ARRAY_(0x007FD320, long, [768])
 #define vert_wibble_table	ARRAY_(0x00535520, float, [32])
+#define unused_vert_wibble_table	ARRAY_(0x0053511C, float, [256])
 #define WaterTable	ARRAY_(0x00533B1C, WATERTAB, [22][64])
 #define no_rotation	ARRAY_(0x004BF630, short, [12])
 #define rings	ARRAY_(0x007FEA20, RINGME*, [2])
@@ -613,6 +614,18 @@
 #define DS_Samples	ARRAY_(0x0052B6C8, DS_SAMPLE, [32])
 #define DS_Buffers	ARRAY_(0x0052AAC0, DS_SAMPLE, [256])
 #define source_pcm_format	ARRAY_(0x004B263C, char, [50])
+#define SkinVertNums	ARRAY_(0x0080E520, char, [40][12])
+#define ScratchVertNums	ARRAY_(0x0080E320, char, [40][12])
+#define Bubbles	ARRAY_(0x00800920, BUBBLE_STRUCT, [40])
+#define ShockWaves	ARRAY_(0x007FF960, SHOCKWAVE_STRUCT, [16])
+#define splashes	ARRAY_(0x00804E80, SPLASH_STRUCT, [4])
+#define ripples	ARRAY_(0x00801300, RIPPLE_STRUCT, [16])
+#define fire_spark	ARRAY_(0x00800600, FIRE_SPARKS, [20])
+#define blood	ARRAY_(0x00800180, BLOOD_STRUCT, [32])
+#define uwdust	ARRAY_(0x00670E58, WATER_DUST, [256])
+#define CharDef	ARRAY_(0x004AEDB0, CHARDEF, [106])
+#define ShadeFromTo	ARRAY_(0x004AFF48, CVECTOR, [10][2])
+#define FontShades	ARRAY_(0x004BF704, CVECTOR, [10][32])
 
 
 /*Fog stuff*/
@@ -651,6 +664,7 @@
 #define NO_HEIGHT	-32512
 #define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
+#define WINDOW_STYLE	(WS_OVERLAPPED | WS_BORDER | WS_CAPTION)
 #define W2V_SHIFT	14
 #define MAX_SAMPLES	370
 #ifdef GENERAL_FIXES

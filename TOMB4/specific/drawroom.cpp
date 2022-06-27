@@ -267,7 +267,7 @@ void ProcessRoomData(ROOM_INFO* r)
 			r->verts[nWaterVerts].y = (float)data_ptr[1];
 			r->verts[nWaterVerts].z = (float)data_ptr[2];
 			prelight[nWaterVerts] = data_ptr[5];
-			faces[i] = (short)(nWaterVerts | 0x8000);
+			faces[i] = short(nWaterVerts | 0x8000);
 			nWaterVerts++;
 		}
 
@@ -285,7 +285,7 @@ void ProcessRoomData(ROOM_INFO* r)
 			r->verts[nShoreVerts + nWaterVerts].y = (float)data_ptr[1];
 			r->verts[nShoreVerts + nWaterVerts].z = (float)data_ptr[2];
 			prelight[nShoreVerts + nWaterVerts] = data_ptr[5];
-			faces[i] = (short)(nShoreVerts + nWaterVerts);
+			faces[i] = short(nShoreVerts + nWaterVerts);
 			nShoreVerts++;
 		}
 
@@ -303,7 +303,7 @@ void ProcessRoomData(ROOM_INFO* r)
 			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].y = (float)data_ptr[1];
 			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].z = (float)data_ptr[2];
 			prelight[nRestOfVerts + nShoreVerts + nWaterVerts] = data_ptr[5];
-			faces[i] = (short)(nRestOfVerts + nShoreVerts + nWaterVerts);
+			faces[i] = short(nRestOfVerts + nShoreVerts + nWaterVerts);
 			nRestOfVerts++;
 		}
 
@@ -364,9 +364,9 @@ void ProcessRoomData(ROOM_INFO* r)
 		cG = ((prelight[i] & 0x3E0) >> 5) << 3;
 		cB = (prelight[i] & 0x1F) << 3;
 		r->prelight[i] = RGBA(cR, cG, cB, 0xFF);
-		cR = (ushort)((cR * water_color_R) >> 8);
-		cG = (ushort)((cR * water_color_G) >> 8);
-		cB = (ushort)((cR * water_color_B) >> 8);
+		cR = ushort((cR * water_color_R) >> 8);
+		cG = ushort((cG * water_color_G) >> 8);
+		cB = ushort((cB * water_color_B) >> 8);
 		r->prelightwater[i] = RGBA(cR, cG, cB, 0xFF);
 		vptr++;
 		data_ptr += 6;
@@ -412,21 +412,21 @@ void ProcessRoomData(ROOM_INFO* r)
 					continue;
 
 				pclight = &r->pclight[nLights];
-				pclight->r = light->r * 0.0039215689F;
-				pclight->g = light->g * 0.0039215689F;
-				pclight->b = light->b * 0.0039215689F;
+				pclight->r = light->r * (1.0F / 255.0F);
+				pclight->g = light->g * (1.0F / 255.0F);
+				pclight->b = light->b * (1.0F / 255.0F);
 				intensity = r->light[nLights].Intensity;
 
 				if (intensity < 0)
 					intensity = -intensity;
 
-				intensity *= 0.00012208521F;
+				intensity *= 1.0F / 8191.0F;
 				pclight->r *= intensity;
 				pclight->g *= intensity;
 				pclight->b *= intensity;
 
 				if (r->light[nLights].Type)
-					pclight->shadow = (long)(intensity * 255);
+					pclight->shadow = long(intensity * 255);
 
 				pclight->x = (float)light->x;
 				pclight->y = (float)light->y;
@@ -437,9 +437,9 @@ void ProcessRoomData(ROOM_INFO* r)
 				pclight->nx = -light->nx;
 				pclight->ny = -light->ny;
 				pclight->nz = -light->nz;
-				pclight->inx = (long)(light->nx * -16384.0F);
-				pclight->iny = (long)(light->ny * -16384.0F);
-				pclight->inz = (long)(light->nz * -16384.0F);
+				pclight->inx = long(light->nx * -16384.0F);
+				pclight->iny = long(light->ny * -16384.0F);
+				pclight->inz = long(light->nz * -16384.0F);
 				pclight->Inner = light->Inner;
 				pclight->Outer = light->Outer;
 				pclight->InnerAngle = 2 * acos(light->Inner);
@@ -524,6 +524,47 @@ void PrelightVertsNonMMX(long nVerts, D3DTLVERTEX* v, ROOM_INFO* r)
 		v->color = (v->color & 0xFF000000) | cR | cG | cB;
 		CalcColorSplit(v->color, &v->color);
 		v++;
+	}
+}
+
+void PrelightVertsMMX(long nVerts, D3DTLVERTEX* v, ROOM_INFO* r)
+{
+	long* prelight;
+	long p, c;
+
+	if (bWaterEffect && !(r->flags & ROOM_UNDERWATER))
+		prelight = r->prelightwater;
+	else
+		prelight = r->prelight;
+
+	for (int i = 0; i < r->nWaterVerts; i++)
+	{
+		p = r->prelight[i];
+		c = v->color;
+
+		__asm
+		{
+			movd mm0, p
+			movd mm1, c
+			paddusb mm1, mm0
+			mov edx, v
+			add edx, 0x10
+			movd [edx], mm1
+		}
+
+		v->specular &= 0xFF000000;
+		v++;
+	}
+
+	for (int i = r->nWaterVerts; i < r->nVerts; i++)
+	{
+		AddPrelitMMX(prelight[i], &v->color);
+		v++;
+	}
+
+	__asm
+	{
+		emms
 	}
 }
 
@@ -921,6 +962,101 @@ void DrawBuckets()
 	}
 }
 
+void CreateVertexNormals(ROOM_INFO* r)
+{
+	D3DVECTOR p1;
+	D3DVECTOR p2;
+	D3DVECTOR p3;
+	D3DVECTOR n1;
+	D3DVECTOR n2;
+	short* data;
+	short nQuads;
+	short nTris;
+
+	data = r->FaceData;
+	r->fnormals = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * (r->gt3cnt + r->gt4cnt));
+	nQuads = *data++;
+
+	for (int i = 0; i < nQuads; i++)
+	{
+		p1 = r->verts[data[0]];
+		p2 = r->verts[data[1]];
+		p3 = r->verts[data[2]];
+		CalcTriFaceNormal(&p1, &p2, &p3, &n1);
+
+		p1 = r->verts[data[0]];
+		p2 = r->verts[data[2]];
+		p3 = r->verts[data[3]];
+		CalcTriFaceNormal(&p1, &p2, &p3, &n2);
+
+		n1.x += n2.x;
+		n1.y += n2.y;
+		n1.z += n2.z;
+		D3DNormalise(&n1);
+		r->fnormals[i] = n1;
+		data += 5;
+	}
+
+	nTris = *data++;
+
+	for (int i = 0; i < nTris; i++)
+	{
+		p1 = r->verts[data[0]];
+		p2 = r->verts[data[1]];
+		p3 = r->verts[data[2]];
+		CalcTriFaceNormal(&p1, &p2, &p3, &n1);
+		D3DNormalise(&n1);
+		r->fnormals[nQuads + i] = n1;
+		data += 4;
+	}
+
+	r->vnormals = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * r->nVerts);
+
+	data = r->FaceData;
+	nQuads = *data++;
+
+	data += nQuads * 5;
+	nTris = *data;
+
+	for (int i = 0; i < r->nVerts; i++)
+	{
+		n1.x = 0;
+		n1.y = 0;
+		n1.z = 0;
+
+		data = r->FaceData + 1;
+
+		for (int j = 0; j < nQuads; j++)
+		{
+			if (data[0] == i || data[1] == i || data[2] == i || data[3] == i)
+			{
+				n1.x += r->fnormals[j].x;
+				n1.y += r->fnormals[j].y;
+				n1.z += r->fnormals[j].z;
+			}
+
+			data += 5;
+		}
+
+		data++;
+
+		for (int j = 0; j < nTris; j++)
+		{
+			if (data[0] == i || data[1] == i || data[2] == i)
+			{
+				n1.x += r->fnormals[nQuads + j].x;
+				n1.y += r->fnormals[nQuads + j].y;
+				n1.z += r->fnormals[nQuads + j].z;
+			}
+
+			data += 4;
+		}
+
+		D3DNormalise(&n1);
+		r->vnormals[i] = n1;
+	}
+}
+
 void inject_drawroom(bool replace)
 {
 	INJECT(0x00471E00, ProjectVerts, replace);
@@ -928,6 +1064,7 @@ void inject_drawroom(bool replace)
 	INJECT(0x00472190, ProjectShoreVerts, replace);
 	INJECT(0x00471420, ProcessRoomData, replace);
 	INJECT(0x004724C0, PrelightVertsNonMMX, replace);
+	INJECT(0x00472400, PrelightVertsMMX, replace);
 	INJECT(0x00472650, InsertRoom, replace);
 	INJECT(0x00472EE0, CalcTriFaceNormal, replace);
 	INJECT(0x00471040, ProcessMeshData, replace);
@@ -935,4 +1072,5 @@ void inject_drawroom(bool replace)
 	INJECT(0x004729E0, DrawBucket, replace);
 	INJECT(0x004728D0, FindBucket, replace);
 	INJECT(0x00472C10, DrawBuckets, replace);
+	INJECT(0x00472F50, CreateVertexNormals, replace);
 }

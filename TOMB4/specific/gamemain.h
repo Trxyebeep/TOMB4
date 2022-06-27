@@ -5,7 +5,8 @@ void inject_gamemain(bool replace);
 
 void GameClose();
 unsigned int __stdcall GameMain(void* ptr);
-
-#define S_LoadGame	( (void(__cdecl*)(long)) 0x00477600 )
-#define S_SaveGame	( (void(__cdecl*)(long)) 0x00477430 )
-#define GameInitialise	( (bool(__cdecl*)()) 0x00476FA0 )
+ushort GetRandom(WATERTAB* wt, long lp);
+void init_water_table();
+bool GameInitialise();
+long S_SaveGame(long slot_num);
+long S_LoadGame(long slot_num);

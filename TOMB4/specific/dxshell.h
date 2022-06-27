@@ -31,6 +31,6 @@ long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, lon
 long DXChangeVideoMode();
 long DXToggleFullScreen();
 HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC lpHWDesc, LPD3DDEVICEDESC lpHELDesc, LPVOID lpContext);
+const char* DXGetErrorString(HRESULT hr);
 
-#define DXGetErrorString	( (const char*(__cdecl*)(HRESULT)) 0x00490FF0 )
 #define DXInitKeyboard	( (void(__cdecl*)(HWND, HINSTANCE)) 0x00494270 )

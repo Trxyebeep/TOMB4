@@ -1112,13 +1112,13 @@ x for functions decompiled but not injected, for one reason or another.
 0x004592E0		RopeNodeCollision
 0x004593B0		RopeControl
 0x00459410	+	DrawRopeList
-0x00459450		Normalise
+0x00459450	+	Normalise
 0x00459510		ModelRigid
 0x00459640		ModelRigidRope
 0x00459740		SetPendulumPoint
 0x004597D0		SetPendulumVelocity
 0x00459890		CalculateRope
-0x00459F90		ProjectRopePoints
+0x00459F90	+	ProjectRopePoints
 
 
 		game/sas.cpp
@@ -1289,7 +1289,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/text.cpp
 
-0x00463650		InitFont
+0x00463650	+	InitFont
 0x00463930		UpdatePulseColour
 0x004639E0		GetStringLength
 0x00463B50		PrintString
@@ -1489,7 +1489,7 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/clipping.cpp
 
 0x0046E4D0	+	ZClipper
-0x0046E8D0		XYUVGClipper
+0x0046E8D0	+	XYUVGClipper
 0x0046FDE0	+	visible_zclip
 
 
@@ -1524,7 +1524,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00471E00	+	ProjectVerts
 0x00471F40	+	ProjectWaterVerts
 0x00472190	+	ProjectShoreVerts
-0x00472400		PrelightVertsMMX
+0x00472400	+	PrelightVertsMMX
 0x004724C0	+	PrelightVertsNonMMX
 0x00472650	+	InsertRoom
 0x004728B0	+	InitBuckets
@@ -1532,12 +1532,12 @@ x for functions decompiled but not injected, for one reason or another.
 0x004729E0	+	DrawBucket
 0x00472C10	+	DrawBuckets
 0x00472EE0	+	CalcTriFaceNormal
-0x00472F50		CreateVertexNormals
+0x00472F50	+	CreateVertexNormals
 
 
 		specific/dxshell.cpp
 
-0x00490FF0		DXGetErrorString
+0x00490FF0	+	DXGetErrorString
 0x00491C30	+	DXAttempt
 0x00491C60	+	DXGetInfo
 0x00491CC0	+	DXEnumDirectSound
@@ -1605,7 +1605,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00473F20	+	LoadTextures
 0x004749C0	+	LoadRooms
 0x00474E10	+	LoadObjects
-0x004752A0		AdjustUV
+0x004752A0	+	AdjustUV
 0x00475730	+	LoadSprites
 0x00475970	+	LoadCameras
 0x00475A30	+	LoadSoundEffects
@@ -1656,18 +1656,18 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/gamemain.cpp
 
 0x00476EC0	+	GameMain
-0x00476FA0		GameInitialise
+0x00476FA0	+	GameInitialise
 0x004770C0	+	GameClose
-0x00477180		init_water_table
-0x004773F0		GetRandom
-0x00477430		S_SaveGame
-0x00477600		S_LoadGame
+0x00477180	+	init_water_table
+0x004773F0	+	GetRandom
+0x00477430	+	S_SaveGame
+0x00477600	+	S_LoadGame
 
 
 		specific/input.cpp
 
 0x004776C0	+	Key
-0x004777E0		ReadJoystick
+0x004777E0	+	ReadJoystick
 0x004778B0	+	S_UpdateInput
 
 
@@ -1719,9 +1719,9 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/output.cpp
 
 0x0047D5B0	+	S_InitialisePolyList
-0x0047D6B0		StashSkinVertices
-0x0047D760		SkinVerticesToScratch
-0x0047D810		CalcVertsColorSplitMMX
+0x0047D6B0	+	StashSkinVertices
+0x0047D760	+	SkinVerticesToScratch
+0x0047D810	+	CalcVertsColorSplitMMX
 0x0047D900	+	PrelightVerts
 0x0047DA60	+	phd_PutPolygons
 0x0047E8B0	+	phd_PutPolygonsPickup
@@ -1769,8 +1769,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00483C80	+	AddTriClippedSorted
 0x004842A0	+	AddQuadClippedSorted
 0x00484850	+	AddLineClippedSorted
-0x00484920		CalcColorSplitMMX
-0x004849A0		AddPrelitMMX
+0x00484920	+	CalcColorSplitMMX
+0x004849A0	+	AddPrelitMMX
 0x00484A20	+	CalcColorSplit
 
 
@@ -1795,28 +1795,28 @@ x for functions decompiled but not injected, for one reason or another.
 0x004857E0	+	setXY3
 0x00485950	+	setXYZ4
 0x00485D90	+	setXYZ3
-0x004860D0		DrawBubbles
-0x00486430		S_DrawSplashes
-0x00486DD0		S_DrawFireSparks
-0x00487260		S_DrawSmokeSparks
+0x004860D0	+	DrawBubbles
+0x00486430	+	S_DrawSplashes
+0x00486DD0	+	S_DrawFireSparks
+0x00487260	+	S_DrawSmokeSparks
 0x004876C0	+	S_PrintShadow
 0x00487B60	+	InitTarget_2
 0x00487C30	+	InitBinoculars
 0x00487D00	+	DrawBinoculars
 0x00488140	+	S_DrawDrawSparks
-0x00488690		ClipLine
+0x00488690	+	ClipLine
 0x00488950	+	DrawFlatSky
 0x00489360	+	ClipCheckPoint
 0x00489480	+	OutputSky
-0x00489540		DrawRope
+0x00489540	+	DrawRope
 0x00489950	+	DrawLaserSightSprite
 0x00489B90	+	DrawDebris
-0x0048A0C0		DrawBlood
+0x0048A0C0	+	DrawBlood
 0x0048A430	+	DrawDrips
-0x0048A840		DoUwEffect
+0x0048A840	+	DoUwEffect
 0x0048AD60	+	DrawWraithTrail
 0x0048B130	+	ShowTitle
-0x0048B480		DrawTrainFloorStrip
+0x0048B480	+	DrawTrainFloorStrip
 0x0048B990	+	DrawTrainStrips
 0x0048BAB0	+	DrawSprite
 0x0048BC30	+	SetUpLensFlare
@@ -1825,11 +1825,11 @@ x for functions decompiled but not injected, for one reason or another.
 0x0048C400	+	DrawPsxTile
 0x0048C5F0	+	DrawFlash
 0x0048C6C0	+	DrawBikeSpeedo
-0x0048CAA0		DrawShockwaves
+0x0048CAA0	+	DrawShockwaves
 0x0048D160	+	S_DrawDarts
 0x0048D3D0	+	Draw2DSprite
 0x0048D580	+	DrawJeepSpeedo
-0x0048D9B0		DrawLightning
+0x0048D9B0	+	DrawLightning
 
 
 		specific/texture.cpp

@@ -20,7 +20,6 @@ void do_boot_screen(long language);
 void S_AnimateTextures(long n);
 long S_DumpScreen();
 void S_OutputPolyList();
-
-#define CalcVertsColorSplitMMX ( (void(__cdecl*)(long, D3DTLVERTEX*)) 0x0047D810 )
-#define StashSkinVertices	( (void(__cdecl*)(long)) 0x0047D6B0 )
-#define SkinVerticesToScratch	( (void(__cdecl*)(long)) 0x0047D760 )
+void CalcVertsColorSplitMMX(long nVerts, D3DTLVERTEX* v);
+void StashSkinVertices(long node);
+void SkinVerticesToScratch(long node);

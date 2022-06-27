@@ -1248,6 +1248,138 @@ void S_GetUVRotateTextures()
 	}
 }
 
+void AdjustUV(long num)
+{
+	TEXTURESTRUCT* tex;
+	float u, v;
+	ushort type;
+
+	Log(2, "AdjustUV");
+
+	for (int i = 0; i < num; i++)
+	{
+		tex = &textinfo[i];
+		Textures[tex->tpage].tpage++;
+		tex->tpage++;
+		u = 1.0F / float(Textures[tex->tpage].width << 1);
+		v = 1.0F / float(Textures[tex->tpage].height << 1);
+		type = tex->flag & 7;
+
+		if (tex->flag & 0x8000)
+		{
+			switch (type)
+			{
+			case 0:
+				tex->u1 += u;
+				tex->v1 += v;
+				tex->u2 -= u;
+				tex->v2 += v;
+				tex->u3 += u;
+				tex->v3 -= v;
+				break;
+
+			case 1:
+				tex->u1 -= u;
+				tex->v1 += v;
+				tex->u2 -= u;
+				tex->v2 -= v;
+				tex->u3 += u;
+				tex->v3 += v;
+				break;
+
+			case 2:
+				tex->u1 -= u;
+				tex->v1 -= v;
+				tex->u2 += u;
+				tex->v2 -= v;
+				tex->u3 -= u;
+				tex->v3 += v;
+				break;
+
+			case 3:
+				tex->u1 += u;
+				tex->v1 -= v;
+				tex->u2 += u;
+				tex->v2 += v;
+				tex->u3 -= u;
+				tex->v3 -= v;
+				break;
+
+			case 4:
+				tex->u1 -= u;
+				tex->v1 += v;
+				tex->u2 += u;
+				tex->v2 += v;
+				tex->u3 -= u;
+				tex->v3 -= v;
+				break;
+
+			case 5:
+				tex->u1 += u;
+				tex->v1 += v;
+				tex->u2 += u;
+				tex->v2 -= v;
+				tex->u3 -= u;
+				tex->v3 += v;
+				break;
+
+			case 6:
+				tex->u1 += u;
+				tex->v1 -= v;
+				tex->u2 -= u;
+				tex->v2 -= v;
+				tex->u3 += u;
+				tex->v3 += v;
+				break;
+
+			case 7:
+				tex->u1 -= u;
+				tex->v1 -= v;
+				tex->u2 -= u;
+				tex->v2 += v;
+				tex->u3 += u;
+				tex->v3 -= v;
+				break;
+
+			default:
+				Log(1, "TextureInfo Type %d Not Found", type);
+				break;
+			}
+		}
+		else
+		{
+			switch (type)
+			{
+			case 0:
+				tex->u1 += u;
+				tex->v1 += v;
+				tex->u2 -= u;
+				tex->v2 += v;
+				tex->u3 -= u;
+				tex->v3 -= v;
+				tex->u4 += u;
+				tex->v4 -= v;
+				break;
+
+			case 1:
+				tex->u1 -= u;
+				tex->v1 += v;
+				tex->u2 += u;
+				tex->v2 += v;
+				tex->u3 += u;
+				tex->v3 -= v;
+				tex->u4 -= u;
+				tex->v4 -= v;
+				break;
+
+			default:
+				Log(1, "TextureInfo Type %d Not Found", type);
+				break;
+			}
+		}
+	}
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, replace);
@@ -1273,4 +1405,5 @@ void inject_file(bool replace)
 	INJECT(0x004761F0, LoadAIInfo, replace);
 	INJECT(0x00476260, LoadSamples, replace);
 	INJECT(0x00476410, S_GetUVRotateTextures, replace);
+	INJECT(0x004752A0, AdjustUV, replace);
 }

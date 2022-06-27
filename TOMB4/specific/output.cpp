@@ -22,6 +22,9 @@
 #include "winmain.h"
 #include "../game/tomb4fx.h"
 
+D3DTLVERTEX SkinVerts[40][12];
+short SkinClip[40][12];
+
 void phd_PutPolygons(short* objptr, long clip)	//whore
 {
 	MESH_DATA* mesh;
@@ -1294,6 +1297,104 @@ void S_OutputPolyList()
 	MungeFPCW(&FPCW);
 }
 
+void CalcVertsColorSplitMMX(long nVerts, D3DTLVERTEX* v)
+{
+	D3DTLVERTEX* waterVtx;
+	short r, g, b;
+
+	if (bWaterEffect && !(room[current_item->room_number].flags & ROOM_UNDERWATER))
+	{
+		waterVtx = v;
+
+		for (int i = 0; i < nVerts; i++, waterVtx++)
+		{
+			r = short(water_color_R * CLRR(waterVtx->color) >> 8);
+			g = short(water_color_G * CLRG(waterVtx->color) >> 8);
+			b = short(water_color_B * CLRB(waterVtx->color) >> 8);
+			waterVtx->color &= 0xFF000000;
+			waterVtx->color |= RGBONLY(r, g, b);
+		}
+	}
+
+	if (App.mmx)
+	{
+		for (int i = 0; i < nVerts; i++, v++)
+			CalcColorSplitMMX(v->color, &v->color);
+
+		__asm
+		{
+			emms
+		}
+	}
+	else
+	{
+		for (int i = 0; i < nVerts; i++, v++)
+			CalcColorSplit(v->color, &v->color);
+	}
+}
+
+void StashSkinVertices(long node)
+{
+	D3DTLVERTEX* v;
+	D3DTLVERTEX* d;
+	short* cf;
+	char* vns;
+
+	vns = (char*)&SkinVertNums[node];
+	cf = (short*)&SkinClip[node];
+	d = (D3DTLVERTEX*)&SkinVerts[node];
+	DestVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
+
+	while (1)
+	{
+		if (*vns < 0)
+			return;	//they forgot to unlock DestVB
+
+		d->sx = v[*vns].sx;
+		d->sy = v[*vns].sy;
+		d->sz = v[*vns].sz;
+		d->rhw = v[*vns].rhw;
+		d->color = v[*vns].color;
+		d->specular = v[*vns].specular;
+		d->tu = v[*vns].tu;
+		d->tv = v[*vns].tv;
+		*cf++ = clipflags[*vns];
+		d++;
+		vns++;
+	}
+}
+
+void SkinVerticesToScratch(long node)
+{
+	D3DTLVERTEX* v;
+	D3DTLVERTEX* d;
+	short* cf;
+	char* vns;
+
+	vns = (char*)&ScratchVertNums[node];
+	cf = (short*)&SkinClip[node];
+	d = (D3DTLVERTEX*)&SkinVerts[node];
+	DestVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
+
+	while (1)
+	{
+		if (*vns < 0)
+			return;	//they forgot to unlock DestVB again
+
+		v[*vns].sx = d->sx;
+		v[*vns].sy = d->sy;
+		v[*vns].sz = d->sz;
+		v[*vns].rhw = d->rhw;
+		v[*vns].color = d->color;
+		v[*vns].specular = d->specular;
+		v[*vns].tu = d->tu;
+		v[*vns].tv = d->tv;
+		clipflags[*vns] = *cf++;
+		d++;
+		vns++;
+	}
+}
+
 void inject_output(bool replace)
 {
 	INJECT(0x0047DA60, phd_PutPolygons, replace);
@@ -1313,4 +1414,7 @@ void inject_output(bool replace)
 	INJECT(0x00480070, S_AnimateTextures, replace);
 	INJECT(0x0047FCA0, S_DumpScreen, replace);
 	INJECT(0x0047FA10, S_OutputPolyList, replace);
+	INJECT(0x0047D810, CalcVertsColorSplitMMX, replace);
+	INJECT(0x0047D6B0, StashSkinVertices, replace);
+	INJECT(0x0047D760, SkinVerticesToScratch, replace);
 }

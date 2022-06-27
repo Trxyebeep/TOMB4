@@ -16,6 +16,8 @@
 
 #define CIRCUMFERENCE_POINTS 32 // Number of points in the circumference
 #endif
+#include "../game/rope.h"
+#include "../game/tomb4fx.h"
 
 #define LINE_POINTS	4	//number of points in each grid line
 #define POINT_HEIGHT_CORRECTION	196	//if the difference between the floor below Lara and the floor height below the point is greater than this value, point height is corrected to lara's floor level.
@@ -86,6 +88,97 @@ uchar TargetGraphColTab[48] =
 	255, 255, 0,
 	255, 255, 0,
 	255, 255, 0
+};
+
+uchar SplashLinks[347]
+{
+	16, 18, 0, 2,
+	18, 20, 2, 4,
+	20, 22, 4, 6,
+	22, 24, 6, 8,
+	24, 26, 8, 10,
+	26, 28, 10, 12,
+	28, 30, 12, 14,
+	30, 16, 14, 0,
+	84, 111, 109, 98,
+	32, 82, 97, 105,
+	100, 101, 114, 32,
+	73, 86, 32, 45,
+	32, 84, 104, 101,
+	32, 76, 97, 115,
+	116, 32, 82, 101,
+	118, 101, 108, 97,
+	116, 105, 111, 110,
+	32, 32, 45, 45,
+	32, 68, 101, 100,
+	105, 99, 97, 116,
+	101, 100, 32, 116,
+	111, 32, 109, 121,
+	32, 102, 105, 97,
+	110, 99, 101, 32,
+	74, 97, 121, 32,
+	102, 111, 114, 32,
+	112, 117, 116, 116,
+	105, 110, 103, 32,
+	117, 112, 32, 119,
+	105, 116, 104, 32,
+	116, 104, 105, 115,
+	32, 103, 97, 109,
+	101, 32, 116, 97,
+	107, 105, 110, 103,
+	32, 111, 118, 101,
+	114, 32, 111, 117,
+	114, 32, 108, 105,
+	102, 101, 115, 44,
+	109, 121, 32, 115,
+	116, 101, 112, 32,
+	115, 111, 110, 115,
+	32, 67, 114, 97,
+	105, 103, 44, 74,
+	97, 109, 105, 101,
+	32, 38, 32, 65,
+	105, 100, 101, 110,
+	32, 40, 83, 104,
+	111, 119, 32, 116,
+	104, 105, 115, 32,
+	116, 111, 32, 121,
+	111, 117, 114, 32,
+	109, 97, 116, 101,
+	115, 32, 97, 116,
+	32, 115, 99, 104,
+	111, 111, 108, 44,
+	32, 116, 104, 101,
+	121, 39, 108, 108,
+	32, 98, 101, 108,
+	105, 101, 118, 101,
+	32, 121, 111, 117,
+	32, 110, 111, 119,
+	33, 33, 41, 44,
+	97, 108, 115, 111,
+	32, 102, 111, 114,
+	32, 109, 121, 32,
+	100, 97, 117, 103,
+	104, 116, 101, 114,
+	115, 32, 83, 111,
+	112, 104, 105, 101,
+	32, 97, 110, 100,
+	32, 74, 111, 100, 121, 32,
+	45, 32, 83, 101,
+	101, 32, 121, 111,
+	117, 32, 105, 110,
+	32, 97, 110, 111,
+	116, 104, 101,
+	114, 32, 104, 101,
+	120, 32, 100, 117,
+	109, 112, 32, 45,
+	32, 82, 105, 99,
+	104, 97, 114, 100,
+	32, 70, 108, 111,
+	119, 101, 114,
+	32, 49, 49,
+	47, 49, 49, 47,
+	49, 57, 57, 57,
+	0, 0, 0, 0
 };
 
 #ifdef SMOOTH_SHADOWS
@@ -538,14 +631,14 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr
 			{
 				sin = rcossin_tbl[sptr->RotAng << 1];
 				cos = rcossin_tbl[(sptr->RotAng << 1) + 1];
-				sx1 = (-s1h * sin) >> 12;
-				sx2 = (s1h * sin) >> 12;
-				sy1 = (-s2h * sin) >> 12;
-				sy2 = (s2h * sin) >> 12;
-				cx1 = (-s1h * cos) >> 12;
-				cx2 = (s1h * cos) >> 12;
-				cy1 = (-s2h * cos) >> 12;
-				cy2 = (s2h * cos) >> 12;
+				sx1 = (-s1h * sin) >> (W2V_SHIFT - 2);
+				sx2 = (s1h * sin) >> (W2V_SHIFT - 2);
+				sy1 = (-s2h * sin) >> (W2V_SHIFT - 2);
+				sy2 = (s2h * sin) >> (W2V_SHIFT - 2);
+				cx1 = (-s1h * cos) >> (W2V_SHIFT - 2);
+				cx2 = (s1h * cos) >> (W2V_SHIFT - 2);
+				cy1 = (-s2h * cos) >> (W2V_SHIFT - 2);
+				cy2 = (s2h * cos) >> (W2V_SHIFT - 2);
 				x1 = sx1 - cy1 + xyptr[0];
 				x2 = sx2 - cy1 + xyptr[0];
 				x3 = sx2 - cy2 + xyptr[0];
@@ -2537,6 +2630,1645 @@ void DrawDrips()
 	phd_PopMatrix();
 }
 
+void DrawBubbles()
+{
+	BUBBLE_STRUCT* bubble;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR pos;
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	long dx, dy, dz, size, x1, y1, x2, y2;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	bubble = Bubbles;
+
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+
+	for (int i = 0; i < 40; i++)
+	{
+		if (!bubble->size)
+		{
+			bubble++;
+			continue;
+		}
+
+		dx = bubble->pos.x - lara_item->pos.x_pos;
+		dy = bubble->pos.y - lara_item->pos.y_pos;
+		dz = bubble->pos.z - lara_item->pos.z_pos;
+
+		if (dx < -0x5000 || dx > 0x5000 || dy < -0x5000 || dy > 0x5000 || dz < -0x5000 || dz > 0x5000)
+		{
+			bubble->size = 0;
+			bubble++;
+			continue;
+		}
+
+		offsets[0] = (short)dx;
+		offsets[1] = (short)dy;
+		offsets[2] = (short)dz;
+		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
+		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
+		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
+		perspz = f_persp / (float)pos.z;
+		XY[0] = short(float(pos.x * perspz + f_centerx));
+		XY[1] = short(float(pos.y * perspz + f_centery));
+		Z[0] = pos.z >> W2V_SHIFT;
+
+		if (Z[0] < 32)
+		{
+			bubble++;
+			continue;
+		}
+
+		if (Z[0] > 0x5000)
+		{
+			bubble->size = 0;
+			bubble++;
+			continue;
+		}
+
+		size = phd_persp * (bubble->size >> 1) / Z[0];
+
+		if (size > 128)
+		{
+			bubble->size = 0;
+			continue;
+		}
+
+		if (size < 4)
+			size = 4;
+
+		size >>= 1;
+
+		x1 = XY[0] - size;
+		y1 = XY[1] - size;
+		x2 = XY[0] + size;
+		y2 = XY[1] + size;
+
+		if (x2 < phd_winxmin || x1 >= phd_winxmax || y2 < phd_winymin || y1 >= phd_winymax)
+		{
+			bubble++;
+			continue;
+		}
+
+		sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 13];
+		setXY4(v, x1, y1, x2, y1, x2, y2, x1, y2, Z[0], clipflags);
+		v[0].color = RGBA(bubble->shade, bubble->shade, bubble->shade, 0xFF);
+		v[1].color = RGBA(bubble->shade, bubble->shade, bubble->shade, 0xFF);
+		v[2].color = RGBA(bubble->shade, bubble->shade, bubble->shade, 0xFF);
+		v[3].color = RGBA(bubble->shade, bubble->shade, bubble->shade, 0xFF);
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		v[3].specular = 0xFF000000;
+		tex.drawtype = 2;
+		tex.flag = 0;
+		tex.tpage = sprite->tpage;
+		tex.u1 = sprite->x1;
+		tex.v1 = sprite->y1;
+		tex.u2 = sprite->x2;
+		tex.v3 = sprite->y2;
+		tex.v2 = sprite->y1;
+		tex.u3 = sprite->x2;
+		tex.u4 = sprite->x1;
+		tex.v4 = sprite->y2;
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+		bubble++;
+	}
+
+	phd_PopMatrix();
+}
+
+void DrawShockwaves()
+{
+	SHOCKWAVE_STRUCT* wave;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX vtx[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR p1, p2, p3;
+	long* Z;
+	short* XY;
+	short* offsets;
+	long v, x1, y1, x2, y2, x3, y3, x4, y4, r, g, b, c;
+	short rad;
+
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 8];
+	offsets = (short*)&scratchpad[768];
+
+	for (int i = 0; i < 16; i++)
+	{
+		wave = &ShockWaves[i];
+
+		if (!wave->life)
+			continue;
+
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[256];
+		phd_PushMatrix();
+		phd_TranslateAbs(wave->x, wave->y, wave->z);
+		phd_RotX(wave->XRot);
+		offsets[1] = 0;
+		offsets[5] = 0;
+		offsets[9] = 0;
+		rad = wave->OuterRad;
+
+		for (int j = 0; j < 2; j++)
+		{
+			offsets[0] = (rad * phd_sin(0)) >> W2V_SHIFT;
+			offsets[2] = (rad * phd_cos(0)) >> W2V_SHIFT;
+			offsets[4] = (rad * phd_sin(0x1000)) >> W2V_SHIFT;
+			offsets[6] = (rad * phd_cos(0x1000)) >> W2V_SHIFT;
+			offsets[8] = (rad * phd_sin(0x2000)) >> W2V_SHIFT;
+			offsets[10] = (rad * phd_cos(0x2000)) >> W2V_SHIFT;
+
+			for (int k = 1; k < 7; k++)
+			{
+				v = k * 0x3000;
+
+				p1.x = (offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+				p1.y = (offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+				p1.z = (offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+				p2.x = (offsets[4] * phd_mxptr[M00] + offsets[5] * phd_mxptr[M01] + offsets[6] * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+				p2.y = (offsets[4] * phd_mxptr[M10] + offsets[5] * phd_mxptr[M11] + offsets[6] * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+				p2.z = (offsets[4] * phd_mxptr[M20] + offsets[5] * phd_mxptr[M21] + offsets[6] * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+				p3.x = (offsets[8] * phd_mxptr[M00] + offsets[9] * phd_mxptr[M01] + offsets[10] * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+				p3.y = (offsets[8] * phd_mxptr[M10] + offsets[9] * phd_mxptr[M11] + offsets[10] * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+				p3.z = (offsets[8] * phd_mxptr[M20] + offsets[9] * phd_mxptr[M21] + offsets[10] * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+				offsets[0] = (rad * phd_sin(v)) >> W2V_SHIFT;
+				offsets[2] = (rad * phd_cos(v)) >> W2V_SHIFT;
+				offsets[4] = (rad * phd_sin(v + 0x1000)) >> W2V_SHIFT;
+				offsets[6] = (rad * phd_cos(v + 0x1000)) >> W2V_SHIFT;
+				offsets[8] = (rad * phd_sin(v + 0x2000)) >> W2V_SHIFT;
+				offsets[10] = (rad * phd_cos(v + 0x2000)) >> W2V_SHIFT;
+
+				XY[0] = (short)p1.x;
+				XY[1] = (short)p1.y;
+				Z[0] = p1.z;
+
+				XY[2] = (short)p2.x;
+				XY[3] = (short)p2.y;
+				Z[1] = p2.z;
+
+				XY[4] = (short)p3.x;
+				XY[5] = (short)p3.y;
+				Z[2] = p3.z;
+
+				XY += 6;
+				Z += 3;
+			}
+
+			rad = wave->InnerRad;
+		}
+
+		phd_PopMatrix();
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[256];
+
+		for (int j = 0; j < 16; j++)
+		{
+			x1 = XY[0];
+			y1 = XY[1];
+			x2 = XY[2];
+			y2 = XY[3];
+			x3 = XY[36];
+			y3 = XY[37];
+			x4 = XY[38];
+			y4 = XY[39];
+			setXYZ4(vtx, x1, y1, Z[0], x2, y2, Z[1], x4, y4, Z[19], x3, y3, Z[18], clipflags);
+
+			r = wave->r;
+			g = wave->g;
+			b = wave->b;
+
+			if (wave->life < 8)
+			{
+				r = (r * wave->life) >> 3;
+				g = (g * wave->life) >> 3;
+				b = (b * wave->life) >> 3;
+			}
+
+			c = RGBA(b, g, r, 0xFF);
+			vtx[0].color = c;
+			vtx[1].color = c;
+			vtx[2].color = c;
+			vtx[3].color = c;
+			vtx[0].specular = 0xFF000000;
+			vtx[1].specular = 0xFF000000;
+			vtx[2].specular = 0xFF000000;
+			vtx[3].specular = 0xFF000000;
+
+			tex.drawtype = 2;
+			tex.flag = 0;
+			tex.tpage = sprite->tpage;
+			tex.u1 = sprite->x1;
+			tex.v1 = sprite->y2;
+			tex.u2 = sprite->x2;
+			tex.v2 = sprite->y2;
+			tex.u3 = sprite->x2;
+			tex.v3 = sprite->y1;
+			tex.u4 = sprite->x1;
+			tex.v4 = sprite->y1;
+			AddQuadSorted(vtx, 0, 1, 2, 3, &tex, 1);
+
+			XY += 2;
+			Z++;
+		}
+	}
+}
+
+void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags)
+{
+	SVECTOR* offsets;
+	D3DTLVERTEX v[4];
+	PHD_VECTOR p1, p2, p3;
+	long* Z;
+	short* XY;
+	long num, z1, z2, z3, z4, spec;
+	short x1, y1, x2, y2, x3, y3, x4, y4;
+
+	num = 0;
+	offsets = (SVECTOR*)&scratchpad[984];
+	offsets[0].z = (short)z;
+	offsets[1].z = short(z + 512);
+	offsets[2].z = short(z + 1024);
+
+	if (y_and_flags & 0x1000000)
+	{
+		offsets[1].z += 1024;
+		offsets[2].z += 2048;
+	}
+
+	offsets[0].y = ((y_and_flags >> 16) & 0xFF) << 4;
+	offsets[1].y = ((y_and_flags >> 8) & 0xFF) << 4;
+	offsets[2].y = (y_and_flags & 0xFF) << 4;
+	
+	offsets[0].x = (short)x;
+	offsets[1].x = (short)x;
+	offsets[2].x = (short)x;
+
+	for (int i = 0; i < 2; i++)
+	{
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[492];
+		XY -= 6;
+		Z -= 3;
+
+		for (int j = 0; j < 41; j++)
+		{
+			p1.x = (offsets[0].x * phd_mxptr[M00] + offsets[0].y * phd_mxptr[M01] + offsets[0].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+			p1.y = (offsets[0].x * phd_mxptr[M10] + offsets[0].y * phd_mxptr[M11] + offsets[0].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+			p1.z = (offsets[0].x * phd_mxptr[M20] + offsets[0].y * phd_mxptr[M21] + offsets[0].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+			p2.x = (offsets[1].x * phd_mxptr[M00] + offsets[1].y * phd_mxptr[M01] + offsets[1].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+			p2.y = (offsets[1].x * phd_mxptr[M10] + offsets[1].y * phd_mxptr[M11] + offsets[1].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+			p2.z = (offsets[1].x * phd_mxptr[M20] + offsets[1].y * phd_mxptr[M21] + offsets[1].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+			p3.x = (offsets[2].x * phd_mxptr[M00] + offsets[2].y * phd_mxptr[M01] + offsets[2].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+			p3.y = (offsets[2].x * phd_mxptr[M10] + offsets[2].y * phd_mxptr[M11] + offsets[2].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+			p3.z = (offsets[2].x * phd_mxptr[M20] + offsets[2].y * phd_mxptr[M21] + offsets[2].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+			offsets[0].x += 512;
+			offsets[1].x += 512;
+			offsets[2].x += 512;
+			XY += 6;
+			Z += 3;
+
+			XY[0] = (short)p1.x;
+			XY[1] = (short)p1.y;
+			Z[0] = p1.z;
+
+			XY[2] = (short)p2.x;
+			XY[3] = (short)p2.y;
+			Z[1] = p2.z;
+
+			XY[4] = (short)p3.x;
+			XY[5] = (short)p3.y;
+			Z[2] = p3.z;
+		}
+
+		offsets[0].x -= 512;
+		offsets[1].x -= 512;
+		offsets[2].x -= 512;
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[492];
+
+		for (int j = num; j < num + 20; j++, XY += 12, Z += 6)
+		{
+			z1 = Z[0];
+			z2 = Z[2];
+			z3 = Z[6];
+			z4 = Z[8];
+
+			if (!(z1 | z2 | z3 | z4))
+				continue;
+
+			x1 = XY[0];
+			y1 = XY[1];
+			x2 = XY[4];
+			y2 = XY[5];
+			x3 = XY[12];
+			y3 = XY[13];
+			x4 = XY[16];
+			y4 = XY[17];
+
+			if (j < 7)
+				spec = (j + 1) * 0x101010;
+			else if (j >= 33)
+				spec = (40 - j) * 0x101010;
+			else
+				spec = 0x808080;
+
+			setXYZ4(v, x1, y1, z1, x2, y2, z2, x4, y4, z4, x3, y3, z3, clipflags);
+			spec = ((spec & 0xFF) - 1) << 25;
+			v[0].color = 0xFFFFFFFF;
+			v[1].color = 0xFFFFFFFF;
+			v[2].color = 0xFFFFFFFF;
+			v[3].color = 0xFFFFFFFF;
+			v[0].specular = spec;
+			v[1].specular = spec;
+			v[2].specular = spec;
+			v[3].specular = spec;
+			AddQuadSorted(v, 0, 1, 2, 3, tex, 0);
+		}
+
+		num += 20;
+	}
+}
+
+void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ripple in disguise))
+{
+	SPLASH_STRUCT* splash;
+	RIPPLE_STRUCT* ripple;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	long* Z;
+	short* XY;
+	short* offsets;
+	uchar* links;
+	ulong c0, c1;
+	long x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, linkNum, r, g, b;
+	short rads[6];
+	short yVals[6];
+
+	offsets = (short*)&scratchpad[768];
+
+	for (int i = 0; i < 4; i++)
+	{
+		splash = &splashes[i];
+
+		if (!(splash->flags & 1))
+			continue;
+
+		phd_PushMatrix();
+		phd_TranslateAbs(splash->x, splash->y, splash->z);
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[256];
+
+		rads[0] = splash->InnerRad;
+		rads[1] = splash->InnerRad + splash->InnerSize;
+		rads[2] = splash->MiddleRad;
+		rads[3] = splash->MiddleRad + splash->MiddleSize;
+		rads[4] = splash->OuterRad;
+		rads[5] = splash->OuterRad + splash->OuterSize;
+
+		yVals[0] = 0;
+		yVals[1] = splash->InnerY;
+		yVals[2] = 0;
+		yVals[3] = splash->MiddleY;
+		yVals[4] = 0;
+		yVals[5] = 0;
+
+		for (int j = 0; j < 6; j++)
+		{
+			for (int k = 0; k < 0x10000; k += 0x2000)
+			{
+				offsets[0] = (rads[j] * phd_sin(k)) >> (W2V_SHIFT - 1);
+				offsets[1] = yVals[j] >> 3;
+				offsets[2] = (rads[j] * phd_cos(k)) >> (W2V_SHIFT - 1);
+				*XY++ = short((phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03]) >> W2V_SHIFT);
+				*XY++ = short((phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13]) >> W2V_SHIFT);
+				*Z++ = (phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23]) >> W2V_SHIFT;
+				Z++;	//?
+			}
+		}
+
+		phd_PopMatrix();
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[256];
+
+		for (int j = 0; j < 3; j++)
+		{
+			if (j == 2 || (!j && splash->flags & 4) || (j == 1 && splash->flags & 8))
+				sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 4 + ((wibble >> 4) & 3)];
+			else
+				sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 8];
+
+			links = SplashLinks;
+			linkNum = j << 5;
+
+			for (int k = 0; k < 8; k++)
+			{
+				x1 = XY[links[0] + linkNum];
+				y1 = XY[links[0] + linkNum + 1];
+				z1 = Z[links[0] + linkNum];
+				links++;
+
+				x2 = XY[links[0] + linkNum];
+				y2 = XY[links[0] + linkNum + 1];
+				z2 = Z[links[0] + linkNum];
+				links++;
+
+				x3 = XY[links[0] + linkNum];
+				y3 = XY[links[0] + linkNum + 1];
+				z3 = Z[links[0] + linkNum];
+				links++;
+
+				x4 = XY[links[0] + linkNum];
+				y4 = XY[links[0] + linkNum + 1];
+				z4 = Z[links[0] + linkNum];
+				links++;
+
+				setXYZ4(v, x1, y1, z1, x2, y2, z2, x4, y4, z4, x3, y3, z3, clipflags);
+
+				r = splash->life << 1;
+				g = splash->life << 1;
+				b = splash->life << 1;
+				
+				if (r > 255)
+					r = 255;
+
+				if (g > 255)
+					g = 255;
+
+				if (b > 255)
+					b = 255;
+
+				c0 = RGBA(r, g, b, 0xFF);
+
+				r = (splash->life - (splash->life >> 2)) << 1;
+				g = (splash->life - (splash->life >> 2)) << 1;
+				b = (splash->life - (splash->life >> 2)) << 1;
+
+				if (r > 255)
+					r = 255;
+
+				if (g > 255)
+					g = 255;
+
+				if (b > 255)
+					b = 255;
+
+				c1 = RGBA(r, g, b, 0xFF);
+
+				v[0].color = c0;
+				v[1].color = c0;
+				v[2].color = c1;
+				v[3].color = c1;
+				v[0].specular = 0xFF000000;
+				v[1].specular = 0xFF000000;
+				v[2].specular = 0xFF000000;
+				v[3].specular = 0xFF000000;
+				tex.drawtype = 2;
+				tex.flag = 0;
+				tex.tpage = sprite->tpage;
+				tex.u1 = sprite->x1;
+				tex.v1 = sprite->y1;
+				tex.u2 = sprite->x2;
+				tex.v2 = sprite->y1;
+				tex.v3 = sprite->y2;
+				tex.u3 = sprite->x2;
+				tex.u4 = sprite->x1;
+				tex.v4 = sprite->y2;
+				AddQuadSorted(v, 0, 1, 2, 3, &tex, 1);
+			}
+		}
+	}
+
+	for (int i = 0; i < 16; i++)
+	{
+		ripple = &ripples[i];
+
+		if (!(ripple->flags & 1))
+			continue;
+
+		phd_PushMatrix();
+		phd_TranslateAbs(ripple->x, ripple->y, ripple->z);
+
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[256];
+
+		offsets[0] = -ripple->size;
+		offsets[1] = 0;
+		offsets[2] = -ripple->size;
+		*XY++ = short((phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03]) >> W2V_SHIFT);
+		*XY++ = short((phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13]) >> W2V_SHIFT);
+		*Z++ = (phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23]) >> W2V_SHIFT;
+		Z++;
+
+		offsets[0] = -ripple->size;
+		offsets[1] = 0;
+		offsets[2] = ripple->size;
+		*XY++ = short((phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03]) >> W2V_SHIFT);
+		*XY++ = short((phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13]) >> W2V_SHIFT);
+		*Z++ = (phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23]) >> W2V_SHIFT;
+		Z++;
+
+		offsets[0] = ripple->size;
+		offsets[1] = 0;
+		offsets[2] = ripple->size;
+		*XY++ = short((phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03]) >> W2V_SHIFT);
+		*XY++ = short((phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13]) >> W2V_SHIFT);
+		*Z++ = (phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23]) >> W2V_SHIFT;
+		Z++;
+
+		offsets[0] = ripple->size;
+		offsets[1] = 0;
+		offsets[2] = -ripple->size;
+		*XY++ = short((phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03]) >> W2V_SHIFT);
+		*XY++ = short((phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13]) >> W2V_SHIFT);
+		*Z++ = (phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23]) >> W2V_SHIFT;
+		Z++;
+
+		phd_PopMatrix();
+
+		XY = (short*)&scratchpad[0];
+		Z = (long*)&scratchpad[256];
+
+		if (ripple->flags & 0x20)
+			sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index];
+		else
+			sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 9];
+
+		x1 = *XY++;
+		y1 = *XY++;
+		z1 = *Z++;
+		Z++;
+
+		x2 = *XY++;
+		y2 = *XY++;
+		z2 = *Z++;
+		Z++;
+
+		x3 = *XY++;
+		y3 = *XY++;
+		z3 = *Z++;
+		Z++;
+
+		x4 = *XY++;
+		y4 = *XY++;
+		z4 = *Z++;
+		Z++;
+
+		setXYZ4(v, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, clipflags);
+
+		if (ripple->flags & 0x10)
+		{
+			if (ripple->flags & 0x20)
+			{
+				if (ripple->init)
+				{
+					r = (ripple->init >> 1) << 1;
+					g = 0;
+					b = (ripple->init >> 4) << 1;
+				}
+				else
+				{
+					r = (ripple->life >> 1) << 1;
+					g = 0;
+					b = (ripple->life >> 4) << 1;
+				}
+			}
+			else
+			{
+				if (ripple->init)
+				{
+					r = ripple->init << 1;
+					g = ripple->init << 1;
+					b = ripple->init << 1;
+				}
+				else
+				{
+					r = ripple->life << 1;
+					g = ripple->life << 1;
+					b = ripple->life << 1;
+				}
+			}
+		}
+		else
+		{
+			if (ripple->init)
+			{
+				r = ripple->init << 2;
+				g = ripple->init << 2;
+				b = ripple->init << 2;
+			}
+			else
+			{
+				r = ripple->life << 2;
+				g = ripple->life << 2;
+				b = ripple->life << 2;
+			}
+		}
+
+		if (r > 255)
+			r = 255;
+
+		if (g > 255)
+			g = 255;
+
+		if (b > 255)
+			b = 255;
+
+		c0 = RGBA(r, g, b, 0xFF);
+
+		v[0].color = c0;
+		v[1].color = c0;
+		v[2].color = c0;
+		v[3].color = c0;
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		v[3].specular = 0xFF000000;
+		tex.drawtype = 2;
+		tex.flag = 0;
+		tex.tpage = sprite->tpage;
+		tex.u1 = sprite->x1;
+		tex.v1 = sprite->y1;
+		tex.u2 = sprite->x2;
+		tex.v2 = sprite->y1;
+		tex.v3 = sprite->y2;
+		tex.u3 = sprite->x2;
+		tex.u4 = sprite->x1;
+		tex.v4 = sprite->y2;
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 1);
+	}
+}
+
+bool ClipLine(long& x1, long& y1, long z1, long& x2, long& y2, long z2, long xMin, long yMin, long w, long h)
+{
+	float clip;
+
+	if (z1 < 20 || z2 < 20)
+		return 0;
+
+	if (x1 < xMin && x2 < xMin || y1 < yMin && y2 < yMin)
+		return 0;
+
+	if (x1 > w && x2 > w || y1 > h && y2 > h)
+		return 0;
+
+	if (x1 > w)
+	{
+		clip = ((float)w - x2) / float(x1 - x2);
+		x1 = w;
+		y1 = long((y1 - y2) * clip + y2);
+	}
+
+	if (x2 > w)
+	{
+		clip = ((float)w - x1) / float(x2 - x1);
+		x2 = w;
+		y2 = long((y2 - y1) * clip + y1);
+	}
+
+	if (x1 < xMin)
+	{
+		clip = ((float)xMin - x1) / float(x2 - x1);
+		x1 = xMin;
+		y1 = long((y2 - y1) * clip + y1);
+	}
+
+	if (x2 < xMin)
+	{
+		clip = ((float)xMin - x2) / float(x1 - x2);
+		x2 = xMin;
+		y2 = long((y1 - y2) * clip + y2);
+	}
+
+	if (y1 > h)
+	{
+		clip = ((float)h - y2) / float(y1 - y2);
+		y1 = h;
+		x1 = long((x1 - x2) * clip + x2);
+	}
+
+	if (y2 > h)
+	{
+		clip = ((float)h - y1) / float(y2 - y1);
+		y2 = h;
+		x2 = long((x2 - x1) * clip + x1);
+	}
+
+	if (y1 < yMin)
+	{
+		clip = ((float)yMin - y1) / float(y2 - y1);
+		y1 = yMin;
+		x1 = long((x2 - x1) * clip + x1);
+	}
+
+	if (y2 < yMin)
+	{
+		clip = ((float)yMin - y2) / float(y1 - y2);
+		y2 = yMin;
+		x2 = long((x1 - x2) * clip + x2);
+	}
+
+	return 1;
+}
+
+void S_DrawFireSparks(long size, long life)
+{
+	FIRE_SPARKS* sptr;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR pos;
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	ulong r, g, b, col;
+	long newSize, s, c, sx1, cx1, sx2, cx2;
+	long dx, dy, dz, x1, y1, x2, y2, x3, y3, x4, y4;
+	short ang;
+
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+
+	for (int i = 0; i < 20; i++)
+	{
+		sptr = &fire_spark[i];
+
+		if (!sptr->On)
+			continue;
+
+		dx = sptr->x >> (2 - size);
+		dy = sptr->y >> (2 - size);
+		dz = sptr->z >> (2 - size);
+
+		if (dx < -0x5000 || dx > 0x5000 || dy < -0x5000 || dy > 0x5000 || dz < -0x5000 || dz > 0x5000)
+			continue;
+
+		offsets[0] = (short)dx;
+		offsets[1] = (short)dy;
+		offsets[2] = (short)dz;
+		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
+		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
+		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
+		perspz = f_persp / (float)pos.z;
+		XY[0] = short(float(pos.x * perspz + f_centerx));
+		XY[1] = short(float(pos.y * perspz + f_centery));
+		Z[0] = pos.z >> W2V_SHIFT;
+
+
+		if (Z[0] <= 0 || Z[0] >= 0x5000)
+			continue;
+
+		newSize = (((phd_persp * sptr->Size) << 2) / Z[0]) >> (2 - size);
+
+		if (newSize > (sptr->Size << 2))
+			newSize = (sptr->Size << 2);
+		else if (newSize < 4)
+			newSize = 4;
+
+		newSize >>= 1;
+
+		if (XY[0] + newSize < phd_winxmin || XY[0] - newSize >= phd_winxmax || XY[1] + newSize < phd_winymin || XY[1] - newSize >= phd_winymax)
+			continue;
+
+		if (sptr->Flags & 0x10)
+		{
+			ang = sptr->RotAng << 1;
+			s = rcossin_tbl[ang];
+			c = rcossin_tbl[ang + 1];
+			sx1 = (-newSize * s) >> (W2V_SHIFT - 2);
+			cx1 = (-newSize * c) >> (W2V_SHIFT - 2);
+			sx2 = (newSize * s) >> (W2V_SHIFT - 2);
+			cx2 = (newSize * c) >> (W2V_SHIFT - 2);
+			x1 = XY[0] + (sx1 - cx1);
+			y1 = XY[1] + sx1 + cx1;
+			x2 = XY[0] + (sx2 - cx1);
+			y2 = XY[1] + sx1 + cx2;
+			x3 = XY[0] + (sx2 - cx2);
+			y3 = XY[1] + sx2 + cx2;
+			x4 = XY[0] + (sx1 - cx2);
+			y4 = XY[1] + sx2 + cx1;
+			setXY4(v, x1, y1, x2, y2, x3, y3, x4, y4, Z[0], clipflags);
+		}
+		else
+		{
+			x1 = XY[0] - newSize;
+			x2 = XY[0] + newSize;
+			y1 = XY[1] - newSize;
+			y2 = XY[1] + newSize;
+			setXY4(v, x1, y1, x2, y1, x2, y2, x1, y2, Z[0], clipflags);
+		}
+
+		sprite = &spriteinfo[sptr->Def];
+
+		if (Z[0] <= 0x3000)
+		{
+			r = sptr->R;
+			g = sptr->G;
+			b = sptr->B;
+		}
+		else
+		{
+			r = ((0x5000 - Z[0]) * sptr->R) >> 13;
+			g = ((0x5000 - Z[0]) * sptr->G) >> 13;
+			b = ((0x5000 - Z[0]) * sptr->B) >> 13;
+		}
+
+		r = (r * life) >> 8;
+		g = (g * life) >> 8;
+		b = (b * life) >> 8;
+		col = RGBA(r, g, b, 0xFF);
+
+		v[0].color = col;
+		v[1].color = col;
+		v[2].color = col;
+		v[3].color = col;
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		v[3].specular = 0xFF000000;
+		tex.drawtype = 2;
+		tex.flag = 0;
+		tex.tpage = sprite->tpage;
+		tex.u1 = sprite->x1;
+		tex.v1 = sprite->y1;
+		tex.u2 = sprite->x2;
+		tex.v2 = sprite->y1;
+		tex.u3 = sprite->x2;
+		tex.v3 = sprite->y2;
+		tex.u4 = sprite->x1;
+		tex.v4 = sprite->y2;
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+	}
+}
+
+void DrawRope(ROPE_STRUCT* rope)
+{
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	long dx, dy, d, b, w, spec;
+	long x1, y1, z1, x2, y2, z2, x3, y3, x4, y4;
+
+	ProjectRopePoints(rope);
+	dx = rope->Coords[1][0] - rope->Coords[0][0];
+	dy = rope->Coords[1][1] - rope->Coords[0][1];
+	d = SQUARE(dx) + SQUARE(dy);
+	d = phd_sqrt(ABS(d));
+
+	dx <<= W2V_SHIFT + 2;
+	dy <<= W2V_SHIFT + 2;
+	d <<= W2V_SHIFT + 2;
+
+	if (d)
+	{
+		d = ((0x1000000 / (d >> 8)) << 8) >> 8;
+		b = dx;
+		dx = ((__int64)-dy * (__int64)d) >> (W2V_SHIFT + 2);
+		dy = ((__int64)b * (__int64)d) >> (W2V_SHIFT + 2);
+	}
+
+	w = 0x60000;
+
+	if (rope->Coords[0][2])
+	{
+		w = 0x60000 * phd_persp / rope->Coords[0][2];
+
+		if (w < 1)
+			w = 1;
+	}
+
+	w <<= (W2V_SHIFT + 2);
+	dx = (((__int64)dx * (__int64)w) >> (W2V_SHIFT + 2)) >> (W2V_SHIFT + 2);
+	dy = (((__int64)dy * (__int64)w) >> (W2V_SHIFT + 2)) >> (W2V_SHIFT + 2);
+	x1 = rope->Coords[0][0] - dx;
+	y1 = rope->Coords[0][1] - dy;
+	z1 = rope->Coords[0][2] >> W2V_SHIFT;
+	x4 = rope->Coords[0][0] + dx;
+	y4 = rope->Coords[0][1] + dy;
+
+	for (int i = 0; i < 23; i++)
+	{
+		dx = rope->Coords[i + 1][0] - rope->Coords[i][0];
+		dy = rope->Coords[i + 1][1] - rope->Coords[i][1];
+		d = SQUARE(dx) + SQUARE(dy);
+		d = phd_sqrt(ABS(d));
+
+		dx <<= W2V_SHIFT + 2;
+		dy <<= W2V_SHIFT + 2;
+		d <<= W2V_SHIFT + 2;
+
+		if (d)
+		{
+			d = ((0x1000000 / (d >> 8)) << 8) >> 8;
+			b = dx;
+			dx = ((__int64)-dy * (__int64)d) >> (W2V_SHIFT + 2);
+			dy = ((__int64)b * (__int64)d) >> (W2V_SHIFT + 2);
+		}
+
+		w = 0x60000;
+
+		if (rope->Coords[i][2])
+		{
+			w = 0x60000 * phd_persp / rope->Coords[i][2];
+
+			if (w < 3)
+				w = 3;
+		}
+
+		w <<= (W2V_SHIFT + 2);
+		dx = (((__int64)dx * (__int64)w) >> (W2V_SHIFT + 2)) >> (W2V_SHIFT + 2);
+		dy = (((__int64)dy * (__int64)w) >> (W2V_SHIFT + 2)) >> (W2V_SHIFT + 2);
+		x2 = rope->Coords[i + 1][0] - dx;
+		y2 = rope->Coords[i + 1][1] - dy;
+		z2 = rope->Coords[i + 1][2] >> W2V_SHIFT;
+		x3 = rope->Coords[i + 1][0] + dx;
+		y3 = rope->Coords[i + 1][1] + dy;
+
+		if ((double)z1 > f_mznear && (double)z2 > f_mznear)
+		{
+			setXY4(v, x1, y1, x2, y2, x3, y3, x4, y4, z1, clipflags);
+			v[0].color = 0xFF7F7F7F;
+			v[1].color = 0xFF7F7F7F;
+			v[2].color = 0xFF7F7F7F;
+			v[3].color = 0xFF7F7F7F;
+
+			spec = 255;
+
+			if (z1 > 0x3000)
+				spec = (255 * (0x5000 - z1)) >> 13;
+
+			v[0].specular = spec << 24;
+			v[1].specular = spec << 24;
+			v[2].specular = spec << 24;
+			v[3].specular = spec << 24;
+			sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 16];
+			tex.drawtype = 1;
+			tex.flag = 0;
+			tex.tpage = sprite->tpage;
+			tex.u1 = sprite->x1;
+			tex.v1 = sprite->y1;
+			tex.u2 = sprite->x1;
+			tex.v2 = sprite->y2;
+			tex.u3 = sprite->x2;
+			tex.v3 = sprite->y2;
+			tex.u4 = sprite->x2;
+			tex.v4 = sprite->y1;
+			AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+		}
+
+		x1 = x2;
+		y1 = y2;
+		z1 = z2;
+		x4 = x3;
+		y4 = y3;
+	}
+}
+
+void DrawBlood()
+{
+	BLOOD_STRUCT* bptr;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR pos;
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	ulong r, col;
+	long size, s, c;
+	long dx, dy, dz, x1, y1, x2, y2, x3, y3, x4, y4;
+	short ang;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 15];
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+
+	for (int i = 0; i < 32; i++)
+	{
+		bptr = &blood[i];
+
+		if (!bptr->On)
+			continue;
+
+		dx = bptr->x - lara_item->pos.x_pos;
+		dy = bptr->y - lara_item->pos.y_pos;
+		dz = bptr->z - lara_item->pos.z_pos;
+
+		if (dx < -0x5000 || dx > 0x5000 || dy < -0x5000 || dy > 0x5000 || dz < -0x5000 || dz > 0x5000)
+			continue;
+
+		offsets[0] = (short)dx;
+		offsets[1] = (short)dy;
+		offsets[2] = (short)dz;
+		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
+		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
+		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
+		perspz = f_persp / (float)pos.z;
+		XY[0] = short(float(pos.x * perspz + f_centerx));
+		XY[1] = short(float(pos.y * perspz + f_centery));
+		Z[0] = pos.z >> W2V_SHIFT;
+
+		if (Z[0] <= 0 || Z[0] >= 0x5000)
+			continue;
+
+		size = ((phd_persp * bptr->Size) << 1) / Z[0];
+
+		if (size > (bptr->Size << 1))
+			size = (bptr->Size << 1);
+		else if (size < 4)
+			size = 4;
+
+		size <<= 1;
+		ang = bptr->RotAng << 1;
+		s = (size * rcossin_tbl[ang]) >> (W2V_SHIFT - 2);
+		c = (size * rcossin_tbl[ang + 1]) >> (W2V_SHIFT - 2);
+		x1 = c + XY[0] - s;
+		y1 = XY[1] - c - s;
+		x2 = s + c + XY[0];
+		y2 = c + XY[1] - s;
+		x3 = s + XY[0] - c;
+		y3 = s + XY[1] + c;
+		x4 = XY[0] - c - s;
+		y4 = XY[1] - c + s;
+		setXY4(v, x1, y1, x2, y2, x3, y3, x4, y4, Z[0], clipflags);
+
+		if (Z[0] <= 0x3000)
+			col = RGBA(bptr->Shade, 0, 0, 0xFF);
+		else
+		{
+			r = ((0x5000 - Z[0]) * bptr->Shade) >> 13;
+			col = RGBA(r, 0, 0, 0xFF);
+		}
+
+		v[0].color = col;
+		v[1].color = col;
+		v[2].color = col;
+		v[3].color = col;
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		v[3].specular = 0xFF000000;
+		tex.drawtype = 2;
+		tex.flag = 0;
+		tex.tpage = sprite->tpage;
+		tex.u1 = sprite->x1;
+		tex.v1 = sprite->y1;
+		tex.u2 = sprite->x2;
+		tex.v2 = sprite->y1;
+		tex.u3 = sprite->x2;
+		tex.v3 = sprite->y2;
+		tex.u4 = sprite->x1;
+		tex.v4 = sprite->y2;
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+	}
+
+	phd_PopMatrix();
+}
+
+void S_DrawSmokeSparks()
+{
+	SMOKE_SPARKS* sptr;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR pos;
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	long is_mirror, size, col, s, c, ss, cs, sm, cm;
+	long dx, dy, dz, x1, y1, x2, y2, x3, y3, x4, y4;
+	short ang;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+	is_mirror = 0;
+	sptr = &smoke_spark[0];
+
+	for (int i = 0; i < 32; i++)
+	{
+		if (!sptr->On)
+		{
+			sptr++;
+			continue;
+		}
+
+		if (sptr->mirror && !is_mirror)
+			is_mirror = 1;
+		else
+			is_mirror = 0;
+
+		dx = sptr->x - lara_item->pos.x_pos;
+		dy = sptr->y - lara_item->pos.y_pos;
+		dz = sptr->z - lara_item->pos.z_pos;
+
+		if (is_mirror)
+			dz = 2 * gfMirrorZPlane - lara_item->pos.z_pos - sptr->z;
+
+		if (dx < -0x5000 || dx > 0x5000 || dy < -0x5000 || dy > 0x5000 || dz < -0x5000 || dz > 0x5000)
+		{
+			if (!is_mirror)
+				sptr++;
+
+			continue;
+		}
+
+		offsets[0] = (short)dx;
+		offsets[1] = (short)dy;
+		offsets[2] = (short)dz;
+		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
+		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
+		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
+		perspz = f_persp / (float)pos.z;
+		XY[0] = short(float(pos.x * perspz + f_centerx));
+		XY[1] = short(float(pos.y * perspz + f_centery));
+		Z[0] = pos.z >> W2V_SHIFT;
+
+		if (Z[0] <= 0 || Z[0] >= 0x5000)
+		{
+			if (!is_mirror)
+				sptr++;
+
+			continue;
+		}
+
+		size = ((phd_persp * sptr->Size) << 2) / Z[0];
+
+		if (size > (sptr->Size << 2))
+			size = (sptr->Size << 2);
+		else if (size < 4)
+			size = 4;
+
+		size >>= 1;
+
+		if (XY[0] + size < phd_winxmin || XY[0] - size >= phd_winxmax || XY[1] + size < phd_winymin || XY[1] - size >= phd_winymax)
+		{
+			if (!is_mirror)
+				sptr++;
+
+			continue;
+		}
+
+		if (sptr->Flags & 0x10)
+		{
+			ang = sptr->RotAng << 1;
+			s = rcossin_tbl[ang];
+			c = rcossin_tbl[ang + 1];
+			ss = (s * size) >> (W2V_SHIFT - 2);
+			cs = (c * size) >> (W2V_SHIFT - 2);
+			sm = (s * -size) >> (W2V_SHIFT - 2);
+			cm = (c * -size) >> (W2V_SHIFT - 2);
+
+			x1 = sm + XY[0] - cm;
+			y1 = sm + XY[1] + cm;
+			x2 = XY[0] - cm + ss;
+			y2 = sm + XY[1] + cs;
+			x3 = ss + XY[0] - cs;
+			y3 = cs + XY[1] + ss;
+			x4 = sm + XY[0] - cs;
+			y4 = ss + XY[1] + cm;
+
+			setXY4(v, x1, y1, x2, y2, x3, y3, x4, y4, Z[0], clipflags);
+		}
+		else
+		{
+			x1 = XY[0] - size;
+			y1 = XY[1] - size;
+			x2 = XY[0] + size;
+			y2 = XY[1] + size;
+			setXY4(v, x1, y1, x2, y1, x2, y2, x1, y2, Z[0], clipflags);
+		}
+
+		sprite = &spriteinfo[sptr->Def];
+
+		if (Z[0] <= 0x3000)
+			col = sptr->Shade;
+		else
+			col = ((0x5000 - Z[0]) * sptr->Shade) >> 13;
+
+		v[0].color = RGBA(col, col, col, 0xFF);
+		v[1].color = RGBA(col, col, col, 0xFF);
+		v[2].color = RGBA(col, col, col, 0xFF);
+		v[3].color = RGBA(col, col, col, 0xFF);
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		v[3].specular = 0xFF000000;
+		tex.drawtype = 2;
+		tex.flag = 0;
+		tex.tpage = sprite->tpage;
+		tex.u1 = sprite->x1;
+		tex.v1 = sprite->y1;
+		tex.u2 = sprite->x2;
+		tex.v3 = sprite->y2;
+		tex.v2 = sprite->y1;
+		tex.u3 = sprite->x2;
+		tex.u4 = sprite->x1;
+		tex.v4 = sprite->y2;
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+
+		if (!is_mirror)
+			sptr++;
+	}
+
+	phd_PopMatrix();
+}
+
+void DoUwEffect()
+{
+	WATER_DUST* p;
+	SPRITESTRUCT* sprite;
+	D3DTLVERTEX v[3];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR pos;
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	long num_alive, rad, ang, x, y, z, size, col, yv;
+
+	num_alive = 0;
+
+	for (int i = 0; i < 256; i++)
+	{
+		p = &uwdust[i];
+
+		if (!p->pos.x && num_alive < 16)
+		{
+			num_alive++;
+			rad = GetRandomDraw() & 0xFFF;
+			ang = GetRandomDraw() & 0x1FFE;
+			x = (rad * rcossin_tbl[ang]) >> (W2V_SHIFT - 2);
+			y = (GetRandomDraw() & 0x7FF) - 1024;
+			z = (rad * rcossin_tbl[ang + 1]) >> (W2V_SHIFT - 2);
+			p->pos.x = lara_item->pos.x_pos + x;
+			p->pos.y = lara_item->pos.y_pos + y;
+			p->pos.z = lara_item->pos.z_pos + z;
+
+			if (IsRoomOutside(p->pos.x, p->pos.y, p->pos.z) < 0 || !(room[IsRoomOutsideNo].flags & ROOM_UNDERWATER))
+			{
+				p->pos.x = 0;
+				continue;
+			}
+
+			p->life = (GetRandomDraw() & 7) + 16;
+			p->xvel = GetRandomDraw() & 3;
+
+			if (p->xvel == 2)
+				p->xvel = -1;
+
+			p->yvel = ((GetRandomDraw() & 7) + 8) << 3;
+			p->zvel = GetRandomDraw() & 3;
+
+			if (p->zvel == 2)
+				p->zvel = -1;
+		}
+
+		p->pos.x += p->xvel;
+		p->pos.y += (p->yvel & ~7) >> 6;
+		p->pos.z += p->zvel;
+
+		if (!p->life)
+		{
+			p->pos.x = 0;
+			continue;
+		}
+
+		p->life--;
+
+		if ((p->yvel & 7) < 7)
+			p->yvel++;
+	}
+
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 10];
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+
+	for (int i = 0; i < 256; i++)
+	{
+		p = &uwdust[i];
+
+		if (!p->pos.x)
+			continue;
+
+		x = p->pos.x - lara_item->pos.x_pos;
+		y = p->pos.y - lara_item->pos.y_pos;
+		z = p->pos.z - lara_item->pos.z_pos;
+		offsets[0] = (short)x;
+		offsets[1] = (short)y;
+		offsets[2] = (short)z;
+		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
+		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
+		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
+		perspz = f_persp / (float)pos.z;
+		XY[0] = short(float(pos.x * perspz + f_centerx));
+		XY[1] = short(float(pos.y * perspz + f_centery));
+		Z[0] = pos.z >> W2V_SHIFT;
+
+		if (Z[0] < 32)
+		{
+			if (p->life > 16)
+				p->life = 16;
+
+			continue;
+		}
+
+		if (XY[0] < phd_winxmin || XY[0] > phd_winxmax || XY[1] < phd_winymin || XY[1] > phd_winymax)
+			continue;
+
+		size = (phd_persp * (p->yvel >> 3)) / (Z[0] >> 4);
+
+		if (size < 1)
+			size = 6;
+		else if (size > 12)
+			size = 12;
+
+		size = (0x5556 * size) >> 16;
+
+		if (phd_winwidth > 512)
+			size = long(float(phd_winwidth / 512.0F) * (float)size);
+
+		if ((p->yvel & 7) == 7)
+		{
+			if (p->life > 18)
+				col = 0xFF404040;
+			else
+				col = (p->life | ((p->life | ((p->life | 0xFFFFFFC0) << 8)) << 8)) << 2;	//decipher me
+		}
+		else
+		{
+			yv = (p->yvel & 7) << 2;
+			col = (yv | ((yv | ((yv | 0xFFFFFF80) << 8)) << 8)) << 1;	//decipher me
+		}
+
+		setXY3(v, XY[0] + size, XY[1] - (size << 1), XY[0] + size, XY[1] + size, XY[0] - (size << 1), XY[1] + size, Z[0], clipflags);
+		v[0].color = col;
+		v[1].color = col;
+		v[2].color = col;
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		tex.drawtype = 2;
+		tex.flag = 0;
+		tex.tpage = sprite->tpage;
+		tex.u1 = sprite->x2;
+		tex.v1 = sprite->y1;
+		tex.u2 = sprite->x2;
+		tex.v2 = sprite->y2;
+		tex.u3 = sprite->x1;
+		tex.v3 = sprite->y2;
+		AddTriSorted(v, 0, 1, 2, &tex, 0);
+	}
+
+	phd_PopMatrix();
+}
+
+void DrawLightning()
+{
+	LIGHTNING_STRUCT* pL;
+	SPRITESTRUCT* sprite;
+	PHD_VECTOR* vec;
+	SVECTOR* offsets;
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	PHD_VECTOR p1, p2, p3;
+	long* Z;
+	short* XY;
+	float perspz;
+	long c, xsize, ysize, r, g, b;
+	long x1, y1, z1, x2, y2, z2, z;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 28];
+
+	for (int i = 0; i < 16; i++)
+	{
+		pL = &Lightning[i];
+
+		if (!pL->Life)
+			continue;
+
+		vec = (PHD_VECTOR*)&scratchpad[128];
+		memcpy(&vec[0], &pL->Point[0], sizeof(PHD_VECTOR));
+		memcpy(&vec[1], &pL->Point[0], 4 * sizeof(PHD_VECTOR));
+		memcpy(&vec[5], &pL->Point[3], sizeof(PHD_VECTOR));
+
+		for (int j = 0; j < 6; j++)
+		{
+			vec[j].x -= lara_item->pos.x_pos;
+			vec[j].y -= lara_item->pos.y_pos;
+			vec[j].z -= lara_item->pos.z_pos;
+		}
+
+		offsets = (SVECTOR*)&scratchpad[0];
+		XY = (short*)&scratchpad[256];
+		Z = (long*)&scratchpad[512];
+		CalcLightningSpline(vec, offsets, pL);
+
+		if (vec[0].x > 0x6000 || vec[0].y > 0x6000 || vec[0].z > 0x6000)
+			continue;
+
+		for (int j = 0; j < pL->Segments; j++)
+		{
+			p1.x = (offsets[0].x * phd_mxptr[M00] + offsets[0].y * phd_mxptr[M01] + offsets[0].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+			p1.y = (offsets[0].x * phd_mxptr[M10] + offsets[0].y * phd_mxptr[M11] + offsets[0].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+			p1.z = (offsets[0].x * phd_mxptr[M20] + offsets[0].y * phd_mxptr[M21] + offsets[0].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+			p2.x = (offsets[1].x * phd_mxptr[M00] + offsets[1].y * phd_mxptr[M01] + offsets[1].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+			p2.y = (offsets[1].x * phd_mxptr[M10] + offsets[1].y * phd_mxptr[M11] + offsets[1].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+			p2.z = (offsets[1].x * phd_mxptr[M20] + offsets[1].y * phd_mxptr[M21] + offsets[1].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+			p3.x = (offsets[2].x * phd_mxptr[M00] + offsets[2].y * phd_mxptr[M01] + offsets[2].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
+			p3.y = (offsets[2].x * phd_mxptr[M10] + offsets[2].y * phd_mxptr[M11] + offsets[2].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
+			p3.z = (offsets[2].x * phd_mxptr[M20] + offsets[2].y * phd_mxptr[M21] + offsets[2].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+
+			XY[0] = (short)p1.x;
+			XY[1] = (short)p1.y;
+			Z[0] = p1.z;
+
+			XY[2] = (short)p2.x;
+			XY[3] = (short)p2.y;
+			Z[1] = p2.z;
+
+			XY[4] = (short)p3.x;
+			XY[5] = (short)p3.y;
+			Z[2] = p3.z;
+
+			offsets += 3;
+			XY += 6;
+			Z += 3;
+		}
+
+		XY = (short*)&scratchpad[256];
+		Z = (long*)&scratchpad[512];
+
+		for (int j = 0; j < 3 * pL->Segments - 1; j++)
+		{
+			if (pL->Life < 16)
+				c = pL->Life << 2;
+			else
+				c = 64;
+
+			if (Z[0] > 0x3000)
+				c = (c * (0x5000 - *Z)) >> 13;
+
+			c = RGBA(c, c, c, 66);
+
+			x1 = XY[0];
+			y1 = XY[1];
+			z1 = Z[0];
+			x2 = XY[2];
+			y2 = XY[3];
+			z2 = Z[1];
+			setXYZ4(v, x1, y1, z1, x2, y2, z2, x1, y1, z1, x2, y2, z2, clipflags);
+			x1 = (long)v[0].sx;
+			y1 = (long)v[0].sy;
+			z1 = (long)v[0].sz;
+			x2 = (long)v[1].sx;
+			y2 = (long)v[1].sy;
+			z2 = (long)v[1].sz;
+
+			if (ClipLine(x1, y1, z1, x2, y2, z2, phd_winxmin, phd_winymin, phd_winxmax, phd_winymax))
+			{
+				perspz = f_mpersp / Z[0] * f_moneopersp;
+
+				v[0].sx = (float)x1;
+				v[0].sy = (float)y1;
+				v[0].sz = f_a - perspz * f_boo;
+				v[0].rhw = perspz;
+				v[0].color = c;
+				v[0].specular = 0xFF000000;
+
+				v[1].sx = (float)x2;
+				v[1].sy = (float)y2;
+				v[1].sz = f_a - perspz * f_boo;
+				v[1].rhw = perspz;
+				v[1].color = c;
+				v[1].specular = 0xFF000000;
+
+				AddLineSorted(&v[0], &v[1], 6);
+
+				if (Z[0] > 0x4000)
+					xsize = 1;
+				else
+					xsize = ((0x4000 - Z[0]) * pL->Size) >> 16;
+
+				if (xsize < 4)
+					xsize = 4;
+
+				if (pL->Life < 16)
+				{
+					r = (pL->Life * pL->r) >> 4;
+					g = (pL->Life * pL->g) >> 4;
+					b = (pL->Life * pL->b) >> 4;
+				}
+				else
+				{
+					r = pL->r;
+					g = pL->g;
+					b = pL->b;
+				}
+
+				if (Z[0] > 0x3000)
+				{
+					r = (r * (0x5000 - Z[0])) >> 13;
+					g = (g * (0x5000 - Z[0])) >> 13;
+					b = (b * (0x5000 - Z[0])) >> 13;
+				}
+
+				x1 = XY[0];
+				y1 = XY[1];
+				z1 = Z[0];
+				x2 = XY[2];
+				y2 = XY[3];
+				z2 = Z[1];
+				setXYZ4(v, x1, y1, z1, x2, y2, z2, x1, y1, z1, x2, y2, z2, clipflags);
+				x1 = (long)v[0].sx;
+				y1 = (long)v[0].sy;
+				z1 = (long)v[0].sz;
+				x2 = (long)v[1].sx;
+				y2 = (long)v[1].sy;
+				z2 = (long)v[1].sz;
+
+				vec[0].x = (x1 - x2) << 8;
+				vec[0].y = (y1 - y2) << 8;
+				vec[0].z = 0;
+				Normalise(vec);
+				vec[0].z = vec[0].x;
+				vec[0].x = -vec[0].y;
+				vec[0].y = vec[0].z;
+
+				ysize = (vec[0].y * xsize) >> 12;
+				xsize = (vec[0].x * xsize) >> 12;
+				z = (z1 + z2) >> 1;
+
+				if (z > 64)
+				{
+					setXY4(v, x1 + xsize, y1 + ysize, x2 + xsize, y2 + ysize, x1 - xsize, y1 - ysize, x2 - xsize, y2 - ysize, z, clipflags);
+
+					c = RGBA(b, g, r, 0xFF);
+
+					v[0].color = c;
+					v[1].color = c;
+					v[2].color = c;
+					v[3].color = c;
+					v[0].specular = 0xFF000000;
+					v[1].specular = 0xFF000000;
+					v[2].specular = 0xFF000000;
+					v[3].specular = 0xFF000000;
+					tex.drawtype = 2;
+					tex.flag = 0;
+					tex.tpage = sprite->tpage;
+					tex.u1 = sprite->x1;
+					tex.v1 = sprite->y2;
+					tex.u2 = sprite->x2;
+					tex.v2 = sprite->y2;
+					tex.u3 = sprite->x2;
+					tex.v3 = sprite->y1;
+					tex.u4 = sprite->x1;
+					tex.v4 = sprite->y1;
+					AddQuadClippedSorted(v, 0, 1, 3, 2, &tex, 0);
+				}
+			}
+
+			XY += 2;
+			Z++;
+		}
+	}
+
+	phd_PopMatrix();
+}
+
 void inject_specificfx(bool replace)
 {
 	INJECT(0x0048B990, DrawTrainStrips, replace);
@@ -2567,4 +4299,15 @@ void inject_specificfx(bool replace)
 	INJECT(0x00487D00, DrawBinoculars, replace);
 	INJECT(0x0048AD60, DrawWraithTrail, replace);
 	INJECT(0x0048A430, DrawDrips, replace);
+	INJECT(0x004860D0, DrawBubbles, replace);
+	INJECT(0x0048CAA0, DrawShockwaves, replace);
+	INJECT(0x0048B480, DrawTrainFloorStrip, replace);
+	INJECT(0x00486430, S_DrawSplashes, replace);
+	INJECT(0x00488690, ClipLine, replace);
+	INJECT(0x00486DD0, S_DrawFireSparks, replace);
+	INJECT(0x00489540, DrawRope, replace);
+	INJECT(0x0048A0C0, DrawBlood, replace);
+	INJECT(0x00487260, S_DrawSmokeSparks, replace);
+	INJECT(0x0048A840, DoUwEffect, replace);
+	INJECT(0x0048D9B0, DrawLightning, replace);
 }

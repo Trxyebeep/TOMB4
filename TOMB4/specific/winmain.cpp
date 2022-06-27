@@ -542,8 +542,8 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	r.top = 0;
 	r.right = 640;
 	r.bottom = 480;
-	AdjustWindowRect(&r, WS_OVERLAPPED | WS_BORDER | WS_CAPTION, 0);
-	App.hWnd = CreateWindowEx(WS_EX_APPWINDOW, "MainGameWindow", "Tomb Raider - The Last Revelation", WS_OVERLAPPED | WS_BORDER | WS_CAPTION,
+	AdjustWindowRect(&r, WINDOW_STYLE, 0);
+	App.hWnd = CreateWindowEx(WS_EX_APPWINDOW, "MainGameWindow", "Tomb Raider - The Last Revelation", WINDOW_STYLE,
 		CW_USEDEFAULT, CW_USEDEFAULT, r.right - r.left, r.bottom - r.top, 0, 0, hInstance, 0);
 
 	if (!App.hWnd)
@@ -577,11 +577,19 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	App.fmv = 0;
 	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
 
-	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WS_OVERLAPPED | WS_BORDER | WS_CAPTION))
+	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WINDOW_STYLE))
 	{
 		MessageBox(0, SCRIPT_TEXT(TXT_Failed_To_Setup_DirectX), "Tomb Raider IV", 0);
 		return 0;
 	}
+
+#ifdef GENERAL_FIXES	//remove the border in fullscreen
+	if (G_dxptr->Flags & 1)
+	{
+		SetWindowLongPtr(App.hWnd, GWL_STYLE, WS_POPUP);
+		SetWindowPos(App.hWnd, 0, App.dx.rScreen.left, App.dx.rScreen.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+	}
+#endif
 
 	UpdateWindow(App.hWnd);
 	ShowWindow(App.hWnd, nShowCmd);

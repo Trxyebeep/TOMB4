@@ -428,9 +428,9 @@ struct FVECTOR
 
 struct SVECTOR
 {
-	short vx;
-	short vy;
-	short vz;
+	short x;
+	short y;
+	short z;
 	short pad;
 };
 
@@ -1041,8 +1041,7 @@ struct ROPE_STRUCT
 	PHD_VECTOR Position;
 	long Coords[24][3];
 	long SegmentLength;
-	short Active;
-	short Coiled;
+	long Active;
 };
 
 struct STATS
@@ -1932,6 +1931,149 @@ struct DS_SAMPLE
 	LPDIRECTSOUNDBUFFER buffer;
 	long frequency;
 	long playing;
+};
+
+struct BUBBLE_STRUCT
+{
+	PHD_VECTOR pos;
+	short room_number;
+	short speed;
+	short size;
+	short dsize;
+	uchar shade;
+	uchar vel;
+	short pad;
+};
+
+struct SHOCKWAVE_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	short InnerRad;
+	short OuterRad;
+	short XRot;
+	short Flags;
+	uchar r;
+	uchar g;
+	uchar b;
+	uchar life;
+	short Speed;
+	short Temp;
+};
+
+struct SPLASH_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	short InnerRad;
+	short InnerSize;
+	short InnerRadVel;
+	short InnerYVel;
+	short InnerY;
+	short MiddleRad;
+	short MiddleSize;
+	short MiddleRadVel;
+	short MiddleYVel;
+	short MiddleY;
+	short OuterRad;
+	short OuterSize;
+	short OuterRadVel;
+	char flags;
+	uchar life;
+};
+
+struct RIPPLE_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	char flags;
+	uchar life;
+	uchar size;
+	uchar init;
+};
+
+struct FIRE_SPARKS
+{
+	short x;
+	short y;
+	short z;
+	short Xvel;
+	short Yvel;
+	short Zvel;
+	short Gravity;
+	short RotAng;
+	short Flags;
+	uchar sSize;
+	uchar dSize;
+	uchar Size;
+	uchar Friction;
+	uchar Scalar;
+	uchar Def;
+	char RotAdd;
+	char MaxYvel;
+	uchar On;
+	uchar sR;
+	uchar sG;
+	uchar sB;
+	uchar dR;
+	uchar dG;
+	uchar dB;
+	uchar R;
+	uchar G;
+	uchar B;
+	uchar ColFadeSpeed;
+	uchar FadeToBlack;
+	uchar sLife;
+	uchar Life;
+};
+
+struct BLOOD_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	short Xvel;
+	short Yvel;
+	short Zvel;
+	short Gravity;
+	short RotAng;
+	uchar sSize;
+	uchar dSize;
+	uchar Size;
+	uchar Friction;
+	char RotAdd;
+	uchar On;
+	uchar sShade;
+	uchar dShade;
+	uchar Shade;
+	uchar ColFadeSpeed;
+	uchar FadeToBlack;
+	char sLife;
+	char Life;
+	char Pad;
+};
+
+struct WATER_DUST
+{
+	PHD_VECTOR pos;
+	char xvel;
+	uchar yvel;
+	char zvel;
+	uchar life;
+};
+
+struct CHARDEF
+{
+	float u;
+	float v;
+	short w;
+	short h;
+	short YOffset;
+	char TopShade;
+	char BottomShade;
 };
 
 #ifdef IMPROVED_BARS
