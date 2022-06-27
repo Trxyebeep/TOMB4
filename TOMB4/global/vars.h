@@ -623,6 +623,9 @@
 #define fire_spark	ARRAY_(0x00800600, FIRE_SPARKS, [20])
 #define blood	ARRAY_(0x00800180, BLOOD_STRUCT, [32])
 #define uwdust	ARRAY_(0x00670E58, WATER_DUST, [256])
+#define CharDef	ARRAY_(0x004AEDB0, CHARDEF, [106])
+#define ShadeFromTo	ARRAY_(0x004AFF48, CVECTOR, [10][2])
+#define FontShades	ARRAY_(0x004BF704, CVECTOR, [10][32])
 
 
 /*Fog stuff*/
