@@ -1489,7 +1489,7 @@ x for functions decompiled but not injected, for one reason or another.
 		specific/clipping.cpp
 
 0x0046E4D0	+	ZClipper
-0x0046E8D0		XYUVGClipper
+0x0046E8D0	+	XYUVGClipper
 0x0046FDE0	+	visible_zclip
 
 
