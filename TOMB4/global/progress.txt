@@ -507,7 +507,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/harpy.cpp
 
-0x00407290		TriggerHarpyMissileFlame
+0x00407290	+	TriggerHarpyMissileFlame
 0x004073F0		DoHarpyEffects
 0x00407700		TriggerHarpyMissile
 0x004077B0		TriggerHarpySparks
