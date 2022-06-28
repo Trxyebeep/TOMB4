@@ -4,6 +4,15 @@
 #include "objects.h"
 #include "../specific/function_stubs.h"
 #include "tomb4fx.h"
+#include "../specific/3dmath.h"
+#include "missile.h"
+#include "items.h"
+#include "effects.h"
+#include "traps.h"
+#include "seth.h"
+#include "demigod.h"
+#include "harpy.h"
+#include "croc.h"
 
 void ControlSmokeEmitter(short item_number)
 {
@@ -523,6 +532,185 @@ void ClearDynamics()
 		dynamics[i].on = 0;
 }
 
+void ControlEnemyMissile(short fx_number)
+{
+	FX_INFO* fx;
+	FLOOR_INFO* floor;
+	long speed, ox, oy, oz, h, c;
+	short room_number, max_speed, max_turn;
+	short angles[2];
+
+	fx = &effects[fx_number];
+	phd_GetVectorAngles(lara_item->pos.x_pos - fx->pos.x_pos, lara_item->pos.y_pos - fx->pos.y_pos - 256, lara_item->pos.z_pos - fx->pos.z_pos, angles);
+
+	if (fx->flag1 == 1)
+	{
+		max_turn = 512;
+		max_speed = 256;
+	}
+	else if (fx->flag1 == 6)
+	{
+		if (fx->counter)
+			fx->counter--;
+
+		max_turn = 768;
+		max_speed = 192;
+	}
+	else
+	{
+		max_turn = 768;
+		max_speed = 192;
+	}
+
+	if (fx->speed < max_speed)
+	{
+		if (fx->flag1 == 6)
+			fx->speed++;
+		else
+			fx->speed += 3;
+
+		oy = (ushort)angles[0] - (ushort)fx->pos.y_rot;
+
+		if (ABS(oy) > 0x8000)
+			oy = (ushort)fx->pos.y_rot - (ushort)angles[0];
+
+		ox = (ushort)angles[1] - (ushort)fx->pos.x_rot;
+
+		if (ABS(ox) > 0x8000)
+			ox = (ushort)fx->pos.x_rot - (ushort)angles[1];
+
+		oy >>= 3;
+		ox >>= 3;
+
+		if (oy > max_turn)
+			oy = max_turn;
+		else if (oy < -max_turn)
+			oy = -max_turn;
+
+		if (ox > max_turn)
+			ox = max_turn;
+		else if (ox < -max_turn)
+			ox = -max_turn;
+
+		fx->pos.x_rot += (short)ox;
+
+		if (fx->flag1 != 4 && (fx->flag1 != 6 || !fx->counter))
+			fx->pos.y_rot += (short)oy;
+	}
+
+	fx->pos.z_rot += fx->speed << 4;
+
+	if (fx->flag1 == 6)
+		fx->pos.z_rot += fx->speed << 4;
+
+	ox = fx->pos.x_pos;
+	oy = fx->pos.y_pos;
+	oz = fx->pos.z_pos;
+	speed = fx->speed * phd_cos(fx->pos.x_rot) >> W2V_SHIFT;
+	fx->pos.x_pos += speed * phd_sin(fx->pos.y_rot) >> W2V_SHIFT;
+	fx->pos.y_pos += fx->speed * phd_sin(-fx->pos.x_rot) >> W2V_SHIFT;
+	fx->pos.z_pos += speed * phd_cos(fx->pos.y_rot) >> W2V_SHIFT;
+	room_number = fx->room_number;
+	floor = GetFloor(fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos, &room_number);
+	h = GetHeight(floor, fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos);
+	c = GetCeiling(floor, fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos);
+
+	if (fx->pos.y_pos >= h || fx->pos.y_pos <= c)
+	{
+		fx->pos.x_pos = ox;
+		fx->pos.y_pos = oy;
+		fx->pos.z_pos = oz;
+
+		if (fx->flag1 != 6)
+			ExplodeFX(fx, 0, -32);
+
+		if (fx->flag1 == 1)
+		{
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x18008040, (((~room[fx->room_number].flags & 0xFF) >> 4) & 2) << 16);	//decipher me
+			TriggerExplosionSparks(ox, oy, oz, 3, -2, 2, fx->room_number);
+		}
+		else if (fx->flag1 == 0)
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10008040, 0);
+		else if (fx->flag1 == 3 || fx->flag1 == 4)
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10004080, 0);
+		else if (fx->flag1 == 5)
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10806000, 0);
+		else if (fx->flag1 == 2)
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10808000, 0);
+		else if (fx->flag1 == 6)
+		{
+			TriggerExplosionSparks(ox, oy, oz, 3, -2, 0, fx->room_number);
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 64, 0x18806000, 0x20000);
+			fx->pos.y_pos -= 128;
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 48, 0x10807000, 0x20000);
+			fx->pos.y_pos += 256;
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 48, 0x10807000, 0x20000);
+		}
+
+		KillEffect(fx_number);
+		return;
+	}
+
+	if (ItemNearLara(&fx->pos, 200))
+	{
+		lara_item->hit_status = 1;
+
+		if (fx->flag1 != 6)
+			ExplodeFX(fx, 0, -32);
+
+		KillEffect(fx_number);
+
+		if (fx->flag1 == 1)
+		{
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 64, 0x18008040, 0);
+			TriggerExplosionSparks(ox, oy, oz, 3, -2, 2, fx->room_number);
+			LaraBurn();
+			lara.BurnGreen = 1;
+		}
+		else if (fx->flag1 == 0)
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0x580018, 48, 0x10008040, (((~room[fx->room_number].flags & 0xFF) >> 4) & 2) << 16);
+		else if (fx->flag1 == 3 || fx->flag1 == 4)
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10004080, 0x10000);
+		else if (fx->flag1 == 5)
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10806000, 0x20000);
+		else if (fx->flag1 == 2)
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10808000, 0x20000);
+		else if (fx->flag1 == 6)
+		{
+			TriggerExplosionSparks(ox, oy, oz, 3, -2, 0, fx->room_number);
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 64, 0x18806000, 0);
+			fx->pos.y_pos -= 128;
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 48, 0x10807000, 0);
+			fx->pos.y_pos += 256;
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 48, 0x10807000, 0);
+			LaraBurn();
+		}
+	}
+	else
+	{
+		if (room_number != fx->room_number)
+			EffectNewRoom(fx_number, room_number);
+
+		ox -= fx->pos.x_pos;
+		oy -= fx->pos.y_pos;
+		oz -= fx->pos.z_pos;
+
+		if (wibble & 4 || fx->flag1 == 1 || fx->flag1 == 5 || fx->flag1 == 2)
+		{
+			if (fx->flag1 == 0)
+				TriggerSethMissileFlame(fx_number, ox << 4, oy << 4, oz << 4);
+			else if (fx->flag1 == 1)
+				TriggerSethMissileFlame(fx_number, ox << 5, oy << 5, oz << 5);
+			else if (fx->flag1 == 3 || fx->flag1 == 4 || fx->flag1 == 5)
+				TriggerDemigodMissileFlame(fx_number, ox << 4, oy << 4, oz << 4);
+			else if (fx->flag1 == 2)
+				TriggerHarpyMissileFlame(fx_number, ox << 4, oy << 4, oz << 4);
+			else if (fx->flag1 == 6)
+				TriggerCrocgodMissileFlame(fx_number, ox << 4, oy << 4, oz << 4);
+		}
+	}
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -532,4 +720,5 @@ void inject_effect2(bool replace)
 	INJECT(0x004361A0, TriggerDynamic, replace);
 	INJECT(0x00436250, TriggerDynamic_MIRROR, replace);
 	INJECT(0x00436320, ClearDynamics, replace);
+	INJECT(0x004369B0, ControlEnemyMissile, replace);
 }

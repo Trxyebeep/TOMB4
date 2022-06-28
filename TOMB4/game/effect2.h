@@ -10,6 +10,7 @@ void TriggerFlareSparks(long x, long y, long z, long xvel, long yvel, long zvel,
 void TriggerDynamic(long x, long y, long z, long falloff, long r, long g, long b);
 void TriggerDynamic_MIRROR(long x, long y, long z, long falloff, long r, long g, long b);
 void ClearDynamics();
+void ControlEnemyMissile(short fx_number);
 
 #define KillEverything	( (void(__cdecl*)()) 0x00436050 )
 #define UpdateSparks	( (void(__cdecl*)()) 0x00433E10 )

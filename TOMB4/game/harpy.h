@@ -3,4 +3,4 @@
 
 void inject_harpy(bool replace);
 
-void TriggerHarpyMissileFlame(short fx_number, short xvel, short yvel, short zvel);
+void TriggerHarpyMissileFlame(short fx_number, long xv, long yv, long zv);

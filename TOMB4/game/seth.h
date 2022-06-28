@@ -3,4 +3,4 @@
 
 void inject_seth(bool replace);
 
-void TriggerSethMissileFlame(short fx_number, short xvel, short yvel, short zvel);
+void TriggerSethMissileFlame(short fx_number, long xv, long yv, long zv);

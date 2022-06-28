@@ -411,7 +411,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00436320	+	ClearDynamics
 0x00436340	+	ControlSmokeEmitter
 0x00436900		ControlColouredLights
-0x004369B0		ControlEnemyMissile
+0x004369B0	+	ControlEnemyMissile
 
 
 		game/effects.cpp

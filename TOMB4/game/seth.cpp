@@ -3,7 +3,7 @@
 #include "effect2.h"
 #include "../specific/function_stubs.h"
 
-void TriggerSethMissileFlame(short fx_number, short xvel, short yvel, short zvel)
+void TriggerSethMissileFlame(short fx_number, long xv, long yv, long zv)
 {
 	SPARKS* sptr;
 	long dx, dz;
@@ -30,9 +30,9 @@ void TriggerSethMissileFlame(short fx_number, short xvel, short yvel, short zvel
 	sptr->x = (GetRandomControl() & 0xF) - 8;
 	sptr->y = 0;
 	sptr->z = (GetRandomControl() & 0xF) - 8;
-	sptr->Xvel = xvel;
-	sptr->Yvel = yvel;
-	sptr->Zvel = zvel;
+	sptr->Xvel = (short)xv;
+	sptr->Yvel = (short)yv;
+	sptr->Zvel = (short)zv;
 	sptr->Friction = 68;
 	sptr->Flags = 602;
 	sptr->RotAng = GetRandomControl() & 0xFFF;

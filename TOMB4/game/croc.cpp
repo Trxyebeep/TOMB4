@@ -596,7 +596,7 @@ void TriggerCrocgodMissile(PHD_3DPOS* pos, short room_number, short num)
 	}
 }
 
-void TriggerCrocgodMissileFlame(short fx_number, short xv, short yv, short zv)
+void TriggerCrocgodMissileFlame(short fx_number, long xv, long yv, long zv)
 {
 	FX_INFO* fx;
 	SPARKS* sptr;
@@ -626,9 +626,9 @@ void TriggerCrocgodMissileFlame(short fx_number, short xv, short yv, short zv)
 	sptr->x = fx->pos.x_pos + (GetRandomControl() & 0xF) - 8;
 	sptr->y = fx->pos.y_pos;
 	sptr->z = fx->pos.z_pos + (GetRandomControl() & 0xF) - 8;
-	sptr->Xvel = xv;
-	sptr->Yvel = yv;
-	sptr->Zvel = zv;
+	sptr->Xvel = (short)xv;
+	sptr->Yvel = (short)yv;
+	sptr->Zvel = (short)zv;
 	sptr->Friction = 34;
 	sptr->Flags = 538;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
