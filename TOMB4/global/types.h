@@ -2076,6 +2076,16 @@ struct CHARDEF
 	char BottomShade;
 };
 
+struct STRINGHEADER
+{
+	ushort nStrings;
+	ushort nPSXStrings;
+	ushort nPCStrings;
+	ushort StringWadLen;
+	ushort PSXStringWadLen;
+	ushort PCStringWadLen;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

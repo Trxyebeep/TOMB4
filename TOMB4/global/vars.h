@@ -402,6 +402,7 @@
 #define wav_file_buffer	VAR_U_(0x004BFE5C, uchar*)
 #define ADPCMBuffer	VAR_U_(0x004BFE60, uchar*)
 #define gfScriptFile	VAR_U_(0x007FD2AC, uchar*)
+#define gfExtensions	VAR_U_(0x004BF654, char*)
 #define gfLanguageFile	VAR_U_(0x007FD26C, uchar*)
 #define MonoScreenOn	VAR_U_(0x00536F1C, char)
 #define nAIObjects	VAR_U_(0x007FD200, short)
