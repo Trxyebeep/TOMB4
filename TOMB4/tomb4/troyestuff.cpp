@@ -424,7 +424,7 @@ bool Page1(long& num, long textY, ulong selection)
 
 	switch (selection)
 	{
-	case 1 << 1:
+	case 1 << 0:
 
 		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
 		{
@@ -435,7 +435,7 @@ bool Page1(long& num, long textY, ulong selection)
 
 		break;
 
-	case 1 << 2:
+	case 1 << 1:
 
 		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
 		{
@@ -446,7 +446,7 @@ bool Page1(long& num, long textY, ulong selection)
 
 		break;
 
-	case 1 << 3:
+	case 1 << 2:
 
 		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
 		{
@@ -457,7 +457,7 @@ bool Page1(long& num, long textY, ulong selection)
 
 		break;
 
-	case 1 << 4:
+	case 1 << 3:
 
 		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
 		{
@@ -468,7 +468,7 @@ bool Page1(long& num, long textY, ulong selection)
 
 		break;
 
-	case 1 << 5:
+	case 1 << 4:
 
 		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
 		{
@@ -479,7 +479,7 @@ bool Page1(long& num, long textY, ulong selection)
 
 		break;
 
-	case 1 << 6:
+	case 1 << 5:
 
 		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
 		{
