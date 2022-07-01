@@ -16,3 +16,5 @@ void ACMClose();
 void S_CDPlay(long track, long mode);
 void S_CDStop();
 void S_StartSyncedAudio(long track);
+
+extern HACMDRIVER hACMDriver;
