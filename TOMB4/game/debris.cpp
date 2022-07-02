@@ -253,8 +253,8 @@ void ShatterObject(SHATTER_ITEM* ShatterItem, MESH_INFO* StaticMesh, short Num, 
 		vtx += 5;
 
 		offsets[0] = short((phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> W2V_SHIFT);
-		offsets[1] = short((phd_mxptr[M10] * y + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> W2V_SHIFT);
-		offsets[2] = short((phd_mxptr[M20] * z + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> W2V_SHIFT);
+		offsets[1] = short((phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> W2V_SHIFT);
+		offsets[2] = short((phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> W2V_SHIFT);
 
 		pos.x += offsets[0];
 		pos.y += offsets[1];
@@ -269,11 +269,12 @@ void ShatterObject(SHATTER_ITEM* ShatterItem, MESH_INFO* StaticMesh, short Num, 
 	VPos.z = pos.z / lp;
 	phd_PopMatrix();
 
-	vec.room_number = RoomNumber;
-	face_data = (ushort*)mesh->gt3;
 	RotVerts = (short*)&tsv_buffer[0];
 	Vels = (long*)&tsv_buffer[1536];
 	offsets = (short*)&tsv_buffer[1548];
+	vec.room_number = RoomNumber;
+
+	face_data = (ushort*)mesh->gt3;
 
 	while (nTris && Num)
 	{
@@ -283,9 +284,9 @@ void ShatterObject(SHATTER_ITEM* ShatterItem, MESH_INFO* StaticMesh, short Num, 
 		DebrisMeshC1 = v1;
 		DebrisMeshC2 = v2;
 		DebrisMeshC3 = v3;
-		v1 = v1 * 3;
-		v2 = v2 * 3;
-		v3 = v3 * 3;
+		v1 *= 3;
+		v2 *= 3;
+		v3 *= 3;
 		tex = (TEXTURESTRUCT*)*face_data++;
 		DebrisMeshFlags = *face_data++;
 
@@ -327,9 +328,9 @@ void ShatterObject(SHATTER_ITEM* ShatterItem, MESH_INFO* StaticMesh, short Num, 
 			}
 			else
 			{
-				Vels[0] = (vec.x - VPos.x);
-				Vels[1] = (vec.y - VPos.y);
-				Vels[2] = (vec.z - VPos.z);
+				Vels[0] = vec.x - VPos.x;
+				Vels[1] = vec.y - VPos.y;
+				Vels[2] = vec.z - VPos.z;
 			}
 
 			if (NoXZVel < 0)
@@ -361,9 +362,9 @@ void ShatterObject(SHATTER_ITEM* ShatterItem, MESH_INFO* StaticMesh, short Num, 
 		DebrisMeshC1 = v1;
 		DebrisMeshC2 = v2;
 		DebrisMeshC3 = v3;
-		v1 = v1 * 3;
-		v2 = v2 * 3;
-		v3 = v3 * 3;
+		v1 *= 3;
+		v2 *= 3;
+		v3 *= 3;
 		tex = (TEXTURESTRUCT*)*face_data++;
 		DebrisMeshFlags = *face_data++;
 
@@ -405,9 +406,9 @@ void ShatterObject(SHATTER_ITEM* ShatterItem, MESH_INFO* StaticMesh, short Num, 
 			}
 			else
 			{
-				Vels[0] = (vec.x - VPos.x);
-				Vels[1] = (vec.y - VPos.y);
-				Vels[2] = (vec.z - VPos.z);
+				Vels[0] = vec.x - VPos.x;
+				Vels[1] = vec.y - VPos.y;
+				Vels[2] = vec.z - VPos.z;
 			}
 
 			if (NoXZVel < 0)
