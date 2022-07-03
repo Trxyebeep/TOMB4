@@ -219,6 +219,9 @@ void ShatterObject(SHATTER_ITEM* ShatterItem, MESH_INFO* StaticMesh, short Num, 
 		TPos.y = ShatterItem->Sphere.y;
 		TPos.z = ShatterItem->Sphere.z;
 		RotY = ShatterItem->YRot;
+#ifdef GENERAL_FIXES
+		rgb = 0;
+#endif
 	}
 	else
 	{
@@ -275,6 +278,7 @@ void ShatterObject(SHATTER_ITEM* ShatterItem, MESH_INFO* StaticMesh, short Num, 
 	vec.room_number = RoomNumber;
 
 	face_data = (ushort*)mesh->gt3;
+	DebrisMeshAmbient = room[vec.room_number].ambient;
 
 	while (nTris && Num)
 	{
