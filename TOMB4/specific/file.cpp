@@ -1,4 +1,5 @@
 #include "../tomb4/pch.h"
+#include "../tomb4/libs/zlib/zlib.h"
 #include "file.h"
 #include "function_stubs.h"
 #include "texture.h"
@@ -1380,6 +1381,30 @@ void AdjustUV(long num)
 	}
 }
 
+bool Decompress(char* pDest, char* pCompressed, long compressedSize, long size)
+{
+	z_stream stream;
+
+	Log(2, "Decompress");
+	memset(&stream, 0, sizeof(z_stream));
+	stream.avail_in = compressedSize;
+	stream.avail_out = size;
+	stream.next_out = (Bytef*)pDest;
+	stream.next_in = (Bytef*)pCompressed;
+	inflateInit(&stream);
+	inflate(&stream, Z_FINISH);
+
+	if (stream.total_out != size)
+	{
+		Log(1, "Error Decompressing Data");
+		return 0;
+	}
+
+	inflateEnd(&stream);
+	Log(5, "Decompression OK");
+	return 1;
+}
+
 void inject_file(bool replace)
 {
 	INJECT(0x00476470, LoadLevel, replace);
@@ -1406,4 +1431,5 @@ void inject_file(bool replace)
 	INJECT(0x00476260, LoadSamples, replace);
 	INJECT(0x00476410, S_GetUVRotateTextures, replace);
 	INJECT(0x004752A0, AdjustUV, replace);
+	INJECT(0x00473E80, Decompress, replace);
 }

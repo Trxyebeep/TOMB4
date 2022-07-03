@@ -1601,7 +1601,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00473D80	+	FileClose
 0x00473DA0	+	FileSize
 0x00473DD0	+	LoadFile
-0x00473E80		Decompress
+0x00473E80	+	Decompress
 0x00473F20	+	LoadTextures
 0x004749C0	+	LoadRooms
 0x00474E10	+	LoadObjects

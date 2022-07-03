@@ -26,5 +26,4 @@ bool LoadAIInfo();
 bool LoadSamples();
 void S_GetUVRotateTextures();
 void AdjustUV(long num);
-
-#define Decompress	( (void(__cdecl*)(char*, char*, long, long)) 0x00473E80 )
+bool Decompress(char* pDest, char* pCompressed, long compressedSize, long size);
