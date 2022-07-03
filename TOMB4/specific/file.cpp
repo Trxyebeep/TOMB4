@@ -1219,11 +1219,23 @@ bool LoadSamples()
 		READ(&comp_size, 1, 4, level_fp);
 		READ(samples_buffer, comp_size, 1, level_fp);
 
+#ifndef LEVEL_EDITOR
 		if (!DXCreateSampleADPCM(samples_buffer, comp_size, uncomp_size, i))
 		{
 			FreeSampleDecompress();
 			return 0;
 		}
+#else 
+		LPWAVEFORMATEX format = (LPWAVEFORMATEX)(samples_buffer + 20);
+
+		int data_len = *((int*)(samples_buffer + 40));
+		int data_off = 44;
+
+		if (!DXCreateSample(i, format, samples_buffer + data_off, data_len)) {
+			FreeSampleDecompress();
+			return 0;
+		}
+#endif
 	}
 
 	FreeSampleDecompress();
