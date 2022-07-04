@@ -50,11 +50,6 @@ do \
 #define	TRIGMULT3(a,b,c)	(TRIGMULT2((TRIGMULT2(a, b)), c))
 
 	/**********************************/
-#define OPEN	( (FILE*(__cdecl*)(const char*, const char*)) 0x004A0B4C )
-#define SEEK	( (int(__cdecl*)(FILE*, int, int)) 0x004A0948 )
-#define READ	( (size_t(__cdecl*)(void*, size_t, size_t, FILE*)) 0x004A0860 )
-#define TELL	( (int(__cdecl*)(FILE*)) 0x004A0B5F )
-#define CLOSE	( (int(__cdecl*)(FILE*)) 0x004A07B4 )
 #define MALLOC	( (void*(__cdecl*)(size_t)) 0x004A0558 )
 #define REALLOC	( (void*(__cdecl*)(void*, size_t)) 0x004A1453 )
 #define FREE	( (void(__cdecl*)(void*)) 0x004A0A01 )
