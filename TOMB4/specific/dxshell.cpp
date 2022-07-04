@@ -532,14 +532,17 @@ void DXMove(long x, long y)
 		SetRect(&G_dxptr->rScreen, x, y, x + G_dxptr->dwRenderWidth, y + G_dxptr->dwRenderHeight);
 }
 
-/*
 void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 {
-#if 0	//sort out old dinput stuff (need to set up old dx sdk stuff to link dinput.lib and not be forced to upgrade to dinput8)
 	IDirectInput* dinput;
 	IDirectInputDevice* Keyboard;
 
-	DXAttempt(DirectInputCreate(hinstance, DIRECTINPUT_VERSION, &dinput, 0));
+#if (DIRECTINPUT_VERSION >= 0x800)
+	DXAttempt(DirectInput8Create(hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&dinput, 0));
+#else
+	DXAttempt(DirectInputCreate(hinstance, DIRECTINPUT_VERSION, &dinput, 0));	//original
+#endif
+
 	dinput->QueryInterface(DIGUID, (void**)&G_dxptr->lpDirectInput);
 
 	if (dinput)
@@ -566,9 +569,7 @@ void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance)
 	DXAttempt(G_dxptr->Keyboard->Acquire());
 	memset(keymap, 0, sizeof(keymap));
 	memset(keymap2, 0, sizeof(keymap2));
-#endif
 }
-*/
 
 void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 {
@@ -1695,7 +1696,7 @@ void inject_dxshell(bool replace)
 	INJECT(0x00493E70, DXCreateViewport, replace);
 	INJECT(0x00493F60, DXShowFrame, replace);
 	INJECT(0x00494030, DXMove, replace);
-//	INJECT(0x00494270, DXInitKeyboard, 0);
+	INJECT(0x00494270, DXInitKeyboard, replace);
 	INJECT(0x00494080, DXSaveScreen, replace);
 	INJECT(0x00493C00, DXClose, replace);
 	INJECT(0x00493130, DXCreate, replace);

@@ -32,5 +32,5 @@ long DXChangeVideoMode();
 long DXToggleFullScreen();
 HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC lpHWDesc, LPD3DDEVICEDESC lpHELDesc, LPVOID lpContext);
 const char* DXGetErrorString(HRESULT hr);
+void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance);
 
-#define DXInitKeyboard	( (void(__cdecl*)(HWND, HINSTANCE)) 0x00494270 )

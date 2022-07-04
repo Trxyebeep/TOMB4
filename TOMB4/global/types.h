@@ -71,8 +71,15 @@ do \
 #define TEXGUID					IID_IDirect3DTexture2
 #define DDGUID					IID_IDirectDraw4
 #define D3DGUID					IID_IDirect3D3
+
+#if (DIRECTINPUT_VERSION >= 0x800)
+#define DIGUID					IID_IDirectInput8
+#define DIDGUID					IID_IDirectInputDevice8
+#else
 #define DIGUID					IID_IDirectInput2
 #define DIDGUID					IID_IDirectInputDevice2
+#endif
+
 #define DSNGUID					IID_IDirectSoundNotify
 	/**********************************/
 
