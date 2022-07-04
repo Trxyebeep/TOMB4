@@ -309,8 +309,8 @@ long LoadFile(const char* name, char** dest)
 bool LoadTextures(long RTPages, long OTPages, long BTPages)
 {
 	DXTEXTUREINFO* dxtex;
-	LPDIRECTDRAWSURFACE4 tSurf;
-	LPDIRECT3DTEXTURE2 pTex;
+	LPDIRECTDRAWSURFACEX tSurf;
+	LPDIRECT3DTEXTUREX pTex;
 	uchar* TextureData;
 	long* d;
 	char* pData;
@@ -380,7 +380,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 		nTex = nTextures;
 		nTextures++;
 		tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, 0, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
-		DXAttempt(tSurf->QueryInterface(IID_IDirect3DTexture2, (LPVOID*)&pTex));
+		DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 		Textures[nTex].tex = pTex;
 		Textures[nTex].surface = tSurf;
 		Textures[nTex].width = App.TextureSize;
@@ -404,7 +404,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 		nTex = nTextures;
 		nTextures++;
 		tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, 0, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
-		DXAttempt(tSurf->QueryInterface(IID_IDirect3DTexture2, (LPVOID*)&pTex));
+		DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 		Textures[nTex].tex = pTex;
 		Textures[nTex].surface = tSurf;
 		Textures[nTex].width = App.TextureSize;
@@ -440,7 +440,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 			Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 			nTex = nTextures;
 			nTextures++;
-			DXAttempt(tSurf->QueryInterface(IID_IDirect3DTexture2, (LPVOID*)&pTex));
+			DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 			Textures[nTex].tex = pTex;
 			Textures[nTex].surface = tSurf;
 
@@ -519,7 +519,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 			nTex = nTextures;
 			nTextures++;
 			tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, 0, 0);
-			DXAttempt(tSurf->QueryInterface(IID_IDirect3DTexture2, (LPVOID*)&pTex));
+			DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 			Textures[nTex].tex = pTex;
 			Textures[nTex].surface = tSurf;
 			Textures[nTex].width = 256;
@@ -538,7 +538,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	nTex = nTextures;
 	nTextures++;
 	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, 0, 0);
-	DXAttempt(tSurf->QueryInterface(IID_IDirect3DTexture2, (LPVOID*)&pTex));
+	DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 	Textures[nTex].tex = pTex;
 	Textures[nTex].surface = tSurf;
 	Textures[nTex].width = 256;
@@ -553,7 +553,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	nTex = nTextures;
 	nTextures++;
 	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, 0, 0);
-	DXAttempt(tSurf->QueryInterface(IID_IDirect3DTexture2, (LPVOID*)&pTex));
+	DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 	Textures[nTex].tex = pTex;
 	Textures[nTex].surface = tSurf;
 	Textures[nTex].width = 256;

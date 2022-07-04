@@ -439,8 +439,8 @@
 #define KeyTriggerActive	VAR_U_(0x004BF3F8, char)
 #define G_dxptr	VAR_U_(0x007544F4, DXPTR*)
 #define G_dxinfo	VAR_U_(0x00754120, DXINFO*)
-#define G_ddraw	VAR_U_(0x0075411C, LPDIRECTDRAW4)
-#define G_d3d	VAR_U_(0x007541A4, LPDIRECT3D3)
+#define G_ddraw	VAR_U_(0x0075411C, LPDIRECTDRAWX)
+#define G_d3d	VAR_U_(0x007541A4, LPDIRECT3DX)
 #define G_hwnd	VAR_U_(0x00754118, HWND)
 #define joy_fire	VAR_U_(0x0053589C, long)
 #define joy_x	VAR_U_(0x005358A0, long)
@@ -634,7 +634,7 @@
 
 /*Bink bs*/
 #define BinkSurfaceType	VAR_U_(0x007E6E00, long)
-#define BinkSurface	VAR_U_(0x007E6E04, LPDIRECTDRAWSURFACE4)
+#define BinkSurface	VAR_U_(0x007E6E04, LPDIRECTDRAWSURFACEX)
 #define Bink	VAR_U_(0x007E6E08, BINK_STRUCT*)
 
 
