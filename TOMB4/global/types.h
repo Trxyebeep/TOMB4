@@ -1067,6 +1067,14 @@ struct ROPE_STRUCT
 	long Active;
 };
 
+struct PENDULUM
+{
+	PHD_VECTOR Position;
+	PHD_VECTOR Velocity;
+	long node;
+	ROPE_STRUCT* Rope;
+};
+
 struct STATS
 {
 	ulong Timer;
@@ -1078,7 +1086,7 @@ struct STATS
 	uchar HealthUsed;
 };
 
-struct SAVEGAME_INFO	//savegame is at 007F76C0
+struct SAVEGAME_INFO
 {
 	LARA_INFO Lara;
 	long cutscene_triggered;

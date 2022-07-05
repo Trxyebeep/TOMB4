@@ -490,6 +490,7 @@
 #define continue_reading_audio_file	VAR_U_(0x004BFE3C, bool)
 #define audio_counter	VAR_U_(0x004BFE70, long)
 #define sound_active	VAR_U_(0x004BF6DC, long)
+#define CurrentPendulum	VAR_U_(0x007FD1A0, PENDULUM)
 
 
 

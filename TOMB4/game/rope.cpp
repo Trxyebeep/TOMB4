@@ -251,6 +251,24 @@ void ModelRigidRope(PHD_VECTOR* pa, PHD_VECTOR* pb, PHD_VECTOR* va, PHD_VECTOR* 
 	vb->z -= delta.z;
 }
 
+void SetPendulumPoint(ROPE_STRUCT* Rope, long node)
+{
+	CurrentPendulum.Position.x = Rope->Segment[node].x;
+	CurrentPendulum.Position.y = Rope->Segment[node].y;
+	CurrentPendulum.Position.z = Rope->Segment[node].z;
+
+	if (CurrentPendulum.node == -1)
+	{
+		CurrentPendulum.Velocity.x += Rope->Velocity[node].x;
+		CurrentPendulum.Velocity.y += Rope->Velocity[node].y;
+		CurrentPendulum.Velocity.z += Rope->Velocity[node].z;
+	}
+
+	CurrentPendulum.Rope = Rope;
+	CurrentPendulum.node = node;
+}
+
+
 void inject_rope(bool replace)
 {
 	INJECT(0x00459410, DrawRopeList, replace);
@@ -264,4 +282,5 @@ void inject_rope(bool replace)
 	INJECT(0x00458B90, AlignLaraToRope, replace);
 	INJECT(0x00459510, ModelRigid, replace);
 	INJECT(0x00459640, ModelRigidRope, replace);
+	INJECT(0x00459740, SetPendulumPoint, replace);
 }
