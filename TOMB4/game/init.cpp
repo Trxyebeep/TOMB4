@@ -7,6 +7,7 @@
 #include "items.h"
 #include "traps.h"
 #include "draw.h"
+#include "rope.h"
 
 void InitialiseMapper(short item_number)
 {
@@ -503,6 +504,28 @@ void InitialisePickUp(short item_number)
 		item->flags |= IFL_TRIGGERED;
 }
 
+void CreateRope(ROPE_STRUCT* rope, PHD_VECTOR* pos, PHD_VECTOR* dir, long slength, ITEM_INFO* item)
+{
+	rope->Position = *pos;
+	rope->SegmentLength = slength << 16;
+	dir->x <<= (W2V_SHIFT + 2);
+	dir->y <<= (W2V_SHIFT + 2);
+	dir->z <<= (W2V_SHIFT + 2);
+	Normalise(dir);
+
+	for (int n = 0; n < 24; ++n)
+	{
+		rope->Segment[n].x = (__int64)(rope->SegmentLength * n) * dir->x >> (W2V_SHIFT + 2);
+		rope->Segment[n].y = (__int64)(rope->SegmentLength * n) * dir->y >> (W2V_SHIFT + 2);
+		rope->Segment[n].z = (__int64)(rope->SegmentLength * n) * dir->z >> (W2V_SHIFT + 2);
+		rope->Velocity[n].x = 0;
+		rope->Velocity[n].y = 0;
+		rope->Velocity[n].z = 0;
+	}
+
+	rope->Active = 0;
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
@@ -527,4 +550,5 @@ void inject_init(bool replace)
 	INJECT(0x00453980, InitialiseSmokeEmitter, replace);
 	INJECT(0x00453E40, InitialisePulley, replace);
 	INJECT(0x00453E90, InitialisePickUp, replace);
+	INJECT(0x00453F60, CreateRope, replace);
 }
