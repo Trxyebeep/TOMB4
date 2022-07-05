@@ -65,10 +65,16 @@ void vMul(PHD_VECTOR* v, long scale, PHD_VECTOR* d)
 	d->z = scale * v->z >> W2V_SHIFT;
 }
 
+long mDotProduct(PHD_VECTOR* a, PHD_VECTOR* b)
+{
+	return (a->x * b->x + a->y * b->y + a->z * b->z) >> W2V_SHIFT;
+}
+
 void inject_rope(bool replace)
 {
 	INJECT(0x00459410, DrawRopeList, replace);
 	INJECT(0x00459F90, ProjectRopePoints, replace);
 	INJECT(0x00459450, Normalise, replace);
 	INJECT(0x00458A00, vMul, replace);
+	INJECT(0x00458A40, mDotProduct, replace);
 }
