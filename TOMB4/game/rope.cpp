@@ -101,6 +101,17 @@ void phd_GetMatrixAngles(long* m, short* dest)
 	dest[2] = roll;
 }
 
+void GetRopePos(ROPE_STRUCT* rope, long pos, long* x, long* y, long* z)
+{
+	long segment;
+
+	segment = pos >> 7;
+	pos &= 0x7F;
+	*x = (rope->NormalisedSegment[segment].x * pos >> (W2V_SHIFT + 2)) + (rope->MeshSegment[segment].x >> (W2V_SHIFT + 2)) + rope->Position.x;
+	*y = (rope->NormalisedSegment[segment].y * pos >> (W2V_SHIFT + 2)) + (rope->MeshSegment[segment].y >> (W2V_SHIFT + 2)) + rope->Position.y;
+	*z = (rope->NormalisedSegment[segment].z * pos >> (W2V_SHIFT + 2)) + (rope->MeshSegment[segment].z >> (W2V_SHIFT + 2)) + rope->Position.z;
+}
+
 void inject_rope(bool replace)
 {
 	INJECT(0x00459410, DrawRopeList, replace);
@@ -110,4 +121,5 @@ void inject_rope(bool replace)
 	INJECT(0x00458A40, mDotProduct, replace);
 	INJECT(0x00458A70, mCrossProduct, replace);
 	INJECT(0x00458AD0, phd_GetMatrixAngles, replace);
+	INJECT(0x00459060, GetRopePos, replace);
 }
