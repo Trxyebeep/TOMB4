@@ -457,6 +457,26 @@ void CalculateRope(ROPE_STRUCT* Rope)
 	}
 }
 
+long RopeNodeCollision(ROPE_STRUCT* rope, long x, long y, long z, long rad)
+{
+	long rx, ry, rz;
+
+	for (int i = 0; i < 22; ++i)
+	{
+		if (y > rope->Position.y + (rope->MeshSegment[i].y >> (W2V_SHIFT + 2)) && y < rope->Position.y + (rope->MeshSegment[i + 1].y >> (W2V_SHIFT + 2)))
+		{
+			rx = x - ((rope->MeshSegment[i + 1].x + rope->MeshSegment[i].x) >> 17) - rope->Position.x;
+			ry = y - ((rope->MeshSegment[i + 1].y + rope->MeshSegment[i].y) >> 17) - rope->Position.y;
+			rz = z - ((rope->MeshSegment[i + 1].z + rope->MeshSegment[i].z) >> 17) - rope->Position.z;
+
+			if (SQUARE(rx) + SQUARE(ry) + SQUARE(rz) < SQUARE(rad + 64))
+				return i;
+		}
+	}
+
+	return -1;
+}
+
 void inject_rope(bool replace)
 {
 	INJECT(0x00459410, DrawRopeList, replace);
@@ -473,4 +493,5 @@ void inject_rope(bool replace)
 	INJECT(0x00459740, SetPendulumPoint, replace);
 	INJECT(0x004597D0, SetPendulumVelocity, replace);
 	INJECT(0x00459890, CalculateRope, replace);
+	INJECT(0x004592E0, RopeNodeCollision, replace);
 }
