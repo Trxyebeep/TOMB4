@@ -1625,6 +1625,7 @@ void JeepControl(short item_number)
 
 	if (lara_item->current_anim_state == 9 || lara_item->current_anim_state == 10)
 		ExhaustSmokeVel = 0;
+	else
 	{
 		pos.x = 80;
 		pos.y = 0;

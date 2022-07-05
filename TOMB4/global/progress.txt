@@ -209,7 +209,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00433020	+	GetFreeDebris
 0x004330A0	+	TriggerDebris
 0x004332C0	+	UpdateDebris
-0x00433410		ShatterObject
+0x00433410	+	ShatterObject
 
 
 		game/delstuff.cpp
@@ -411,7 +411,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00436320	+	ClearDynamics
 0x00436340	+	ControlSmokeEmitter
 0x00436900		ControlColouredLights
-0x004369B0		ControlEnemyMissile
+0x004369B0	+	ControlEnemyMissile
 
 
 		game/effects.cpp
@@ -478,7 +478,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/gameflow.cpp
 
-0x00451510		LoadGameflow
+0x00451510	+	LoadGameflow
 0x00451770	+	DoGameflow
 0x00451E30	+	DoTitle
 0x00452710	+	DoLevel
@@ -507,7 +507,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/harpy.cpp
 
-0x00407290		TriggerHarpyMissileFlame
+0x00407290	+	TriggerHarpyMissileFlame
 0x004073F0		DoHarpyEffects
 0x00407700		TriggerHarpyMissile
 0x004077B0		TriggerHarpySparks
@@ -560,9 +560,9 @@ x for functions decompiled but not injected, for one reason or another.
 0x00453A30	+	InitialiseDoor
 0x00453E40	+	InitialisePulley
 0x00453E90	+	InitialisePickUp
-0x00453F30		init_all_ropes
-0x00453F60		CreateRope
-0x00454070		InitialiseRope
+0x00453F30	+	init_all_ropes
+0x00453F60	+	CreateRope
+0x00454070	+	InitialiseRope
 
 
 		game/items.cpp
@@ -676,7 +676,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00423F20	+	lara_as_poleright
 0x00423F60	+	lara_col_poleup
 0x00423FF0	+	lara_col_poledown
-0x00424150		ApplyVelocityToRope
+0x00424150	+	ApplyVelocityToRope
 0x004241A0	+	lara_as_rope
 0x004241D0		FallFromRope
 0x00424270	+	lara_col_rope
@@ -1102,22 +1102,22 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/rope.cpp
 
-0x00458A00		vMul
-0x00458A40		mDotProduct
-0x00458A70		mCrossProduct
-0x00458AD0		phd_GetMatrixAngles
-0x00458B90		AlignLaraToRope
-0x00459060		GetRopePos
-0x00459100		RopeCollision
-0x004592E0		RopeNodeCollision
-0x004593B0		RopeControl
+0x00458A00	+	vMul
+0x00458A40	+	mDotProduct
+0x00458A70	+	mCrossProduct
+0x00458AD0	+	phd_GetMatrixAngles
+0x00458B90	+	AlignLaraToRope
+0x00459060	+	GetRopePos
+0x00459100	+	RopeCollision
+0x004592E0	+	RopeNodeCollision
+0x004593B0	+	RopeControl
 0x00459410	+	DrawRopeList
 0x00459450	+	Normalise
-0x00459510		ModelRigid
-0x00459640		ModelRigidRope
-0x00459740		SetPendulumPoint
-0x004597D0		SetPendulumVelocity
-0x00459890		CalculateRope
+0x00459510	+	ModelRigid
+0x00459640	+	ModelRigidRope
+0x00459740	+	SetPendulumPoint
+0x004597D0	+	SetPendulumVelocity
+0x00459890	+	CalculateRope
 0x00459F90	+	ProjectRopePoints
 
 
@@ -1198,7 +1198,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00410070		TriggerSethMissile
 0x00410130		TriggerSethSparks
 0x00410220		TriggerSethFlame
-0x004103B0		TriggerSethMissileFlame
+0x004103B0	+	TriggerSethMissileFlame
 0x00410530		DoSethEffects
 0x00410C30		InitialiseSeth
 0x00410C90		SethControl
@@ -1480,7 +1480,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0046D9C0	+	ACMInit
 0x0046DD00	+	ACMClose
 0x0046DE50	+	OpenStreamFile
-0x0046DF50	x	FillADPCMBuffer
+0x0046DF50	+	FillADPCMBuffer
 0x0046E0F0	+	GetADPCMData
 0x0046E180	+	ACMEmulateCDPlay
 0x0046E340	+	ACMHandleNotifications
@@ -1564,7 +1564,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00493F60	+	DXShowFrame
 0x00494030	+	DXMove
 0x00494080	+	DXSaveScreen
-0x00494270	x	DXInitKeyboard
+0x00494270	+	DXInitKeyboard
 0x004944D0	+	DXReadKeyboard
 
 
@@ -1601,7 +1601,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00473D80	+	FileClose
 0x00473DA0	+	FileSize
 0x00473DD0	+	LoadFile
-0x00473E80		Decompress
+0x00473E80	+	Decompress
 0x00473F20	+	LoadTextures
 0x004749C0	+	LoadRooms
 0x00474E10	+	LoadObjects

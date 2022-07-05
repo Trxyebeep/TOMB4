@@ -47,7 +47,7 @@ void TriggerDemigodMissile(PHD_3DPOS* pos, short room_number, short type)
 	}
 }
 
-void TriggerDemigodMissileFlame(short fx_number, short xv, short yv, short zv)
+void TriggerDemigodMissileFlame(short fx_number, long xv, long yv, long zv)
 {
 	FX_INFO* fx;
 	SPARKS* sptr;
@@ -90,9 +90,9 @@ void TriggerDemigodMissileFlame(short fx_number, short xv, short yv, short zv)
 	sptr->x = (GetRandomControl() & 0xF) - 8;
 	sptr->y = 0;
 	sptr->z = (GetRandomControl() & 0xF) - 8;
-	sptr->Xvel = xv;
-	sptr->Yvel = yv;
-	sptr->Zvel = zv;
+	sptr->Xvel = (short)xv;
+	sptr->Yvel = (short)yv;
+	sptr->Zvel = (short)zv;
 	sptr->Friction = 68;
 	sptr->Flags = 602;
 	sptr->RotAng = GetRandomControl() & 0xFFF;

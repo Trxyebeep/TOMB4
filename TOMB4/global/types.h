@@ -50,14 +50,37 @@ do \
 #define	TRIGMULT3(a,b,c)	(TRIGMULT2((TRIGMULT2(a, b)), c))
 
 	/**********************************/
-#define OPEN	( (FILE*(__cdecl*)(const char*, const char*)) 0x004A0B4C )
-#define SEEK	( (int(__cdecl*)(FILE*, int, int)) 0x004A0948 )
-#define READ	( (size_t(__cdecl*)(void*, size_t, size_t, FILE*)) 0x004A0860 )
-#define TELL	( (int(__cdecl*)(FILE*)) 0x004A0B5F )
-#define CLOSE	( (int(__cdecl*)(FILE*)) 0x004A07B4 )
 #define MALLOC	( (void*(__cdecl*)(size_t)) 0x004A0558 )
 #define REALLOC	( (void*(__cdecl*)(void*, size_t)) 0x004A1453 )
 #define FREE	( (void(__cdecl*)(void*)) 0x004A0A01 )
+	/**********************************/
+
+	/**********************************/
+#define LPDIRECTDRAWX			LPDIRECTDRAW4
+#define LPDIRECT3DX				LPDIRECT3D3
+#define LPDIRECT3DDEVICEX		LPDIRECT3DDEVICE3
+#define LPDIRECTDRAWSURFACEX	LPDIRECTDRAWSURFACE4
+#define LPDIRECT3DVIEWPORTX		LPDIRECT3DVIEWPORT3
+#define LPDIRECTINPUTX			LPDIRECTINPUT2
+#define LPDIRECTINPUTDEVICEX	LPDIRECTINPUTDEVICE2
+#define DDSURFACEDESCX			DDSURFACEDESC2
+#define LPDDSURFACEDESCX		DDSURFACEDESCX*
+#define LPDIRECT3DMATERIALX		LPDIRECT3DMATERIAL3
+#define D3DLIGHTX				D3DLIGHT2
+#define LPDIRECT3DTEXTUREX		LPDIRECT3DTEXTURE2
+#define TEXGUID					IID_IDirect3DTexture2
+#define DDGUID					IID_IDirectDraw4
+#define D3DGUID					IID_IDirect3D3
+
+#if (DIRECTINPUT_VERSION >= 0x800)
+#define DIGUID					IID_IDirectInput8
+#define DIDGUID					IID_IDirectInputDevice8
+#else
+#define DIGUID					IID_IDirectInput2
+#define DIDGUID					IID_IDirectInputDevice2
+#endif
+
+#define DSNGUID					IID_IDirectSoundNotify
 	/**********************************/
 
 enum win_commands
@@ -1044,6 +1067,14 @@ struct ROPE_STRUCT
 	long Active;
 };
 
+struct PENDULUM
+{
+	PHD_VECTOR Position;
+	PHD_VECTOR Velocity;
+	long node;
+	ROPE_STRUCT* Rope;
+};
+
 struct STATS
 {
 	ulong Timer;
@@ -1055,7 +1086,7 @@ struct STATS
 	uchar HealthUsed;
 };
 
-struct SAVEGAME_INFO	//savegame is at 007F76C0
+struct SAVEGAME_INFO
 {
 	LARA_INFO Lara;
 	long cutscene_triggered;
@@ -1156,14 +1187,14 @@ struct STATIC_INFO
 
 struct DXPTR
 {
-	LPDIRECTDRAW4 lpDD;
-	LPDIRECT3D3 lpD3D;
-	LPDIRECT3DDEVICE3 lpD3DDevice;
-	LPDIRECT3DDEVICE3 _lpD3DDevice;
-	LPDIRECTDRAWSURFACE4 lpPrimaryBuffer;
-	LPDIRECTDRAWSURFACE4 lpBackBuffer;
-	LPDIRECTDRAWSURFACE4 lpZBuffer;
-	LPDIRECT3DVIEWPORT3 lpViewport;
+	LPDIRECTDRAWX lpDD;
+	LPDIRECT3DX lpD3D;
+	LPDIRECT3DDEVICEX lpD3DDevice;
+	LPDIRECT3DDEVICEX _lpD3DDevice;
+	LPDIRECTDRAWSURFACEX lpPrimaryBuffer;
+	LPDIRECTDRAWSURFACEX lpBackBuffer;
+	LPDIRECTDRAWSURFACEX lpZBuffer;
+	LPDIRECT3DVIEWPORTX lpViewport;
 	LPDIRECTSOUND lpDS;
 	ulong dwRenderWidth;
 	ulong dwRenderHeight;
@@ -1172,8 +1203,8 @@ struct DXPTR
 	long Flags;
 	long WindowStyle;
 	long CoopLevel;
-	IDirectInput2* lpDirectInput;
-	IDirectInputDevice2* Keyboard;
+	LPDIRECTINPUTX lpDirectInput;
+	LPDIRECTINPUTDEVICEX Keyboard;
 	HWND hWnd;
 	volatile long InScene;
 	volatile long WaitAtBeginScene;
@@ -1187,14 +1218,13 @@ struct DXDISPLAYMODE
 	long bpp;
 	long RefreshRate;
 	long bPalette;
-	DDSURFACEDESC2 ddsd;
+	DDSURFACEDESCX ddsd;
 	uchar rbpp;
 	uchar gbpp;
 	uchar bbpp;
 	uchar rshift;
 	uchar gshift;
 	uchar bshift;
-
 };
 
 struct DXTEXTUREINFO
@@ -1282,7 +1312,7 @@ struct WINAPP
 	DXPTR dx;
 	HANDLE mutex;
 	float fps;
-	LPDIRECT3DMATERIAL3 GlobalMaterial;
+	LPDIRECT3DMATERIALX GlobalMaterial;
 	D3DMATERIALHANDLE GlobalMaterialHandle;
 	HACCEL hAccel;
 	bool SetupComplete;
@@ -1370,7 +1400,7 @@ struct LIGHTNING_STRUCT
 struct D3DLIGHT_STRUCT
 {
 	LPDIRECT3DLIGHT D3DLight;
-	D3DLIGHT2 D3DLight2;
+	D3DLIGHTX D3DLightx;
 };
 
 struct DYNAMIC
@@ -1578,8 +1608,8 @@ struct D3DTLBUMPVERTEX
 
 struct TEXTURE
 {
-	IDirect3DTexture2* tex;
-	LPDIRECTDRAWSURFACE4 surface;
+	LPDIRECT3DTEXTUREX tex;
+	LPDIRECTDRAWSURFACEX surface;
 	ulong xoff;
 	ulong yoff;
 	ulong width;
@@ -1774,8 +1804,8 @@ struct SMOKE_SPARKS
 
 struct MONOSCREEN_STRUCT
 {
-	IDirect3DTexture2* tex;
-	LPDIRECTDRAWSURFACE4 surface;
+	LPDIRECT3DTEXTUREX tex;
+	LPDIRECTDRAWSURFACEX surface;
 };
 
 struct VonCroyCutData
@@ -2074,6 +2104,16 @@ struct CHARDEF
 	short YOffset;
 	char TopShade;
 	char BottomShade;
+};
+
+struct STRINGHEADER
+{
+	ushort nStrings;
+	ushort nPSXStrings;
+	ushort nPCStrings;
+	ushort StringWadLen;
+	ushort PSXStringWadLen;
+	ushort PCStringWadLen;
 };
 
 #ifdef IMPROVED_BARS

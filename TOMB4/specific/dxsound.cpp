@@ -2,6 +2,15 @@
 #include "dxsound.h"
 #include "dxshell.h"
 #include "function_stubs.h"
+#include "audio.h"
+
+static LPDIRECTSOUNDBUFFER DSPrimary;
+static DS_SAMPLE DS_Samples[32];
+static DS_SAMPLE DS_Buffers[256];
+static MMRESULT mmresult;
+static WAVEFORMATEX pcm_format;
+static HACMSTREAM hACMStream;
+static ACMSTREAMHEADER ACMStreamHeader;
 
 bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 {
@@ -21,7 +30,7 @@ bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 	pcfxFormat.cbSize = 0;
 	S_SoundStopAllSamples();
 
-	if (G_DSPrimary && DXAttempt(G_DSPrimary->SetFormat(&pcfxFormat)) != DS_OK)
+	if (DSPrimary && DXAttempt(DSPrimary->SetFormat(&pcfxFormat)) != DS_OK)
 	{
 		Log(1, "Can't set sound output format to %d", pcfxFormat.nSamplesPerSec);
 		return 0;
@@ -79,10 +88,10 @@ bool DXSetOutputFormat()
 	desc.dwSize = sizeof(desc);
 	desc.dwFlags = DSBCAPS_PRIMARYBUFFER;
 
-	if (DXAttempt(App.dx.lpDS->CreateSoundBuffer(&desc, &G_DSPrimary, 0)) == DS_OK)
+	if (DXAttempt(App.dx.lpDS->CreateSoundBuffer(&desc, &DSPrimary, 0)) == DS_OK)
 	{
 		DXChangeOutputFormat(sfx_frequencies[SoundQuality], 0);
-		G_DSPrimary->Play(0, 0, DSBPLAY_LOOPING);
+		DSPrimary->Play(0, 0, DSBPLAY_LOOPING);
 		return 1;
 	}
 
@@ -110,10 +119,10 @@ bool InitSampleDecompress()
 	pcm_format.nSamplesPerSec = 22050;
 	pcm_format.nBlockAlign = 2;
 	pcm_format.wBitsPerSample = 16;
-	DS_mmresult = acmStreamOpen(&DS_hACMStream, hACMDriver, (LPWAVEFORMATEX)source_pcm_format, &pcm_format, 0, 0, 0, 0);
+	mmresult = acmStreamOpen(&hACMStream, hACMDriver, (LPWAVEFORMATEX)source_pcm_format, &pcm_format, 0, 0, 0, 0);
 
-	if (DS_mmresult != DS_OK)
-		Log(1, "Stream Open %d", DS_mmresult);
+	if (mmresult != DS_OK)
+		Log(1, "Stream Open %d", mmresult);
 
 	decompressed_samples_buffer = (char*)MALLOC(0x40000);
 	samples_buffer = (char*)MALLOC(0x4005A);
@@ -123,10 +132,10 @@ bool InitSampleDecompress()
 	ACMStreamHeader.cbSrcLength = 0x40000;
 	ACMStreamHeader.cbDstLength = 0x40000;
 	ACMStreamHeader.pbDst = (uchar*)decompressed_samples_buffer;
-	DS_mmresult = acmStreamPrepareHeader(DS_hACMStream, &ACMStreamHeader, 0);
+	mmresult = acmStreamPrepareHeader(hACMStream, &ACMStreamHeader, 0);
 
-	if (DS_mmresult != DS_OK)
-		Log(1, "Prepare Stream %d", DS_mmresult);
+	if (mmresult != DS_OK)
+		Log(1, "Prepare Stream %d", mmresult);
 
 	return 1;
 }
@@ -134,15 +143,15 @@ bool InitSampleDecompress()
 bool FreeSampleDecompress()
 {
 	ACMStreamHeader.cbSrcLength = 0x40000;
-	DS_mmresult = acmStreamUnprepareHeader(DS_hACMStream, &ACMStreamHeader, 0);
+	mmresult = acmStreamUnprepareHeader(hACMStream, &ACMStreamHeader, 0);
 
-	if (DS_mmresult != DS_OK)
-		Log(1, "UnPrepare Stream %d", DS_mmresult);
+	if (mmresult != DS_OK)
+		Log(1, "UnPrepare Stream %d", mmresult);
 
-	DS_mmresult = acmStreamClose(DS_hACMStream, 0);
+	mmresult = acmStreamClose(hACMStream, 0);
 
-	if (DS_mmresult != DS_OK)
-		Log(1, "Stream Close %d", DS_mmresult);
+	if (mmresult != DS_OK)
+		Log(1, "Stream Close %d", mmresult);
 
 	FREE(decompressed_samples_buffer);
 	FREE(samples_buffer);
@@ -168,10 +177,10 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 		Log(1, "Incorrect SamplesPerSec");
 
 	ACMStreamHeader.cbSrcLength = comp_size - (sizeof(WAVEFORMATEX) + format->cbSize + 40);
-	DS_mmresult = acmStreamConvert(DS_hACMStream, &ACMStreamHeader, ACM_STREAMCONVERTF_BLOCKALIGN | ACM_STREAMCONVERTF_START);
+	mmresult = acmStreamConvert(hACMStream, &ACMStreamHeader, ACM_STREAMCONVERTF_BLOCKALIGN | ACM_STREAMCONVERTF_START);
 
-	if (DS_mmresult != DS_OK)
-		Log(1, "Stream Convert %d", DS_mmresult);
+	if (mmresult != DS_OK)
+		Log(1, "Stream Convert %d", mmresult);
 
 	desc.dwSize = 20;
 	desc.dwFlags = 226;

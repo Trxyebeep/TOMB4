@@ -2,6 +2,11 @@
 #include "text.h"
 #include "../specific/polyinsert.h"
 
+#ifdef GENERAL_FIXES
+long stash_font_height;
+long smol_font_height;
+#endif
+
 void InitFont()
 {
 	D3DTLVERTEX v;
@@ -78,6 +83,10 @@ void InitFont()
 	}
 
 	font_height = short(float(3.0F * phd_winymax / 40.0F));
+#ifdef GENERAL_FIXES
+	stash_font_height = font_height;
+	smol_font_height = short(float(7.0F * phd_winymax / 120.0F));
+#endif
 }
 
 void inject_text(bool replace)

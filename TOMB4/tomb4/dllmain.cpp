@@ -76,6 +76,8 @@
 #include "../specific/audio.h"
 #include "../specific/dxsound.h"
 #include "../game/text.h"
+#include "../game/harpy.h"
+#include "../game/seth.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -171,6 +173,8 @@ void inject_all(bool replace)
 	inject_audio(replace);
 	inject_dxsound(replace);
 	inject_text(replace);
+	inject_harpy(replace);
+	inject_seth(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

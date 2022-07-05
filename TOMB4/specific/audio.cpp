@@ -120,6 +120,23 @@ const char* TrackFileNames[112] =
 	"103_a3_out_night.wav"
 };
 
+HACMDRIVER hACMDriver;
+
+static LPDIRECTSOUNDBUFFER DSBuffer = 0;
+static LPDIRECTSOUNDNOTIFY DSNotify = 0;
+static ACMSTREAMHEADER StreamHeaders[4];
+static HACMDRIVERID hACMDriverID = 0;
+static HACMSTREAM hACMStream = 0;
+static HANDLE NotifyEventHandles[2];
+static HANDLE NotificationThreadHandle = 0;
+static uchar* audio_fp_write_ptr = 0;
+static uchar* pAudioWrite = 0;
+static ulong AudioBytes = 0;
+static long audio_buffer_size = 0;
+static long CurrentNotify = 0;
+static long NotifySize = 0;
+static long NextWriteOffset = 0;
+
 void OpenStreamFile(char* name)
 {
 	__try
@@ -139,13 +156,13 @@ void OpenStreamFile(char* name)
 		return;
 	}
 
-	SEEK(audio_stream_fp, 90, SEEK_SET);
+	fseek(audio_stream_fp, 90, SEEK_SET);
 	audio_fp_write_ptr = wav_file_buffer;
 	memset(wav_file_buffer, 0, 0x37000);
 
-	if (READ(wav_file_buffer, 1, 0x37000, audio_stream_fp) < 0x37000 && auido_play_mode == 1)
+	if (fread(wav_file_buffer, 1, 0x37000, audio_stream_fp) < 0x37000 && auido_play_mode == 1)
 	{
-		SEEK(audio_stream_fp, 90, SEEK_SET);
+		fseek(audio_stream_fp, 90, SEEK_SET);
 		Log(0, "FileReset In OpenStreamFile");
 	}
 }
@@ -157,10 +174,10 @@ void GetADPCMData()
 
 	memset(audio_fp_write_ptr, 0, 0x5800);
 
-	if (READ(audio_fp_write_ptr, 1, 0x5800, audio_stream_fp) < 0x5800 && auido_play_mode == 1)
+	if (fread(audio_fp_write_ptr, 1, 0x5800, audio_stream_fp) < 0x5800 && auido_play_mode == 1)
 	{
 		Log(0, "FileReset In GetADPCMData");
-		SEEK(audio_stream_fp, 90, 0);
+		fseek(audio_stream_fp, 90, SEEK_SET);
 	}
 
 	audio_fp_write_ptr += 0x5800;
@@ -178,8 +195,8 @@ void ACMSetVolume()
 	else
 		volume = -4000 * (100 - MusicVolume) / 100;
 
-	if (G_DSBuffer)
-		G_DSBuffer->SetVolume(volume);
+	if (DSBuffer)
+		DSBuffer->SetVolume(volume);
 }
 
 void ACMEmulateCDPlay(long track, long mode)
@@ -213,16 +230,16 @@ void ACMEmulateCDPlay(long track, long mode)
 
 	memcpy(ADPCMBuffer, audio_fp_write_ptr, 0x5800);
 	GetADPCMData();
-	DXAttempt(G_DSBuffer->Lock(0, audio_buffer_size, (LPVOID*)&pAudioWrite, &AudioBytes, 0, 0, 0));
+	DXAttempt(DSBuffer->Lock(0, audio_buffer_size, (LPVOID*)&pAudioWrite, &AudioBytes, 0, 0, 0));
 	acmStreamConvert(hACMStream, &StreamHeaders[0], ACM_STREAMCONVERTF_BLOCKALIGN | ACM_STREAMCONVERTF_START);
 	memcpy(ADPCMBuffer, audio_fp_write_ptr, 0x5800);
 	GetADPCMData();
 	acmStreamConvert(hACMStream, &StreamHeaders[1], ACM_STREAMCONVERTF_BLOCKALIGN);
-	DXAttempt(G_DSBuffer->Unlock(pAudioWrite, audio_buffer_size, 0, 0));
+	DXAttempt(DSBuffer->Unlock(pAudioWrite, audio_buffer_size, 0, 0));
 	CurrentNotify = 2;
 	NextWriteOffset = 2 * NotifySize;
 	ACMSetVolume();
-	G_DSBuffer->Play(0, 0, DSBPLAY_LOOPING);
+	DSBuffer->Play(0, 0, DSBPLAY_LOOPING);
 }
 
 BOOL __stdcall ACMEnumCallBack(HACMDRIVERID hadid, DWORD_PTR dwInstance, DWORD fdwSupport)
@@ -267,7 +284,7 @@ long ACMSetupNotifications()
 	if (!NotificationThreadHandle)
 		Log(1, "Create Notification Thread failed");
 
-	result = G_DSNotify->SetNotificationPositions(5, posNotif);
+	result = DSNotify->SetNotificationPositions(5, posNotif);
 
 	if (result != DS_OK)
 	{
@@ -319,12 +336,12 @@ void FillADPCMBuffer(char* p, long track)
 		return;
 	}
 
-	READ(p, 1, 0x5800, audio_stream_fp);
+	fread(p, 1, 0x5800, audio_stream_fp);
 
-	if (audio_stream_fp && feof(audio_stream_fp))	//feof doesnt act properly
+	if (audio_stream_fp && feof(audio_stream_fp))
 	{
 		if (auido_play_mode == 1)
-			SEEK(audio_stream_fp, 90, SEEK_SET);
+			fseek(audio_stream_fp, 90, SEEK_SET);
 		else
 		{
 			audio_counter++;
@@ -366,7 +383,7 @@ long ACMHandleNotifications()
 	{
 		EnterCriticalSection(&audio_cs);
 
-		if (!wait && G_DSBuffer)
+		if (!wait && DSBuffer)
 		{
 			memcpy(ADPCMBuffer, audio_fp_write_ptr, 0x5800);
 
@@ -382,9 +399,9 @@ long ACMHandleNotifications()
 				if ((long)audio_fp_write_ptr >= long(wav_file_buffer + 0x37000))
 					audio_fp_write_ptr = wav_file_buffer;
 
-				G_DSBuffer->Lock(NextWriteOffset, NotifySize, (LPVOID*)&write, &bytes, 0, 0, 0);
+				DSBuffer->Lock(NextWriteOffset, NotifySize, (LPVOID*)&write, &bytes, 0, 0, 0);
 				acmStreamConvert(hACMStream, &StreamHeaders[CurrentNotify], ACM_STREAMCONVERTF_BLOCKALIGN);
-				G_DSBuffer->Unlock(&write, bytes, 0, 0);
+				DSBuffer->Unlock(&write, bytes, 0, 0);
 				NextWriteOffset += bytes;
 
 				if (NextWriteOffset >= audio_buffer_size)
@@ -396,7 +413,7 @@ long ACMHandleNotifications()
 
 		LeaveCriticalSection(&audio_cs);
 
-		if (!G_DSBuffer)
+		if (!DSBuffer)
 			break;
 	}
 
@@ -406,6 +423,8 @@ long ACMHandleNotifications()
 bool ACMInit()
 {
 	DSBUFFERDESC desc;
+	static WAVEFORMATEX wav_format;
+	static ulong StreamSize;
 	ulong version, pMetric;
 
 	version = acmGetVersion();
@@ -429,8 +448,8 @@ bool ACMInit()
 	ADPCMBuffer = (uchar*)MALLOC(0x5800);
 	wav_file_buffer = (uchar*)MALLOC(0x37000);
 	wav_format.wFormatTag = WAVE_FORMAT_PCM;
-	acmMetrics(0, 0x32u, &pMetric);
-	acmFormatSuggest(hACMDriver, &source_wav_format, &wav_format, pMetric, 0x10000u);
+	acmMetrics(0, ACM_METRIC_MAX_SIZE_FORMAT, &pMetric);
+	acmFormatSuggest(hACMDriver, (LPWAVEFORMATEX)&source_wav_format, &wav_format, pMetric, ACM_FORMATSUGGESTF_WFORMATTAG);
 	audio_buffer_size = 0x577C0;
 	NotifySize = 0x15DF0;
 
@@ -440,13 +459,13 @@ bool ACMInit()
 	desc.dwSize = 20;
 	desc.dwFlags = DSBCAPS_LOCSOFTWARE | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLPOSITIONNOTIFY | DSBCAPS_GETCURRENTPOSITION2;
 	desc.lpwfxFormat = &wav_format;
-	App.dx.lpDS->CreateSoundBuffer(&desc, &G_DSBuffer, 0);
-	G_DSBuffer->QueryInterface(IID_IDirectSoundNotify, (LPVOID*)&G_DSNotify);
+	App.dx.lpDS->CreateSoundBuffer(&desc, &DSBuffer, 0);
+	DSBuffer->QueryInterface(DSNGUID, (LPVOID*)&DSNotify);
 
 	ACMSetupNotifications();
-	acmStreamOpen(&hACMStream, hACMDriver, &source_wav_format, &wav_format, 0, 0, 0, 0);
-	acmStreamSize(hACMStream, 0x5800u, (ulong*)&StreamSize, 0);
-	DXAttempt(G_DSBuffer->Lock(0, audio_buffer_size, (LPVOID*)&pAudioWrite, &AudioBytes, 0, 0, 0));
+	acmStreamOpen(&hACMStream, hACMDriver, (LPWAVEFORMATEX)&source_wav_format, &wav_format, 0, 0, 0, 0);
+	acmStreamSize(hACMStream, 0x5800u, &StreamSize, 0);
+	DXAttempt(DSBuffer->Lock(0, audio_buffer_size, (LPVOID*)&pAudioWrite, &AudioBytes, 0, 0, 0));
 	memset(pAudioWrite, 0, audio_buffer_size);
 
 	for (int i = 0; i < 4; i++)
@@ -460,7 +479,7 @@ bool ACMInit()
 		acmStreamPrepareHeader(hACMStream, &StreamHeaders[i], 0);
 	}
 
-	DXAttempt(G_DSBuffer->Unlock(pAudioWrite, audio_buffer_size, 0, 0));
+	DXAttempt(DSBuffer->Unlock(pAudioWrite, audio_buffer_size, 0, 0));
 	acm_ready = 1;
 	return 1;
 }
@@ -481,18 +500,18 @@ void ACMClose()
 	acmStreamClose(hACMStream, 0);
 	acmDriverClose(hACMDriver, 0);
 
-	if (G_DSNotify)
+	if (DSNotify)
 	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Notification", G_DSNotify, G_DSNotify->Release());
-		G_DSNotify = 0;
+		Log(4, "Released %s @ %x - RefCnt = %d", "Notification", DSNotify, DSNotify->Release());
+		DSNotify = 0;
 	}
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Notification");
 
-	if (G_DSBuffer)
+	if (DSBuffer)
 	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Stream Buffer", G_DSBuffer, G_DSBuffer->Release());
-		G_DSBuffer = 0;
+		Log(4, "Released %s @ %x - RefCnt = %d", "Stream Buffer", DSBuffer, DSBuffer->Release());
+		DSBuffer = 0;
 	}
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Stream Buffer");
@@ -534,10 +553,10 @@ void S_CDStop()
 		}
 
 		memset(wav_file_buffer, 0, 0x37000);
-		G_DSBuffer->Stop();
-		G_DSBuffer->SetCurrentPosition(0);
+		DSBuffer->Stop();
+		DSBuffer->SetCurrentPosition(0);
 		while (reading_audio_file) {};
-		CLOSE(audio_stream_fp);
+		fclose(audio_stream_fp);
 		audio_stream_fp = 0;
 		audio_counter = 0;
 		XAFlag = 7;
@@ -559,7 +578,7 @@ void inject_audio(bool replace)
 	INJECT(0x0046E180, ACMEmulateCDPlay, replace);
 	INJECT(0x0046D800, ACMEnumCallBack, replace);
 	INJECT(0x0046D890, ACMSetupNotifications, replace);
-	INJECT(0x0046DF50, FillADPCMBuffer, 0);	//inject me when FILE* stuff are moved to dll
+	INJECT(0x0046DF50, FillADPCMBuffer, replace);
 	INJECT(0x0046E340, ACMHandleNotifications, replace);
 	INJECT(0x0046D9C0, ACMInit, replace);
 	INJECT(0x0046DD00, ACMClose, replace);

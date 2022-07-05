@@ -389,7 +389,7 @@ LRESULT CALLBACK WinMainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 	case WM_MOVE:
 		Log(6, "WM_MOVE");
-		DXMove(lParam & 0xFFFF, short((lParam >> 16) & 0xFFFF));
+		DXMove((short)lParam, short((lParam >> 16) & 0xFFFF));
 		break;
 
 	case WM_ACTIVATE:

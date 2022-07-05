@@ -12,6 +12,6 @@ void ControlLocustEmitter(short item_number);
 void DrawLocusts();
 void UpdateLocusts();
 void TriggerCrocgodMissile(PHD_3DPOS* pos, short room_number, short num);
-void TriggerCrocgodMissileFlame(short fx_number, short xv, short yv, short zv);
+void TriggerCrocgodMissileFlame(short fx_number, long xv, long yv, long zv);
 void InitialiseCrocgod(short item_number);
 void CrocgodControl(short item_number);

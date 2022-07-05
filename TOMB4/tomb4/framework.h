@@ -6,7 +6,7 @@
 #include <cmath>
 #include <stdio.h>
 #include <process.h>
-#define DIRECTINPUT_VERSION 0x0500
+#define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #define DIRECTSOUND_VERSION	0x0500
 #include <dsound.h>
