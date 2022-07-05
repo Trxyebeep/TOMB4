@@ -70,6 +70,18 @@ long mDotProduct(PHD_VECTOR* a, PHD_VECTOR* b)
 	return (a->x * b->x + a->y * b->y + a->z * b->z) >> W2V_SHIFT;
 }
 
+void mCrossProduct(PHD_VECTOR* a, PHD_VECTOR* b, PHD_VECTOR* n)
+{
+	PHD_VECTOR t;
+
+	t.x = a->y * b->z - a->z * b->y;
+	t.y = a->z * b->x - a->x * b->z;
+	t.z = a->x * b->y - a->y * b->x;
+	n->x = t.x >> W2V_SHIFT;
+	n->y = t.y >> W2V_SHIFT;
+	n->z = t.z >> W2V_SHIFT;
+}
+
 void inject_rope(bool replace)
 {
 	INJECT(0x00459410, DrawRopeList, replace);
@@ -77,4 +89,5 @@ void inject_rope(bool replace)
 	INJECT(0x00459450, Normalise, replace);
 	INJECT(0x00458A00, vMul, replace);
 	INJECT(0x00458A40, mDotProduct, replace);
+	INJECT(0x00458A70, mCrossProduct, replace);
 }
