@@ -3,6 +3,7 @@
 #include "../specific/specificfx.h"
 #include "../specific/3dmath.h"
 #include "draw.h"
+#include "control.h"
 
 static PENDULUM NullPendulum = { {0, 0, 0}, {0, 0, 0}, 0, 0 };
 
@@ -477,6 +478,21 @@ long RopeNodeCollision(ROPE_STRUCT* rope, long x, long y, long z, long rad)
 	return -1;
 }
 
+void RopeControl(short item_num)
+{
+	ROPE_STRUCT* currope;
+
+	currope = &RopeList[items[item_num].trigger_flags];
+
+	if (TriggerActive(&items[item_num]))
+	{
+		currope->Active = 1;
+		CalculateRope(currope);
+	}
+	else
+		currope->Active = 0;
+}
+
 void inject_rope(bool replace)
 {
 	INJECT(0x00459410, DrawRopeList, replace);
@@ -494,4 +510,5 @@ void inject_rope(bool replace)
 	INJECT(0x004597D0, SetPendulumVelocity, replace);
 	INJECT(0x00459890, CalculateRope, replace);
 	INJECT(0x004592E0, RopeNodeCollision, replace);
+	INJECT(0x004593B0, RopeControl, replace);
 }

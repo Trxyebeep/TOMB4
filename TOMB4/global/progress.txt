@@ -1110,7 +1110,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00459060	+	GetRopePos
 0x00459100		RopeCollision
 0x004592E0	+	RopeNodeCollision
-0x004593B0		RopeControl
+0x004593B0	+	RopeControl
 0x00459410	+	DrawRopeList
 0x00459450	+	Normalise
 0x00459510	+	ModelRigid

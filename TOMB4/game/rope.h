@@ -18,3 +18,4 @@ void SetPendulumPoint(ROPE_STRUCT* Rope, long node);
 void SetPendulumVelocity(long x, long y, long z);
 void CalculateRope(ROPE_STRUCT* Rope);
 long RopeNodeCollision(ROPE_STRUCT* rope, long x, long y, long z, long rad);
+void RopeControl(short item_num);
