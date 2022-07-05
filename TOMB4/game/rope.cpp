@@ -4,6 +4,8 @@
 #include "../specific/3dmath.h"
 #include "draw.h"
 #include "control.h"
+#include "lara_states.h"
+#include "lara.h"
 
 static PENDULUM NullPendulum = { {0, 0, 0}, {0, 0, 0}, 0, 0 };
 
@@ -493,6 +495,55 @@ void RopeControl(short item_num)
 		currope->Active = 0;
 }
 
+void RopeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ROPE_STRUCT* rope;
+	int i;
+	short* bounds;
+	long x, y, z, rad;
+
+	rope = &RopeList[items[item_number].trigger_flags];
+
+	if (input & IN_ACTION && lara.gun_status == LG_NO_ARMS && (l->current_anim_state == AS_REACH || l->current_anim_state == AS_UPJUMP) && l->gravity_status && l->fallspeed > 0 && rope->Active)
+	{
+		bounds = GetBoundsAccurate(l);
+		x = l->pos.x_pos;
+		y = l->pos.y_pos + bounds[2] + 512;
+		z = l->pos.z_pos + (bounds[5] * phd_cos(l->pos.y_rot) >> 14);
+		rad = l->current_anim_state == AS_REACH ? 128 : 320;
+		i = RopeNodeCollision(rope, x, y, z, rad);
+
+		if (i >= 0)
+		{
+			if (l->current_anim_state == AS_REACH)
+			{
+				l->anim_number = 379;
+				l->current_anim_state = AS_ROPEFWD;
+				lara.RopeFrame = (anims[ANIM_SWINGFWD].frame_base + 32) << 8;
+				lara.RopeDFrame = (anims[ANIM_SWINGFWD].frame_base + 60) << 8;
+			}
+			else
+			{
+				l->anim_number = ANIM_UPJUMP2ROPE;
+				l->current_anim_state = AS_ROPE;
+			}
+
+			l->frame_number = anims[l->anim_number].frame_base;
+			l->gravity_status = 0;
+			l->fallspeed = 0;
+			lara.gun_status = LG_HANDS_BUSY;
+			lara.RopePtr = items[item_number].trigger_flags;
+			lara.RopeSegment = i;
+			lara.RopeY = l->pos.y_rot;
+			AlignLaraToRope(l);
+			CurrentPendulum.Velocity.x = 0;
+			CurrentPendulum.Velocity.y = 0;
+			CurrentPendulum.Velocity.z = 0;
+			ApplyVelocityToRope(i, l->pos.y_rot, lara_item->speed << 4);
+		}
+	}
+}
+
 void inject_rope(bool replace)
 {
 	INJECT(0x00459410, DrawRopeList, replace);
@@ -511,4 +562,5 @@ void inject_rope(bool replace)
 	INJECT(0x00459890, CalculateRope, replace);
 	INJECT(0x004592E0, RopeNodeCollision, replace);
 	INJECT(0x004593B0, RopeControl, replace);
+	INJECT(0x00459100, RopeCollision, replace);
 }
