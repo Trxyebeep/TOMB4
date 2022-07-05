@@ -560,7 +560,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00453A30	+	InitialiseDoor
 0x00453E40	+	InitialisePulley
 0x00453E90	+	InitialisePickUp
-0x00453F30		init_all_ropes
+0x00453F30	+	init_all_ropes
 0x00453F60	+	CreateRope
 0x00454070	+	InitialiseRope
 

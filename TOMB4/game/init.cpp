@@ -544,8 +544,16 @@ void InitialiseRope(short item_number)
 	RopeDir.y = 0x4000;
 	RopeDir.z = 0;
 	CreateRope(&RopeList[nRope], &RopePos, &RopeDir, 128, item);
-	item->trigger_flags = nRope;
+	item->trigger_flags = (short)nRope;
 	nRope++;
+}
+
+void init_all_ropes()
+{
+	for (int i = 0; i < 5; i++)
+		RopeList[i].Active = 0;
+
+	nRope = 0;
 }
 
 void inject_init(bool replace)
@@ -574,4 +582,5 @@ void inject_init(bool replace)
 	INJECT(0x00453E90, InitialisePickUp, replace);
 	INJECT(0x00453F60, CreateRope, replace);
 	INJECT(0x00454070, InitialiseRope, replace);
+	INJECT(0x00453F30, init_all_ropes, replace);
 }
