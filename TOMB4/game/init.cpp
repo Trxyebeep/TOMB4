@@ -526,6 +526,28 @@ void CreateRope(ROPE_STRUCT* rope, PHD_VECTOR* pos, PHD_VECTOR* dir, long slengt
 	rope->Active = 0;
 }
 
+void InitialiseRope(short item_number)
+{
+	PHD_VECTOR RopePos, RopeDir;
+	ITEM_INFO* item;
+	FLOOR_INFO* floor;
+	short room_number;
+
+	item = &items[item_number];
+	room_number = item->room_number;
+	RopePos.x = item->pos.x_pos;
+	RopePos.y = item->pos.y_pos;
+	RopePos.z = item->pos.z_pos;
+	floor = GetFloor(RopePos.x, RopePos.y, RopePos.z, &room_number);
+	RopePos.y = GetCeiling(floor, RopePos.x, RopePos.y, RopePos.z);
+	RopeDir.x = 0;
+	RopeDir.y = 0x4000;
+	RopeDir.z = 0;
+	CreateRope(&RopeList[nRope], &RopePos, &RopeDir, 128, item);
+	item->trigger_flags = nRope;
+	nRope++;
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
@@ -551,4 +573,5 @@ void inject_init(bool replace)
 	INJECT(0x00453E40, InitialisePulley, replace);
 	INJECT(0x00453E90, InitialisePickUp, replace);
 	INJECT(0x00453F60, CreateRope, replace);
+	INJECT(0x00454070, InitialiseRope, replace);
 }
