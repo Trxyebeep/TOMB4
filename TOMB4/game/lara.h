@@ -152,6 +152,7 @@ void LookUpDown();
 void LookLeftRight();
 long UseInventoryItems(ITEM_INFO* item);
 void LaraDeflectEdgeJump(ITEM_INFO* item, COLL_INFO* coll);
+void ApplyVelocityToRope(long node, ushort angle, ushort n);
 
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
 #define LaraHangLeftCornerTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004266E0 )
@@ -170,4 +171,3 @@ void LaraDeflectEdgeJump(ITEM_INFO* item, COLL_INFO* coll);
 #define FallFromRope	( (void(__cdecl*)(ITEM_INFO*)) 0x004241D0 )
 #define UpdateRopeSwing	( (void(__cdecl*)(ITEM_INFO*)) 0x00424320 )
 #define JumpOffRope	( (void(__cdecl*)(ITEM_INFO*)) 0x00424820 )
-#define ApplyVelocityToRope	( (void(__cdecl*)(long, ushort, ushort)) 0x00424150 )

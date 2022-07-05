@@ -20,6 +20,7 @@
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
+#include "rope.h"
 
 void(*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 {
@@ -4641,6 +4642,15 @@ void LaraDeflectEdgeJump(ITEM_INFO* item, COLL_INFO* coll)
 	}
 }
 
+void ApplyVelocityToRope(long node, ushort angle, ushort n)
+{
+	long xvel, zvel;
+
+	xvel = n * phd_sin(angle) >> 2;
+	zvel = n * phd_cos(angle) >> 2;
+	SetPendulumVelocity(xvel, 0, zvel);
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -4788,4 +4798,5 @@ void inject_lara(bool replace)
 	INJECT(0x00428D40, LookLeftRight, replace);
 	INJECT(0x00424E90, UseInventoryItems, replace);
 	INJECT(0x00422C50, LaraDeflectEdgeJump, replace);
+	INJECT(0x00424150, ApplyVelocityToRope, replace);
 }

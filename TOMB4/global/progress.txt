@@ -676,7 +676,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00423F20	+	lara_as_poleright
 0x00423F60	+	lara_col_poleup
 0x00423FF0	+	lara_col_poledown
-0x00424150		ApplyVelocityToRope
+0x00424150	+	ApplyVelocityToRope
 0x004241A0	+	lara_as_rope
 0x004241D0		FallFromRope
 0x00424270	+	lara_col_rope
