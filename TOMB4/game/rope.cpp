@@ -268,6 +268,22 @@ void SetPendulumPoint(ROPE_STRUCT* Rope, long node)
 	CurrentPendulum.node = node;
 }
 
+void SetPendulumVelocity(long x, long y, long z)
+{
+	long scale;
+
+	if (2 * (CurrentPendulum.node >> 1) < 24)
+	{
+		scale = 4096 / (24 - 2 * (CurrentPendulum.node >> 1)) * 256;
+		x = (__int64)scale * x >> (W2V_SHIFT + 2);
+		y = (__int64)scale * y >> (W2V_SHIFT + 2);
+		z = (__int64)scale * z >> (W2V_SHIFT + 2);
+	}
+
+	CurrentPendulum.Velocity.x += x;
+	CurrentPendulum.Velocity.y += y;
+	CurrentPendulum.Velocity.z += z;
+}
 
 void inject_rope(bool replace)
 {
@@ -283,4 +299,5 @@ void inject_rope(bool replace)
 	INJECT(0x00459510, ModelRigid, replace);
 	INJECT(0x00459640, ModelRigidRope, replace);
 	INJECT(0x00459740, SetPendulumPoint, replace);
+	INJECT(0x004597D0, SetPendulumVelocity, replace);
 }
