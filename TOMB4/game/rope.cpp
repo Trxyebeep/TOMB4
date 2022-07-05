@@ -226,6 +226,31 @@ void ModelRigid(PHD_VECTOR* pa, PHD_VECTOR* pb, PHD_VECTOR* va, PHD_VECTOR* vb, 
 	vb->z -= delta.z;
 }
 
+void ModelRigidRope(PHD_VECTOR* pa, PHD_VECTOR* pb, PHD_VECTOR* va, PHD_VECTOR* vb, long rlength)
+{
+	PHD_VECTOR delta, d, a, b;
+	long length, scale;
+
+	a.x = pb->x - pa->x;
+	a.y = pb->y - pa->y;
+	a.z = pb->z - pa->z;
+	b.x = vb->x;
+	b.y = vb->y;
+	b.z = vb->z;
+	d.x = a.x + b.x;
+	d.y = a.y + b.y;
+	d.z = a.z + b.z;
+	length = phd_sqrt(ABS(SQUARE(d.x >> (W2V_SHIFT + 2)) + SQUARE(d.y >> (W2V_SHIFT + 2)) + SQUARE(d.z >> (W2V_SHIFT + 2))));
+	scale = (length << (W2V_SHIFT + 2)) - rlength;
+	Normalise(&d);
+	delta.x = (__int64)scale * d.x >> (W2V_SHIFT + 2);
+	delta.y = (__int64)scale * d.y >> (W2V_SHIFT + 2);
+	delta.z = (__int64)scale * d.z >> (W2V_SHIFT + 2);
+	vb->x -= delta.x;
+	vb->y -= delta.y;
+	vb->z -= delta.z;
+}
+
 void inject_rope(bool replace)
 {
 	INJECT(0x00459410, DrawRopeList, replace);
@@ -238,4 +263,5 @@ void inject_rope(bool replace)
 	INJECT(0x00459060, GetRopePos, replace);
 	INJECT(0x00458B90, AlignLaraToRope, replace);
 	INJECT(0x00459510, ModelRigid, replace);
+	INJECT(0x00459640, ModelRigidRope, replace);
 }
