@@ -11,3 +11,4 @@ long mDotProduct(PHD_VECTOR* a, PHD_VECTOR* b);
 void mCrossProduct(PHD_VECTOR* a, PHD_VECTOR* b, PHD_VECTOR* n);
 void phd_GetMatrixAngles(long* m, short* dest);
 void GetRopePos(ROPE_STRUCT* rope, long pos, long* x, long* y, long* z);
+void AlignLaraToRope(ITEM_INFO* l);
