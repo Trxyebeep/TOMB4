@@ -4,6 +4,8 @@
 #include "../specific/3dmath.h"
 #include "draw.h"
 
+static PENDULUM NullPendulum = { {0, 0, 0}, {0, 0, 0}, 0, 0 };
+
 void DrawRopeList()
 {
 	for (int i = 0; i < nRope; i++)
@@ -53,9 +55,9 @@ PHD_VECTOR* Normalise(PHD_VECTOR* v)
 	d = ABS(SQUARE(a) + SQUARE(b) + SQUARE(c));
 	e = phd_sqrt(d);
 	mod = 65536 / e;
-	v->x = (long long)mod * v->x >> 16;
-	v->y = (long long)mod * v->y >> 16;
-	v->z = (long long)mod * v->z >> 16;
+	v->x = (__int64)mod * v->x >> 16;
+	v->y = (__int64)mod * v->y >> 16;
+	v->z = (__int64)mod * v->z >> 16;
 	return v;
 }
 
@@ -285,6 +287,176 @@ void SetPendulumVelocity(long x, long y, long z)
 	CurrentPendulum.Velocity.z += z;
 }
 
+void CalculateRope(ROPE_STRUCT* Rope)
+{
+	PENDULUM* Pendulum;
+	PHD_VECTOR dir;
+	long n, bSetFlag;
+
+	bSetFlag = 0;
+
+	if (Rope == &RopeList[lara.RopePtr])
+	{
+		Pendulum = &CurrentPendulum;
+
+		if (CurrentPendulum.node != lara.RopeSegment + 1)
+		{
+			SetPendulumPoint(Rope, lara.RopeSegment + 1);
+			bSetFlag = 1;
+		}
+	}
+	else
+	{
+		Pendulum = &NullPendulum;
+
+		if (lara.RopePtr == -1 && CurrentPendulum.Rope)
+		{
+			for (n = 0; n < CurrentPendulum.node; n++)
+			{
+				CurrentPendulum.Rope->Velocity[n].x = CurrentPendulum.Rope->Velocity[CurrentPendulum.node].x;
+				CurrentPendulum.Rope->Velocity[n].y = CurrentPendulum.Rope->Velocity[CurrentPendulum.node].y;
+				CurrentPendulum.Rope->Velocity[n].z = CurrentPendulum.Rope->Velocity[CurrentPendulum.node].z;
+			}
+
+			CurrentPendulum.Rope = 0;
+			CurrentPendulum.node = -1;
+			CurrentPendulum.Position.x = 0;
+			CurrentPendulum.Position.y = 0;
+			CurrentPendulum.Position.z = 0;
+			CurrentPendulum.Velocity.x = 0;
+			CurrentPendulum.Velocity.y = 0;
+			CurrentPendulum.Velocity.z = 0;
+		}
+	}
+
+	if (lara.RopePtr != -1)
+	{
+		dir.x = Pendulum->Position.x - Rope->Segment[0].x;
+		dir.y = Pendulum->Position.y - Rope->Segment[0].y;
+		dir.z = Pendulum->Position.z - Rope->Segment[0].z;
+		Normalise(&dir);
+
+		for (n = Pendulum->node; n >= 0; n--)
+		{
+			Rope->Segment[n].x = Rope->MeshSegment[n - 1].x + ((__int64)Rope->SegmentLength * dir.x >> (W2V_SHIFT + 2));
+			Rope->Segment[n].y = Rope->MeshSegment[n - 1].y + ((__int64)Rope->SegmentLength * dir.y >> (W2V_SHIFT + 2));
+			Rope->Segment[n].z = Rope->MeshSegment[n - 1].z + ((__int64)Rope->SegmentLength * dir.z >> (W2V_SHIFT + 2));
+			Rope->Velocity[n].x = 0;
+			Rope->Velocity[n].y = 0;
+			Rope->Velocity[n].z = 0;
+		}
+
+		if (bSetFlag)
+		{
+			dir.x = Pendulum->Position.x - Rope->Segment[Pendulum->node].x;
+			dir.y = Pendulum->Position.y - Rope->Segment[Pendulum->node].y;
+			dir.z = Pendulum->Position.z - Rope->Segment[Pendulum->node].z;
+			Rope->Segment[Pendulum->node].x = Pendulum->Position.x;
+			Rope->Segment[Pendulum->node].y = Pendulum->Position.y;
+			Rope->Segment[Pendulum->node].z = Pendulum->Position.z;
+
+			for (n = Pendulum->node; n < 24; n++)
+			{
+				Rope->Segment[n].x -= dir.x;
+				Rope->Segment[n].y -= dir.y;
+				Rope->Segment[n].z -= dir.z;
+				Rope->Velocity[n].x = 0;
+				Rope->Velocity[n].y = 0;
+				Rope->Velocity[n].z = 0;
+			}
+		}
+
+		ModelRigidRope(&Rope->Segment[0], &Pendulum->Position, &Rope->Velocity[0], &Pendulum->Velocity, Rope->SegmentLength * Pendulum->node);
+		Pendulum->Velocity.y += 0x60000;
+		Pendulum->Position.x += Pendulum->Velocity.x;
+		Pendulum->Position.y += Pendulum->Velocity.y;
+		Pendulum->Position.z += Pendulum->Velocity.z;
+		Pendulum->Velocity.x -= Pendulum->Velocity.x >> 8;
+		Pendulum->Velocity.z -= Pendulum->Velocity.z >> 8;
+	}
+
+	for (n = Pendulum->node; n < 23; n++)
+		ModelRigid(&Rope->Segment[n], &Rope->Segment[n + 1], &Rope->Velocity[n], &Rope->Velocity[n + 1], Rope->SegmentLength);
+
+	for (n = 0; n < 24; n++)
+	{
+		Rope->Segment[n].x += Rope->Velocity[n].x;
+		Rope->Segment[n].y += Rope->Velocity[n].y;
+		Rope->Segment[n].z += Rope->Velocity[n].z;
+	}
+
+	for (n = Pendulum->node; n < 24; n++)
+	{
+		Rope->Velocity[n].y += 0x30000;
+
+		if (Pendulum->Rope)
+		{
+			Rope->Velocity[n].x -= Rope->Velocity[n].x >> 4;
+			Rope->Velocity[n].z -= Rope->Velocity[n].z >> 4;
+		}
+		else
+		{
+			Rope->Velocity[n].x -= Rope->Velocity[n].x >> 7;
+			Rope->Velocity[n].z -= Rope->Velocity[n].z >> 7;
+		}
+	}
+
+	Rope->Segment[0].x = 0;
+	Rope->Segment[0].y = 0;
+	Rope->Segment[0].z = 0;
+	Rope->Velocity[0].x = 0;
+	Rope->Velocity[0].y = 0;
+	Rope->Velocity[0].z = 0;
+
+	for (n = 0; n < 23; n++)
+	{
+		Rope->NormalisedSegment[n].x = Rope->Segment[n + 1].x - Rope->Segment[n].x;
+		Rope->NormalisedSegment[n].y = Rope->Segment[n + 1].y - Rope->Segment[n].y;
+		Rope->NormalisedSegment[n].z = Rope->Segment[n + 1].z - Rope->Segment[n].z;
+		Normalise(&Rope->NormalisedSegment[n]);
+	}
+
+	if (Rope != &RopeList[lara.RopePtr])
+	{
+		Rope->MeshSegment[0].x = Rope->Segment[0].x;
+		Rope->MeshSegment[0].y = Rope->Segment[0].y;
+		Rope->MeshSegment[0].z = Rope->Segment[0].z;
+		Rope->MeshSegment[1].x = Rope->Segment[0].x + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[0].x >> 16);
+		Rope->MeshSegment[1].y = Rope->Segment[0].y + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[0].y >> 16);
+		Rope->MeshSegment[1].z = Rope->Segment[0].z + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[0].z >> 16);
+
+		for (n = 2; n < 24; n++)
+		{
+			Rope->MeshSegment[n].x = Rope->MeshSegment[n - 1].x + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[n - 1].x >> (W2V_SHIFT + 2));
+			Rope->MeshSegment[n].y = Rope->MeshSegment[n - 1].y + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[n - 1].y >> (W2V_SHIFT + 2));
+			Rope->MeshSegment[n].z = Rope->MeshSegment[n - 1].z + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[n - 1].z >> (W2V_SHIFT + 2));
+		}
+	}
+	else
+	{
+		Rope->MeshSegment[Pendulum->node].x = Rope->Segment[Pendulum->node].x;
+		Rope->MeshSegment[Pendulum->node].y = Rope->Segment[Pendulum->node].y;
+		Rope->MeshSegment[Pendulum->node].z = Rope->Segment[Pendulum->node].z;
+		Rope->MeshSegment[Pendulum->node + 1].x = Rope->Segment[Pendulum->node].x + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[Pendulum->node].x >> (W2V_SHIFT + 2));
+		Rope->MeshSegment[Pendulum->node + 1].y = Rope->Segment[Pendulum->node].y + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[Pendulum->node].y >> (W2V_SHIFT + 2));
+		Rope->MeshSegment[Pendulum->node + 1].z = Rope->Segment[Pendulum->node].z + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[Pendulum->node].z >> (W2V_SHIFT + 2));
+
+		for (n = Pendulum->node + 1; n < 23; n++)
+		{
+			Rope->MeshSegment[n + 1].x = Rope->MeshSegment[n].x + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[n].x >> (W2V_SHIFT + 2));
+			Rope->MeshSegment[n + 1].y = Rope->MeshSegment[n].y + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[n].y >> (W2V_SHIFT + 2));
+			Rope->MeshSegment[n + 1].z = Rope->MeshSegment[n].z + ((__int64)Rope->SegmentLength * Rope->NormalisedSegment[n].z >> (W2V_SHIFT + 2));
+		}
+
+		for (n = 0; n < Pendulum->node; n++)
+		{
+			Rope->MeshSegment[n].x = Rope->Segment[n].x;
+			Rope->MeshSegment[n].y = Rope->Segment[n].y;
+			Rope->MeshSegment[n].z = Rope->Segment[n].z;
+		}
+	}
+}
+
 void inject_rope(bool replace)
 {
 	INJECT(0x00459410, DrawRopeList, replace);
@@ -300,4 +472,5 @@ void inject_rope(bool replace)
 	INJECT(0x00459640, ModelRigidRope, replace);
 	INJECT(0x00459740, SetPendulumPoint, replace);
 	INJECT(0x004597D0, SetPendulumVelocity, replace);
+	INJECT(0x00459890, CalculateRope, replace);
 }

@@ -16,3 +16,4 @@ void ModelRigid(PHD_VECTOR* pa, PHD_VECTOR* pb, PHD_VECTOR* va, PHD_VECTOR* vb, 
 void ModelRigidRope(PHD_VECTOR* pa, PHD_VECTOR* pb, PHD_VECTOR* va, PHD_VECTOR* vb, long rlength);
 void SetPendulumPoint(ROPE_STRUCT* Rope, long node);
 void SetPendulumVelocity(long x, long y, long z);
+void CalculateRope(ROPE_STRUCT* Rope);
