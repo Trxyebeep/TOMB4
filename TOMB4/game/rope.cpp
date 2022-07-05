@@ -82,6 +82,25 @@ void mCrossProduct(PHD_VECTOR* a, PHD_VECTOR* b, PHD_VECTOR* n)
 	n->z = t.z >> W2V_SHIFT;
 }
 
+void phd_GetMatrixAngles(long* m, short* dest)
+{
+	long sy, cy;
+	short roll, pitch, yaw;
+
+	pitch = (short)phd_atan(phd_sqrt(SQUARE(m[M22]) + SQUARE(m[M02])), m[M12]);
+
+	if (m[M12] >= 0 && pitch > 0 || m[M12] < 0 && pitch < 0)
+		pitch = -pitch;
+
+	yaw = (short)phd_atan(m[M22], m[M02]);
+	sy = phd_sin(yaw);
+	cy = phd_cos(yaw);
+	roll = (short)phd_atan(m[M00] * cy - m[M20] * sy, m[M21] * sy - m[M01] * cy);
+	dest[0] = pitch;
+	dest[1] = yaw;
+	dest[2] = roll;
+}
+
 void inject_rope(bool replace)
 {
 	INJECT(0x00459410, DrawRopeList, replace);
@@ -90,4 +109,5 @@ void inject_rope(bool replace)
 	INJECT(0x00458A00, vMul, replace);
 	INJECT(0x00458A40, mDotProduct, replace);
 	INJECT(0x00458A70, mCrossProduct, replace);
+	INJECT(0x00458AD0, phd_GetMatrixAngles, replace);
 }
