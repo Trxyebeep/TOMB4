@@ -58,9 +58,17 @@ PHD_VECTOR* Normalise(PHD_VECTOR* v)
 	return v;
 }
 
+void vMul(PHD_VECTOR* v, long scale, PHD_VECTOR* d)
+{
+	d->x = scale * v->x >> W2V_SHIFT;
+	d->y = scale * v->y >> W2V_SHIFT;
+	d->z = scale * v->z >> W2V_SHIFT;
+}
+
 void inject_rope(bool replace)
 {
 	INJECT(0x00459410, DrawRopeList, replace);
 	INJECT(0x00459F90, ProjectRopePoints, replace);
 	INJECT(0x00459450, Normalise, replace);
+	INJECT(0x00458A00, vMul, replace);
 }

@@ -1102,7 +1102,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/rope.cpp
 
-0x00458A00		vMul
+0x00458A00	+	vMul
 0x00458A40		mDotProduct
 0x00458A70		mCrossProduct
 0x00458AD0		phd_GetMatrixAngles
