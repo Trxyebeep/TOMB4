@@ -1113,7 +1113,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004593B0		RopeControl
 0x00459410	+	DrawRopeList
 0x00459450	+	Normalise
-0x00459510		ModelRigid
+0x00459510	+	ModelRigid
 0x00459640		ModelRigidRope
 0x00459740		SetPendulumPoint
 0x004597D0		SetPendulumVelocity
