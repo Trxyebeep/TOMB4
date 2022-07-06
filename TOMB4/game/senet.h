@@ -7,5 +7,6 @@ void InitialiseSenet(short item_number);
 void MakeMove(long piece, long displacement);
 void SenetControl(short item_number);
 long CheckSenetWinner(long won);
+void InitialiseGameStix(short item_number);
 
 #define ShockwaveExplosion	( (void(__cdecl*)(ITEM_INFO*, ulong, long)) 0x0040FBD0 )

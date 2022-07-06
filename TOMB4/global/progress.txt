@@ -1177,7 +1177,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0040F3B0	+	InitialiseSenet
 0x0040F480	+	SenetControl
 0x0040F4D0	+	MakeMove
-0x0040F600		InitialiseGameStix
+0x0040F600	+	InitialiseGameStix
 0x0040F630		GameStixControl
 0x0040FBD0		ShockwaveExplosion
 0x0040FC60		ThrowSticks

@@ -8,12 +8,12 @@ void InitialiseSenet(short item_number)
 {
 	ITEM_INFO* item;
 
-	if (SenetPieceNumbers[0])
+	if (senet_item[0])
 		return;
 
-	memset(SenetBoard, 0, 17);
-	memset(ActiveSenetPieces, 0, 6);
-	SenetBoard[0] = 3;
+	memset(senet_board, 0, 17);
+	memset(senet_piece, 0, 6);
+	senet_board[0] = 3;
 
 	for (int i = 0; i < level_items; i++)
 	{
@@ -22,21 +22,21 @@ void InitialiseSenet(short item_number)
 		switch (item->object_number)
 		{
 		case GAME_PIECE1:
-			SenetPieceNumbers[0] = i;
+			senet_item[0] = i;
 			SenetTargetX = item->pos.x_pos + 1024;
 			SenetTargetZ = item->pos.z_pos;
 			break;
 
 		case GAME_PIECE2:
-			SenetPieceNumbers[1] = i;
+			senet_item[1] = i;
 			break;
 
 		case GAME_PIECE3:
-			SenetPieceNumbers[2] = i;
+			senet_item[2] = i;
 			break;
 
 		case ENEMY_PIECE:
-			SenetPieceNumbers[item->trigger_flags + 3] = i;
+			senet_item[item->trigger_flags + 3] = i;
 			break;
 		}
 	}
@@ -48,47 +48,47 @@ void MakeMove(long piece, long displacement)
 
 	num = piece >= 3 ? 2 : 1;
 
-	if (ActiveSenetPieces[piece] == NO_ITEM || !displacement ||
-		ActiveSenetPieces[piece] + displacement > 16 || SenetBoard[ActiveSenetPieces[piece] + displacement] & num)
+	if (senet_piece[piece] == NO_ITEM || !displacement ||
+		senet_piece[piece] + displacement > 16 || senet_board[senet_piece[piece] + displacement] & num)
 		return;
 
-	SenetBoard[ActiveSenetPieces[piece]] &= ~num;
+	senet_board[senet_piece[piece]] &= ~num;
 
-	if (!ActiveSenetPieces[piece])
+	if (!senet_piece[piece])
 	{
 		for (int i = 3 * num - 3; i < 3 * num; i++)
 		{
-			if (i != piece && !ActiveSenetPieces[i])
-				SenetBoard[0] |= num;
+			if (i != piece && !senet_piece[i])
+				senet_board[0] |= num;
 		}
 	}
 
-	ActivePiece = (char)piece;
-	ActiveSenetPieces[ActivePiece] += (char)displacement;
+	piece_moving = (char)piece;
+	senet_piece[piece_moving] += (char)displacement;
 
-	if (ActiveSenetPieces[ActivePiece] > 4)
+	if (senet_piece[piece_moving] > 4)
 	{
-		SenetBoard[ActiveSenetPieces[ActivePiece]] = 0;
+		senet_board[senet_piece[piece_moving]] = 0;
 
 		for (int i = 6 - 3 * num; i < 9 - 3 * num; i++)
 		{
-			if (ActiveSenetPieces[i] == ActiveSenetPieces[ActivePiece])
+			if (senet_piece[i] == senet_piece[piece_moving])
 			{
-				ActiveSenetPieces[i] = 0;
-				SenetBoard[0] |= 3 - num;
+				senet_piece[i] = 0;
+				senet_board[0] |= 3 - num;
 			}
 		}
 	}
 
-	if (!(ActiveSenetPieces[ActivePiece] & 3) || SenetDisplacement == 6)
-		SenetDisplacement = 0;
+	if (!(senet_piece[piece_moving] & 3) || last_throw == 6)
+		last_throw = 0;
 	else
-		SenetDisplacement = -1;
+		last_throw = -1;
 
-	if (ActiveSenetPieces[ActivePiece] < 16)
-		SenetBoard[ActiveSenetPieces[ActivePiece]] |= num;
+	if (senet_piece[piece_moving] < 16)
+		senet_board[senet_piece[piece_moving]] |= num;
 	else
-		ActiveSenetPieces[ActivePiece] = -1;
+		senet_piece[piece_moving] = -1;
 }
 
 void SenetControl(short item_number)
@@ -97,8 +97,8 @@ void SenetControl(short item_number)
 
 	item = &items[item_number];
 
-	if (SenetDisplacement > 0 && item->trigger_flags != 1)
-		MakeMove(item->object_number - GAME_PIECE1, SenetDisplacement);
+	if (last_throw > 0 && item->trigger_flags != 1)
+		MakeMove(item->object_number - GAME_PIECE1, last_throw);
 
 	RemoveActiveItem(item_number);
 }
@@ -111,7 +111,7 @@ long CheckSenetWinner(long ourPiece)
 	{
 		num = 0;
 
-		while (ActiveSenetPieces[num] == NO_ITEM)			//if our piece is dead
+		while (senet_piece[num] == NO_ITEM)			//if our piece is dead
 		{
 			num++;
 
@@ -127,7 +127,7 @@ long CheckSenetWinner(long ourPiece)
 	{
 		num = 3;
 
-		while (ActiveSenetPieces[num] == NO_ITEM)
+		while (senet_piece[num] == NO_ITEM)
 		{
 			num++;
 
@@ -145,10 +145,20 @@ long CheckSenetWinner(long ourPiece)
 	return 0;
 }
 
+void InitialiseGameStix(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->trigger_flags = NO_ITEM;
+	item->data = item->item_flags;
+}
+
 void inject_senet(bool replace)
 {
 	INJECT(0x0040F3B0, InitialiseSenet, replace);
 	INJECT(0x0040F4D0, MakeMove, replace);
 	INJECT(0x0040F480, SenetControl, replace);
 	INJECT(0x0040F320, CheckSenetWinner, replace);
+	INJECT(0x0040F600, InitialiseGameStix, replace);
 }
