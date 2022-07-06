@@ -6,6 +6,15 @@
 #include "../specific/function_stubs.h"
 #include "sound.h"
 #include "control.h"
+#include "lara_states.h"
+#include "collide.h"
+
+short GameStixBounds[12] =
+{
+	 -256, 256, -200, 200, -256, 256, -1820, 1820, -5460, 5460, 0, 0
+};
+
+PHD_VECTOR GameStixPos = { 0, 0, -100 };
 
 void InitialiseSenet(short item_number)
 {
@@ -391,6 +400,43 @@ void GameStixControl(short item_number)
 	}
 }
 
+void GameStixCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && lara.gun_status == LG_NO_ARMS && !item->active ||
+		lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+	{
+		l->pos.y_rot ^= 0x8000;
+
+		if (TestLaraPosition(GameStixBounds, item, l))
+		{
+			if (MoveLaraPosition(&GameStixPos, item, l))
+			{
+				l->anim_number = ANIM_THROWSTIX;
+				l->frame_number = anims[ANIM_THROWSTIX].frame_base;
+				l->current_anim_state = AS_CONTROLLED;
+				lara.IsMoving = 0;
+				lara.head_x_rot = 0;
+				lara.head_y_rot = 0;
+				lara.torso_x_rot = 0;
+				lara.torso_y_rot = 0;
+				lara.gun_status = LG_HANDS_BUSY;
+				item->status = ITEM_ACTIVE;
+				AddActiveItem(item_number);
+			}
+			else
+				lara.GeneralPtr = (void*)item_number;
+		}
+
+		l->pos.y_rot ^= 0x8000;
+	}
+	else
+		ObjectCollision(item_number, l, coll);
+}
+
 void inject_senet(bool replace)
 {
 	INJECT(0x0040F3B0, InitialiseSenet, replace);
@@ -400,4 +446,5 @@ void inject_senet(bool replace)
 	INJECT(0x0040F600, InitialiseGameStix, replace);
 	INJECT(0x0040FC60, ThrowSticks, replace);
 	INJECT(0x0040F630, GameStixControl, replace);
+	INJECT(0x0040FF40, GameStixCollision, replace);
 }
