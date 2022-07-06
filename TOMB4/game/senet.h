@@ -11,5 +11,4 @@ void InitialiseGameStix(short item_number);
 void ThrowSticks(ITEM_INFO* item);
 void GameStixControl(short item_number);
 void GameStixCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
-
-#define ShockwaveExplosion	( (void(__cdecl*)(ITEM_INFO*, ulong, long)) 0x0040FBD0 )
+void ShockwaveExplosion(ITEM_INFO* item, ulong col, long speed);

@@ -8,6 +8,7 @@
 #include "control.h"
 #include "lara_states.h"
 #include "collide.h"
+#include "tomb4fx.h"
 
 short GameStixBounds[12] =
 {
@@ -437,6 +438,28 @@ void GameStixCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		ObjectCollision(item_number, l, coll);
 }
 
+void ShockwaveExplosion(ITEM_INFO* item, ulong col, long speed)
+{
+	PHD_VECTOR pos;
+	long InnerOuter;
+
+	item->pos.y_pos -= 384;
+
+	if (speed < 0)
+		InnerOuter = 0x2000280;
+	else
+		InnerOuter = 0xA00020;
+
+	pos.x = item->pos.x_pos;
+	pos.y = item->pos.y_pos;
+	pos.z = item->pos.z_pos;
+	TriggerShockwave(&pos, InnerOuter, speed, col | 0x18000000, 0);
+	TriggerShockwave(&pos, InnerOuter, speed, col | 0x18000000, 0x2000);
+	TriggerShockwave(&pos, InnerOuter, speed, col | 0x18000000, 0x4000);
+	TriggerShockwave(&pos, InnerOuter, speed, col | 0x18000000, 0x6000);
+	item->pos.y_pos += 384;
+}
+
 void inject_senet(bool replace)
 {
 	INJECT(0x0040F3B0, InitialiseSenet, replace);
@@ -447,4 +470,5 @@ void inject_senet(bool replace)
 	INJECT(0x0040FC60, ThrowSticks, replace);
 	INJECT(0x0040F630, GameStixControl, replace);
 	INJECT(0x0040FF40, GameStixCollision, replace);
+	INJECT(0x0040FBD0, ShockwaveExplosion, replace);
 }
