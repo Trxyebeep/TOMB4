@@ -3,6 +3,7 @@
 #include "objects.h"
 #include "items.h"
 #include "deltapak.h"
+#include "../specific/function_stubs.h"
 
 void InitialiseSenet(short item_number)
 {
@@ -154,6 +155,31 @@ void InitialiseGameStix(short item_number)
 	item->data = item->item_flags;
 }
 
+void ThrowSticks(ITEM_INFO* item)
+{
+	char rnd;
+
+	last_throw = 0;
+	item->trigger_flags = 0;
+
+	for (int i = 0; i < 4; i++)
+	{
+		rnd = GetRandomControl() & 1;
+		last_throw += rnd;
+
+		if (rnd)
+			item->trigger_flags |= 1 << i;
+	}
+
+	if (!last_throw)
+		last_throw = 6;
+
+	item->hit_points = 120;
+
+	for (int i = 0; i < 3; i++)
+		items[senet_item[i]].trigger_flags = 1;
+}
+
 void inject_senet(bool replace)
 {
 	INJECT(0x0040F3B0, InitialiseSenet, replace);
@@ -161,4 +187,5 @@ void inject_senet(bool replace)
 	INJECT(0x0040F480, SenetControl, replace);
 	INJECT(0x0040F320, CheckSenetWinner, replace);
 	INJECT(0x0040F600, InitialiseGameStix, replace);
+	INJECT(0x0040FC60, ThrowSticks, replace);
 }
