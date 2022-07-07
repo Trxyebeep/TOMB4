@@ -5118,6 +5118,82 @@ void JumpOffRope(ITEM_INFO* item)
 	}
 }
 
+void UpdateRopeSwing(ITEM_INFO* item)
+{
+	long temp;
+	static uchar LegsSwinging;
+
+	if (lara.RopeMaxXForward > 9000)
+		lara.RopeMaxXForward = 9000;
+
+	if (lara.RopeMaxXBackward > 9000)
+		lara.RopeMaxXBackward = 9000;
+
+	if (lara.RopeDirection)
+	{
+		if (item->pos.x_rot > 0 && item->pos.x_rot - lara.RopeLastX < -100)
+		{
+			lara.RopeArcFront = lara.RopeLastX;
+			lara.RopeDirection = 0;
+			lara.RopeMaxXBackward = 0;
+			temp = (15 * lara.RopeMaxXForward / 18000 + anims[ANIM_SWINGFWD].frame_base + 47) << 8;
+
+			if (temp > lara.RopeDFrame)
+			{
+				lara.RopeDFrame = temp;
+				LegsSwinging = 1;
+			}
+			else
+				LegsSwinging = 0;
+
+			SoundEffect(SFX_LARA_ROPE_CREAK, &item->pos, 0);
+		}
+		else if (lara.RopeLastX < 0 && lara.RopeFrame == lara.RopeDFrame)
+		{
+			LegsSwinging = 0;
+			lara.RopeDFrame = (15 * lara.RopeMaxXBackward / 18000 + anims[ANIM_SWINGFWD].frame_base + 47) << 8;
+			lara.RopeFrameRate = 15 * lara.RopeMaxXBackward / 9000 + 1;
+		}
+		else if (lara.RopeFrameRate < 512)
+			lara.RopeFrameRate += (LegsSwinging ? 31 : 7) * lara.RopeMaxXBackward / 9000 + 1;
+	}
+	else if (item->pos.x_rot < 0 && item->pos.x_rot - lara.RopeLastX > 100)
+	{
+		lara.RopeArcBack = lara.RopeLastX;
+		lara.RopeDirection = 1;
+		lara.RopeMaxXForward = 0;
+		temp = (anims[ANIM_SWINGFWD].frame_base - 15 * lara.RopeMaxXBackward / 18000 + 17) << 8;
+
+		if (temp < lara.RopeDFrame)
+		{
+			lara.RopeDFrame = temp;
+			LegsSwinging = 1;
+		}
+		else
+			LegsSwinging = 0;
+
+		SoundEffect(SFX_LARA_ROPE_CREAK, &item->pos, 0);
+	}
+	else if (lara.RopeLastX > 0 && lara.RopeFrame == lara.RopeDFrame)
+	{
+		LegsSwinging = 0;
+		lara.RopeDFrame = (anims[ANIM_SWINGFWD].frame_base - 15 * lara.RopeMaxXForward / 18000 + 17) << 8;
+		lara.RopeFrameRate = 15 * lara.RopeMaxXForward / 9000 + 1;
+	}
+	else if (lara.RopeFrameRate < 512)
+		lara.RopeFrameRate += (LegsSwinging ? 31 : 7) * lara.RopeMaxXForward / 9000 + 1;
+
+	lara.RopeLastX = item->pos.x_rot;
+
+	if (lara.RopeDirection)
+	{
+		if (item->pos.x_rot > lara.RopeMaxXForward)
+			lara.RopeMaxXForward = item->pos.x_rot;
+	}
+	else if (item->pos.x_rot < -lara.RopeMaxXBackward)
+		lara.RopeMaxXBackward = ABS(item->pos.x_rot);
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -5272,4 +5348,5 @@ void inject_lara(bool replace)
 	INJECT(0x004266E0, LaraHangLeftCornerTest, replace);
 	INJECT(0x004259C0, LaraSlideEdgeJump, replace);
 	INJECT(0x00424820, JumpOffRope, replace);
+	INJECT(0x00424320, UpdateRopeSwing, replace);
 }
