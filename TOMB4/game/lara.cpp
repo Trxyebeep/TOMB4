@@ -5085,6 +5085,39 @@ void LaraSlideEdgeJump(ITEM_INFO* item, COLL_INFO* coll)
 	}
 }
 
+void JumpOffRope(ITEM_INFO* item)
+{
+	if (lara.RopePtr != -1)
+	{
+		if (item->pos.x_rot >= 0)
+		{
+			item->fallspeed = -112;
+			item->speed = item->pos.x_rot / 128;
+		}
+		else
+		{
+			item->speed = 0;
+			item->fallspeed = -20;
+		}
+
+		item->pos.x_rot = 0;
+		item->gravity_status = 1;
+		lara.gun_status = LG_NO_ARMS;
+
+		if (item->frame_number - anims[ANIM_SWINGFWD].frame_base <= 21)
+			item->anim_number = 386;
+		else if (item->frame_number - anims[ANIM_SWINGFWD].frame_base <= 42)
+			item->anim_number = 407;
+		else
+			item->anim_number = 406;
+
+		item->frame_number = anims[item->anim_number].frame_base;
+		item->current_anim_state = AS_REACH;
+		item->goal_anim_state = AS_REACH;
+		lara.RopePtr = -1;
+	}
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -5238,4 +5271,5 @@ void inject_lara(bool replace)
 	INJECT(0x00426230, LaraHangRightCornerTest, replace);
 	INJECT(0x004266E0, LaraHangLeftCornerTest, replace);
 	INJECT(0x004259C0, LaraSlideEdgeJump, replace);
+	INJECT(0x00424820, JumpOffRope, replace);
 }

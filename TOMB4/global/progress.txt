@@ -684,7 +684,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00424620	+	lara_as_ropel
 0x00424650	+	lara_as_roper
 0x00424680	+	lara_col_ropefwd
-0x00424820		JumpOffRope
+0x00424820	+	JumpOffRope
 0x004248E0	+	lara_as_climbrope
 0x00424950	+	lara_as_climbroped
 0x00424A60	+	lara_as_stop
