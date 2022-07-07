@@ -801,6 +801,92 @@ void SmashObject(short item_number)
 	item->status = ITEM_DEACTIVATED;
 }
 
+void EarthQuake(short item_number)
+{
+	ITEM_INFO* item;
+	long pitch;
+	short earth_item;
+
+	item = &items[item_number];
+
+	if (!TriggerActive(item))
+		return;
+
+	if (item->trigger_flags == 888)
+	{
+		camera.bounce = -64 - (GetRandomControl() & 0x1F);
+		SoundEffect(SFX_EARTHQUAKE_LOOP, 0, SFX_DEFAULT);
+		item->item_flags[3]++;
+
+		if (item->item_flags[3] > 150)
+		{
+			SoundEffect(SFX_DOOR_GEN_THUD, 0, SFX_DEFAULT);
+			KillItem(item_number);
+		}
+	}
+	else if (item->trigger_flags == 333)
+	{
+		if (item->item_flags[0] >= 495)
+			KillItem(item_number);
+		else
+		{
+			item->item_flags[0]++;
+			SoundEffect(SFX_EARTHQUAKE_LOOP, 0, SFX_DEFAULT);
+		}
+	}
+	else
+	{
+		if (!item->item_flags[1])
+			item->item_flags[1] = 100;
+
+		if (!item->item_flags[2])
+		{
+			if (ABS(item->item_flags[0] - item->item_flags[1]) < 16)
+			{
+				if (item->item_flags[1] == 20)
+				{
+					item->item_flags[1] = 100;
+					item->item_flags[2] = (GetRandomControl() & 0x7F) + 90;
+				}
+				else
+				{
+					item->item_flags[1] = 20;
+					item->item_flags[2] = (GetRandomControl() & 0x7F) + 30;
+				}
+			}
+		}
+
+		if (item->item_flags[2])
+			item->item_flags[2]--;
+
+		if (item->item_flags[0] <= item->item_flags[1])
+			item->item_flags[0] += (GetRandomControl() & 7) + 2;
+		else
+			item->item_flags[0] -= (GetRandomControl() & 7) + 2;
+
+		pitch = (item->item_flags[0] << 16) + 0x1000000;
+		SoundEffect(SFX_EARTHQUAKE_LOOP, 0, pitch | SFX_SETPITCH);
+		camera.bounce = -item->item_flags[0];
+
+		if (GetRandomControl() < 1024)
+		{
+			for (earth_item = room[item->room_number].item_number; earth_item != NO_ITEM; earth_item = item->next_item)
+			{
+				item = &items[earth_item];
+
+				if (item->object_number == FLAME_EMITTER && item->status != ITEM_ACTIVE && item->status != ITEM_DEACTIVATED)
+				{
+					AddActiveItem(earth_item);
+					item->status = ITEM_ACTIVE;
+					item->timer = 0;
+					item->flags |= IFL_CODEBITS;
+					break;
+				}
+			}
+		}
+	}
+}
+
 void inject_objects(bool replace)
 {
 	INJECT(0x00456580, ControlMapper, replace);
@@ -823,4 +909,5 @@ void inject_objects(bool replace)
 	INJECT(0x00456050, ControlAnimatingSlots, replace);
 	INJECT(0x00455DF0, SmashObjectControl, replace);
 	INJECT(0x00455CF0, SmashObject, replace);
+	INJECT(0x00455AE0, EarthQuake, replace);
 }

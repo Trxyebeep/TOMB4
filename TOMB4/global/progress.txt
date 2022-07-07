@@ -1040,7 +1040,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/objects.cpp
 
-0x00455AE0		EarthQuake
+0x00455AE0	+	EarthQuake
 0x00455CF0	+	SmashObject
 0x00455DF0	+	SmashObjectControl
 0x00455EA0	+	BridgeFlatFloor
