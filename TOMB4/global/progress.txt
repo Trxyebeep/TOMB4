@@ -707,7 +707,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00425F50	+	lara_as_hang
 0x00425FA0	+	lara_col_hang
 0x00426230		LaraHangRightCornerTest
-0x00426600		IsValidHangPos
+0x00426600	+	IsValidHangPos
 0x004266E0		LaraHangLeftCornerTest
 0x00426AB0	+	CanLaraHangSideways
 0x00426B50	+	lara_as_hangleft

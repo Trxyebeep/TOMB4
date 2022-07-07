@@ -575,7 +575,7 @@ long CanLaraHangSideways(ITEM_INFO* item, COLL_INFO* coll, short angle)
 	z = item->pos.z_pos;
 	lara.move_angle = angle + item->pos.y_rot;
 
-	switch ((ushort)(lara.move_angle + 8192) >> W2V_SHIFT)
+	switch (ushort(lara.move_angle + 0x2000) / 0x4000)
 	{
 	case NORTH:
 		z += 16;
@@ -1130,7 +1130,7 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 
 							if (!collided)
 							{
-								switch ((ushort)(item->pos.y_rot + 8192) >> W2V_SHIFT)
+								switch (ushort(item->pos.y_rot + 0x2000) / 0x4000)
 								{
 								case NORTH:
 									item->pos.y_rot = 0;
@@ -3931,7 +3931,7 @@ void lara_col_reach(ITEM_INFO* item, COLL_INFO* coll)
 					{
 						item->pos.y_pos += coll->front_floor - bounds[2];
 
-						switch ((ushort)(item->pos.y_rot + 0x2000) >> W2V_SHIFT)
+						switch (ushort(item->pos.y_rot + 0x2000) / 0x4000)
 						{
 						case NORTH:
 							item->pos.z_pos = (item->pos.z_pos | 0x3FF) - 100;
@@ -4651,6 +4651,46 @@ void ApplyVelocityToRope(long node, ushort angle, ushort n)
 	SetPendulumVelocity(xvel, 0, zvel);
 }
 
+static long IsValidHangPos(ITEM_INFO* item, COLL_INFO* coll)
+{
+	short angle;
+
+	if (LaraFloorFront(item, lara.move_angle, 100) >= 200)
+	{
+		angle = ushort(item->pos.y_rot + 0x2000) / 0x4000;
+
+		switch (angle)
+		{
+		case NORTH:
+			item->pos.z_pos += 4;
+			break;
+
+		case EAST:
+			item->pos.x_pos += 4;
+			break;
+
+		case SOUTH:
+			item->pos.z_pos -= 4;
+			break;
+
+		case WEST:
+			item->pos.x_pos -= 4;
+			break;
+		}
+
+		coll->bad_pos = -NO_HEIGHT;
+		coll->bad_neg = -512;
+		coll->bad_ceiling = 0;
+		lara.move_angle = item->pos.y_rot;
+		GetLaraCollisionInfo(item, coll);
+
+		if (coll->mid_ceiling < 0 && coll->coll_type == CT_FRONT && !coll->hit_static && ABS(coll->front_floor - coll->right_floor2) < 60)
+			return 1;
+	}
+
+	return 0;
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -4799,4 +4839,5 @@ void inject_lara(bool replace)
 	INJECT(0x00424E90, UseInventoryItems, replace);
 	INJECT(0x00422C50, LaraDeflectEdgeJump, replace);
 	INJECT(0x00424150, ApplyVelocityToRope, replace);
+	INJECT(0x00426600, IsValidHangPos, replace);
 }
