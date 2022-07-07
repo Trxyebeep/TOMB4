@@ -722,6 +722,34 @@ void PoleCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void ControlAnimatingSlots(short item_number)
+{
+	ITEM_INFO* item;
+	PHD_VECTOR pos;
+
+	item = &items[item_number];
+
+	if (TriggerActive(item))
+	{
+		item->status = ITEM_ACTIVE;
+		AnimateItem(item);
+
+		if (item->trigger_flags == 666)
+		{
+			pos.x = 0;
+			pos.y = 0;
+			pos.z = 0;
+			GetJointAbsPosition(item, &pos, 0);
+			SoundEffect(SFX_HELICOPTER_LOOP, (PHD_3DPOS*)&pos, SFX_DEFAULT);
+
+			if (item->frame_number == anims[item->anim_number].frame_end)
+				item->flags &= ~IFL_CODEBITS;
+		}
+	}
+	else if (item->trigger_flags == 2)
+		item->status = ITEM_INVISIBLE;
+}
+
 void inject_objects(bool replace)
 {
 	INJECT(0x00456580, ControlMapper, replace);
@@ -741,4 +769,5 @@ void inject_objects(bool replace)
 	INJECT(0x00456420, AnimateWaterfalls, replace);
 	INJECT(0x00456360, ControlTriggerTriggerer, replace);
 	INJECT(0x00456120, PoleCollision, replace);
+	INJECT(0x00456050, ControlAnimatingSlots, replace);
 }
