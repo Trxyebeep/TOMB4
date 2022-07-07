@@ -160,6 +160,7 @@ void LaraSlideEdgeJump(ITEM_INFO* item, COLL_INFO* coll);
 void JumpOffRope(ITEM_INFO* item);
 void UpdateRopeSwing(ITEM_INFO* item);
 void FallFromRope(ITEM_INFO* item);
+short GetDirOctant(long rot);
 
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
 #define LaraTestClimbStance	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422810 )

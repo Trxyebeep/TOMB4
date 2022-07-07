@@ -5212,6 +5212,12 @@ void FallFromRope(ITEM_INFO* item)
 	lara.RopePtr = -1;
 }
 
+short GetDirOctant(long rot)
+{
+	rot = ABS(rot);
+	return rot >= 0x2000 && rot <= 0x6000;
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -5368,4 +5374,5 @@ void inject_lara(bool replace)
 	INJECT(0x00424820, JumpOffRope, replace);
 	INJECT(0x00424320, UpdateRopeSwing, replace);
 	INJECT(0x004241D0, FallFromRope, replace);
+	INJECT(0x00423780, GetDirOctant, replace);
 }

@@ -658,7 +658,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004235B0		SnapLaraToEdgeOfBlock
 0x00423660	+	MonkeySwingSnap
 0x004236B0		TestMonkeyLeft
-0x00423780		GetDirOctant
+0x00423780	+	GetDirOctant
 0x004237B0		TestMonkeyRight
 0x00423880	+	lara_as_monkeyswing
 0x00423930	+	lara_col_monkeyswing
