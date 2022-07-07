@@ -159,6 +159,7 @@ long LaraHangLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll);
 void LaraSlideEdgeJump(ITEM_INFO* item, COLL_INFO* coll);
 void JumpOffRope(ITEM_INFO* item);
 void UpdateRopeSwing(ITEM_INFO* item);
+void FallFromRope(ITEM_INFO* item);
 
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
 #define LaraTestClimbStance	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422810 )
@@ -170,4 +171,3 @@ void UpdateRopeSwing(ITEM_INFO* item);
 #define LaraCollideStop	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004229D0 )
 #define TestMonkeyLeft	( (short(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004236B0 )
 #define TestMonkeyRight	( (short(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004237B0 )
-#define FallFromRope	( (void(__cdecl*)(ITEM_INFO*)) 0x004241D0 )

@@ -5194,6 +5194,24 @@ void UpdateRopeSwing(ITEM_INFO* item)
 		lara.RopeMaxXBackward = ABS(item->pos.x_rot);
 }
 
+void FallFromRope(ITEM_INFO* item)
+{
+	long l;
+
+	l = ABS(CurrentPendulum.Velocity.x >> 16) + ABS(CurrentPendulum.Velocity.z >> 16);
+	item->speed = short(l >> 1);
+	item->pos.x_rot = 0;
+	item->pos.y_pos += 320;
+	item->anim_number = ANIM_FALLDOWN;
+	item->frame_number = anims[ANIM_FALLDOWN].frame_base;
+	item->current_anim_state = AS_FORWARDJUMP;
+	item->goal_anim_state = AS_FORWARDJUMP;
+	item->fallspeed = 0;
+	item->gravity_status = 1;
+	lara.gun_status = LG_NO_ARMS;
+	lara.RopePtr = -1;
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -5349,4 +5367,5 @@ void inject_lara(bool replace)
 	INJECT(0x004259C0, LaraSlideEdgeJump, replace);
 	INJECT(0x00424820, JumpOffRope, replace);
 	INJECT(0x00424320, UpdateRopeSwing, replace);
+	INJECT(0x004241D0, FallFromRope, replace);
 }
