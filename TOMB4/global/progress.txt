@@ -961,7 +961,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00409460	+	InitialiseMovingBlock
 0x004094A0	+	ClearMovableBlockSplitters
 0x004096D0		MovableBlock
-0x00409B80		TestBlockPush
+0x00409B80	+	TestBlockPush
 0x00409D20		TestBlockPull
 0x0040A040		MovableBlockCollision
 0x0040A3C0		InitialisePlanetEffect
