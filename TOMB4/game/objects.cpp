@@ -546,6 +546,28 @@ void BurningRopeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void ControlWaterfall(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (TriggerActive(item))
+	{
+		item->status = ITEM_ACTIVE;
+
+		if (item->trigger_flags == 668)
+			SoundEffect(SFX_SAND_LOOP, &item->pos, SFX_DEFAULT);
+		else if (item->trigger_flags == 777)
+			SoundEffect(SFX_WATERFALL_LOOP, &item->pos, SFX_DEFAULT);
+	}
+	else
+	{
+		if (item->trigger_flags == 2 || item->trigger_flags == 668)
+			item->status = ITEM_INVISIBLE;
+	}
+}
+
 void inject_objects(bool replace)
 {
 	INJECT(0x00456580, ControlMapper, replace);
@@ -561,4 +583,5 @@ void inject_objects(bool replace)
 	INJECT(0x00456780, TriggerRopeFlame, replace);
 	INJECT(0x00456AC0, ControlBurningRope, replace);
 	INJECT(0x00456910, BurningRopeCollision, replace);
+	INJECT(0x004564E0, ControlWaterfall, replace);
 }

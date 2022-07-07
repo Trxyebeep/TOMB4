@@ -1054,7 +1054,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00456120		PoleCollision
 0x00456360		ControlTriggerTriggerer
 0x00456420		AnimateWaterfalls
-0x004564E0		ControlWaterfall
+0x004564E0	+	ControlWaterfall
 0x00456580	+	ControlMapper
 0x00456780	+	TriggerRopeFlame
 0x00456910	+	BurningRopeCollision
