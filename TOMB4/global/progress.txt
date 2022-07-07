@@ -696,7 +696,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00425550	+	lara_col_forwardjump
 0x00425630	+	lara_as_reach
 0x00425650	+	lara_col_reach
-0x004259C0		LaraSlideEdgeJump
+0x004259C0	+	LaraSlideEdgeJump
 0x00425AC0	+	lara_as_walk
 0x00425B60	+	lara_as_run
 0x00425D10	+	lara_as_fastback

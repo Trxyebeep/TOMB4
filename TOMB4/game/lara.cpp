@@ -5050,6 +5050,41 @@ long LaraHangLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 	return flag;
 }
 
+void LaraSlideEdgeJump(ITEM_INFO* item, COLL_INFO* coll)
+{
+	ShiftItem(item, coll);
+
+	switch (coll->coll_type)
+	{
+	case CT_LEFT:
+		item->pos.y_rot += 910;
+		break;
+
+	case CT_RIGHT:
+		item->pos.y_rot -= 910;
+		break;
+
+	case CT_TOP:
+	case CT_TOP_FRONT:
+
+		if (item->fallspeed <= 0)
+			item->fallspeed = 1;
+
+		break;
+
+	case CT_CLAMP:
+		item->pos.z_pos -= (100 * phd_cos(coll->facing)) >> 14;
+		item->pos.x_pos -= (100 * phd_sin(coll->facing)) >> 14;
+		item->speed = 0;
+		coll->mid_floor = 0;
+
+		if (item->fallspeed <= 0)
+			item->fallspeed = 16;
+
+		break;
+	}
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -5202,4 +5237,5 @@ void inject_lara(bool replace)
 	INJECT(0x00421E90, LaraTestHangOnClimbWall, replace);
 	INJECT(0x00426230, LaraHangRightCornerTest, replace);
 	INJECT(0x004266E0, LaraHangLeftCornerTest, replace);
+	INJECT(0x004259C0, LaraSlideEdgeJump, replace);
 }
