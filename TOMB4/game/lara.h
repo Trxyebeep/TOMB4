@@ -153,13 +153,13 @@ void LookLeftRight();
 long UseInventoryItems(ITEM_INFO* item);
 void LaraDeflectEdgeJump(ITEM_INFO* item, COLL_INFO* coll);
 void ApplyVelocityToRope(long node, ushort angle, ushort n);
+long LaraTestHangOnClimbWall(ITEM_INFO* item, COLL_INFO* coll);
 
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
 #define LaraHangLeftCornerTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004266E0 )
 #define LaraHangRightCornerTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00426230 )
 #define LaraTestClimbStance	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422810 )
 #define LaraTestEdgeCatch	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*, long*)) 0x00421DE0 )
-#define LaraTestHangOnClimbWall	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00421E90 )
 #define TestHangSwingIn	( (long(__cdecl*)(ITEM_INFO*, short)) 0x00421FF0 )
 #define TestLaraVault	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422480 )
 #define LaraDeflectEdge	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422400 )

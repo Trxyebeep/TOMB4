@@ -4691,6 +4691,56 @@ static long IsValidHangPos(ITEM_INFO* item, COLL_INFO* coll)
 	return 0;
 }
 
+long LaraTestHangOnClimbWall(ITEM_INFO* item, COLL_INFO* coll)
+{
+	short* bounds;
+	long shift, result;
+	short angle, l, r;
+
+	if (!lara.climb_status || item->fallspeed < 0)
+		return 0;
+
+	angle = ushort(item->pos.y_rot + 0x2000) / 0x4000;
+
+	switch (angle)
+	{
+	case NORTH:
+	case SOUTH:
+		item->pos.z_pos += coll->shift.z;
+		break;
+
+	case EAST:
+	case WEST:
+		item->pos.x_pos += coll->shift.x;
+		break;
+	}
+
+	bounds = GetBoundsAccurate(item);
+
+	if (lara.move_angle != item->pos.y_rot)
+	{
+		r = LaraCeilingFront(item, item->pos.y_rot, 0, 0);
+		l = LaraCeilingFront(item, lara.move_angle, 128, 0);
+
+		if (ABS(r - l) > 60)
+			return 0;
+	}
+
+	if (!LaraTestClimbPos(item, coll->radius, coll->radius, bounds[2], bounds[3] - bounds[2], &shift) ||
+		!LaraTestClimbPos(item, coll->radius, -coll->radius, bounds[2], bounds[3] - bounds[2], &shift))
+		return 0;
+
+	result = LaraTestClimbPos(item, coll->radius, 0, bounds[2], bounds[3] - bounds[2], &shift);
+
+	if (!result)
+		return 0;
+
+	if (result != 1)
+		item->pos.y_pos += shift;
+
+	return 1;
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -4840,4 +4890,5 @@ void inject_lara(bool replace)
 	INJECT(0x00422C50, LaraDeflectEdgeJump, replace);
 	INJECT(0x00424150, ApplyVelocityToRope, replace);
 	INJECT(0x00426600, IsValidHangPos, replace);
+	INJECT(0x00421E90, LaraTestHangOnClimbWall, replace);
 }
