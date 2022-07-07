@@ -14,6 +14,7 @@ void lara_as_climbend(ITEM_INFO* item, COLL_INFO* coll);
 void lara_col_climbstnc(ITEM_INFO* item, COLL_INFO* coll);
 void lara_col_climbing(ITEM_INFO* item, COLL_INFO* coll);
 void lara_col_climbdown(ITEM_INFO* item, COLL_INFO* coll);
+short GetClimbTrigger(long x, long y, long z, short room_number);
 
 #define LaraCheckForLetGo	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x0042C980 )
 #define	LaraDoClimbLeftRight	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*, long, long)) 0x0042CD20 )
