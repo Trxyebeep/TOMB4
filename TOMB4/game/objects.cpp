@@ -339,6 +339,60 @@ void StatuePlinthCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void TriggerRopeFlame(PHD_VECTOR* pos)
+{
+	SPARKS* sptr;
+
+	sptr = &spark[GetFreeSpark()];
+	sptr->On = 1;
+	sptr->sR = 255;
+	sptr->sG = (GetRandomControl() & 0x1F) + 48;
+	sptr->sB = 48;
+	sptr->dR = (GetRandomControl() & 0x3F) - 64;
+	sptr->dG = (GetRandomControl() & 0x3F) + 0x80;
+	sptr->dB = 32;
+	sptr->FadeToBlack = 4;
+	sptr->ColFadeSpeed = (GetRandomControl() & 3) + 4;
+	sptr->TransType = 2;
+	sptr->Life = (GetRandomControl() & 3) + 24;
+	sptr->sLife = sptr->Life;
+	sptr->x = (GetRandomControl() & 0xF) + pos->x - 8;
+	sptr->y = pos->y;
+	sptr->z = (GetRandomControl() & 0xF) + pos->z - 8;
+	sptr->Xvel = (GetRandomControl() & 0xFF) - 128;
+	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
+	sptr->Friction = 5;
+	sptr->Flags = 538;
+
+	if (!(GetRandomControl() & 3))
+		sptr->Flags |= 0x20;
+
+	sptr->RotAng = GetRandomControl() & 0xFFF;
+
+	if (GetRandomControl() & 1)
+		sptr->RotAdd = -16 - (GetRandomControl() & 0xF);
+	else
+		sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
+
+	if (GetRandomControl() & 0xF)
+	{
+		sptr->Yvel = -24 - (GetRandomControl() & 0xF);
+		sptr->Gravity = -24 - (GetRandomControl() & 0x1F);
+		sptr->MaxYvel = -16 - (GetRandomControl() & 7);
+	}
+	else
+	{
+		sptr->Yvel = (GetRandomControl() & 0xF) + 24;
+		sptr->MaxYvel = 0;
+		sptr->Gravity = (GetRandomControl() & 0x1F) + 24;
+	}
+
+	sptr->Scalar = 2;
+	sptr->Size = (GetRandomControl() & 0xF) + 96;
+	sptr->sSize = sptr->Size;
+	sptr->dSize = sptr->Size >> 3;
+}
+
 void inject_objects(bool replace)
 {
 	INJECT(0x00456580, ControlMapper, replace);
@@ -351,4 +405,5 @@ void inject_objects(bool replace)
 	INJECT(0x00455FC0, BridgeTilt2Floor, replace);
 	INJECT(0x00456010, BridgeTilt2Ceiling, replace);
 	INJECT(0x004570F0, StatuePlinthCollision, replace);
+	INJECT(0x00456780, TriggerRopeFlame, replace);
 }
