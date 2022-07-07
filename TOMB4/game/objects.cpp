@@ -14,6 +14,7 @@
 #include "newinv.h"
 #include "switch.h"
 #include "delstuff.h"
+#include "effects.h"
 
 static short StatuePlinthBounds[12] = { 0, 0, -64, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short PoleBounds[12] = { -256, 256, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
@@ -750,6 +751,56 @@ void ControlAnimatingSlots(short item_number)
 		item->status = ITEM_INVISIBLE;
 }
 
+void SmashObjectControl(short item_number)
+{
+	ITEM_INFO* item;
+	long speed;
+
+	item = &items[item_number];
+
+	if (item->flags & IFL_INVISIBLE)
+		return;
+
+	if (lara.vehicle != NO_ITEM && ItemNearLara(&item->pos, 512))
+		SmashObject(item_number);
+	else if (item->touch_bits)
+	{
+		item->touch_bits = 0;
+		speed = (lara_item->speed * phd_cos(lara_item->pos.y_rot - item->pos.y_rot)) >> W2V_SHIFT;
+
+		if (speed >= 50)
+			SmashObject(item_number);
+	}
+}
+
+void SmashObject(short item_number)
+{
+	ITEM_INFO* item;
+	ROOM_INFO* r;
+	BOX_INFO* box;
+	long sector;
+
+	item = &items[item_number];
+	r = &room[item->room_number];
+	sector = ((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10);
+	box = &boxes[r->floor[sector].box];
+
+	if (box->overlap_index & 0x8000)
+		box->overlap_index &= ~0x4000;
+
+	SoundEffect(SFX_EXPLOSION1, &item->pos, SFX_DEFAULT);
+	SoundEffect(SFX_EXPLOSION2, &item->pos, SFX_DEFAULT);
+	item->collidable = 0;
+	item->mesh_bits = 0xFFFE;
+	ExplodingDeath2(item_number, -1, 256);
+	item->flags |= IFL_INVISIBLE;
+
+	if (item->status == ITEM_ACTIVE)
+		RemoveActiveItem(item_number);
+
+	item->status = ITEM_DEACTIVATED;
+}
+
 void inject_objects(bool replace)
 {
 	INJECT(0x00456580, ControlMapper, replace);
@@ -770,4 +821,6 @@ void inject_objects(bool replace)
 	INJECT(0x00456360, ControlTriggerTriggerer, replace);
 	INJECT(0x00456120, PoleCollision, replace);
 	INJECT(0x00456050, ControlAnimatingSlots, replace);
+	INJECT(0x00455DF0, SmashObjectControl, replace);
+	INJECT(0x00455CF0, SmashObject, replace);
 }
