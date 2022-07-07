@@ -47,7 +47,16 @@ static void ClearMovableBlockSplitters(long x, long y, long z, short room_number
 	}
 }
 
+void InitialiseMovingBlock(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	ClearMovableBlockSplitters(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number);
+}
+
 void inject_moveblok(bool replace)
 {
 	INJECT(0x004094A0, ClearMovableBlockSplitters, replace);
+	INJECT(0x00409460, InitialiseMovingBlock, replace);
 }

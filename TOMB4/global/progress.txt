@@ -958,7 +958,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/moveblok.cpp
 
-0x00409460		InitialiseMovingBlock
+0x00409460	+	InitialiseMovingBlock
 0x004094A0	+	ClearMovableBlockSplitters
 0x004096D0		MovableBlock
 0x00409B80		TestBlockPush
