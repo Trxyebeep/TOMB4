@@ -568,6 +568,38 @@ void ControlWaterfall(short item_number)
 	}
 }
 
+void AnimateWaterfalls()
+{
+	TEXTURESTRUCT* tex;
+	OBJECT_INFO* obj;
+	float off;
+	static long vOff = 0;
+
+	vOff -= 7;
+	vOff &= 0x3F;
+	off = (float)vOff * float(1.0F / 256.0F);
+
+	for (int i = 0; i < 3; i++)
+	{
+		obj = &objects[WATERFALL1 + i];
+
+		if (obj->loaded)
+		{
+			tex = AnimatingWaterfalls[i];
+			tex->v1 = AnimatingWaterfallsV[i] + off;
+			tex->v2 = AnimatingWaterfallsV[i] + off;
+			tex->v3 = AnimatingWaterfallsV[i] + off + 0.25F;
+			tex->v4 = AnimatingWaterfallsV[i] + off + 0.25F;
+
+			tex++;
+			tex->v1 = AnimatingWaterfallsV[i] + off;
+			tex->v2 = AnimatingWaterfallsV[i] + off;
+			tex->v3 = AnimatingWaterfallsV[i] + off + 0.25F;
+			tex->v4 = AnimatingWaterfallsV[i] + off + 0.25F;
+		}
+	}
+}
+
 void inject_objects(bool replace)
 {
 	INJECT(0x00456580, ControlMapper, replace);
@@ -584,4 +616,5 @@ void inject_objects(bool replace)
 	INJECT(0x00456AC0, ControlBurningRope, replace);
 	INJECT(0x00456910, BurningRopeCollision, replace);
 	INJECT(0x004564E0, ControlWaterfall, replace);
+	INJECT(0x00456420, AnimateWaterfalls, replace);
 }
