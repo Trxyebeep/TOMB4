@@ -19,6 +19,7 @@ void BurningRopeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void ControlWaterfall(short item_number);
 void AnimateWaterfalls();
 void ControlTriggerTriggerer(short item_number);
+void PoleCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll);
 
 enum object_types 
 {
