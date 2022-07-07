@@ -15,6 +15,7 @@ void BridgeTilt2Ceiling(ITEM_INFO* item, long x, long y, long z, long* height);
 void StatuePlinthCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void TriggerRopeFlame(PHD_VECTOR* pos);
 void ControlBurningRope(short item_number);
+void BurningRopeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 
 #define AnimateWaterfalls	( (void(__cdecl*)()) 0x00456420 )
 

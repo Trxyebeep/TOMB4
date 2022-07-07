@@ -13,6 +13,7 @@
 #include "draw.h"
 #include "newinv.h"
 #include "switch.h"
+#include "delstuff.h"
 
 static short StatuePlinthBounds[12] = { 0, 0, -64, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
@@ -493,6 +494,58 @@ void ControlBurningRope(short item_number)
 	DebrisFlags = 0;
 }
 
+void BurningRopeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	SPHERE* sphere;
+	PHD_VECTOR pos;
+	long nSpheres, dx, dy, dz;
+
+	item = &items[item_number];
+
+	if (item->trigger_flags || !lara.LitTorch)
+		return;
+
+	nSpheres = GetSpheres(item, Slist, 1);
+	dx = item->pos.x_pos - lara_item->pos.x_pos;
+	dy = item->pos.y_pos - lara_item->pos.y_pos;
+	dz = item->pos.z_pos - lara_item->pos.z_pos;
+
+	if (dx > 0x1000 || dx < -0x1000 || dy > 0x800 || dy < -0x800 || dz > 0x1000 || dz < -0x1000)
+		return;
+
+	pos.x = -32;
+	pos.y = 64;
+	pos.z = 256;
+	GetLaraJointPos(&pos, 14);
+
+	for (int i = 0; i < nSpheres; i++)
+	{
+		sphere = &Slist[i];
+		dx = ABS(sphere->x - pos.x);
+		dy = ABS(sphere->y - pos.y);
+		dz = ABS(sphere->z - pos.z);
+
+		if (dx < sphere->r && dy < sphere->r && dz < sphere->r)
+		{
+			if (gfCurrentLevel == 27)
+			{
+				SoundEffect(SFX_BOULDER_FALL, 0, SFX_DEFAULT);
+				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 1, 0);
+			}
+
+			item->trigger_flags = 1;
+			item->item_flags[0] = i << 1;
+			item->item_flags[1] = i << 1;
+			item->item_flags[2] = i;
+			item->item_flags[3] = 150;
+			AddActiveItem(item_number);
+			item->status = ITEM_ACTIVE;
+			item->flags |= IFL_CODEBITS;
+		}
+	}
+}
+
 void inject_objects(bool replace)
 {
 	INJECT(0x00456580, ControlMapper, replace);
@@ -507,4 +560,5 @@ void inject_objects(bool replace)
 	INJECT(0x004570F0, StatuePlinthCollision, replace);
 	INJECT(0x00456780, TriggerRopeFlame, replace);
 	INJECT(0x00456AC0, ControlBurningRope, replace);
+	INJECT(0x00456910, BurningRopeCollision, replace);
 }
