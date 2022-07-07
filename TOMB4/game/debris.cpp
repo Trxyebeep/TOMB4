@@ -71,7 +71,7 @@ void TriggerDebris(GAME_VECTOR* pos, void* TextInfo, short* Offsets, long* Vels,
 	}
 	else
 	{
-		dptr->Dir = (short)(phd_atan(Vels[2], Vels[0]));
+		dptr->Dir = (short)phd_atan(Vels[2], Vels[0]);
 
 		if (Vels[0] < 0)
 			Vels[0] = -Vels[0];
@@ -79,23 +79,23 @@ void TriggerDebris(GAME_VECTOR* pos, void* TextInfo, short* Offsets, long* Vels,
 		if (Vels[2] < 0)
 			Vels[2] = -Vels[2];
 
-		dptr->Speed = (short)((Vels[0] + Vels[2]) >> 2);
+		dptr->Speed = short((Vels[0] + Vels[2]) >> 2);
+	}
 
-		if (Vels[1])
-		{
-			dptr->Yvel = -512 - (GetRandomControl() & 0x1FF);
-			dptr->Gravity = (GetRandomControl() & 0x3F) + 64;
+	if (Vels[1])
+	{
+		dptr->Yvel = -512 - (GetRandomControl() & 0x1FF);
+		dptr->Gravity = (GetRandomControl() & 0x3F) + 64;
 
-			if (Vels[1] == -1)
-				dptr->Yvel <<= 1;
-			else if (Vels[1] == -2)
-				dptr->Yvel >>= 1;
-		}
-		else
-		{
-			dptr->Yvel = 0;
-			dptr->Gravity = (GetRandomControl() & 0x1F) + 32;
-		}
+		if (Vels[1] == -1)
+			dptr->Yvel <<= 1;
+		else if (Vels[1] == -2)
+			dptr->Yvel >>= 1;
+	}
+	else
+	{
+		dptr->Yvel = 0;
+		dptr->Gravity = (GetRandomControl() & 0x1F) + 32;
 	}
 
 	dptr->RoomNumber = pos->room_number;
