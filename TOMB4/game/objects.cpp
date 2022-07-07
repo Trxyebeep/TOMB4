@@ -8,6 +8,12 @@
 #include "items.h"
 #include "tomb4fx.h"
 #include "traps.h"
+#include "lara_states.h"
+#include "collide.h"
+#include "draw.h"
+#include "newinv.h"
+
+static short StatuePlinthBounds[12] = { 0, 0, -64, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
 void ControlMapper(short item_number)
 {
@@ -254,6 +260,77 @@ void BridgeTilt2Ceiling(ITEM_INFO* item, long x, long y, long z, long* height)
 		*height = level + 256;
 }
 
+void StatuePlinthCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	FLOOR_INFO* floor;
+	short* bounds;
+	short room_number, y_rot;
+
+	item = &items[item_number];
+
+	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && !l->gravity_status &&
+		lara.gun_status == LG_NO_ARMS && !item->trigger_flags && !item->item_flags[0])
+	{
+		if (!item->item_flags[1])
+		{
+			bounds = GetBoundsAccurate(item);
+			StatuePlinthBounds[0] = bounds[0];
+			StatuePlinthBounds[1] = bounds[1];
+			StatuePlinthBounds[4] = bounds[4] - 200;
+			StatuePlinthBounds[5] = bounds[4] + 200;
+			y_rot = item->pos.y_rot;
+			item->pos.y_rot = l->pos.y_rot;
+
+			if (TestLaraPosition(StatuePlinthBounds, item, l))
+			{
+				if (have_i_got_object(PUZZLE_ITEM5))
+				{
+					GLOBAL_enterinventory = PUZZLE_ITEM5;
+					item->item_flags[1] = 1;
+				}
+			}
+
+			item->pos.y_rot = y_rot;
+			return;
+		}
+		
+		if (GLOBAL_inventoryitemchosen == PUZZLE_ITEM5)
+		{
+			l->anim_number = ANIM_PLINTHHI;
+			l->frame_number = anims[ANIM_PLINTHHI].frame_base;
+			l->current_anim_state = AS_CONTROLLED;
+			return;
+		}
+	}
+	else if (item->item_flags[1])
+	{
+		if (GLOBAL_inventoryitemchosen == PUZZLE_ITEM5)
+		{
+			l->anim_number = ANIM_PLINTHHI;
+			l->frame_number = anims[ANIM_PLINTHHI].frame_base;
+			l->current_anim_state = AS_CONTROLLED;
+			return;
+		}
+	}
+
+	if (l->anim_number == ANIM_PLINTHHI && l->frame_number == anims[ANIM_PLINTHHI].frame_base + 45)
+	{
+		room_number = item->room_number;
+		floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+		GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+		TestTriggers(trigger_index, 1, item->flags & 0x3E00);
+		item->mesh_bits = 255;
+		item->item_flags[0] = 1;
+		lara.puzzleitems[4]--;
+	}
+	else
+	{
+		item->item_flags[1] = 0;
+		ObjectCollision(item_number, l, coll);
+	}
+}
+
 void inject_objects(bool replace)
 {
 	INJECT(0x00456580, ControlMapper, replace);
@@ -265,4 +342,5 @@ void inject_objects(bool replace)
 	INJECT(0x00455F80, BridgeTilt1Ceiling, replace);
 	INJECT(0x00455FC0, BridgeTilt2Floor, replace);
 	INJECT(0x00456010, BridgeTilt2Ceiling, replace);
+	INJECT(0x004570F0, StatuePlinthCollision, replace);
 }

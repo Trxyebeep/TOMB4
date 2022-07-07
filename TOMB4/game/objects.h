@@ -12,6 +12,7 @@ void BridgeTilt1Floor(ITEM_INFO* item, long x, long y, long z, long* height);
 void BridgeTilt1Ceiling(ITEM_INFO* item, long x, long y, long z, long* height);
 void BridgeTilt2Floor(ITEM_INFO* item, long x, long y, long z, long* height);
 void BridgeTilt2Ceiling(ITEM_INFO* item, long x, long y, long z, long* height);
+void StatuePlinthCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 
 #define AnimateWaterfalls	( (void(__cdecl*)()) 0x00456420 )
 
