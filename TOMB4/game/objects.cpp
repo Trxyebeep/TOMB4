@@ -12,6 +12,7 @@
 #include "collide.h"
 #include "draw.h"
 #include "newinv.h"
+#include "switch.h"
 
 static short StatuePlinthBounds[12] = { 0, 0, -64, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
@@ -393,6 +394,105 @@ void TriggerRopeFlame(PHD_VECTOR* pos)
 	sptr->dSize = sptr->Size >> 3;
 }
 
+void ControlBurningRope(short item_number)
+{
+	ITEM_INFO* item;
+	SPHERE* sphere;
+	PHD_VECTOR pos;
+	long passes;
+	short nmeshes;
+
+	item = &items[item_number];
+
+	if (!TriggerActive(item))
+		return;
+
+	nmeshes = objects[item->object_number].nmeshes - 1;
+
+	if (!(GlobalCounter & 3))
+	{
+		GetSpheres(item, Slist, 1);
+		sphere = &Slist[item->item_flags[0] >> 1];
+
+		for (int i = item->item_flags[0]; i < item->item_flags[1]; i++)
+		{
+			if (item->mesh_bits & (1 << (i >> 1)))
+			{
+				if (i & 1 && GlobalCounter & 4)
+				{
+					pos.x = (sphere->x + sphere[1].x) >> 1;
+					pos.y = (sphere->y + sphere[1].y) >> 1;
+					pos.z = (sphere->z + sphere[1].z) >> 1;
+					TriggerRopeFlame(&pos);
+				}
+				else if (!(GlobalCounter & 4))
+				{
+					pos.x = sphere->x;
+					pos.y = sphere->y;
+					pos.z = sphere->z;
+					TriggerRopeFlame(&pos);
+				}
+			}
+
+			if (i & 1)
+				sphere++;
+		}
+
+		if (item->item_flags[3])
+		{
+			if (item->item_flags[0] > 1)
+				item->item_flags[0]--;
+
+			if (item->item_flags[1] < nmeshes << 1)
+				item->item_flags[1]++;
+		}
+	}
+
+	DebrisFlags = 1;
+
+	if (item->item_flags[3])
+	{
+		item->item_flags[3]--;
+
+		if (!item->item_flags[3])
+		{
+			item->item_flags[1] = item->item_flags[2];
+			item->item_flags[0] = item->item_flags[2];
+			ExplodeItemNode(item, item->item_flags[2], 0, 256);
+		}
+	}
+	else if (GlobalCounter & 1)
+	{
+		passes = 0;
+
+		if (item->item_flags[0] > 0)
+		{
+			item->item_flags[0]--;
+			ExplodeItemNode(item, item->item_flags[0], 0, 256);
+		}
+		else
+			passes++;
+
+		if (item->item_flags[1] < nmeshes)
+		{
+			item->item_flags[1]++;
+			ExplodeItemNode(item, item->item_flags[1], 0, 256);
+		}
+		else
+			passes++;
+
+		if (passes == 2)
+		{
+			if (gfCurrentLevel != 27)
+				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 1, 0);
+
+			KillItem(item_number);
+		}
+	}
+
+	DebrisFlags = 0;
+}
+
 void inject_objects(bool replace)
 {
 	INJECT(0x00456580, ControlMapper, replace);
@@ -406,4 +506,5 @@ void inject_objects(bool replace)
 	INJECT(0x00456010, BridgeTilt2Ceiling, replace);
 	INJECT(0x004570F0, StatuePlinthCollision, replace);
 	INJECT(0x00456780, TriggerRopeFlame, replace);
+	INJECT(0x00456AC0, ControlBurningRope, replace);
 }
