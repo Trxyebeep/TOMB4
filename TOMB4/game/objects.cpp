@@ -300,6 +300,10 @@ void StatuePlinthCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 			l->anim_number = ANIM_PLINTHHI;
 			l->frame_number = anims[ANIM_PLINTHHI].frame_base;
 			l->current_anim_state = AS_CONTROLLED;
+#ifdef GENERAL_FIXES
+			lara.gun_status = LG_HANDS_BUSY;
+			GLOBAL_inventoryitemchosen = NO_ITEM;
+#endif
 			return;
 		}
 	}
@@ -310,6 +314,10 @@ void StatuePlinthCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 			l->anim_number = ANIM_PLINTHHI;
 			l->frame_number = anims[ANIM_PLINTHHI].frame_base;
 			l->current_anim_state = AS_CONTROLLED;
+#ifdef GENERAL_FIXES
+			lara.gun_status = LG_HANDS_BUSY;
+			GLOBAL_inventoryitemchosen = NO_ITEM;
+#endif
 			return;
 		}
 	}
