@@ -161,6 +161,8 @@ void JumpOffRope(ITEM_INFO* item);
 void UpdateRopeSwing(ITEM_INFO* item);
 void FallFromRope(ITEM_INFO* item);
 short GetDirOctant(long rot);
+short TestMonkeyLeft(ITEM_INFO* item, COLL_INFO* coll);
+short TestMonkeyRight(ITEM_INFO* item, COLL_INFO* coll);
 
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
 #define LaraTestClimbStance	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422810 )
@@ -170,5 +172,3 @@ short GetDirOctant(long rot);
 #define LaraDeflectEdge	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422400 )
 #define TestWall	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x004228D0 )
 #define LaraCollideStop	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004229D0 )
-#define TestMonkeyLeft	( (short(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004236B0 )
-#define TestMonkeyRight	( (short(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004237B0 )
