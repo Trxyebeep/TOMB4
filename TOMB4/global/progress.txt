@@ -157,7 +157,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044A390		GetWaterHeight
 0x0044A530		GetHeight
 0x0044AA20		RefreshCamera
-0x0044AB50		TestTriggers
+0x0044AB50	+	TestTriggers
 0x0044B620		TriggerActive
 0x0044B690		GetCeiling
 0x0044BB20		GetDoor
@@ -1263,6 +1263,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/switch.cpp
 
+0x00461B10		SwitchTrigger
 0x00461BD0		GetSwitchTrigger
 0x00461CA0		TestTriggersAtXYZ
 0x00461CF0		SwitchControl

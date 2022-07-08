@@ -447,6 +447,8 @@
 #define OutsideRoomOffsets	VAR_U_(0x007FE2E8, short*)
 #define cd_drive	VAR_U_(0x005333A0, char)
 #define OldPickupPos	VAR_U_(0x007FD1D0, PHD_VECTOR)
+#define HeavyTriggered	VAR_U_(0x007FE154, uchar)
+#define fliptimer	VAR_U_(0x004BF410, long)
 
 
 
@@ -540,6 +542,7 @@
 #define RPickups	ARRAY_(0x007FD1C0, uchar, [16])
 #define jroomies	ARRAY_(0x007F4FE0, short, [22])
 #define conflict	ARRAY_(0x005355B8, long, [18])
+#define flipmap	ARRAY_(0x007FE220, long, [10])
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)
