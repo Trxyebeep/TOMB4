@@ -510,8 +510,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00407290	+	TriggerHarpyMissileFlame
 0x004073F0		DoHarpyEffects
 0x00407700	+	TriggerHarpyMissile
-0x004077B0		TriggerHarpySparks
-0x004078A0		TriggerHarpyFlame
+0x004077B0	+	TriggerHarpySparks
+0x004078A0	+	TriggerHarpyFlame
 0x00407A30		InitialiseHarpy
 0x00407A90		HarpyControl
 
