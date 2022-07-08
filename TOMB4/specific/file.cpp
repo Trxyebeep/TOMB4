@@ -25,7 +25,7 @@ unsigned int __stdcall LoadLevel(void* name)
 
 	Log(2, "LoadLevel");
 	FreeLevel();
-	memset(malloc_ptr, 0, 5000000);
+	memset(malloc_ptr, 0, MALLOC_SIZE);
 	memset(&lara, 0, sizeof(LARA_INFO));
 
 	Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));

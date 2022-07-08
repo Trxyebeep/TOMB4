@@ -650,3 +650,9 @@
 #else
 #define MAX_DYNAMICS	32
 #endif
+
+#ifdef GENERAL_FIXES
+#define MALLOC_SIZE	15000000	//15MB
+#else
+#define MALLOC_SIZE	5000000		//5MB
+#endif
