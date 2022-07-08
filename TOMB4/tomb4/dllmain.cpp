@@ -79,6 +79,7 @@
 #include "../game/harpy.h"
 #include "../game/seth.h"
 #include "../game/moveblok.h"
+#include "../game/objlight.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -177,6 +178,7 @@ void inject_all(bool replace)
 	inject_harpy(replace);
 	inject_seth(replace);
 	inject_moveblok(replace);
+	inject_objlight(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

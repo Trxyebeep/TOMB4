@@ -1062,9 +1062,10 @@ x for functions decompiled but not injected, for one reason or another.
 0x00456CD0	+	ControlLightningConductor
 0x004570F0	+	StatuePlinthCollision
 
+
 		game/objlight.cpp
 
-0x004572D0		ControlPulseLight
+0x004572D0	+	ControlPulseLight
 0x00457440		ControlElectricalLight
 0x00457560		ControlBlinker
 
