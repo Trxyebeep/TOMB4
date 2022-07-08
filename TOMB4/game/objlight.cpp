@@ -4,6 +4,7 @@
 #include "effect2.h"
 #include "sound.h"
 #include "../specific/function_stubs.h"
+#include "sphere.h"
 
 void ControlPulseLight(short item_number)
 {
@@ -105,8 +106,37 @@ void ControlElectricalLight(short item_number)
 	TriggerDynamic(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 16, r, g, b);
 }
 
+void ControlBlinker(short item_number)
+{
+	ITEM_INFO* item;
+	PHD_VECTOR pos;
+
+	item = &items[item_number];
+
+	if (!TriggerActive(item))
+		return;
+
+	item->trigger_flags--;
+
+	if (item->trigger_flags >= 3)
+		item->mesh_bits = 1;
+	else
+	{
+		pos.z = 0;
+		pos.y = 0;
+		pos.x = 0;
+		GetJointAbsPosition(item, &pos, 0);
+		TriggerDynamic(pos.x, pos.y, pos.z, 16, 255, 192, 16);
+		item->mesh_bits = 2;
+
+		if (item->trigger_flags < 0)
+			item->trigger_flags = 30;
+	}
+}
+
 void inject_objlight(bool replace)
 {
 	INJECT(0x004572D0, ControlPulseLight, replace);
 	INJECT(0x00457440, ControlElectricalLight, replace);
+	INJECT(0x00457560, ControlBlinker, replace);
 }

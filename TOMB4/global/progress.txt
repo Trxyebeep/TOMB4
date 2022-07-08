@@ -1067,7 +1067,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x004572D0	+	ControlPulseLight
 0x00457440	+	ControlElectricalLight
-0x00457560		ControlBlinker
+0x00457560	+	ControlBlinker
 
 
 		game/people.cpp
