@@ -40,10 +40,10 @@ void SeedRandomDraw(long seed)
 
 void init_game_malloc()
 {
-	malloc_buffer = (char*)MALLOC(5000000);
-	malloc_size = 5000000;
+	malloc_buffer = (char*)MALLOC(MALLOC_SIZE);
+	malloc_size = MALLOC_SIZE;
 	malloc_ptr = malloc_buffer;
-	malloc_free = 5000000;
+	malloc_free = MALLOC_SIZE;
 	malloc_used = 0;
 }
 

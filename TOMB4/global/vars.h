@@ -368,8 +368,8 @@
 #define GLOBAL_resident_depack_buffers	VAR_U_(0x007F4FAC, char*)
 #define SenetTargetX	VAR_U_(0x007FE204, long)
 #define SenetTargetZ	VAR_U_(0x007FE208, long)
-#define ActivePiece	VAR_U_(0x004AEBF8, char)
-#define SenetDisplacement	VAR_U_(0x004BF40C, char)
+#define piece_moving	VAR_U_(0x004AEBF8, char)
+#define last_throw	VAR_U_(0x004BF40C, char)
 #define LaraFixedPosition	VAR_U_(0x007F5760, PHD_VECTOR)
 #define InitialCameraTarget	VAR_U_(0x007F5750, PHD_VECTOR)
 #define InitialCameraPosition	VAR_U_(0x007F57D0, PHD_VECTOR)
@@ -556,9 +556,9 @@
 #define Drips	ARRAY_(0x00800DC0, DRIP_STRUCT, [32])
 #define GlobalCollisionBounds	ARRAY_(0x007FE7F0, short, [6])
 #define Slist	ARRAY_(0x007F6EE0, SPHERE, [34])
-#define SenetPieceNumbers	ARRAY_(0x004BF400, short, [6])
-#define SenetBoard	ARRAY_(0x007FE340, char, [17])
-#define ActiveSenetPieces	ARRAY_(0x007FE158, char, [6])
+#define senet_item	ARRAY_(0x004BF400, short, [6])
+#define senet_board	ARRAY_(0x007FE340, char, [17])
+#define senet_piece	ARRAY_(0x007FE158, char, [6])
 #define SpotCam	ARRAY_(0x007F5A80, SPOTCAM, [128])
 #define camera_xposition	ARRAY_(0x007F5840, long, [18])
 #define camera_yposition	ARRAY_(0x007F59C0, long, [18])
@@ -649,4 +649,10 @@
 #define MAX_DYNAMICS	64
 #else
 #define MAX_DYNAMICS	32
+#endif
+
+#ifdef GENERAL_FIXES
+#define MALLOC_SIZE	15000000	//15MB
+#else
+#define MALLOC_SIZE	5000000		//5MB
 #endif

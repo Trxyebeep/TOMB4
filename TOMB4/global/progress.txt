@@ -508,10 +508,10 @@ x for functions decompiled but not injected, for one reason or another.
 		game/harpy.cpp
 
 0x00407290	+	TriggerHarpyMissileFlame
-0x004073F0		DoHarpyEffects
-0x00407700		TriggerHarpyMissile
-0x004077B0		TriggerHarpySparks
-0x004078A0		TriggerHarpyFlame
+0x004073F0	+	DoHarpyEffects
+0x00407700	+	TriggerHarpyMissile
+0x004077B0	+	TriggerHarpySparks
+0x004078A0	+	TriggerHarpyFlame
 0x00407A30		InitialiseHarpy
 0x00407A90		HarpyControl
 
@@ -636,7 +636,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00421AD0	+	lara_col_crawlb
 0x00421BF0	+	lara_col_crawl2hang
 0x00421DE0		LaraTestEdgeCatch
-0x00421E90		LaraTestHangOnClimbWall
+0x00421E90	+	LaraTestHangOnClimbWall
 0x00421FF0		TestHangSwingIn
 0x004220B0	+	lara_as_dash
 0x00422200	+	lara_col_dash
@@ -657,9 +657,9 @@ x for functions decompiled but not injected, for one reason or another.
 0x004230E0		LaraHangTest
 0x004235B0		SnapLaraToEdgeOfBlock
 0x00423660	+	MonkeySwingSnap
-0x004236B0		TestMonkeyLeft
-0x00423780		GetDirOctant
-0x004237B0		TestMonkeyRight
+0x004236B0	+	TestMonkeyLeft
+0x00423780	+	GetDirOctant
+0x004237B0	+	TestMonkeyRight
 0x00423880	+	lara_as_monkeyswing
 0x00423930	+	lara_col_monkeyswing
 0x00423A60	+	lara_as_monkeyl
@@ -678,13 +678,13 @@ x for functions decompiled but not injected, for one reason or another.
 0x00423FF0	+	lara_col_poledown
 0x00424150	+	ApplyVelocityToRope
 0x004241A0	+	lara_as_rope
-0x004241D0		FallFromRope
+0x004241D0	+	FallFromRope
 0x00424270	+	lara_col_rope
-0x00424320		UpdateRopeSwing
+0x00424320	+	UpdateRopeSwing
 0x00424620	+	lara_as_ropel
 0x00424650	+	lara_as_roper
 0x00424680	+	lara_col_ropefwd
-0x00424820		JumpOffRope
+0x00424820	+	JumpOffRope
 0x004248E0	+	lara_as_climbrope
 0x00424950	+	lara_as_climbroped
 0x00424A60	+	lara_as_stop
@@ -696,7 +696,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00425550	+	lara_col_forwardjump
 0x00425630	+	lara_as_reach
 0x00425650	+	lara_col_reach
-0x004259C0		LaraSlideEdgeJump
+0x004259C0	+	LaraSlideEdgeJump
 0x00425AC0	+	lara_as_walk
 0x00425B60	+	lara_as_run
 0x00425D10	+	lara_as_fastback
@@ -706,9 +706,9 @@ x for functions decompiled but not injected, for one reason or another.
 0x00425F10	+	lara_as_fastfall
 0x00425F50	+	lara_as_hang
 0x00425FA0	+	lara_col_hang
-0x00426230		LaraHangRightCornerTest
-0x00426600		IsValidHangPos
-0x004266E0		LaraHangLeftCornerTest
+0x00426230	+	LaraHangRightCornerTest
+0x00426600	+	IsValidHangPos
+0x004266E0	+	LaraHangLeftCornerTest
 0x00426AB0	+	CanLaraHangSideways
 0x00426B50	+	lara_as_hangleft
 0x00426B90	+	lara_col_hangleft
@@ -834,7 +834,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0042D5E0	+	lara_as_climbdown
 0x0042D600	+	lara_col_climbdown
 0x0042D7A0	+	lara_as_climbend
-0x0042D7D0		GetClimbTrigger
+0x0042D7D0	+	GetClimbTrigger
 
 
 		game/laradouble.cpp
@@ -958,12 +958,12 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/moveblok.cpp
 
-0x00409460		InitialiseMovingBlock
-0x004094A0		ClearMovableBlockSplitters
-0x004096D0		MovableBlock
-0x00409B80		TestBlockPush
-0x00409D20		TestBlockPull
-0x0040A040		MovableBlockCollision
+0x00409460	+	InitialiseMovingBlock
+0x004094A0	+	ClearMovableBlockSplitters
+0x004096D0	+	MovableBlock
+0x00409B80	+	TestBlockPush
+0x00409D20	+	TestBlockPull
+0x0040A040	+	MovableBlockCollision
 0x0040A3C0		InitialisePlanetEffect
 0x0040A4C0		ControlPlanetEffect
 0x0040A7F0		DrawPlanetEffect
@@ -1040,9 +1040,9 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/objects.cpp
 
-0x00455AE0		EarthQuake
-0x00455CF0		SmashObject
-0x00455DF0		SmashObjectControl
+0x00455AE0	+	EarthQuake
+0x00455CF0	+	SmashObject
+0x00455DF0	+	SmashObjectControl
 0x00455EA0	+	BridgeFlatFloor
 0x00455ED0	+	BridgeFlatCeiling
 0x00455EF0	+	GetOffset
@@ -1050,23 +1050,24 @@ x for functions decompiled but not injected, for one reason or another.
 0x00455F80	+	BridgeTilt1Ceiling
 0x00455FC0	+	BridgeTilt2Floor
 0x00456010	+	BridgeTilt2Ceiling
-0x00456050		ControlAnimatingSlots
-0x00456120		PoleCollision
-0x00456360		ControlTriggerTriggerer
-0x00456420		AnimateWaterfalls
-0x004564E0		ControlWaterfall
+0x00456050	+	ControlAnimatingSlots
+0x00456120	+	PoleCollision
+0x00456360	+	ControlTriggerTriggerer
+0x00456420	+	AnimateWaterfalls
+0x004564E0	+	ControlWaterfall
 0x00456580	+	ControlMapper
-0x00456780		TriggerRopeFlame
-0x00456910		BurningRopeCollision
-0x00456AC0		ControlBurningRope
+0x00456780	+	TriggerRopeFlame
+0x00456910	+	BurningRopeCollision
+0x00456AC0	+	ControlBurningRope
 0x00456CD0	+	ControlLightningConductor
-0x004570F0		StatuePlinthCollision
+0x004570F0	+	StatuePlinthCollision
+
 
 		game/objlight.cpp
 
-0x004572D0		ControlPulseLight
-0x00457440		ControlElectricalLight
-0x00457560		ControlBlinker
+0x004572D0	+	ControlPulseLight
+0x00457440	+	ControlElectricalLight
+0x00457560	+	ControlBlinker
 
 
 		game/people.cpp
@@ -1177,13 +1178,13 @@ x for functions decompiled but not injected, for one reason or another.
 0x0040F3B0	+	InitialiseSenet
 0x0040F480	+	SenetControl
 0x0040F4D0	+	MakeMove
-0x0040F600		InitialiseGameStix
-0x0040F630		GameStixControl
-0x0040FBD0		ShockwaveExplosion
-0x0040FC60		ThrowSticks
+0x0040F600	+	InitialiseGameStix
+0x0040F630	+	GameStixControl
+0x0040FBD0	+	ShockwaveExplosion
+0x0040FC60	+	ThrowSticks
 0x0040FCF0		ControlGodHead
 0x0040FDD0		DrawGodHead
-0x0040FF40		GameStixCollision
+0x0040FF40	+	GameStixCollision
 
 
 		game/sentrygun.cpp

@@ -266,6 +266,9 @@ void(*lara_collision_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 	lara_void_func
 };
 
+static short LeftClimbTab[4] = { 512, 1024, 2048, 256 };
+static short RightClimbTab[4] = { 2048, 256, 512, 1024 };
+
 #ifdef GENERAL_FIXES
 static void TiltHer(ITEM_INFO* item, long rad, long height)
 {
@@ -575,7 +578,7 @@ long CanLaraHangSideways(ITEM_INFO* item, COLL_INFO* coll, short angle)
 	z = item->pos.z_pos;
 	lara.move_angle = angle + item->pos.y_rot;
 
-	switch ((ushort)(lara.move_angle + 8192) >> W2V_SHIFT)
+	switch (ushort(lara.move_angle + 0x2000) / 0x4000)
 	{
 	case NORTH:
 		z += 16;
@@ -1130,7 +1133,7 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 
 							if (!collided)
 							{
-								switch ((ushort)(item->pos.y_rot + 8192) >> W2V_SHIFT)
+								switch (ushort(item->pos.y_rot + 0x2000) / 0x4000)
 								{
 								case NORTH:
 									item->pos.y_rot = 0;
@@ -3931,7 +3934,7 @@ void lara_col_reach(ITEM_INFO* item, COLL_INFO* coll)
 					{
 						item->pos.y_pos += coll->front_floor - bounds[2];
 
-						switch ((ushort)(item->pos.y_rot + 0x2000) >> W2V_SHIFT)
+						switch (ushort(item->pos.y_rot + 0x2000) / 0x4000)
 						{
 						case NORTH:
 							item->pos.z_pos = (item->pos.z_pos | 0x3FF) - 100;
@@ -4651,6 +4654,630 @@ void ApplyVelocityToRope(long node, ushort angle, ushort n)
 	SetPendulumVelocity(xvel, 0, zvel);
 }
 
+static long IsValidHangPos(ITEM_INFO* item, COLL_INFO* coll)
+{
+	short angle;
+
+	if (LaraFloorFront(item, lara.move_angle, 100) >= 200)
+	{
+		angle = ushort(item->pos.y_rot + 0x2000) / 0x4000;
+
+		switch (angle)
+		{
+		case NORTH:
+			item->pos.z_pos += 4;
+			break;
+
+		case EAST:
+			item->pos.x_pos += 4;
+			break;
+
+		case SOUTH:
+			item->pos.z_pos -= 4;
+			break;
+
+		case WEST:
+			item->pos.x_pos -= 4;
+			break;
+		}
+
+		coll->bad_pos = -NO_HEIGHT;
+		coll->bad_neg = -512;
+		coll->bad_ceiling = 0;
+		lara.move_angle = item->pos.y_rot;
+		GetLaraCollisionInfo(item, coll);
+
+		if (coll->mid_ceiling < 0 && coll->coll_type == CT_FRONT && !coll->hit_static && ABS(coll->front_floor - coll->right_floor2) < 60)
+			return 1;
+	}
+
+	return 0;
+}
+
+long LaraTestHangOnClimbWall(ITEM_INFO* item, COLL_INFO* coll)
+{
+	short* bounds;
+	long shift, result;
+	short angle, l, r;
+
+	if (!lara.climb_status || item->fallspeed < 0)
+		return 0;
+
+	angle = ushort(item->pos.y_rot + 0x2000) / 0x4000;
+
+	switch (angle)
+	{
+	case NORTH:
+	case SOUTH:
+		item->pos.z_pos += coll->shift.z;
+		break;
+
+	case EAST:
+	case WEST:
+		item->pos.x_pos += coll->shift.x;
+		break;
+	}
+
+	bounds = GetBoundsAccurate(item);
+
+	if (lara.move_angle != item->pos.y_rot)
+	{
+		r = LaraCeilingFront(item, item->pos.y_rot, 0, 0);
+		l = LaraCeilingFront(item, lara.move_angle, 128, 0);
+
+		if (ABS(r - l) > 60)
+			return 0;
+	}
+
+	if (!LaraTestClimbPos(item, coll->radius, coll->radius, bounds[2], bounds[3] - bounds[2], &shift) ||
+		!LaraTestClimbPos(item, coll->radius, -coll->radius, bounds[2], bounds[3] - bounds[2], &shift))
+		return 0;
+
+	result = LaraTestClimbPos(item, coll->radius, 0, bounds[2], bounds[3] - bounds[2], &shift);
+
+	if (!result)
+		return 0;
+
+	if (result != 1)
+		item->pos.y_pos += shift;
+
+	return 1;
+}
+
+long LaraHangRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
+{
+	long oldx, oldz, front, x, z, flag;
+	short oldy, angle;
+
+	if (item->anim_number != ANIM_GRABLEDGE || coll->hit_static)
+		return 0;
+
+	oldx = item->pos.x_pos;
+	oldy = item->pos.y_rot;
+	oldz = item->pos.z_pos;
+	front = coll->front_floor;
+	angle = ushort(item->pos.y_rot + 0x2000) / 0x4000;
+
+	switch (angle)
+	{
+	case NORTH:
+	case SOUTH:
+		x = oldx ^ ((ushort)oldx ^ (ushort)oldz) & 1023;
+		z = oldz ^ ((ushort)oldx ^ (ushort)oldz) & 1023;
+		break;
+
+	default:
+		x = (oldx & ~1023) - (oldz & 1023) + 1024;
+		z = (oldz & ~1023) - (oldx & 1023) + 1024;
+		break;
+	}
+
+	item->pos.x_pos = x;
+	item->pos.z_pos = z;
+	item->pos.y_rot += 0x4000;
+	lara.CornerX = x;
+	lara.CornerZ = z;
+	flag = -IsValidHangPos(item, coll);
+
+	if (flag)
+	{
+		if (lara.climb_status)
+		{
+			if (!(GetClimbTrigger(x, item->pos.y_pos, z, item->room_number) & LeftClimbTab[angle]))
+				flag = 0;
+		}
+		else if (ABS(front - coll->front_floor) > 60)
+			flag = 0;
+	}
+
+	if (!flag)
+	{
+		item->pos.x_pos = oldx;
+		item->pos.y_rot = oldy;
+		item->pos.z_pos = oldz;
+		lara.move_angle = oldy;
+
+		if (LaraFloorFront(item, item->pos.y_rot + 0x4000, 116) < 0)
+			return 0;
+
+		switch (angle)
+		{
+		case NORTH:
+			x = ((item->pos.x_pos + 1024) & ~1023) - (item->pos.z_pos & 1023) + 1024;
+			z = ((item->pos.z_pos + 1024) & ~1023) - (item->pos.x_pos & 1023) + 1024;
+			break;
+
+		case SOUTH:
+			x = ((item->pos.x_pos - 1024) & ~1023) - (item->pos.z_pos & 1023) + 1024;
+			z = ((item->pos.z_pos - 1024) & ~1023) - (item->pos.x_pos & 1023) + 1024;
+			break;
+
+		case WEST:
+			x = (item->pos.x_pos ^ ((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023) - 1024;
+			z = ((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023 ^ (item->pos.z_pos + 1024);
+			break;
+
+		default:
+			x = (((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023) ^ (item->pos.x_pos + 1024);
+			z = (item->pos.z_pos ^ (((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023)) - 1024;
+			break;
+		}
+
+		item->pos.x_pos = x;
+		item->pos.z_pos = z;
+		item->pos.y_rot -= 0x4000;
+		lara.CornerX = x;
+		lara.CornerZ = z;
+		flag = IsValidHangPos(item, coll);
+
+		if (flag)
+		{
+			item->pos.x_pos = oldx;
+			item->pos.y_rot = oldy;
+			item->pos.z_pos = oldz;
+			lara.move_angle = oldy;
+
+			if (lara.climb_status)
+			{
+				if (!(GetClimbTrigger(x, item->pos.y_pos, z, item->room_number) & RightClimbTab[angle]))
+				{
+					front = LaraFloorFront(item, item->pos.y_rot, 116);
+
+					if (ABS(coll->front_floor - front) > 60 || front < -768)
+						flag = 0;
+				}
+			}
+			else
+			{
+				if (ABS(front - coll->front_floor) <= 60)
+				{
+					switch (angle)
+					{
+					case NORTH:
+
+						if ((oldx & 1023) < 512)
+							flag = 0;
+
+						break;
+
+					case EAST:
+
+						if ((oldz & 1023) > 512)
+							flag = 0;
+
+						break;
+
+					case SOUTH:
+
+						if ((oldx & 1023) > 512)
+							flag = 0;
+
+						break;
+
+					case WEST:
+
+						if ((oldz & 1023) < 512)
+							flag = 0;
+
+						break;
+					}
+				}
+				else
+					flag = 0;
+			}
+
+			return flag;
+		}
+	}
+
+	item->pos.x_pos = oldx;
+	item->pos.y_rot = oldy;
+	item->pos.z_pos = oldz;
+	lara.move_angle = oldy;
+	return flag;
+}
+
+long LaraHangLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
+{
+	long oldx, oldz, front, x, z, flag;
+	short oldy, angle;
+
+	if (item->anim_number != ANIM_GRABLEDGE || coll->hit_static)
+		return 0;
+
+	oldx = item->pos.x_pos;
+	oldy = item->pos.y_rot;
+	oldz = item->pos.z_pos;
+	front = coll->front_floor;
+	angle = ushort(item->pos.y_rot + 0x2000) / 0x4000;
+
+	switch (angle)
+	{
+	case NORTH:
+	case SOUTH:
+		x = (oldx & ~1023) - (oldz & 1023) + 1024;
+		z = (oldz & ~1023) - (oldx & 1023) + 1024;
+		break;
+
+	default:
+		x = oldx ^ ((ushort)oldx ^ (ushort)oldz) & 1023;
+		z = oldz ^ ((ushort)oldx ^ (ushort)oldz) & 1023;
+		break;
+	}
+
+	item->pos.x_pos = x;
+	item->pos.z_pos = z;
+	item->pos.y_rot -= 0x4000;
+	lara.CornerX = x;
+	lara.CornerZ = z;
+	flag = -IsValidHangPos(item, coll);
+
+	if (flag)
+	{
+		if (lara.climb_status)
+		{
+			if (!(GetClimbTrigger(x, item->pos.y_pos, z, item->room_number) & RightClimbTab[angle]))
+				flag = 0;
+		}
+		else if (ABS(front - coll->front_floor) > 60)
+			flag = 0;
+	}
+
+	if (!flag)
+	{
+		item->pos.x_pos = oldx;
+		item->pos.y_rot = oldy;
+		item->pos.z_pos = oldz;
+		lara.move_angle = oldy;
+
+		if (LaraFloorFront(item, item->pos.y_rot - 0x4000, 116) < 0)
+			return 0;
+
+		switch (angle)
+		{
+		case NORTH:
+			x = (item->pos.x_pos ^ ((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023) - 1024;
+			z = ((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023 ^ (item->pos.z_pos + 1024);
+			break;
+
+		case SOUTH:
+			x = (((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023) ^ (item->pos.x_pos + 1024);
+			z = (((ushort)item->pos.x_pos ^ (ushort)item->pos.z_pos) & 1023) ^ (item->pos.z_pos - 1024);
+			break;
+
+		case WEST:
+			x = (item->pos.x_pos & ~1023) - (item->pos.z_pos & 1023);
+			z = (item->pos.z_pos & ~1023) - (item->pos.x_pos & 1023);
+			break;
+
+		default:
+			x = ((item->pos.x_pos + 1024) & ~1023) - (item->pos.z_pos & 1023) + 1024;
+			z = ((item->pos.z_pos + 1024) & ~1023) - (item->pos.x_pos & 1023) + 1024;
+			break;
+		}
+
+		item->pos.x_pos = x;
+		item->pos.z_pos = z;
+		item->pos.y_rot += 0x4000;
+		lara.CornerX = x;
+		lara.CornerZ = z;
+		flag = IsValidHangPos(item, coll);
+
+		if (flag)
+		{
+			item->pos.x_pos = oldx;
+			item->pos.y_rot = oldy;
+			item->pos.z_pos = oldz;
+			lara.move_angle = oldy;
+
+			if (lara.climb_status)
+			{
+				if (!(GetClimbTrigger(x, item->pos.y_pos, z, item->room_number) & LeftClimbTab[angle]))
+				{
+					front = LaraFloorFront(item, item->pos.y_rot, 116);
+
+					if (ABS(coll->front_floor - front) > 60 || front < -768)
+						flag = 0;
+				}
+			}
+			else
+			{
+				if (ABS(front - coll->front_floor) <= 60)
+				{
+					switch (angle)
+					{
+					case NORTH:
+
+						if ((oldx & 1023) > 512)
+							flag = 0;
+
+						break;
+
+					case EAST:
+
+						if ((oldz & 1023) < 512)
+							flag = 0;
+
+						break;
+
+					case SOUTH:
+
+						if ((oldx & 1023) < 512)
+							flag = 0;
+
+						break;
+
+					case WEST:
+
+						if ((oldz & 1023) > 512)
+							flag = 0;
+
+						break;
+					}
+				}
+				else
+					flag = 0;
+			}
+
+			return flag;
+		}
+	}
+
+	item->pos.x_pos = oldx;
+	item->pos.y_rot = oldy;
+	item->pos.z_pos = oldz;
+	lara.move_angle = oldy;
+	return flag;
+}
+
+void LaraSlideEdgeJump(ITEM_INFO* item, COLL_INFO* coll)
+{
+	ShiftItem(item, coll);
+
+	switch (coll->coll_type)
+	{
+	case CT_LEFT:
+		item->pos.y_rot += 910;
+		break;
+
+	case CT_RIGHT:
+		item->pos.y_rot -= 910;
+		break;
+
+	case CT_TOP:
+	case CT_TOP_FRONT:
+
+		if (item->fallspeed <= 0)
+			item->fallspeed = 1;
+
+		break;
+
+	case CT_CLAMP:
+		item->pos.z_pos -= (100 * phd_cos(coll->facing)) >> 14;
+		item->pos.x_pos -= (100 * phd_sin(coll->facing)) >> 14;
+		item->speed = 0;
+		coll->mid_floor = 0;
+
+		if (item->fallspeed <= 0)
+			item->fallspeed = 16;
+
+		break;
+	}
+}
+
+void JumpOffRope(ITEM_INFO* item)
+{
+	if (lara.RopePtr != -1)
+	{
+		if (item->pos.x_rot >= 0)
+		{
+			item->fallspeed = -112;
+			item->speed = item->pos.x_rot / 128;
+		}
+		else
+		{
+			item->speed = 0;
+			item->fallspeed = -20;
+		}
+
+		item->pos.x_rot = 0;
+		item->gravity_status = 1;
+		lara.gun_status = LG_NO_ARMS;
+
+		if (item->frame_number - anims[ANIM_SWINGFWD].frame_base <= 21)
+			item->anim_number = 386;
+		else if (item->frame_number - anims[ANIM_SWINGFWD].frame_base <= 42)
+			item->anim_number = 407;
+		else
+			item->anim_number = 406;
+
+		item->frame_number = anims[item->anim_number].frame_base;
+		item->current_anim_state = AS_REACH;
+		item->goal_anim_state = AS_REACH;
+		lara.RopePtr = -1;
+	}
+}
+
+void UpdateRopeSwing(ITEM_INFO* item)
+{
+	long temp;
+	static uchar LegsSwinging;
+
+	if (lara.RopeMaxXForward > 9000)
+		lara.RopeMaxXForward = 9000;
+
+	if (lara.RopeMaxXBackward > 9000)
+		lara.RopeMaxXBackward = 9000;
+
+	if (lara.RopeDirection)
+	{
+		if (item->pos.x_rot > 0 && item->pos.x_rot - lara.RopeLastX < -100)
+		{
+			lara.RopeArcFront = lara.RopeLastX;
+			lara.RopeDirection = 0;
+			lara.RopeMaxXBackward = 0;
+			temp = (15 * lara.RopeMaxXForward / 18000 + anims[ANIM_SWINGFWD].frame_base + 47) << 8;
+
+			if (temp > lara.RopeDFrame)
+			{
+				lara.RopeDFrame = temp;
+				LegsSwinging = 1;
+			}
+			else
+				LegsSwinging = 0;
+
+			SoundEffect(SFX_LARA_ROPE_CREAK, &item->pos, 0);
+		}
+		else if (lara.RopeLastX < 0 && lara.RopeFrame == lara.RopeDFrame)
+		{
+			LegsSwinging = 0;
+			lara.RopeDFrame = (15 * lara.RopeMaxXBackward / 18000 + anims[ANIM_SWINGFWD].frame_base + 47) << 8;
+			lara.RopeFrameRate = 15 * lara.RopeMaxXBackward / 9000 + 1;
+		}
+		else if (lara.RopeFrameRate < 512)
+			lara.RopeFrameRate += (LegsSwinging ? 31 : 7) * lara.RopeMaxXBackward / 9000 + 1;
+	}
+	else if (item->pos.x_rot < 0 && item->pos.x_rot - lara.RopeLastX > 100)
+	{
+		lara.RopeArcBack = lara.RopeLastX;
+		lara.RopeDirection = 1;
+		lara.RopeMaxXForward = 0;
+		temp = (anims[ANIM_SWINGFWD].frame_base - 15 * lara.RopeMaxXBackward / 18000 + 17) << 8;
+
+		if (temp < lara.RopeDFrame)
+		{
+			lara.RopeDFrame = temp;
+			LegsSwinging = 1;
+		}
+		else
+			LegsSwinging = 0;
+
+		SoundEffect(SFX_LARA_ROPE_CREAK, &item->pos, 0);
+	}
+	else if (lara.RopeLastX > 0 && lara.RopeFrame == lara.RopeDFrame)
+	{
+		LegsSwinging = 0;
+		lara.RopeDFrame = (anims[ANIM_SWINGFWD].frame_base - 15 * lara.RopeMaxXForward / 18000 + 17) << 8;
+		lara.RopeFrameRate = 15 * lara.RopeMaxXForward / 9000 + 1;
+	}
+	else if (lara.RopeFrameRate < 512)
+		lara.RopeFrameRate += (LegsSwinging ? 31 : 7) * lara.RopeMaxXForward / 9000 + 1;
+
+	lara.RopeLastX = item->pos.x_rot;
+
+	if (lara.RopeDirection)
+	{
+		if (item->pos.x_rot > lara.RopeMaxXForward)
+			lara.RopeMaxXForward = item->pos.x_rot;
+	}
+	else if (item->pos.x_rot < -lara.RopeMaxXBackward)
+		lara.RopeMaxXBackward = ABS(item->pos.x_rot);
+}
+
+void FallFromRope(ITEM_INFO* item)
+{
+	long l;
+
+	l = ABS(CurrentPendulum.Velocity.x >> 16) + ABS(CurrentPendulum.Velocity.z >> 16);
+	item->speed = short(l >> 1);
+	item->pos.x_rot = 0;
+	item->pos.y_pos += 320;
+	item->anim_number = ANIM_FALLDOWN;
+	item->frame_number = anims[ANIM_FALLDOWN].frame_base;
+	item->current_anim_state = AS_FORWARDJUMP;
+	item->goal_anim_state = AS_FORWARDJUMP;
+	item->fallspeed = 0;
+	item->gravity_status = 1;
+	lara.gun_status = LG_NO_ARMS;
+	lara.RopePtr = -1;
+}
+
+short GetDirOctant(long rot)
+{
+	rot = ABS(rot);
+	return rot >= 0x2000 && rot <= 0x6000;
+}
+
+short TestMonkeyLeft(ITEM_INFO* item, COLL_INFO* coll)
+{
+	short oct;
+
+	coll->bad_pos = -NO_HEIGHT;
+	coll->bad_neg = NO_HEIGHT;
+	coll->bad_ceiling = 0;
+	lara.move_angle = item->pos.y_rot - 0x4000;
+	coll->facing = lara.move_angle;
+	coll->radius = 100;
+	coll->slopes_are_walls = 0;
+	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 600);
+
+	if (ABS(coll->mid_ceiling - coll->front_ceiling) > 50)
+		return 0;
+
+	if (coll->coll_type != CT_NONE)
+	{
+		oct = GetDirOctant(item->pos.y_rot);
+
+		if (!oct && (coll->coll_type == CT_FRONT || coll->coll_type == CT_LEFT))
+			return 0;
+
+		if (oct == 1 && (coll->coll_type == CT_RIGHT || coll->coll_type == CT_LEFT))
+			return 0;
+	}
+
+	return 1;
+}
+
+short TestMonkeyRight(ITEM_INFO* item, COLL_INFO* coll)
+{
+	short oct;
+
+	coll->bad_pos = -NO_HEIGHT;
+	coll->bad_neg = -384;
+	coll->bad_ceiling = 0;
+	lara.move_angle = item->pos.y_rot + 0x4000;
+	coll->facing = lara.move_angle;
+	coll->radius = 100;
+	coll->slopes_are_walls = 0;
+	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 600);
+
+	if (ABS(coll->mid_ceiling - coll->front_ceiling) > 50)
+		return 0;
+
+	if (coll->coll_type != CT_NONE)
+	{
+		oct = GetDirOctant(item->pos.y_rot);
+
+		if (!oct && coll->coll_type == CT_FRONT)
+			return 0;
+
+		if (oct == 1 && (coll->coll_type == CT_FRONT || coll->coll_type == CT_RIGHT || coll->coll_type == CT_LEFT))
+			return 0;
+	}
+
+	return 1;
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -4799,4 +5426,15 @@ void inject_lara(bool replace)
 	INJECT(0x00424E90, UseInventoryItems, replace);
 	INJECT(0x00422C50, LaraDeflectEdgeJump, replace);
 	INJECT(0x00424150, ApplyVelocityToRope, replace);
+	INJECT(0x00426600, IsValidHangPos, replace);
+	INJECT(0x00421E90, LaraTestHangOnClimbWall, replace);
+	INJECT(0x00426230, LaraHangRightCornerTest, replace);
+	INJECT(0x004266E0, LaraHangLeftCornerTest, replace);
+	INJECT(0x004259C0, LaraSlideEdgeJump, replace);
+	INJECT(0x00424820, JumpOffRope, replace);
+	INJECT(0x00424320, UpdateRopeSwing, replace);
+	INJECT(0x004241D0, FallFromRope, replace);
+	INJECT(0x00423780, GetDirOctant, replace);
+	INJECT(0x004236B0, TestMonkeyLeft, replace);
+	INJECT(0x004237B0, TestMonkeyRight, replace);
 }

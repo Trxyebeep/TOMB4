@@ -153,21 +153,22 @@ void LookLeftRight();
 long UseInventoryItems(ITEM_INFO* item);
 void LaraDeflectEdgeJump(ITEM_INFO* item, COLL_INFO* coll);
 void ApplyVelocityToRope(long node, ushort angle, ushort n);
+long LaraTestHangOnClimbWall(ITEM_INFO* item, COLL_INFO* coll);
+long LaraHangRightCornerTest(ITEM_INFO* item, COLL_INFO* coll);
+long LaraHangLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll);
+void LaraSlideEdgeJump(ITEM_INFO* item, COLL_INFO* coll);
+void JumpOffRope(ITEM_INFO* item);
+void UpdateRopeSwing(ITEM_INFO* item);
+void FallFromRope(ITEM_INFO* item);
+short GetDirOctant(long rot);
+short TestMonkeyLeft(ITEM_INFO* item, COLL_INFO* coll);
+short TestMonkeyRight(ITEM_INFO* item, COLL_INFO* coll);
 
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
-#define LaraHangLeftCornerTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004266E0 )
-#define LaraHangRightCornerTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00426230 )
 #define LaraTestClimbStance	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422810 )
 #define LaraTestEdgeCatch	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*, long*)) 0x00421DE0 )
-#define LaraTestHangOnClimbWall	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00421E90 )
 #define TestHangSwingIn	( (long(__cdecl*)(ITEM_INFO*, short)) 0x00421FF0 )
 #define TestLaraVault	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422480 )
 #define LaraDeflectEdge	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422400 )
 #define TestWall	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x004228D0 )
 #define LaraCollideStop	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004229D0 )
-#define TestMonkeyLeft	( (short(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004236B0 )
-#define TestMonkeyRight	( (short(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004237B0 )
-#define LaraSlideEdgeJump	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004259C0 )
-#define FallFromRope	( (void(__cdecl*)(ITEM_INFO*)) 0x004241D0 )
-#define UpdateRopeSwing	( (void(__cdecl*)(ITEM_INFO*)) 0x00424320 )
-#define JumpOffRope	( (void(__cdecl*)(ITEM_INFO*)) 0x00424820 )
