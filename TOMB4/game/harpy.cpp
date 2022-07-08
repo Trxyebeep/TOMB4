@@ -6,6 +6,7 @@
 #include "objects.h"
 #include "sphere.h"
 #include "../specific/3dmath.h"
+#include "box.h"
 
 static BITE_INFO right_hand = { 0, 128, 0, 2 };
 static BITE_INFO left_hand = { 0, 128, 0, 4 };
@@ -256,6 +257,18 @@ void DoHarpyEffects(ITEM_INFO* item, short item_number)
 	}
 }
 
+void InitialiseHarpy(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	InitialiseCreature(item_number);
+	item->anim_number = objects[HARPY].anim_index + 4;
+	item->frame_number = anims[item->anim_number].frame_base;
+	item->current_anim_state = 1;
+	item->goal_anim_state = 1;
+}
+
 void inject_harpy(bool replace)
 {
 	INJECT(0x00407290, TriggerHarpyMissileFlame, replace);
@@ -263,4 +276,5 @@ void inject_harpy(bool replace)
 	INJECT(0x004077B0, TriggerHarpySparks, replace);
 	INJECT(0x004078A0, TriggerHarpyFlame, replace);
 	INJECT(0x004073F0, DoHarpyEffects, replace);
+	INJECT(0x00407A30, InitialiseHarpy, replace);
 }
