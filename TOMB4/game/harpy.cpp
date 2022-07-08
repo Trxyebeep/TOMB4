@@ -2,6 +2,8 @@
 #include "harpy.h"
 #include "effect2.h"
 #include "../specific/function_stubs.h"
+#include "items.h"
+#include "objects.h"
 
 void TriggerHarpyMissileFlame(short fx_number, long xv, long yv, long zv)
 {
@@ -51,7 +53,33 @@ void TriggerHarpyMissileFlame(short fx_number, long xv, long yv, long zv)
 	sptr->dSize = sptr->Size >> 5;
 }
 
+void TriggerHarpyMissile(PHD_3DPOS* pos, short room_number, short mesh)
+{
+	FX_INFO* fx;
+	short fx_num;
+
+	fx_num = CreateEffect(room_number);
+
+	if (fx_num != NO_ITEM)
+	{
+		fx = &effects[fx_num];
+		fx->pos.x_pos = pos->x_pos;
+		fx->pos.y_pos = pos->y_pos - (GetRandomControl() & 0x3F) - 32;
+		fx->pos.z_pos = pos->z_pos;
+		fx->pos.x_rot = pos->x_rot;
+		fx->pos.y_rot = pos->y_rot;
+		fx->pos.z_rot = 0;
+		fx->room_number = room_number;
+		fx->counter = short(2 * GetRandomControl() + 0x8000);
+		fx->object_number = BUBBLES;
+		fx->speed = (GetRandomControl() & 0x1F) + 96;
+		fx->flag1 = mesh;
+		fx->frame_number = objects[BUBBLES].mesh_index + mesh * 2;
+	}
+}
+
 void inject_harpy(bool replace)
 {
 	INJECT(0x00407290, TriggerHarpyMissileFlame, replace);
+	INJECT(0x00407700, TriggerHarpyMissile, replace);
 }
