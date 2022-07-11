@@ -947,7 +947,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/mirror.cpp
 
-0x00455800		Draw_Mirror_Lara
+0x00455800	+	Draw_Mirror_Lara
 
 
 		game/missle.cpp
