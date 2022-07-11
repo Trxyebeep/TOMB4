@@ -27,6 +27,11 @@
 #include "jean.h"
 #include "senet.h"
 #include "wraith.h"
+#include "harpy.h"
+#include "rope.h"
+#include "moveblok.h"
+#include "objlight.h"
+#include "laraflar.h"
 
 void ObjectObjects()
 {
@@ -40,7 +45,7 @@ void ObjectObjects()
 	obj->initialise = 0;
 //	obj->control = FlareControl;
 	obj->collision = PickUpCollision;
-//	obj->draw_routine = DrawFlareInAir;
+	obj->draw_routine = DrawFlareInAir;
 	obj->using_drawanimating_item = 0;
 	obj->pivot_length = 256;
 	obj->hit_points = 256;
@@ -211,7 +216,7 @@ void ObjectObjects()
 	for (int i = PUZZLE_ITEM1; i <= SECRET_MAP; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialisePickup;
+		obj->initialise = InitialisePickUp;
 	//	obj->control = AnimatingPickUp;
 		obj->collision = PickUpCollision;
 		obj->save_position = 1;
@@ -221,7 +226,7 @@ void ObjectObjects()
 	for (int i = PISTOLS_ITEM; i <= BINOCULARS_ITEM; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialisePickup;
+		obj->initialise = InitialisePickUp;
 	//	obj->control = AnimatingPickUp;
 		obj->collision = PickUpCollision;
 		obj->save_position = 1;
@@ -235,14 +240,14 @@ void ObjectObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[WATERSKIN1_EMPTY];
-//	obj->initialise = InitialisePickup;
+	obj->initialise = InitialisePickUp;
 //	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
 	obj = &objects[WATERSKIN2_EMPTY];
-//	obj->initialise = InitialisePickup;
+	obj->initialise = InitialisePickUp;
 //	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
@@ -263,14 +268,14 @@ void ObjectObjects()
 	obj->using_drawanimating_item = 0;
 
 	obj = &objects[FLARE_INV_ITEM];
-//	obj->initialise = InitialisePickup;
+	obj->initialise = InitialisePickUp;
 //	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
 	obj = &objects[COMPASS_ITEM];
-//	obj->initialise = InitialisePickup;
+	obj->initialise = InitialisePickUp;
 //	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
@@ -286,21 +291,21 @@ void ObjectObjects()
 	for (int i = PUZZLE_HOLE1; i <= PUZZLE_HOLE12; i++)
 	{
 		obj = &objects[i];
-	//	obj->control = ControlAnimatingSlots;
+		obj->control = ControlAnimatingSlots;
 	//	obj->collision = PuzzleHoleCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
 
 	obj = &objects[SARCOPHAGUS];
-//	obj->control = ControlAnimatingSlots;
+	obj->control = ControlAnimatingSlots;
 	obj->collision = SarcophagusCollision;
 
 
 	for (int i = ANIMATING1; i <= ANIMATING12; i++)
 	{
 		obj = &objects[i];
-	//	obj->control = ControlAnimatingSlots;
+		obj->control = ControlAnimatingSlots;
 		obj->collision = ObjectCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
@@ -309,15 +314,15 @@ void ObjectObjects()
 	for (int i = ANIMATING13; i <= ANIMATING16_MIP; i++)
 	{
 		obj = &objects[i];
-	//	obj->control = ControlAnimatingSlots;
+		obj->control = ControlAnimatingSlots;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->HitEffect = 0;
 	}
 
 	obj = &objects[FIREROPE];
-//	obj->control = ControlBurningRope;
-//	obj->collision = BurningRopeCollision;
+	obj->control = ControlBurningRope;
+	obj->collision = BurningRopeCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
@@ -362,14 +367,14 @@ void ObjectObjects()
 
 	obj = &objects[STATUE_PLINTH];
 	obj->initialise = InitialiseStatuePlinth;
-//	obj->collision = StatuePlinthCollision;
+	obj->collision = StatuePlinthCollision;
 	obj->save_flags = 1;
 	obj->save_mesh = 1;
 
 	for (int i = SWITCH_TYPE7; i <= SWITCH_TYPE8; i++)
 	{
 		obj = &objects[i];
-//		obj->control = ControlAnimatingSlots;
+		obj->control = ControlAnimatingSlots;
 		obj->collision = 0;	//AIPickupCollision
 		obj->save_flags = 1;
 		obj->save_anim = 1;
@@ -418,7 +423,7 @@ void ObjectObjects()
 		obj->initialise = InitialiseRaisingBlock;
 	//	obj->control = ControlRaisingBlock;
 		obj->collision = 0;
-	//	obj->draw_routine = DrawScaledSpike;
+		obj->draw_routine = DrawScaledSpike;
 		obj->using_drawanimating_item = 0;
 		obj->save_flags = 1;
 	}
@@ -450,7 +455,7 @@ void ObjectObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[BUBBLES];
-//	obj->control = ControlEnemyMissile;
+	obj->control = ControlEnemyMissile;
 	obj->draw_routine = (void(*)(ITEM_INFO*))1;
 	obj->nmeshes = 0;
 	obj->loaded = 1;
@@ -461,19 +466,19 @@ void ObjectObjects()
 	obj->using_drawanimating_item = 0;
 
 	obj = &objects[AMBER_LIGHT];
-//	obj->control = ControlPulseLight;
+	obj->control = ControlPulseLight;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
 
 	obj = &objects[WHITE_LIGHT];
-//	obj->control = ControlElectricalLight;
+	obj->control = ControlElectricalLight;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
 
 	obj = &objects[BLINKING_LIGHT];
-//	obj->control = ControlBlinker;
+	obj->control = ControlBlinker;
 	obj->save_flags = 1;
 
 	obj = &objects[LENS_FLARE];
@@ -497,7 +502,7 @@ void ObjectObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[EARTHQUAKE];
-//	obj->control = EarthQuake;
+	obj->control = EarthQuake;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
@@ -551,7 +556,7 @@ void TrapObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[COG];
-//	obj->control = ControlAnimatingSlots;
+	obj->control = ControlAnimatingSlots;
 //	obj->collision = CogCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
@@ -667,15 +672,15 @@ void TrapObjects()
 	for (int i = PUSHABLE_OBJECT1; i < PUSHABLE_OBJECT5; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseMovingBlock;
-	//	obj->control = MovableBlock;
-	//	obj->collision = MovableBlockCollision;
+		obj->initialise = InitialiseMovingBlock;
+		obj->control = MovableBlock;
+		obj->collision = MovableBlockCollision;
 		obj->save_position = 1;
 		obj->save_flags = 1;
 	}
 
 	obj = &objects[SAS_DRAG_BLOKE];
-//	obj->control = ControlAnimatingSlots;
+	obj->control = ControlAnimatingSlots;
 //	obj->collision = DragSASCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
@@ -727,17 +732,17 @@ void TrapObjects()
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
 
-//	init_all_ropes();
+	init_all_ropes();
 	obj = &objects[ROPE];
-//	obj->initialise = InitialiseRope;
-//	obj->control = RopeControl;
-//	obj->collision = RopeCollision;
+	obj->initialise = InitialiseRope;
+	obj->control = RopeControl;
+	obj->collision = RopeCollision;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
 
 	obj = &objects[POLEROPE];
-//	obj->collision = PoleCollision;
+	obj->collision = PoleCollision;
 	obj->save_flags = 1;
 
 	obj = &objects[MINE];
@@ -752,8 +757,8 @@ void TrapObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[TRIGGER_TRIGGERER];
-//	obj->initialise = ControlTriggerTriggerer;
-//	obj->control = ControlTriggerTriggerer;
+	obj->initialise = ControlTriggerTriggerer;
+	obj->control = ControlTriggerTriggerer;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
@@ -773,7 +778,7 @@ void BaddyObjects()
 
 	obj = &objects[LARA];
 //	obj->initialise = InitialiseLaraLoad;
-	obj->draw_routine = NULL;
+	obj->draw_routine = 0;
 	obj->shadow_size = 160;
 	obj->hit_points = 1000;
 	obj->using_drawanimating_item = 0;
@@ -1368,8 +1373,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseHarpy;
-//		obj->control = HarpyControl;
+		obj->initialise = InitialiseHarpy;
+		obj->control = HarpyControl;
 //		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 60;
@@ -1643,9 +1648,9 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseGameStix;
-//		obj->control = GameStixControl;
-//		obj->collision = GameStixCollision;
+		obj->initialise = InitialiseGameStix;
+		obj->control = GameStixControl;
+		obj->collision = GameStixCollision;
 		obj->hit_points = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
@@ -1677,7 +1682,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseScarabGenerator;
 //		obj->control = TriggerScarab;
-		obj->draw_routine = NULL;
+		obj->draw_routine = 0;
 		obj->using_drawanimating_item = 0;
 	}
 
@@ -1687,7 +1692,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseLocustEmitter;
 		obj->control = ControlLocustEmitter;
-		obj->draw_routine = NULL;
+		obj->draw_routine = 0;
 		obj->using_drawanimating_item = 0;
 		obj->save_flags = 1;
 	}
