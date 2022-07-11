@@ -281,7 +281,7 @@ void HarpyControl(short item_number)
 	CREATURE_INFO* harpy;
 	CREATURE_INFO* baddie;
 	AI_INFO info;
-	long goin, dx, dy, dz, dist, max_dist;
+	long dx, dy, dz, dist, max_dist;
 	short angle, head, torso_x, torso_y;
 
 	if (!CreatureActive(item_number))
@@ -297,14 +297,11 @@ void HarpyControl(short item_number)
 	if (item->hit_points <= 0)
 	{
 		item->hit_points = 0;
-		goin = 1;
 
 		if (item->current_anim_state != 9)
 		{
 			if (item->current_anim_state != 10)
 			{
-				goin = 0;
-
 				if (item->current_anim_state == 11)
 				{
 					item->pos.x_rot = 0;
@@ -324,7 +321,7 @@ void HarpyControl(short item_number)
 		else
 			item->goal_anim_state = 10;
 
-		if (goin)
+		if (item->current_anim_state == 10)
 		{
 			if (item->pos.y_pos >= item->floor)
 			{
