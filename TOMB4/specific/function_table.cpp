@@ -2,6 +2,7 @@
 #include "function_table.h"
 #include "function_stubs.h"
 #include "dxshell.h"
+#include "polyinsert.h"
 
 void SetFogColor(long r, long g, long b)
 {
@@ -72,8 +73,76 @@ void HWInitialise()
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
 }
 
+bool _NVisible(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2)
+{
+	return (v0->sy - v1->sy) * (v2->sx - v1->sx) - (v2->sy - v1->sy) * (v0->sx - v1->sx) < 0;
+}
+
+bool _Visible(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2)
+{
+	return (v0->sy - v1->sy) * (v2->sx - v1->sx) - (v2->sy - v1->sy) * (v0->sx - v1->sx) > 0;
+}
+
+void SetCullCW()
+{
+	IsVisible = _Visible;
+}
+
+void SetCullCCW()
+{
+	IsVisible = _NVisible;
+}
+
+HRESULT HWBeginScene()
+{
+	if (App.dx.InScene)
+		Log(1, "Already In Scene");
+
+	App.dx.InScene = 1;
+	App.dx.DoneBlit = 0;
+	while (App.dx.WaitAtBeginScene) {};
+	return App.dx.lpD3DDevice->BeginScene();
+}
+
+HRESULT HWEndScene()
+{
+	App.dx.InScene = 0;
+	return App.dx.lpD3DDevice->EndScene();
+}
+
+void InitialiseFunctionTable()
+{
+	_BeginScene = HWBeginScene;
+	_EndScene = HWEndScene;
+	IsVisible = _NVisible;
+
+	if (App.dx.lpZBuffer)
+	{
+		AddQuadZBuffer = AddQuadClippedZBuffer;
+		AddTriZBuffer = AddTriClippedZBuffer;
+		AddQuadSorted = AddQuadClippedSorted;
+		AddTriSorted = AddTriClippedSorted;
+	}
+	else
+	{
+		AddQuadZBuffer = AddQuadSubdivide;
+		AddTriZBuffer = AddTriSubdivide;
+		AddQuadSorted = AddQuadSubdivide;
+		AddTriSorted = AddTriSubdivide;
+	}
+
+	AddLineSorted = AddLineClippedSorted;
+}
+
 void inject_functbl(bool replace)
 {
 	INJECT(0x00476E80, SetFogColor, replace);
 	INJECT(0x00476B30, HWInitialise, replace);
+	INJECT(0x00476990, _NVisible, replace);
+	INJECT(0x004769D0, _Visible, replace);
+	INJECT(0x00476A10, SetCullCW, replace);
+	INJECT(0x00476A20, SetCullCCW, replace);
+	INJECT(0x00476AC0, HWBeginScene, replace);
+	INJECT(0x00476B10, HWEndScene, replace);
+	INJECT(0x00476A30, InitialiseFunctionTable, replace);
 }

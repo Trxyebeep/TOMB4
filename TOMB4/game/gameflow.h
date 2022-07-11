@@ -6,6 +6,7 @@ void inject_gameflow(bool replace);
 void DoGameflow();
 void DoLevel(uchar Name, uchar Audio);
 void DoTitle(uchar Name, uchar Audio);
+void LoadGameflow();
 
 #define DoCredits	( (long(__cdecl*)()) 0x00452B80 )
 
@@ -468,7 +469,6 @@ enum gf_strings	//auto generated from the script compiler
 	TXT_Demo_Mode_Esc_To_Exit,
 	TXT_Select_Level,
 	TXT_No_FMV,
-	TXT_OEM1,
 	TXT_THE_LAST_STRING_ENTRY,
 	TXT_NUM_STRINGS
 };

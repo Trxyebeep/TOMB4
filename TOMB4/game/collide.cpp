@@ -71,11 +71,11 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 						cy = phd_cos(mesh->y_rot);
 						dx = item->pos.x_pos - mesh->x;
 						dz = item->pos.z_pos - mesh->z;
-						num = (dx * cy - sy * dz) >> 14;
+						num = (dx * cy - sy * dz) >> W2V_SHIFT;
 
 						if (rad + num + 128 >= bounds[0] && num - rad - 128 <= bounds[1])
 						{
-							num = (dx * sy + cy * dz) >> 14;
+							num = (dx * sy + cy * dz) >> W2V_SHIFT;
 
 							if (rad + num + 128 >= bounds[4] && num - rad - 128 <= bounds[5])
 							{
@@ -170,7 +170,7 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 			cy = phd_cos(item2->pos.y_rot);
 			dx = item->pos.x_pos - item2->pos.x_pos;
 			dz = item->pos.z_pos - item2->pos.z_pos;
-			num = (dx * cy - sy * dz) >> 14;
+			num = (dx * cy - sy * dz) >> W2V_SHIFT;
 
 			if (item2->object_number == TURN_SWITCH)
 			{
@@ -183,7 +183,7 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 
 			if (rad + num + 128 >= bounds[0] && num - rad - 128 <= bounds[1])
 			{
-				num = (dx * sy + cy * dz) >> 14;
+				num = (dx * sy + cy * dz) >> W2V_SHIFT;
 
 				if (rad + num + 128 >= bounds[4] && num - rad - 128 <= bounds[5])
 				{

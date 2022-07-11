@@ -214,7 +214,7 @@ void DrawLara(ITEM_INFO* item, long mirror)
 			v1.x = lara_matrices[12 * SkinUseMatrix[i][1] + M01];
 			v1.y = lara_matrices[12 * SkinUseMatrix[i][1] + M11];
 			v1.z = lara_matrices[12 * SkinUseMatrix[i][1] + M21];
-			cos = ((v0.x * v1.x) + (v0.y * v1.y) + (v0.z * v1.z)) >> 14;
+			cos = ((v0.x * v1.x) + (v0.y * v1.y) + (v0.z * v1.z)) >> W2V_SHIFT;
 			sin = phd_sqrt(16777216 - SQUARE(cos));
 
 			if (i == 1 || i == 4)
@@ -323,9 +323,9 @@ void GetLaraJointPos(PHD_VECTOR* pos, long node)
 	phd_mxptr[M22] = lara_joint_matrices[node * 12 + M22];
 	phd_mxptr[M23] = lara_joint_matrices[node * 12 + M23];
 	phd_TranslateRel(pos->x, pos->y, pos->z);
-	pos->x = phd_mxptr[M03] >> 14;
-	pos->y = phd_mxptr[M13] >> 14;
-	pos->z = phd_mxptr[M23] >> 14;
+	pos->x = phd_mxptr[M03] >> W2V_SHIFT;
+	pos->y = phd_mxptr[M13] >> W2V_SHIFT;
+	pos->z = phd_mxptr[M23] >> W2V_SHIFT;
 	pos->x += lara_item->pos.x_pos;
 	pos->y += lara_item->pos.y_pos;
 	pos->z += lara_item->pos.z_pos;

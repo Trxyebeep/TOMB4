@@ -40,10 +40,10 @@ void SeedRandomDraw(long seed)
 
 void init_game_malloc()
 {
-	malloc_buffer = (char*)malloc(5000000);
-	malloc_size = 5000000;
+	malloc_buffer = (char*)MALLOC(MALLOC_SIZE);
+	malloc_size = MALLOC_SIZE;
 	malloc_ptr = malloc_buffer;
-	malloc_free = 5000000;
+	malloc_free = MALLOC_SIZE;
 	malloc_used = 0;
 }
 
@@ -77,6 +77,6 @@ void inject_funcstubs(bool replace)
 	INJECT(0x00490F20, SeedRandomControl, replace);
 	INJECT(0x00490F00, GetRandomDraw, replace);
 	INJECT(0x00490F30, SeedRandomDraw, replace);
-	INJECT(0x00490F40, init_game_malloc, 0);
+	INJECT(0x00490F40, init_game_malloc, replace);
 	INJECT(0x00490F80, game_malloc, replace);
 }

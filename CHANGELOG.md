@@ -1,5 +1,14 @@
 # tomb4 changelog
 
+## [1.2.1](https://github.com/Trxyebeep/TOMB4/tree/V1.2.1) (May 28 2022)
+
+### tomb4 bug fixes
+
+- Fix exit game crash.
+- Fix joystick key mapping crash.
+- Fix joystick input.
+
+
 ## [1.2.0](https://github.com/Trxyebeep/TOMB4/tree/V1.2.0) (April 28 2022)
 
 ### Original bug fixes

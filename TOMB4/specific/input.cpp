@@ -182,34 +182,38 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 
 long Key(long number)
 {
-	short key = layout[1][number];
+	short key;
 
-	if (number >= 256)
-		return joy_fire & (1 << number);
+	key = layout[1][number];
 
-	if (keymap[key])
-		return 1;
-
-	switch (key)
+	if (key < 256)
 	{
-	case DIK_RCONTROL:
-		return keymap[DIK_LCONTROL];
+		if (keymap[key])
+			return 1;
 
-	case DIK_LCONTROL:
-		return keymap[DIK_RCONTROL];
+		switch (key)
+		{
+		case DIK_RCONTROL:
+			return keymap[DIK_LCONTROL];
 
-	case DIK_RSHIFT:
-		return keymap[DIK_LSHIFT];
+		case DIK_LCONTROL:
+			return keymap[DIK_RCONTROL];
 
-	case DIK_LSHIFT:
-		return keymap[DIK_RSHIFT];
+		case DIK_RSHIFT:
+			return keymap[DIK_LSHIFT];
 
-	case DIK_RMENU:
-		return keymap[DIK_LMENU];
+		case DIK_LSHIFT:
+			return keymap[DIK_RSHIFT];
 
-	case DIK_LMENU:
-		return keymap[DIK_RMENU];
+		case DIK_RMENU:
+			return keymap[DIK_LMENU];
+
+		case DIK_LMENU:
+			return keymap[DIK_RMENU];
+		}
 	}
+	else if (joy_fire & (1 << key))
+		return 1;
 
 	if (conflict[number])
 		return 0;
@@ -636,8 +640,43 @@ long S_UpdateInput()
 	return 1;
 }
 
+long ReadJoystick(long& x, long& y)
+{
+	JOYINFOEX joystick;
+	static JOYCAPS caps;
+	static long unavailable = 1;
+
+	joystick.dwSize = sizeof(JOYINFOEX);
+	joystick.dwFlags = JOY_RETURNX | JOY_RETURNY | JOY_RETURNBUTTONS;
+
+	if (joyGetPosEx(0, &joystick) != JOYERR_NOERROR)
+	{
+		unavailable = 1;
+		x = 0;
+		y = 0;
+		return 0;
+	}
+
+	if (unavailable)
+	{
+		if (joyGetDevCaps(JOYSTICKID1, &caps, sizeof(caps)) != JOYERR_NOERROR)
+		{
+			x = 0;
+			y = 0;
+			return 0;
+		}
+		else
+			unavailable = 0;
+	}
+
+	x = (joystick.dwXpos << 5) / (caps.wXmax - caps.wXmin) - 16;
+	y = (joystick.dwYpos << 5) / (caps.wYmax - caps.wYmin) - 16;
+	return joystick.dwButtons;
+}
+
 void inject_input(bool replace)
 {
 	INJECT(0x004776C0, Key, replace);
 	INJECT(0x004778B0, S_UpdateInput, replace);
+	INJECT(0x004777E0, ReadJoystick, replace);
 }

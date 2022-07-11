@@ -140,18 +140,18 @@ void gar_RotYXZsuperpack(short** pprot, long skip)
 
 	prot = (ushort*)*pprot;
 
-	if (*prot >> 14)
+	if (*prot >> W2V_SHIFT)
 	{
-		if ((*prot >> 14) == 1)
+		if ((*prot >> W2V_SHIFT) == 1)
 			phd_RotX((short)((*prot & 4095) << 4));
-		else if ((*prot >> 14) == 2)
+		else if ((*prot >> W2V_SHIFT) == 2)
 			phd_RotY((short)((*prot & 4095) << 4));
 		else
 			phd_RotZ((short)((*prot & 4095) << 4));
 	}
 	else
 	{
-		phd_RotYXZpack(((ushort) * *pprot << 16) + (ushort)(*pprot)[1]);
+		phd_RotYXZpack(((ushort) * *pprot << (W2V_SHIFT + 2)) + (ushort)(*pprot)[1]);
 		++*pprot;
 	}
 
@@ -764,7 +764,7 @@ void DrawRooms(short CurrentRoom)
 	InitDynamicLighting();
 	nPolyType = 0;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
 		if (dynamics[i].on)
 		{

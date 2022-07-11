@@ -821,9 +821,133 @@ void DoTitle(uchar Name, uchar Audio)
 	input = 0;
 }
 
+void LoadGameflow()
+{
+	STRINGHEADER sh;
+	uchar* n;
+	char* s;
+	char* d;
+	long l, end;
+
+	s = 0;
+	LoadFile("SCRIPT.DAT", &s);
+
+	gfScriptFile = (uchar*)s;
+
+	Gameflow = (GAMEFLOW*)s;
+	s += sizeof(GAMEFLOW);
+
+	gfExtensions = s;	//"[PCExtensions]"
+	s += 40;
+
+	gfFilenameOffset = (ushort*)s;
+	s += sizeof(ushort) * Gameflow->nFileNames;
+
+	gfFilenameWad = s;
+	s += Gameflow->FileNameLen;
+
+	gfScriptOffset = (ushort*)s;
+	s += sizeof(ushort) * Gameflow->nLevels;
+
+	gfScriptWad = (uchar*)s;
+	s += Gameflow->ScriptLen;
+
+	for (l = 0;; l++)
+	{
+		d = 0;
+
+		if (LoadFile(s, &d))
+			break;
+
+		s += strlen(s) + 1;
+	}
+
+	gfStringOffset = (ushort*)d;
+	gfLanguageFile = (uchar*)d;
+	Gameflow->Language = l;
+
+	memcpy(&sh, gfStringOffset, sizeof(STRINGHEADER));
+	memcpy(gfStringOffset, gfStringOffset + (sizeof(STRINGHEADER) / sizeof(ushort)), TXT_NUM_STRINGS * sizeof(ushort));
+	gfStringWad = (char*)(gfStringOffset + TXT_NUM_STRINGS);
+	memcpy(gfStringOffset + TXT_NUM_STRINGS,
+		gfStringOffset + TXT_NUM_STRINGS + (sizeof(STRINGHEADER) / sizeof(ushort)),
+		sh.StringWadLen + sh.PCStringWadLen + sh.PSXStringWadLen);
+
+	for (int i = 0; i < TXT_NUM_STRINGS - 1; i++)
+	{
+		s = &gfStringWad[gfStringOffset[i]];
+		d = &gfStringWad[gfStringOffset[i + 1]];
+		l = d - s - 1;
+
+		for (int j = 0; j < l; j++)
+			s[j] ^= 0xA5;
+	}
+
+	for (int i = 0; i < Gameflow->nLevels; i++)
+	{
+		end = 0;
+		n = &gfScriptWad[gfScriptOffset[i]];
+
+		while (!end)
+		{
+			switch (*n++)
+			{
+			case CMD_FMV:
+			case CMD_PLAYCUT:
+			case CMD_CUT1:
+			case CMD_CUT2:
+			case CMD_CUT3:
+			case CMD_CUT4:
+			case CMD_UVROT:
+			case CMD_LEGEND:
+			case CMD_ANIMATINGMIP:
+			case CMD_RESETHUB:
+				n++;
+				break;
+
+			case CMD_FOG:
+				n += 3;
+				break;
+
+			case CMD_TITLE:
+			case CMD_LAYER1:
+			case CMD_LAYER2:
+				n += 4;
+				break;
+
+			case CMD_MIRROR:
+				n += 5;
+				break;
+
+			case CMD_LENSFLARE:
+				n += 9;
+				break;
+
+			case CMD_CAMERA:
+				n += 25;
+				break;
+
+			case CMD_LEVEL:
+				gfLevelNames[i] = *n;
+				n += 5;
+				break;
+
+			case CMD_ENDSEQ:
+				end = 1;
+				break;
+
+			default:
+				n += 2;
+				break;
+			}
+		}
+	}
+}
+
 void inject_gameflow(bool replace)
 {
 	INJECT(0x00451770, DoGameflow, replace);
 	INJECT(0x00452710, DoLevel, replace);
 	INJECT(0x00451E30, DoTitle, replace);
+	INJECT(0x00451510, LoadGameflow, replace);
 }

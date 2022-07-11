@@ -196,9 +196,9 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 		dz = camera.target.z - camera.pos.z;
 		dx = phd_atan(dz, dx);
 		camera.actual_elevation = (short)dx;
-		camera.mike_pos.x = camera.pos.x + (phd_sin(dx) * phd_persp >> 14);
+		camera.mike_pos.x = camera.pos.x + (phd_sin(dx) * phd_persp >> W2V_SHIFT);
 		camera.mike_pos.y = camera.pos.y;
-		camera.mike_pos.z = camera.pos.z + (phd_cos(dx) * phd_persp >> 14);
+		camera.mike_pos.z = camera.pos.z + (phd_cos(dx) * phd_persp >> W2V_SHIFT);
 	}
 
 	camera.old_type = camera.type;
@@ -398,7 +398,7 @@ void LaraTorch(PHD_VECTOR* Soffset, PHD_VECTOR* Eoffset, short yrot, long bright
 	offs[3] = 0x4000;
 	offs[4] = 0x4001;
 
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
 		if (counter)
 		{
@@ -500,7 +500,7 @@ void ChaseCamera(ITEM_INFO* item)
 	else if (camera.target_elevation < -15470)
 		camera.target_elevation = -15470;
 
-	distance = camera.target_distance * phd_cos(camera.target_elevation) >> 14;
+	distance = camera.target_distance * phd_cos(camera.target_elevation) >> W2V_SHIFT;
 	wx = camera.target.x;
 	wy = camera.target.y;
 	wz = camera.target.z;
@@ -542,7 +542,7 @@ void ChaseCamera(ITEM_INFO* item)
 	}
 
 	for (int i = 0; i < 5; i++)
-		ideals[i].y = (camera.target_distance * phd_sin(camera.target_elevation) >> 14) + camera.target.y;
+		ideals[i].y = (camera.target_distance * phd_sin(camera.target_elevation) >> W2V_SHIFT) + camera.target.y;
 
 	farthest = 0x7FFFFFFF;
 	farthestnum = 0;
@@ -554,8 +554,8 @@ void ChaseCamera(ITEM_INFO* item)
 		else
 			angle = camera.target_angle + item->pos.y_rot;
 
-		ideals[i].x = camera.target.x - ((distance * phd_sin(angle)) >> 14);
-		ideals[i].z = camera.target.z - ((distance * phd_cos(angle)) >> 14);
+		ideals[i].x = camera.target.x - ((distance * phd_sin(angle)) >> W2V_SHIFT);
+		ideals[i].z = camera.target.z - ((distance * phd_cos(angle)) >> W2V_SHIFT);
 		ideals[i].room_number = camera.target.room_number;
 
 		if (mgLOS(&camera.target, &ideals[i], 200))
@@ -692,10 +692,10 @@ void CombatCamera(ITEM_INFO* item)
 	}
 
 	camera.target_distance = 1536;
-	distance = 1536 * phd_cos(camera.target_elevation) >> 14;
+	distance = 1536 * phd_cos(camera.target_elevation) >> W2V_SHIFT;
 
 	for (int i = 0; i < 5; i++)
-		ideals[i].y = (1536 * phd_sin(camera.target_elevation) >> 14) + camera.target.y;
+		ideals[i].y = (1536 * phd_sin(camera.target_elevation) >> W2V_SHIFT) + camera.target.y;
 
 	farthest = 0x7FFFFFFF;
 	farthestnum = 0;
@@ -707,8 +707,8 @@ void CombatCamera(ITEM_INFO* item)
 		else
 			angle = camera.target_angle;
 
-		ideals[i].x = camera.target.x - ((distance * phd_sin(angle)) >> 14);
-		ideals[i].z = camera.target.z - ((distance * phd_cos(angle)) >> 14);
+		ideals[i].x = camera.target.x - ((distance * phd_sin(angle)) >> W2V_SHIFT);
+		ideals[i].z = camera.target.z - ((distance * phd_cos(angle)) >> W2V_SHIFT);
 		ideals[i].room_number = camera.target.room_number;
 
 		if (mgLOS(&camera.target, &ideals[i], 200))
@@ -1013,9 +1013,9 @@ void LookCamera(ITEM_INFO* item)
 		dz = camera.target.z - camera.pos.z;
 		dx = phd_atan(dz, dx);
 		camera.actual_elevation = (short)dx;
-		camera.mike_pos.x = camera.pos.x + (phd_sin(dx) * phd_persp >> 14);
+		camera.mike_pos.x = camera.pos.x + (phd_sin(dx) * phd_persp >> W2V_SHIFT);
 		camera.mike_pos.y = camera.pos.y;
-		camera.mike_pos.z = camera.pos.z + (phd_cos(dx) * phd_persp >> 14);
+		camera.mike_pos.z = camera.pos.z + (phd_cos(dx) * phd_persp >> W2V_SHIFT);
 	}
 
 	camera.old_type = camera.type;
@@ -1119,10 +1119,10 @@ void BinocularCamera(ITEM_INFO* item)
 	else
 		pos1.y += 64;
 
-	speed = (20736 * phd_cos(hxrot)) >> 14;
-	pos3.x = pos1.x + (phd_sin(hyrot) * speed >> 14);
-	pos3.y = pos1.y - (phd_sin(hxrot) * 20736 >> 14);
-	pos3.z = pos1.z + (phd_cos(hyrot) * speed >> 14);
+	speed = (20736 * phd_cos(hxrot)) >> W2V_SHIFT;
+	pos3.x = pos1.x + (phd_sin(hyrot) * speed >> W2V_SHIFT);
+	pos3.y = pos1.y - (phd_sin(hxrot) * 20736 >> W2V_SHIFT);
+	pos3.z = pos1.z + (phd_cos(hyrot) * speed >> W2V_SHIFT);
 	camera.pos.x = pos1.x;
 	camera.pos.y = pos1.y;
 	camera.pos.z = pos1.z;
@@ -1177,9 +1177,9 @@ void BinocularCamera(ITEM_INFO* item)
 		dz = camera.target.z - camera.pos.z;
 		dx = phd_atan(dz, dx);
 		camera.actual_elevation = (short)dx;
-		camera.mike_pos.x = camera.pos.x + (phd_sin(dx) * phd_persp >> 14);
+		camera.mike_pos.x = camera.pos.x + (phd_sin(dx) * phd_persp >> W2V_SHIFT);
 		camera.mike_pos.y = camera.pos.y;
-		camera.mike_pos.z = camera.pos.z + (phd_cos(dx) * phd_persp >> 14);
+		camera.mike_pos.z = camera.pos.z + (phd_cos(dx) * phd_persp >> W2V_SHIFT);
 	}
 
 	BinocStep = inputBusy & IN_WALK ? 32 : 64;
@@ -1351,8 +1351,8 @@ void CalculateCamera()
 		if (camera.flags == 1 || UseForcedFixedCamera)
 		{
 			shift = (bounds[4] + bounds[5]) / 2;
-			camera.target.x += (phd_sin(item->pos.y_rot) * shift >> 14);
-			camera.target.z += (phd_cos(item->pos.y_rot) * shift >> 14);
+			camera.target.x += (phd_sin(item->pos.y_rot) * shift >> W2V_SHIFT);
+			camera.target.z += (phd_cos(item->pos.y_rot) * shift >> W2V_SHIFT);
 		}
 
 		camera.target.room_number = item->room_number;

@@ -368,8 +368,8 @@
 #define GLOBAL_resident_depack_buffers	VAR_U_(0x007F4FAC, char*)
 #define SenetTargetX	VAR_U_(0x007FE204, long)
 #define SenetTargetZ	VAR_U_(0x007FE208, long)
-#define ActivePiece	VAR_U_(0x004AEBF8, char)
-#define SenetDisplacement	VAR_U_(0x004BF40C, char)
+#define piece_moving	VAR_U_(0x004AEBF8, char)
+#define last_throw	VAR_U_(0x004BF40C, char)
 #define LaraFixedPosition	VAR_U_(0x007F5760, PHD_VECTOR)
 #define InitialCameraTarget	VAR_U_(0x007F5750, PHD_VECTOR)
 #define InitialCameraPosition	VAR_U_(0x007F57D0, PHD_VECTOR)
@@ -402,10 +402,12 @@
 #define wav_file_buffer	VAR_U_(0x004BFE5C, uchar*)
 #define ADPCMBuffer	VAR_U_(0x004BFE60, uchar*)
 #define gfScriptFile	VAR_U_(0x007FD2AC, uchar*)
+#define gfExtensions	VAR_U_(0x004BF654, char*)
 #define gfLanguageFile	VAR_U_(0x007FD26C, uchar*)
 #define MonoScreenOn	VAR_U_(0x00536F1C, char)
 #define nAIObjects	VAR_U_(0x007FD200, short)
 #define XATrack	VAR_U_(0x004B22F4, long)
+#define XAReqTrack	VAR_U_(0x004BFE6C, long)
 #define XAFlag	VAR_U_(0x004B22F8, long)
 #define pSortBuffer	VAR_U_(0x00660C8C, char*)
 #define pSortList	VAR_U_(0x005C07A8, SORTLIST**)
@@ -432,12 +434,13 @@
 #define SequenceResults	ARRAY_(0x007F5720, uchar, [3][3][3])
 #define Sequences	ARRAY_(0x007F573C, uchar, [3])
 #define REG_Setup	VAR_U_(0x00670E44, bool)
+#define start_setup	VAR_U_(0x004BFE84, bool)
 #define fmvs_disabled	VAR_U_(0x004BFE85, bool)
 #define KeyTriggerActive	VAR_U_(0x004BF3F8, char)
 #define G_dxptr	VAR_U_(0x007544F4, DXPTR*)
 #define G_dxinfo	VAR_U_(0x00754120, DXINFO*)
-#define G_ddraw	VAR_U_(0x0075411C, LPDIRECTDRAW4)
-#define G_d3d	VAR_U_(0x007541A4, LPDIRECT3D3)
+#define G_ddraw	VAR_U_(0x0075411C, LPDIRECTDRAWX)
+#define G_d3d	VAR_U_(0x007541A4, LPDIRECT3DX)
 #define G_hwnd	VAR_U_(0x00754118, HWND)
 #define joy_fire	VAR_U_(0x0053589C, long)
 #define joy_x	VAR_U_(0x005358A0, long)
@@ -449,6 +452,47 @@
 #define OldPickupPos	VAR_U_(0x007FD1D0, PHD_VECTOR)
 #define HeavyTriggered	VAR_U_(0x007FE154, uchar)
 #define fliptimer	VAR_U_(0x004BF410, long)
+#define number_dynamics	VAR_U_(0x007FE110, long)
+#define SaveCounter	VAR_U_(0x005355B4, long)
+#define D3DMW2VMatrix	VAR_U_(0x007540D8, D3DMATRIX)
+#define nClippedPolys	VAR_U_(0x00753958, long)
+#define nDDDevice	VAR_U_(0x004BFE90, long)
+#define nD3DDevice	VAR_U_(0x004BFE7C, long)
+#define Filter	VAR_U_(0x004B253A, bool)
+#define volumetric_fx	VAR_U_(0x004BFE96, bool)
+#define BumpMap	VAR_U_(0x004BFE95, bool)
+#define TextLow	VAR_U_(0x004BFE94, bool)
+#define resChangeCounter	VAR_U_(0x00753BD8, long)
+#define level_fp	VAR_U_(0x00533A74, FILE*)
+#define CompressedData	VAR_U_(0x00533A58, char*)
+#define FileData	VAR_U_(0x005333A4, char*)
+#define floor_data	VAR_U_(0x00533A78, short*)
+#define changes	VAR_U_(0x00533A6C, CHANGE_STRUCT*)
+#define ranges	VAR_U_(0x00533A70, RANGE_STRUCT*)
+#define commands	VAR_U_(0x00533A8C, short*)
+#define frames	VAR_U_(0x00533A84, short*)
+#define number_cameras	VAR_U_(0x007FE940, long)
+#define sound_effects	VAR_U_(0x008012EC, OBJECT_VECTOR*)
+#define number_sound_effects	VAR_U_(0x008012E4, long)
+#define num_boxes	VAR_U_(0x007FE9B4, long)
+#define overlap	VAR_U_(0x007FE9A8, ushort*)
+#define aranges	VAR_U_(0x00753BDC, short*)
+#define nAnimUVRanges	VAR_U_(0x0053339C, long)
+#define num_items	VAR_U_(0x00532C90, long)
+#define sample_lut	VAR_U_(0x007F76A0, short*)
+#define sample_infos	VAR_U_(0x007F76A4, SAMPLE_INFO*)
+#define samples_buffer	VAR_U_(0x0052AAAC, char*)
+#define decompressed_samples_buffer	VAR_U_(0x0052B848, char*)
+#define acm_ready	VAR_U_(0x004BFE64, bool)
+#define AnimatingTexturesVOffset	VAR_U_(0x00533AC8, short)
+#define audio_cs	VAR_U_(0x004BFE08, CRITICAL_SECTION)
+#define audio_stream_fp	VAR_U_(0x004BFE68, FILE*)
+#define auido_play_mode	VAR_U_(0x004BFC88, long)
+#define reading_audio_file	VAR_U_(0x004BFE74, bool)
+#define continue_reading_audio_file	VAR_U_(0x004BFE3C, bool)
+#define audio_counter	VAR_U_(0x004BFE70, long)
+#define sound_active	VAR_U_(0x004BF6DC, long)
+#define CurrentPendulum	VAR_U_(0x007FD1A0, PENDULUM)
 
 
 
@@ -460,7 +504,7 @@
 #define static_objects	ARRAY_(0x005333C0, STATIC_INFO, [60])
 #define flip_stats	ARRAY_(0x007FE300, long, [10])
 #define Lightning	ARRAY_(0x007FFB20, LIGHTNING_STRUCT, [16])
-#define dynamics	ARRAY_(0x00804860, DYNAMIC, [32])
+#define dynamics	ARRAY_(0x00804860, DYNAMIC, [64])
 #define w2v_matrix	ARRAY_(0x00753CC8, long, [12])
 #define dels_handy_train_map	ARRAY_(0x004AFF9C, short, [512])
 #define LaraNodeAmbient	ARRAY_(0x0080E9F0, long, [2])
@@ -492,6 +536,7 @@
 #define HairRotScratchVertNums	ARRAY_(0x004AD6D4, char, [5][12])
 #define IMstack	ARRAY_(0x007FD320, long, [768])
 #define vert_wibble_table	ARRAY_(0x00535520, float, [32])
+#define unused_vert_wibble_table	ARRAY_(0x0053511C, float, [256])
 #define WaterTable	ARRAY_(0x00533B1C, WATERTAB, [22][64])
 #define no_rotation	ARRAY_(0x004BF630, short, [12])
 #define rings	ARRAY_(0x007FEA20, RINGME*, [2])
@@ -513,9 +558,9 @@
 #define Drips	ARRAY_(0x00800DC0, DRIP_STRUCT, [32])
 #define GlobalCollisionBounds	ARRAY_(0x007FE7F0, short, [6])
 #define Slist	ARRAY_(0x007F6EE0, SPHERE, [34])
-#define SenetPieceNumbers	ARRAY_(0x004BF400, short, [6])
-#define SenetBoard	ARRAY_(0x007FE340, char, [17])
-#define ActiveSenetPieces	ARRAY_(0x007FE158, char, [6])
+#define senet_item	ARRAY_(0x004BF400, short, [6])
+#define senet_board	ARRAY_(0x007FE340, char, [17])
+#define senet_piece	ARRAY_(0x007FE158, char, [6])
 #define SpotCam	ARRAY_(0x007F5A80, SPOTCAM, [128])
 #define camera_xposition	ARRAY_(0x007F5840, long, [18])
 #define camera_yposition	ARRAY_(0x007F59C0, long, [18])
@@ -543,6 +588,26 @@
 #define jroomies	ARRAY_(0x007F4FE0, short, [22])
 #define conflict	ARRAY_(0x005355B8, long, [18])
 #define flipmap	ARRAY_(0x007FE220, long, [10])
+#define SaveGames	ARRAY_(0x00536F28, SAVEFILE_INFO, [15])
+#define matrix_stack	ARRAY_(0x00753D04, long, [12])
+#define AnimatingTexturesV	ARRAY_(0x00532D9C, float, [16][8][3])
+#define AnimatingWaterfalls	ARRAY_(0x007FD1E0, TEXTURESTRUCT*, [3])
+#define AnimatingWaterfallsV	ARRAY_(0x007FD1F0, long, [3])
+#define source_pcm_format	ARRAY_(0x004B263C, char, [50])
+#define source_wav_format	ARRAY_(0x004B22C0, char, [50])
+#define SkinVertNums	ARRAY_(0x0080E520, char, [40][12])
+#define ScratchVertNums	ARRAY_(0x0080E320, char, [40][12])
+#define Bubbles	ARRAY_(0x00800920, BUBBLE_STRUCT, [40])
+#define ShockWaves	ARRAY_(0x007FF960, SHOCKWAVE_STRUCT, [16])
+#define splashes	ARRAY_(0x00804E80, SPLASH_STRUCT, [4])
+#define ripples	ARRAY_(0x00801300, RIPPLE_STRUCT, [16])
+#define fire_spark	ARRAY_(0x00800600, FIRE_SPARKS, [20])
+#define blood	ARRAY_(0x00800180, BLOOD_STRUCT, [32])
+#define uwdust	ARRAY_(0x00670E58, WATER_DUST, [256])
+#define CharDef	ARRAY_(0x004AEDB0, CHARDEF, [106])
+#define ShadeFromTo	ARRAY_(0x004AFF48, CVECTOR, [10][2])
+#define FontShades	ARRAY_(0x004BF704, CVECTOR, [10][32])
+
 
 /*Fog stuff*/
 #define NumFXFogBulbs	VAR_U_(0x00670CB8, long)
@@ -573,10 +638,24 @@
 
 /*Bink bs*/
 #define BinkSurfaceType	VAR_U_(0x007E6E00, long)
-#define BinkSurface	VAR_U_(0x007E6E04, LPDIRECTDRAWSURFACE4)
+#define BinkSurface	VAR_U_(0x007E6E04, LPDIRECTDRAWSURFACEX)
 #define Bink	VAR_U_(0x007E6E08, BINK_STRUCT*)
 
 
-#define NO_HEIGHT -32512
+#define NO_HEIGHT	-32512
 #define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
+#define WINDOW_STYLE	(WS_OVERLAPPED | WS_BORDER | WS_CAPTION)
+#define W2V_SHIFT	14
+#define MAX_SAMPLES	370
+#ifdef GENERAL_FIXES
+#define MAX_DYNAMICS	64
+#else
+#define MAX_DYNAMICS	32
+#endif
+
+#ifdef GENERAL_FIXES
+#define MALLOC_SIZE	15000000	//15MB
+#else
+#define MALLOC_SIZE	5000000		//5MB
+#endif

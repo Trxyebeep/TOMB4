@@ -124,8 +124,8 @@ void GetAIEnemy(CREATURE_INFO* info, long tfl)
 
 			if (!(info->ai_target.flags & IFL_TRIGGERED))
 			{
-				info->ai_target.pos.x_pos += (256 * phd_sin(info->ai_target.pos.y_rot)) >> 14;
-				info->ai_target.pos.z_pos += (256 * phd_cos(info->ai_target.pos.y_rot)) >> 14;
+				info->ai_target.pos.x_pos += (256 * phd_sin(info->ai_target.pos.y_rot)) >> W2V_SHIFT;
+				info->ai_target.pos.z_pos += (256 * phd_cos(info->ai_target.pos.y_rot)) >> W2V_SHIFT;
 			}
 		}
 	}
@@ -351,8 +351,8 @@ void VoncroyRaceControl(short item_number)
 	torso_y = 0;
 	ifl3 = 0;
 	room_number = item->room_number;
-	Xoffset = 808 * phd_sin(item->pos.y_rot) >> 14;
-	Zoffset = 808 * phd_cos(item->pos.y_rot) >> 14;
+	Xoffset = 808 * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
+	Zoffset = 808 * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
 	x = item->pos.x_pos + Xoffset;
 	y = item->pos.y_pos;
 	z = item->pos.z_pos + Zoffset;
@@ -1093,8 +1093,8 @@ void VoncroyControl(short item_number)
 	torso_y = 0;
 	ifl3 = 0;
 	room_number = item->room_number;
-	Xoffset = 808 * phd_sin(item->pos.y_rot) >> 14;
-	Zoffset = 808 * phd_cos(item->pos.y_rot) >> 14;
+	Xoffset = 808 * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
+	Zoffset = 808 * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
 	x = item->pos.x_pos + Xoffset;
 	y = item->pos.y_pos;
 	z = item->pos.z_pos + Zoffset;

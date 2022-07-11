@@ -764,7 +764,7 @@ void DoOptions()
 	static long sfx_bak;	//backup sfx volume
 	static long sfx_quality_bak;	//backup sfx quality
 	static long sfx_breath_db = -1;
-	long textY, joystick, joystick_x, joystick_y, joy1, joy2, joy3;
+	long textY, joystick, joystick_x, joystick_y, index, joyButton;
 	uchar num, num2;
 	char quality_text[80];
 	static char sfx_backup_flag;	//have we backed sfx stuff up?
@@ -794,7 +794,7 @@ void DoOptions()
 		}
 #endif
 
-		if (Gameflow->Language == 2)
+		if (Gameflow->Language == GERMAN)
 			keyboard_buttons = GermanKeyboard;
 		else
 			keyboard_buttons = KeyboardButtons;
@@ -936,7 +936,6 @@ void DoOptions()
 			txt = keyboard_buttons[layout[1][15]];
 
 		PrintString(phd_centerx + (phd_centerx >> 2), textY + 16 * font_height, controls_selection & 0x10000 ? 1 : 6, txt, 0);
-
 		small_font = 0;
 
 		if (ControlMethod < 2 && !waiting_for_key)
@@ -990,26 +989,25 @@ void DoOptions()
 
 				if (joystick)
 				{
-					joy1 = controls_selection >> 2;
-					joy2 = 0;
+					controls_selection >>= 2;
+					index = 0;
 
-					while (joy1)
+					while (controls_selection)
 					{
-						joy1 >>= 1;
-						joy2++;
+						controls_selection >>= 1;
+						index++;
 					}
 
 					controls_selection = 0;
-					joy1 = joystick >> 1;
-					joy3 = 0;
+					joyButton = 0;
 
-					while (joy1)
+					while (joystick)
 					{
-						joy1 >>= 1;
-						joy3++;
+						joystick >>= 1;
+						joyButton++;
 					}
 
-					layout[1][joy2] = joy3 + 255;
+					layout[1][index] = joyButton + 255;
 					waiting_for_key = 0;
 				}
 			}
@@ -1295,6 +1293,163 @@ void DoStatScreen()
 	sprintf(buf, "%d / 70", savegame.Game.Secrets);
 	PrintString(phd_centerx + (phd_centerx >> 2), y + 7 * font_height, 6, buf, 0);
 }
+
+long S_DisplayPauseMenu(long reset)
+{
+	static long menu, selection = 1;
+	long y;
+
+	if (!menu)
+	{
+		if (reset)
+		{
+			selection = reset;
+			menu = 0;
+		}
+		else
+		{
+			y = phd_centery - font_height;
+			PrintString(phd_centerx, y - ((3 * font_height) >> 1), 6, SCRIPT_TEXT(TXT_Paused), FF_CENTER);
+			PrintString(phd_centerx, y, selection & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Statistics), FF_CENTER);
+			PrintString(phd_centerx, y + font_height, selection & 2 ? 1 : 2, SCRIPT_TEXT(TXT_Options), FF_CENTER);
+			PrintString(phd_centerx, y + 2 * font_height, selection & 4 ? 1 : 2, SCRIPT_TEXT(TXT_Exit_to_Title), FF_CENTER);
+
+			if (dbinput & IN_FORWARD)
+			{
+				if (selection > 1)
+					selection >>= 1;
+
+				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+			}
+
+			if (dbinput & IN_BACK)
+			{
+				if (selection < 4)
+					selection <<= 1;
+
+				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+			}
+
+			if (dbinput & IN_DESELECT)
+			{
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+				return 1;
+			}
+
+			if (dbinput & IN_SELECT && !keymap[DIK_LALT])
+			{
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_DEFAULT);
+
+				if (selection & 1)
+					menu = 2;
+				else if (selection & 2)
+					menu = 1;
+				else if (selection & 4)
+					return 8;
+			}
+		}
+	}
+	else if (menu == 1)
+	{
+		DoOptions();
+
+		if (dbinput & IN_DESELECT)
+		{
+			menu = 0;
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+		}
+	}
+	else if (menu == 2)
+	{
+		DoStatScreen();
+
+		if (dbinput & IN_DESELECT)
+		{
+			menu = 0;
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+		}
+	}
+
+	return 0;
+}
+
+long DoLoadSave(long LoadSave)
+{
+	SAVEFILE_INFO* pSave;
+	static long selection;
+	long txt, color, l;
+	char string[80];
+	char name[41];
+
+	if (LoadSave & IN_SAVE)
+		txt = TXT_Save_Game;
+	else
+		txt = TXT_Load_Game;
+
+	PrintString(phd_centerx, font_height, 6, SCRIPT_TEXT(txt), FF_CENTER);
+
+	for (int i = 0; i < 15; i++)
+	{
+		pSave = &SaveGames[i];
+		color = 2;
+
+		if (i == selection)
+			color = 1;
+
+		memset(name, ' ', 40);
+		l = strlen(pSave->name);
+
+		if (l > 40)
+			l = 40;
+
+		strncpy(name, pSave->name, l);
+		name[40] = 0;
+		small_font = 1;
+
+		if (pSave->valid)
+		{
+			wsprintf(string, "%03d", pSave->num);
+			PrintString(phd_centerx - long((float)phd_winwidth / 640.0F * 310.0), font_height + font_height * (i + 2), color, string, 0);
+			PrintString(phd_centerx - long((float)phd_winwidth / 640.0F * 270.0), font_height + font_height * (i + 2), color, name, 0);
+			wsprintf(string, "%d %s %02d:%02d:%02d", pSave->days, SCRIPT_TEXT(TXT_days), pSave->hours, pSave->minutes, pSave->seconds);
+			PrintString(phd_centerx - long((float)phd_winwidth / 640.0F * -135.0), font_height + font_height * (i + 2), color, string, 0);
+		}
+		else
+		{
+			wsprintf(string, "%s", pSave->name);
+			PrintString(phd_centerx, font_height + font_height * (i + 2), color, string, FF_CENTER);
+		}
+
+		small_font = 0;
+	}
+
+	if (dbinput & IN_FORWARD)
+	{
+		selection--;
+		SoundEffect(SFX_MENU_CHOOSE, 0, SFX_DEFAULT);
+	}
+
+	if (dbinput & IN_BACK)
+	{
+		selection++;
+		SoundEffect(SFX_MENU_CHOOSE, 0, SFX_DEFAULT);
+	}
+
+	if (selection < 0)
+		selection = 0;
+	else if (selection > 14)
+		selection = 14;
+
+	if (dbinput & IN_SELECT)
+	{
+		if (SaveGames[selection].valid || LoadSave == IN_SAVE)
+			return selection;
+
+		SoundEffect(SFX_LARA_NO, 0, SFX_DEFAULT);
+	}
+
+	return -1;
+}
 #pragma warning(pop)
 
 #ifdef GENERAL_FIXES
@@ -1383,7 +1538,7 @@ long S_LoadSave(long load_or_save, long mono)
 	return ret;
 }
 
-void S_DrawTile(long x, long y, long w, long h, IDirect3DTexture2* t, long tU, long tV, long tW, long tH, long c0, long c1, long c2, long c3)
+void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, long tU, long tV, long tW, long tH, long c0, long c1, long c2, long c3)
 {
 	D3DTLBUMPVERTEX v[4];
 	D3DTLBUMPVERTEX tri[3];
@@ -1603,7 +1758,7 @@ void RGBM_Mono(uchar* r, uchar* g, uchar* b)
 	*b = c;
 }
 
-void MemBltSurf(void* dest, long x, long y, long w, long h, long dadd, void* source, long x2, long y2, DDSURFACEDESC2 surface, float xsize, float ysize)
+void MemBltSurf(void* dest, long x, long y, long w, long h, long dadd, void* source, long x2, long y2, DDSURFACEDESCX surface, float xsize, float ysize)
 {
 	ulong* pDest;
 	short* psSrc;
@@ -1734,7 +1889,7 @@ static void WinVidGetColorBitMasks(COLOR_BIT_MASKS *bm, LPDDPIXELFORMAT pixelFor
 	BitMaskGetNumberOfBits(bm->dwRGBAlphaBitMask, &bm->dwRGBAlphaBitDepth, &bm->dwRGBAlphaBitOffset);
 }
 
-static void CustomBlt(DDSURFACEDESC2* dst, ulong dstX, ulong dstY, DDSURFACEDESC2* src, LPRECT srcRect)
+static void CustomBlt(LPDDSURFACEDESCX dst, ulong dstX, ulong dstY, LPDDSURFACEDESCX src, LPRECT srcRect)
 {
 	COLOR_BIT_MASKS srcMask, dstMask;
 	uchar* srcLine;
@@ -1811,25 +1966,25 @@ static void CustomBlt(DDSURFACEDESC2* dst, ulong dstX, ulong dstY, DDSURFACEDESC
 }
 #endif
 
-void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACE4 surface)
+void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 {
-	DDSURFACEDESC2 tSurf;
+	DDSURFACEDESCX tSurf;
 #ifdef GENERAL_FIXES
-	DDSURFACEDESC2 uSurf;
+	DDSURFACEDESCX uSurf;
 	RECT r;
 #endif
 	ushort* pTexture;
 	ushort* pSrc;
 
 	memset(&tSurf, 0, sizeof(tSurf));
-	tSurf.dwSize = sizeof(DDSURFACEDESC2);
+	tSurf.dwSize = sizeof(DDSURFACEDESCX);
 	surface->Lock(0, &tSurf, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
 	pSrc = (ushort*)tSurf.lpSurface;
 #ifdef GENERAL_FIXES
 	MonoScreen[0].surface = CreateTexturePage(tSurf.dwWidth, tSurf.dwHeight, 0, NULL, RGBM_Mono, -1);
 
 	memset(&uSurf, 0, sizeof(uSurf));
-	uSurf.dwSize = sizeof(DDSURFACEDESC2);
+	uSurf.dwSize = sizeof(DDSURFACEDESCX);
 	MonoScreen[0].surface->Lock(0, &uSurf, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
 	pTexture = (ushort*)uSurf.lpSurface;
 
@@ -1840,31 +1995,31 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACE4 surface)
 	CustomBlt(&uSurf, 0, 0, &tSurf, &r);
 
 	MonoScreen[0].surface->Unlock(0);
-	DXAttempt(MonoScreen[0].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[0].tex));
+	DXAttempt(MonoScreen[0].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[0].tex));
 	surface->Unlock(0);
 #else
 	pTexture = (ushort*)malloc(0x40000);
 
 	MemBltSurf(pTexture, 0, 0, 256, 256, 256, pSrc, 0, 0, tSurf, 1.0F, 1.0F);
 	MonoScreen[0].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[0].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[0].tex));
+	DXAttempt(MonoScreen[0].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[0].tex));
 
 	MemBltSurf(pTexture, 0, 0, 256, 256, 256, pSrc, 256, 0, tSurf, 1.0F, 1.0F);
 	MonoScreen[1].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[1].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[1].tex));
+	DXAttempt(MonoScreen[1].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[1].tex));
 
 	MemBltSurf(pTexture, 0, 0, 128, 256, 256, pSrc, 512, 0, tSurf, 1.0F, 1.0F);
 	MemBltSurf(pTexture, 128, 0, 128, 224, 256, pSrc, 512, 256, tSurf, 1.0F, 1.0F);
 	MonoScreen[2].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[2].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[2].tex));
+	DXAttempt(MonoScreen[2].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[2].tex));
 
 	MemBltSurf(pTexture, 0, 0, 256, 224, 256, pSrc, 0, 256, tSurf, 1.0F, 1.0F);
 	MonoScreen[3].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[3].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[3].tex));
+	DXAttempt(MonoScreen[3].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[3].tex));
 
 	MemBltSurf(pTexture, 0, 0, 256, 224, 256, pSrc, 256, 256, tSurf, 1.0F, 1.0F);
 	MonoScreen[4].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[4].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[4].tex));
+	DXAttempt(MonoScreen[4].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[4].tex));
 
 	surface->Unlock(0);
 	free(pTexture);
@@ -2029,6 +2184,125 @@ void DoSlider(long x, long y, long width, long height, long pos, long clr1, long
 	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 }
 
+void CheckKeyConflicts()
+{
+	short key;
+
+	for (int i = 0; i < 18; i++)
+	{
+		key = layout[0][i];
+		conflict[i] = 0;
+
+		for (int j = 0; j < 18; j++)
+		{
+			if (key == layout[1][j])
+			{
+				conflict[i] = 1;
+				break;
+			}
+		}
+	}
+}
+
+long S_PauseMenu()
+{
+	long fade, ret;
+
+	fade = 0;
+	CreateMonoScreen();
+	S_DisplayPauseMenu(1);
+	InventoryActive = 1;
+
+	do
+	{
+		S_InitialisePolyList();
+
+		if (fade)
+			dbinput = 0;
+		else
+			S_UpdateInput();
+
+		SetDebounce = 1;
+		S_DisplayMonoScreen();
+		ret = S_DisplayPauseMenu(0);
+		UpdatePulseColour();
+		S_OutputPolyList();
+		S_DumpScreen();
+
+		if (ret == 1)
+			break;
+
+		if (ret == 8)
+		{
+			fade = 8;
+			ret = 0;
+			SetFade(0, 255);
+		}
+
+		if (fade && DoFade == 2)
+		{
+			ret = fade;
+			break;
+		}
+
+	} while (!MainThread.ended);
+
+	TIME_Init();
+	FreeMonoScreen();
+	InventoryActive = 0;
+	return ret;
+}
+
+long GetSaveLoadFiles()
+{
+	FILE* file;
+	SAVEFILE_INFO* pSave;
+	SAVEGAME_INFO save_info;
+	static long nSaves;
+	char name[75];
+
+	SaveCounter = 0;
+
+	for (int i = 0; i < 15; i++)
+	{
+		pSave = &SaveGames[i];
+		wsprintf(name, "savegame.%d", i);
+		file = fopen(name, "rb");
+
+		if (!file)
+		{
+			pSave->valid = 0;
+			strcpy(pSave->name, SCRIPT_TEXT(TXT_Empty_Slot));
+			continue;
+		}
+
+		fread(&pSave->name, sizeof(char), 75, file);
+		fread(&pSave->num, sizeof(long), 1, file);
+		fread(&pSave->days, sizeof(short), 1, file);
+		fread(&pSave->hours, sizeof(short), 1, file);
+		fread(&pSave->minutes, sizeof(short), 1, file);
+		fread(&pSave->seconds, sizeof(short), 1, file);
+		fread(&save_info, 1, sizeof(SAVEGAME_INFO), file);
+
+		if (!CheckSumValid((char*)&save_info))
+		{
+			pSave->valid = 0;
+			strcpy(pSave->name, SCRIPT_TEXT(TXT_Empty_Slot));
+			continue;
+		}
+
+		if (pSave->num > SaveCounter)
+			SaveCounter = pSave->num;
+
+		pSave->valid = 1;
+		fclose(file);
+		nSaves++;
+	}
+
+	SaveCounter++;
+	return nSaves;
+}
+
 void inject_loadsave(bool replace)
 {
 	INJECT(0x0047D460, S_DrawHealthBar, replace);
@@ -2040,6 +2314,8 @@ void inject_loadsave(bool replace)
 	INJECT(0x0047B170, DoOptions, replace);
 	INJECT(0x0047CD20, S_LoadSave, replace);
 	INJECT(0x0047C6B0, DoStatScreen, replace);
+	INJECT(0x0047CA20, S_DisplayPauseMenu, replace);
+	INJECT(0x0047A880, DoLoadSave, replace);
 	INJECT(0x0047A220, S_DrawTile, replace);
 	INJECT(0x0047A500, S_DisplayMonoScreen, replace);
 	INJECT(0x00479F20, CreateMonoScreen, replace);
@@ -2048,4 +2324,7 @@ void inject_loadsave(bool replace)
 	INJECT(0x004797C0, MemBltSurf, replace);
 	INJECT(0x00479C10, ConvertSurfaceToTextures, replace);
 	INJECT(0x0047AB80, DoSlider, replace);
+	INJECT(0x0047B130, CheckKeyConflicts, replace);
+	INJECT(0x0047CC60, S_PauseMenu, replace);
+	INJECT(0x0047A6F0, GetSaveLoadFiles, replace);
 }

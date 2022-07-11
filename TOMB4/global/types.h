@@ -37,6 +37,7 @@ do \
 #define phd_PopMatrix()		phd_mxptr -= 12
 #define RGBONLY(r, g, b) ((b) | (((g) | ((r) << 8)) << 8))
 #define RGBA(r, g, b, a) (RGBONLY(r, g, b) | ((a) << 24))
+#define	CLRA(clr)	((clr >> 24) & 0xFF)	//shift r, g, and b out of the way and 0xFF
 #define	CLRR(clr)	((clr >> 16) & 0xFF)	//shift g and b out of the way and 0xFF
 #define	CLRG(clr)	((clr >> 8) & 0xFF)		//shift b out of the way and 0xFF
 #define	CLRB(clr)	((clr) & 0xFF)			//and 0xFF
@@ -45,14 +46,61 @@ do \
 #define SetCutPlayed(num)	(CutSceneTriggered |= 1 << (num))
 #define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
 #define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
+#define	TRIGMULT2(a,b)		(((a) * (b)) >> W2V_SHIFT)
+#define	TRIGMULT3(a,b,c)	(TRIGMULT2((TRIGMULT2(a, b)), c))
 
 	/**********************************/
-#define OPEN	( (FILE*(__cdecl*)(const char*, const char*)) 0x004A0B4C )
-#define SEEK	( (int(__cdecl*)(FILE*, int, int)) 0x004A0948 )
-#define READ	( (size_t(__cdecl*)(void*, size_t, size_t, FILE*)) 0x004A0860 )
-#define TELL	( (int(__cdecl*)(FILE*)) 0x004A0B5F )
-#define CLOSE	( (int(__cdecl*)(FILE*)) 0x004A07B4 )
+#define MALLOC	( (void*(__cdecl*)(size_t)) 0x004A0558 )
+#define REALLOC	( (void*(__cdecl*)(void*, size_t)) 0x004A1453 )
+#define FREE	( (void(__cdecl*)(void*)) 0x004A0A01 )
 	/**********************************/
+
+	/**********************************/
+#define LPDIRECTDRAWX			LPDIRECTDRAW4
+#define LPDIRECT3DX				LPDIRECT3D3
+#define LPDIRECT3DDEVICEX		LPDIRECT3DDEVICE3
+#define LPDIRECTDRAWSURFACEX	LPDIRECTDRAWSURFACE4
+#define LPDIRECT3DVIEWPORTX		LPDIRECT3DVIEWPORT3
+#define LPDIRECTINPUTX			LPDIRECTINPUT2
+#define LPDIRECTINPUTDEVICEX	LPDIRECTINPUTDEVICE2
+#define DDSURFACEDESCX			DDSURFACEDESC2
+#define LPDDSURFACEDESCX		DDSURFACEDESCX*
+#define LPDIRECT3DMATERIALX		LPDIRECT3DMATERIAL3
+#define D3DLIGHTX				D3DLIGHT2
+#define LPDIRECT3DTEXTUREX		LPDIRECT3DTEXTURE2
+#define TEXGUID					IID_IDirect3DTexture2
+#define DDGUID					IID_IDirectDraw4
+#define D3DGUID					IID_IDirect3D3
+
+#if (DIRECTINPUT_VERSION >= 0x800)
+#define DIGUID					IID_IDirectInput8
+#define DIDGUID					IID_IDirectInputDevice8
+#else
+#define DIGUID					IID_IDirectInput2
+#define DIDGUID					IID_IDirectInputDevice2
+#endif
+
+#define DSNGUID					IID_IDirectSoundNotify
+	/**********************************/
+
+enum win_commands
+{
+	KA_ALTENTER = 8,
+	KA_ALTP = 40001,
+	KA_ALTM = 40002
+};
+
+enum languages
+{
+	ENGLISH,
+	FRENCH,
+	GERMAN,
+	ITALIAN,
+	SPANISH,
+	US,
+	JAPAN,
+	DUTCH
+};
 
 enum font_flags
 {
@@ -403,9 +451,9 @@ struct FVECTOR
 
 struct SVECTOR
 {
-	short vx;
-	short vy;
-	short vz;
+	short x;
+	short y;
+	short z;
 	short pad;
 };
 
@@ -1016,8 +1064,15 @@ struct ROPE_STRUCT
 	PHD_VECTOR Position;
 	long Coords[24][3];
 	long SegmentLength;
-	short Active;
-	short Coiled;
+	long Active;
+};
+
+struct PENDULUM
+{
+	PHD_VECTOR Position;
+	PHD_VECTOR Velocity;
+	long node;
+	ROPE_STRUCT* Rope;
 };
 
 struct STATS
@@ -1031,7 +1086,7 @@ struct STATS
 	uchar HealthUsed;
 };
 
-struct SAVEGAME_INFO	//savegame is at 007F76C0
+struct SAVEGAME_INFO
 {
 	LARA_INFO Lara;
 	long cutscene_triggered;
@@ -1132,14 +1187,14 @@ struct STATIC_INFO
 
 struct DXPTR
 {
-	LPDIRECTDRAW4 lpDD;
-	LPDIRECT3D3 lpD3D;
-	LPDIRECT3DDEVICE3 lpD3DDevice;
-	LPDIRECT3DDEVICE3 _lpD3DDevice;
-	LPDIRECTDRAWSURFACE4 lpPrimaryBuffer;
-	LPDIRECTDRAWSURFACE4 lpBackBuffer;
-	LPDIRECTDRAWSURFACE4 lpZBuffer;
-	LPDIRECT3DVIEWPORT3 lpViewport;
+	LPDIRECTDRAWX lpDD;
+	LPDIRECT3DX lpD3D;
+	LPDIRECT3DDEVICEX lpD3DDevice;
+	LPDIRECT3DDEVICEX _lpD3DDevice;
+	LPDIRECTDRAWSURFACEX lpPrimaryBuffer;
+	LPDIRECTDRAWSURFACEX lpBackBuffer;
+	LPDIRECTDRAWSURFACEX lpZBuffer;
+	LPDIRECT3DVIEWPORTX lpViewport;
 	LPDIRECTSOUND lpDS;
 	ulong dwRenderWidth;
 	ulong dwRenderHeight;
@@ -1148,8 +1203,8 @@ struct DXPTR
 	long Flags;
 	long WindowStyle;
 	long CoopLevel;
-	IDirectInput2* lpDirectInput;
-	IDirectInputDevice2* Keyboard;
+	LPDIRECTINPUTX lpDirectInput;
+	LPDIRECTINPUTDEVICEX Keyboard;
 	HWND hWnd;
 	volatile long InScene;
 	volatile long WaitAtBeginScene;
@@ -1163,14 +1218,13 @@ struct DXDISPLAYMODE
 	long bpp;
 	long RefreshRate;
 	long bPalette;
-	DDSURFACEDESC2 ddsd;
+	DDSURFACEDESCX ddsd;
 	uchar rbpp;
 	uchar gbpp;
 	uchar bbpp;
 	uchar rshift;
 	uchar gshift;
 	uchar bshift;
-
 };
 
 struct DXTEXTUREINFO
@@ -1258,7 +1312,7 @@ struct WINAPP
 	DXPTR dx;
 	HANDLE mutex;
 	float fps;
-	LPDIRECT3DMATERIAL3 GlobalMaterial;
+	LPDIRECT3DMATERIALX GlobalMaterial;
 	D3DMATERIALHANDLE GlobalMaterialHandle;
 	HACCEL hAccel;
 	bool SetupComplete;
@@ -1346,7 +1400,7 @@ struct LIGHTNING_STRUCT
 struct D3DLIGHT_STRUCT
 {
 	LPDIRECT3DLIGHT D3DLight;
-	D3DLIGHT2 D3DLight2;
+	D3DLIGHTX D3DLightx;
 };
 
 struct DYNAMIC
@@ -1554,8 +1608,8 @@ struct D3DTLBUMPVERTEX
 
 struct TEXTURE
 {
-	IDirect3DTexture2* tex;
-	LPDIRECTDRAWSURFACE4 surface;
+	LPDIRECT3DTEXTUREX tex;
+	LPDIRECTDRAWSURFACEX surface;
 	ulong xoff;
 	ulong yoff;
 	ulong width;
@@ -1750,8 +1804,8 @@ struct SMOKE_SPARKS
 
 struct MONOSCREEN_STRUCT
 {
-	IDirect3DTexture2* tex;
-	LPDIRECTDRAWSURFACE4 surface;
+	LPDIRECT3DTEXTUREX tex;
+	LPDIRECTDRAWSURFACEX surface;
 };
 
 struct VonCroyCutData
@@ -1825,6 +1879,241 @@ struct BINK_STRUCT
 	long num;
 	char padfuck[8];
 	long num2;
+};
+
+struct SAVEFILE_INFO
+{
+	char name[75];
+	char valid;
+	short hours;
+	short minutes;
+	short seconds;
+	short days;
+	long num;
+};
+
+struct COMMANDLINES
+{
+	char command[20];
+	bool needs_parameter;
+	void (*code)(char*);
+	char parameter[20];
+};
+
+struct CHANGE_STRUCT
+{
+	short goal_anim_state;
+	short number_ranges;
+	short range_index;
+};
+
+struct RANGE_STRUCT
+{
+	short start_frame;
+	short end_frame;
+	short link_anim_num;
+	short link_frame_num;
+};
+
+struct PHDSPRITESTRUCT
+{
+	ushort tpage;
+	ushort offset;
+	ushort width;
+	ushort height;
+	short x1;
+	short y1;
+	short x2;
+	short y2;
+};
+
+struct PHDTEXTURESTRUCT
+{
+	ushort drawtype;
+	ushort tpage;
+	ushort flag;
+	ushort u1;
+	ushort v1;
+	ushort u2;
+	ushort v2;
+	ushort u3;
+	ushort v3;
+	ushort u4;
+	ushort v4;
+	ulong xoff;
+	ulong yoff;
+	ulong width;
+	ulong height;
+};
+
+struct SAMPLE_INFO
+{
+	short number;
+	uchar volume;
+	char radius;
+	char randomness;
+	char pitch;
+	short flags;
+};
+
+struct DS_SAMPLE
+{
+	LPDIRECTSOUNDBUFFER buffer;
+	long frequency;
+	long playing;
+};
+
+struct BUBBLE_STRUCT
+{
+	PHD_VECTOR pos;
+	short room_number;
+	short speed;
+	short size;
+	short dsize;
+	uchar shade;
+	uchar vel;
+	short pad;
+};
+
+struct SHOCKWAVE_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	short InnerRad;
+	short OuterRad;
+	short XRot;
+	short Flags;
+	uchar r;
+	uchar g;
+	uchar b;
+	uchar life;
+	short Speed;
+	short Temp;
+};
+
+struct SPLASH_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	short InnerRad;
+	short InnerSize;
+	short InnerRadVel;
+	short InnerYVel;
+	short InnerY;
+	short MiddleRad;
+	short MiddleSize;
+	short MiddleRadVel;
+	short MiddleYVel;
+	short MiddleY;
+	short OuterRad;
+	short OuterSize;
+	short OuterRadVel;
+	char flags;
+	uchar life;
+};
+
+struct RIPPLE_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	char flags;
+	uchar life;
+	uchar size;
+	uchar init;
+};
+
+struct FIRE_SPARKS
+{
+	short x;
+	short y;
+	short z;
+	short Xvel;
+	short Yvel;
+	short Zvel;
+	short Gravity;
+	short RotAng;
+	short Flags;
+	uchar sSize;
+	uchar dSize;
+	uchar Size;
+	uchar Friction;
+	uchar Scalar;
+	uchar Def;
+	char RotAdd;
+	char MaxYvel;
+	uchar On;
+	uchar sR;
+	uchar sG;
+	uchar sB;
+	uchar dR;
+	uchar dG;
+	uchar dB;
+	uchar R;
+	uchar G;
+	uchar B;
+	uchar ColFadeSpeed;
+	uchar FadeToBlack;
+	uchar sLife;
+	uchar Life;
+};
+
+struct BLOOD_STRUCT
+{
+	long x;
+	long y;
+	long z;
+	short Xvel;
+	short Yvel;
+	short Zvel;
+	short Gravity;
+	short RotAng;
+	uchar sSize;
+	uchar dSize;
+	uchar Size;
+	uchar Friction;
+	char RotAdd;
+	uchar On;
+	uchar sShade;
+	uchar dShade;
+	uchar Shade;
+	uchar ColFadeSpeed;
+	uchar FadeToBlack;
+	char sLife;
+	char Life;
+	char Pad;
+};
+
+struct WATER_DUST
+{
+	PHD_VECTOR pos;
+	char xvel;
+	uchar yvel;
+	char zvel;
+	uchar life;
+};
+
+struct CHARDEF
+{
+	float u;
+	float v;
+	short w;
+	short h;
+	short YOffset;
+	char TopShade;
+	char BottomShade;
+};
+
+struct STRINGHEADER
+{
+	ushort nStrings;
+	ushort nPSXStrings;
+	ushort nPCStrings;
+	ushort StringWadLen;
+	ushort PSXStringWadLen;
+	ushort PCStringWadLen;
 };
 
 #ifdef IMPROVED_BARS

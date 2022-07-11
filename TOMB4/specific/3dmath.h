@@ -15,9 +15,10 @@ void phd_TranslateAbs(long x, long y, long z);
 void phd_GetVectorAngles(long x, long y, long z, short* angles);
 ulong mGetAngle(long x, long z, long x1, long z1);
 void AlterFOV(short fov);
-
-#define phd_atan	( (long(__cdecl*)(long, long)) 0x00490210 )
-#define phd_sqrt	( (long(__cdecl*)(long)) 0x00490280 )
-#define phd_LookAt	( (void(__cdecl*)(long, long, long, long, long, long, short)) 0x00490110 )
-#define ScaleCurrentMatrix	( (void(__cdecl*)(PHD_VECTOR*)) 0x0048FB60 )
-#define InitWindow	(  (void(__cdecl*)(long, long, long, long, long, long, long, long, long)) 0x0048FC10 )
+long phd_atan(long x, long y);
+ulong phd_sqrt(ulong num);
+void ScaleCurrentMatrix(PHD_VECTOR* vec);
+void SetupZRange(long znear, long zfar);
+void InitWindow(long x, long y, long w, long h, long znear, long zfar, long fov, long a, long b);
+void phd_GenerateW2V(PHD_3DPOS* viewPos);
+void phd_LookAt(long sx, long sy, long sz, long tx, long ty, long tz, short roll);

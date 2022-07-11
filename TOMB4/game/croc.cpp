@@ -56,8 +56,8 @@ void CrocControl(short item_number)
 	croc = (CREATURE_INFO*)item->data;
 	angle = 0;
 	rot = 0;
-	s = (1024 * phd_sin(item->pos.y_rot)) >> 14;
-	c = (1024 * phd_cos(item->pos.y_rot)) >> 14;
+	s = (1024 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
+	c = (1024 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
 	x = item->pos.x_pos + s;
 	z = item->pos.z_pos + c;
 	room_number = item->room_number;
@@ -263,11 +263,11 @@ void CrocControl(short item_number)
 	CreatureAnimation(item_number, angle, 0);
 	
 	if (item->current_anim_state == 8)
-		s = (1024 * phd_sin(item->pos.y_rot)) >> 14;
+		s = (1024 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
 	else
-		s = (512 * phd_sin(item->pos.y_rot)) >> 14;
+		s = (512 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
 
-	c = (1024 * phd_cos(item->pos.y_rot)) >> 14;
+	c = (1024 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
 	x = item->pos.x_pos + s;
 	z = item->pos.z_pos + c;
 	room_number = item->room_number;
@@ -545,10 +545,10 @@ void UpdateLocusts()
 			ox = fx->pos.x_pos;
 			oy = fx->pos.y_pos;
 			oz = fx->pos.z_pos;
-			speed = fx->speed * phd_cos(fx->pos.x_rot) >> 14;
-			fx->pos.x_pos += speed * phd_sin(fx->pos.y_rot) >> 14;
-			fx->pos.y_pos += fx->speed * phd_sin(-fx->pos.x_rot) >> 14;
-			fx->pos.z_pos += speed * phd_cos(fx->pos.y_rot) >> 14;
+			speed = fx->speed * phd_cos(fx->pos.x_rot) >> W2V_SHIFT;
+			fx->pos.x_pos += speed * phd_sin(fx->pos.y_rot) >> W2V_SHIFT;
+			fx->pos.y_pos += fx->speed * phd_sin(-fx->pos.x_rot) >> W2V_SHIFT;
+			fx->pos.z_pos += speed * phd_cos(fx->pos.y_rot) >> W2V_SHIFT;
 
 			if (!(i & 1))
 			{
@@ -596,7 +596,7 @@ void TriggerCrocgodMissile(PHD_3DPOS* pos, short room_number, short num)
 	}
 }
 
-void TriggerCrocgodMissileFlame(short fx_number, short xv, short yv, short zv)
+void TriggerCrocgodMissileFlame(short fx_number, long xv, long yv, long zv)
 {
 	FX_INFO* fx;
 	SPARKS* sptr;
@@ -626,9 +626,9 @@ void TriggerCrocgodMissileFlame(short fx_number, short xv, short yv, short zv)
 	sptr->x = fx->pos.x_pos + (GetRandomControl() & 0xF) - 8;
 	sptr->y = fx->pos.y_pos;
 	sptr->z = fx->pos.z_pos + (GetRandomControl() & 0xF) - 8;
-	sptr->Xvel = xv;
-	sptr->Yvel = yv;
-	sptr->Zvel = zv;
+	sptr->Xvel = (short)xv;
+	sptr->Yvel = (short)yv;
+	sptr->Zvel = (short)zv;
 	sptr->Friction = 34;
 	sptr->Flags = 538;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
