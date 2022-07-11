@@ -135,8 +135,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00448070		AlignLaraPosition
 0x00448140		Move3DPosTo3DPos
 0x004483E0		MoveLaraPosition
-0x004485A0		GenericSphereBoxCollision
-0x00448840		GenericDeadlyBoundingBoxCollision
+0x004485A0	+	GenericSphereBoxCollision
+0x00448840	+	GenericDeadlyBoundingBoxCollision
 0x004489A0		TestBoundsCollide2
 0x00448A80		StargateCollision
 0x00448CC0		CogCollision
@@ -157,7 +157,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044A390		GetWaterHeight
 0x0044A530		GetHeight
 0x0044AA20		RefreshCamera
-0x0044AB50		TestTriggers
+0x0044AB50	+	TestTriggers
 0x0044B620		TriggerActive
 0x0044B690		GetCeiling
 0x0044BB20		GetDoor
@@ -1209,7 +1209,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x0045BFB0		InitialiseLara
 0x0045C0D0		InitialiseObjects
-0x0045C1E0		BaddyObjects
+0x0045C1E0	+	BaddyObjects
 0x0045DC10	+	TrapObjects
 0x0045E1F0	+	ObjectObjects
 0x0045EB40		GetCarriedItems
@@ -1264,6 +1264,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/switch.cpp
 
+0x00461B10		SwitchTrigger
 0x00461BD0		GetSwitchTrigger
 0x00461CA0		TestTriggersAtXYZ
 0x00461CF0		SwitchControl
@@ -1382,13 +1383,13 @@ x for functions decompiled but not injected, for one reason or another.
 0x00414F30		LavaBurn
 0x00414FA0		ControlRollingBall
 0x00415680		RollingBallCollision
-0x00415750		ControlJobySpike
-0x004158E0		DrawScaledSpike
+0x00415750	+	ControlJobySpike
+0x004158E0	+	DrawScaledSpike
 0x00415AD0	+	TwoBlockPlatformFloor
 0x00415B20	+	TwoBlockPlatformCeiling
 0x00415B60	+	OnTwoBlockPlatform
 0x00415C30	+	ControlTwoBlockPlatform
-0x00415DB0		ControlSlicerDicer
+0x00415DB0	+	ControlSlicerDicer
 0x00415EC0		TestBoundsCollideTeethSpikes
 0x00415FD0		ControlScaledSpike
 0x00416390		ControlRaisingBlock
