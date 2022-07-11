@@ -1416,7 +1416,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/troops.cpp
 
-0x004183B0		InitialiseTroop
+0x004183B0	+	InitialiseTroop
 0x00418430		TroopControl
 
 
