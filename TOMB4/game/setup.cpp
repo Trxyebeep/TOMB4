@@ -32,6 +32,7 @@
 #include "moveblok.h"
 #include "objlight.h"
 #include "laraflar.h"
+#include "troops.h"
 
 void ObjectObjects()
 {
@@ -1323,8 +1324,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseTroop;
-//		obj->control = TroopControl;
+		obj->initialise = InitialiseTroop;
+		obj->control = TroopControl;
 //		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
