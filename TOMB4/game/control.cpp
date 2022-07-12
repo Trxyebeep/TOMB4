@@ -947,7 +947,11 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			if (camera_flags & IFL_INVISIBLE)
 				SpotCam[value].flags |= SP_FLYBYONESHOT;
 
+#ifdef LEVEL_EDITOR
+			if (bUseSpotCam && gfCurrentLevel)
+#else
 			if (bUseSpotCam)
+#endif
 				break;
 
 			bUseSpotCam = 1;
