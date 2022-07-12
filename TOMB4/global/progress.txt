@@ -1410,7 +1410,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004173A0		FallingSquishyBlockCollision
 0x004174A0		ControlObelisk
 0x00417BB0		MineCollision
-0x00417DB0		ControlMineHelicopter
+0x00417DB0	+	ControlMineHelicopter
 0x00417FC0	+	ControlSprinkler
 
 

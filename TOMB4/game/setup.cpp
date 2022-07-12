@@ -748,7 +748,7 @@ void TrapObjects()
 
 	obj = &objects[MINE];
 	obj->initialise = InitialiseMineHelicopter;
-//	obj->control = ControlMineHelicopter;
+	obj->control = ControlMineHelicopter;
 //	obj->collision = MineCollision;
 	obj->HitEffect = 3;
 
