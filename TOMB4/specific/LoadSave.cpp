@@ -1538,7 +1538,7 @@ long S_LoadSave(long load_or_save, long mono)
 	return ret;
 }
 
-void S_DrawTile(long x, long y, long w, long h, IDirect3DTexture2* t, long tU, long tV, long tW, long tH, long c0, long c1, long c2, long c3)
+void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, long tU, long tV, long tW, long tH, long c0, long c1, long c2, long c3)
 {
 	D3DTLBUMPVERTEX v[4];
 	D3DTLBUMPVERTEX tri[3];
@@ -1758,7 +1758,7 @@ void RGBM_Mono(uchar* r, uchar* g, uchar* b)
 	*b = c;
 }
 
-void MemBltSurf(void* dest, long x, long y, long w, long h, long dadd, void* source, long x2, long y2, DDSURFACEDESC2 surface, float xsize, float ysize)
+void MemBltSurf(void* dest, long x, long y, long w, long h, long dadd, void* source, long x2, long y2, DDSURFACEDESCX surface, float xsize, float ysize)
 {
 	ulong* pDest;
 	short* psSrc;
@@ -1889,7 +1889,7 @@ static void WinVidGetColorBitMasks(COLOR_BIT_MASKS *bm, LPDDPIXELFORMAT pixelFor
 	BitMaskGetNumberOfBits(bm->dwRGBAlphaBitMask, &bm->dwRGBAlphaBitDepth, &bm->dwRGBAlphaBitOffset);
 }
 
-static void CustomBlt(DDSURFACEDESC2* dst, ulong dstX, ulong dstY, DDSURFACEDESC2* src, LPRECT srcRect)
+static void CustomBlt(LPDDSURFACEDESCX dst, ulong dstX, ulong dstY, LPDDSURFACEDESCX src, LPRECT srcRect)
 {
 	COLOR_BIT_MASKS srcMask, dstMask;
 	uchar* srcLine;
@@ -1966,25 +1966,25 @@ static void CustomBlt(DDSURFACEDESC2* dst, ulong dstX, ulong dstY, DDSURFACEDESC
 }
 #endif
 
-void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACE4 surface)
+void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 {
-	DDSURFACEDESC2 tSurf;
+	DDSURFACEDESCX tSurf;
 #ifdef GENERAL_FIXES
-	DDSURFACEDESC2 uSurf;
+	DDSURFACEDESCX uSurf;
 	RECT r;
 #endif
 	ushort* pTexture;
 	ushort* pSrc;
 
 	memset(&tSurf, 0, sizeof(tSurf));
-	tSurf.dwSize = sizeof(DDSURFACEDESC2);
+	tSurf.dwSize = sizeof(DDSURFACEDESCX);
 	surface->Lock(0, &tSurf, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
 	pSrc = (ushort*)tSurf.lpSurface;
 #ifdef GENERAL_FIXES
 	MonoScreen[0].surface = CreateTexturePage(tSurf.dwWidth, tSurf.dwHeight, 0, NULL, RGBM_Mono, -1);
 
 	memset(&uSurf, 0, sizeof(uSurf));
-	uSurf.dwSize = sizeof(DDSURFACEDESC2);
+	uSurf.dwSize = sizeof(DDSURFACEDESCX);
 	MonoScreen[0].surface->Lock(0, &uSurf, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
 	pTexture = (ushort*)uSurf.lpSurface;
 
@@ -1995,31 +1995,31 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACE4 surface)
 	CustomBlt(&uSurf, 0, 0, &tSurf, &r);
 
 	MonoScreen[0].surface->Unlock(0);
-	DXAttempt(MonoScreen[0].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[0].tex));
+	DXAttempt(MonoScreen[0].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[0].tex));
 	surface->Unlock(0);
 #else
 	pTexture = (ushort*)malloc(0x40000);
 
 	MemBltSurf(pTexture, 0, 0, 256, 256, 256, pSrc, 0, 0, tSurf, 1.0F, 1.0F);
 	MonoScreen[0].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[0].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[0].tex));
+	DXAttempt(MonoScreen[0].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[0].tex));
 
 	MemBltSurf(pTexture, 0, 0, 256, 256, 256, pSrc, 256, 0, tSurf, 1.0F, 1.0F);
 	MonoScreen[1].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[1].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[1].tex));
+	DXAttempt(MonoScreen[1].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[1].tex));
 
 	MemBltSurf(pTexture, 0, 0, 128, 256, 256, pSrc, 512, 0, tSurf, 1.0F, 1.0F);
 	MemBltSurf(pTexture, 128, 0, 128, 224, 256, pSrc, 512, 256, tSurf, 1.0F, 1.0F);
 	MonoScreen[2].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[2].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[2].tex));
+	DXAttempt(MonoScreen[2].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[2].tex));
 
 	MemBltSurf(pTexture, 0, 0, 256, 224, 256, pSrc, 0, 256, tSurf, 1.0F, 1.0F);
 	MonoScreen[3].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[3].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[3].tex));
+	DXAttempt(MonoScreen[3].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[3].tex));
 
 	MemBltSurf(pTexture, 0, 0, 256, 224, 256, pSrc, 256, 256, tSurf, 1.0F, 1.0F);
 	MonoScreen[4].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[4].surface->QueryInterface(IID_IDirect3DTexture2, (void**)&MonoScreen[4].tex));
+	DXAttempt(MonoScreen[4].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[4].tex));
 
 	surface->Unlock(0);
 	free(pTexture);

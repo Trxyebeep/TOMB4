@@ -3,11 +3,11 @@
 #include "dxshell.h"
 #include "function_stubs.h"
 
-LPDIRECTDRAWSURFACE4 CreateTexturePage(long w, long h, long MipMapCount, long* pSrc, rgbfunc RGBM, long format)
+LPDIRECTDRAWSURFACEX CreateTexturePage(long w, long h, long MipMapCount, long* pSrc, rgbfunc RGBM, long format)
 {
 	DXTEXTUREINFO* tex;
-	LPDIRECTDRAWSURFACE4 tSurf;
-	DDSURFACEDESC2 desc;
+	LPDIRECTDRAWSURFACEX tSurf;
+	DDSURFACEDESCX desc;
 	long* lS;
 	long* lD;
 	short* sS;
@@ -16,8 +16,8 @@ LPDIRECTDRAWSURFACE4 CreateTexturePage(long w, long h, long MipMapCount, long* p
 	ulong c, o, ro, go, bo, ao;
 	uchar r, g, b, a;
 
-	memset(&desc, 0, sizeof(DDSURFACEDESC2));
-	desc.dwSize = sizeof(DDSURFACEDESC2);
+	memset(&desc, 0, sizeof(DDSURFACEDESCX));
+	desc.dwSize = sizeof(DDSURFACEDESCX);
 	desc.dwWidth = w;
 	desc.dwHeight = h;
 

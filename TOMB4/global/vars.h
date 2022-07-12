@@ -368,8 +368,8 @@
 #define GLOBAL_resident_depack_buffers	VAR_U_(0x007F4FAC, char*)
 #define SenetTargetX	VAR_U_(0x007FE204, long)
 #define SenetTargetZ	VAR_U_(0x007FE208, long)
-#define ActivePiece	VAR_U_(0x004AEBF8, char)
-#define SenetDisplacement	VAR_U_(0x004BF40C, char)
+#define piece_moving	VAR_U_(0x004AEBF8, char)
+#define last_throw	VAR_U_(0x004BF40C, char)
 #define LaraFixedPosition	VAR_U_(0x007F5760, PHD_VECTOR)
 #define InitialCameraTarget	VAR_U_(0x007F5750, PHD_VECTOR)
 #define InitialCameraPosition	VAR_U_(0x007F57D0, PHD_VECTOR)
@@ -439,8 +439,8 @@
 #define KeyTriggerActive	VAR_U_(0x004BF3F8, char)
 #define G_dxptr	VAR_U_(0x007544F4, DXPTR*)
 #define G_dxinfo	VAR_U_(0x00754120, DXINFO*)
-#define G_ddraw	VAR_U_(0x0075411C, LPDIRECTDRAW4)
-#define G_d3d	VAR_U_(0x007541A4, LPDIRECT3D3)
+#define G_ddraw	VAR_U_(0x0075411C, LPDIRECTDRAWX)
+#define G_d3d	VAR_U_(0x007541A4, LPDIRECT3DX)
 #define G_hwnd	VAR_U_(0x00754118, HWND)
 #define joy_fire	VAR_U_(0x0053589C, long)
 #define joy_x	VAR_U_(0x005358A0, long)
@@ -450,6 +450,8 @@
 #define OutsideRoomOffsets	VAR_U_(0x007FE2E8, short*)
 #define cd_drive	VAR_U_(0x005333A0, char)
 #define OldPickupPos	VAR_U_(0x007FD1D0, PHD_VECTOR)
+#define HeavyTriggered	VAR_U_(0x007FE154, uchar)
+#define fliptimer	VAR_U_(0x004BF410, long)
 #define number_dynamics	VAR_U_(0x007FE110, long)
 #define SaveCounter	VAR_U_(0x005355B4, long)
 #define D3DMW2VMatrix	VAR_U_(0x007540D8, D3DMATRIX)
@@ -490,6 +492,7 @@
 #define continue_reading_audio_file	VAR_U_(0x004BFE3C, bool)
 #define audio_counter	VAR_U_(0x004BFE70, long)
 #define sound_active	VAR_U_(0x004BF6DC, long)
+#define CurrentPendulum	VAR_U_(0x007FD1A0, PENDULUM)
 
 
 
@@ -555,9 +558,9 @@
 #define Drips	ARRAY_(0x00800DC0, DRIP_STRUCT, [32])
 #define GlobalCollisionBounds	ARRAY_(0x007FE7F0, short, [6])
 #define Slist	ARRAY_(0x007F6EE0, SPHERE, [34])
-#define SenetPieceNumbers	ARRAY_(0x004BF400, short, [6])
-#define SenetBoard	ARRAY_(0x007FE340, char, [17])
-#define ActiveSenetPieces	ARRAY_(0x007FE158, char, [6])
+#define senet_item	ARRAY_(0x004BF400, short, [6])
+#define senet_board	ARRAY_(0x007FE340, char, [17])
+#define senet_piece	ARRAY_(0x007FE158, char, [6])
 #define SpotCam	ARRAY_(0x007F5A80, SPOTCAM, [128])
 #define camera_xposition	ARRAY_(0x007F5840, long, [18])
 #define camera_yposition	ARRAY_(0x007F59C0, long, [18])
@@ -584,6 +587,7 @@
 #define RPickups	ARRAY_(0x007FD1C0, uchar, [16])
 #define jroomies	ARRAY_(0x007F4FE0, short, [22])
 #define conflict	ARRAY_(0x005355B8, long, [18])
+#define flipmap	ARRAY_(0x007FE220, long, [10])
 #define SaveGames	ARRAY_(0x00536F28, SAVEFILE_INFO, [15])
 #define matrix_stack	ARRAY_(0x00753D04, long, [12])
 #define AnimatingTexturesV	ARRAY_(0x00532D9C, float, [16][8][3])
@@ -634,7 +638,7 @@
 
 /*Bink bs*/
 #define BinkSurfaceType	VAR_U_(0x007E6E00, long)
-#define BinkSurface	VAR_U_(0x007E6E04, LPDIRECTDRAWSURFACE4)
+#define BinkSurface	VAR_U_(0x007E6E04, LPDIRECTDRAWSURFACEX)
 #define Bink	VAR_U_(0x007E6E08, BINK_STRUCT*)
 
 
@@ -648,4 +652,10 @@
 #define MAX_DYNAMICS	64
 #else
 #define MAX_DYNAMICS	32
+#endif
+
+#ifdef GENERAL_FIXES
+#define MALLOC_SIZE	15000000	//15MB
+#else
+#define MALLOC_SIZE	5000000		//5MB
 #endif

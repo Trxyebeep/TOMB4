@@ -102,7 +102,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalOptions>/SECTION:.text,RWE /IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winmm.lib;dxguid.lib;ddraw.lib;Dsound.lib;Msacm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;dxguid.lib;ddraw.lib;Dsound.lib;Msacm32.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,7 +125,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalOptions>/SECTION:.text,RWE /IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winmm.lib;dxguid.lib;ddraw.lib;Dsound.lib;Msacm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;dxguid.lib;ddraw.lib;Dsound.lib;Msacm32.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

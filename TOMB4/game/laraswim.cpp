@@ -293,9 +293,9 @@ void lara_as_uwdeath(ITEM_INFO* item, COLL_INFO* coll)
 	if (item->fallspeed <= 0)
 		item->fallspeed = 0;
 
-	if (item->pos.x_rot >= -364 && item->pos.x_pos <= 364)
+	if (item->pos.x_rot >= -364 && item->pos.x_rot <= 364)
 		item->pos.x_rot = 0;
-	else if (item->pos.x_pos < 0)
+	else if (item->pos.x_rot < 0)
 		item->pos.x_rot += 364;
 	else
 		item->pos.x_rot -= 364;

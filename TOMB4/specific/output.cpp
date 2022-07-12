@@ -978,12 +978,12 @@ long S_GetObjectBounds(short* bounds)
 		return 0;
 }
 
-HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACE4 surf, HBITMAP hbm, long x, long y, long dx, long dy)
+HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACEX surf, HBITMAP hbm, long x, long y, long dx, long dy)
 {
 	HDC hdc;
 	HDC hdc2;
 	BITMAP bitmap;
-	DDSURFACEDESC2 desc;
+	DDSURFACEDESCX desc;
 	HRESULT result;
 	long l, t;
 
@@ -1005,7 +1005,7 @@ HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACE4 surf, HBITMAP hbm, long x, long y, lon
 	if (!dy)
 		dy = bitmap.bmHeight;
 
-	desc.dwSize = sizeof(DDSURFACEDESC2);
+	desc.dwSize = sizeof(DDSURFACEDESCX);
 	desc.dwFlags = DDSD_WIDTH | DDSD_HEIGHT;
 	surf->GetSurfaceDesc(&desc);
 	l = 0;
@@ -1034,7 +1034,7 @@ HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACE4 surf, HBITMAP hbm, long x, long y, lon
 	return result;
 }
 
-HRESULT _LoadBitmap(LPDIRECTDRAWSURFACE4 surf, LPCSTR name)
+HRESULT _LoadBitmap(LPDIRECTDRAWSURFACEX surf, LPCSTR name)
 {
 	HBITMAP hBitmap;
 	HRESULT result;

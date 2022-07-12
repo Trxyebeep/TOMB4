@@ -25,7 +25,7 @@ unsigned int __stdcall LoadLevel(void* name)
 
 	Log(2, "LoadLevel");
 	FreeLevel();
-	memset(malloc_ptr, 0, 5000000);
+	memset(malloc_ptr, 0, MALLOC_SIZE);
 	memset(&lara, 0, sizeof(LARA_INFO));
 
 	Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
@@ -46,18 +46,18 @@ unsigned int __stdcall LoadLevel(void* name)
 
 	if (level_fp)
 	{
-		READ(&version, 1, 4, level_fp);
-		READ(&RTPages, 1, 2, level_fp);
-		READ(&OTPages, 1, 2, level_fp);
-		READ(&BTPages, 1, 2, level_fp);
+		fread(&version, 1, 4, level_fp);
+		fread(&RTPages, 1, 2, level_fp);
+		fread(&OTPages, 1, 2, level_fp);
+		fread(&BTPages, 1, 2, level_fp);
 
 		Log(7, "Process Level Data");
 		LoadTextures(RTPages, OTPages, BTPages);
-		READ(&size, 1, 4, level_fp);
-		READ(&compressedSize, 1, 4, level_fp);
+		fread(&size, 1, 4, level_fp);
+		fread(&compressedSize, 1, 4, level_fp);
 		CompressedData = (char*)MALLOC(compressedSize);
 		FileData = (char*)MALLOC(size);
-		READ(CompressedData, compressedSize, 1u, level_fp);
+		fread(CompressedData, compressedSize, 1u, level_fp);
 		Decompress(FileData, CompressedData, compressedSize, size);
 		FREE(CompressedData);
 
@@ -250,7 +250,7 @@ FILE* FileOpen(const char* name)
 
 	strcat(path_name, name);
 	Log(5, "FileOpen - %s", path_name);
-	file = OPEN(path_name, "rb");//file = fopen(path_name, "rb");
+	file = fopen(path_name, "rb");
 
 	if (!file)
 		Log(1, "Unable To Open %s", path_name);
@@ -261,16 +261,16 @@ FILE* FileOpen(const char* name)
 void FileClose(FILE* file)
 {
 	Log(2, "FileClose");
-	CLOSE(file);//fclose(file);
+	fclose(file);
 }
 
 long FileSize(FILE* file)
 {
 	long size;
 
-	SEEK(file, 0, SEEK_END);//fseek(file, 0, SEEK_END);
-	size = TELL(file);//ftell(file);
-	SEEK(file, 0, SEEK_SET);//fseek(file, 0, SEEK_SET);
+	fseek(file, 0, SEEK_END);
+	size = ftell(file);
+	fseek(file, 0, SEEK_SET);
 	return size;
 }
 
@@ -291,7 +291,7 @@ long LoadFile(const char* name, char** dest)
 	if (!*dest)
 		*dest = (char*)MALLOC(size);
 
-	count = READ(*dest, 1, size, file); //fread(*dest, 1, size, file);
+	count = fread(*dest, 1, size, file);
 	Log(5, "Read - %d FileSize - %d", count, size);
 
 	if (count != size)
@@ -309,8 +309,8 @@ long LoadFile(const char* name, char** dest)
 bool LoadTextures(long RTPages, long OTPages, long BTPages)
 {
 	DXTEXTUREINFO* dxtex;
-	LPDIRECTDRAWSURFACE4 tSurf;
-	LPDIRECT3DTEXTURE2 pTex;
+	LPDIRECTDRAWSURFACEX tSurf;
+	LPDIRECT3DTEXTUREX pTex;
 	uchar* TextureData;
 	long* d;
 	char* pData;
@@ -335,32 +335,32 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 
 	if (format <= 1)
 	{
-		READ(&size, 1, 4, level_fp);
-		READ(&compressedSize, 1, 4, level_fp);
+		fread(&size, 1, 4, level_fp);
+		fread(&compressedSize, 1, 4, level_fp);
 
 		CompressedData = (char*)MALLOC(compressedSize);
 		FileData = (char*)MALLOC(size);
 
-		READ(CompressedData, compressedSize, 1, level_fp);
+		fread(CompressedData, compressedSize, 1, level_fp);
 		Decompress(FileData, CompressedData, compressedSize, size);
 
-		READ(&size, 1, 4, level_fp);
-		READ(&compressedSize, 1, 4, level_fp);
-		SEEK(level_fp, compressedSize, SEEK_CUR);
+		fread(&size, 1, 4, level_fp);
+		fread(&compressedSize, 1, 4, level_fp);
+		fseek(level_fp, compressedSize, SEEK_CUR);
 		FREE(CompressedData);
 	}
 	else
 	{
-		READ(&size, 1, 4, level_fp);
-		READ(&compressedSize, 1, 4, level_fp);
-		SEEK(level_fp, compressedSize, SEEK_CUR);
+		fread(&size, 1, 4, level_fp);
+		fread(&compressedSize, 1, 4, level_fp);
+		fseek(level_fp, compressedSize, SEEK_CUR);
 
-		READ(&size, 1, 4, level_fp);
-		READ(&compressedSize, 1, 4, level_fp);
+		fread(&size, 1, 4, level_fp);
+		fread(&compressedSize, 1, 4, level_fp);
 
 		CompressedData = (char*)MALLOC(compressedSize);
 		FileData = (char*)MALLOC(size);
-		READ(CompressedData, compressedSize, 1, level_fp);
+		fread(CompressedData, compressedSize, 1, level_fp);
 		Decompress(FileData, CompressedData, compressedSize, size);
 		FREE(CompressedData);
 	}
@@ -380,7 +380,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 		nTex = nTextures;
 		nTextures++;
 		tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, 0, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
-		DXAttempt(tSurf->QueryInterface(IID_IDirect3DTexture2, (LPVOID*)&pTex));
+		DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 		Textures[nTex].tex = pTex;
 		Textures[nTex].surface = tSurf;
 		Textures[nTex].width = App.TextureSize;
@@ -404,7 +404,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 		nTex = nTextures;
 		nTextures++;
 		tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, 0, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
-		DXAttempt(tSurf->QueryInterface(IID_IDirect3DTexture2, (LPVOID*)&pTex));
+		DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 		Textures[nTex].tex = pTex;
 		Textures[nTex].surface = tSurf;
 		Textures[nTex].width = App.TextureSize;
@@ -440,7 +440,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 			Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 			nTex = nTextures;
 			nTextures++;
-			DXAttempt(tSurf->QueryInterface(IID_IDirect3DTexture2, (LPVOID*)&pTex));
+			DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 			Textures[nTex].tex = pTex;
 			Textures[nTex].surface = tSurf;
 
@@ -464,11 +464,11 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 
 	FREE(pData);
 
-	READ(&size, 1, 4, level_fp);
-	READ(&compressedSize, 1, 4, level_fp);
+	fread(&size, 1, 4, level_fp);
+	fread(&compressedSize, 1, 4, level_fp);
 	CompressedData = (char*)MALLOC(compressedSize);
 	FileData = (char*)MALLOC(size);
-	READ(CompressedData, compressedSize, 1, level_fp);
+	fread(CompressedData, compressedSize, 1, level_fp);
 	Decompress(FileData, CompressedData, compressedSize, size);
 	FREE(CompressedData);
 
@@ -519,7 +519,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 			nTex = nTextures;
 			nTextures++;
 			tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, 0, 0);
-			DXAttempt(tSurf->QueryInterface(IID_IDirect3DTexture2, (LPVOID*)&pTex));
+			DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 			Textures[nTex].tex = pTex;
 			Textures[nTex].surface = tSurf;
 			Textures[nTex].width = 256;
@@ -538,7 +538,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	nTex = nTextures;
 	nTextures++;
 	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, 0, 0);
-	DXAttempt(tSurf->QueryInterface(IID_IDirect3DTexture2, (LPVOID*)&pTex));
+	DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 	Textures[nTex].tex = pTex;
 	Textures[nTex].surface = tSurf;
 	Textures[nTex].width = 256;
@@ -553,7 +553,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	nTex = nTextures;
 	nTextures++;
 	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, 0, 0);
-	DXAttempt(tSurf->QueryInterface(IID_IDirect3DTexture2, (LPVOID*)&pTex));
+	DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 	Textures[nTex].tex = pTex;
 	Textures[nTex].surface = tSurf;
 	Textures[nTex].width = 256;
@@ -1204,7 +1204,7 @@ bool LoadSamples()
 	}
 
 	Log(8, "Number Of Samples %d", num_samples);
-	READ(&num_samples, 1, 4, level_fp);
+	fread(&num_samples, 1, 4, level_fp);
 	InitSampleDecompress();
 
 	if (num_samples <= 0)
@@ -1215,9 +1215,9 @@ bool LoadSamples()
 
 	for (int i = 0; i < num_samples; i++)
 	{
-		READ(&uncomp_size, 1, 4, level_fp);
-		READ(&comp_size, 1, 4, level_fp);
-		READ(samples_buffer, comp_size, 1, level_fp);
+		fread(&uncomp_size, 1, 4, level_fp);
+		fread(&comp_size, 1, 4, level_fp);
+		fread(samples_buffer, comp_size, 1, level_fp);
 
 #ifndef LEVEL_EDITOR
 		if (!DXCreateSampleADPCM(samples_buffer, comp_size, uncomp_size, i))

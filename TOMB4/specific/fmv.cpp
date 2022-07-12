@@ -13,10 +13,10 @@
 
 void ShowBinkFrame()
 {
-	DDSURFACEDESC2 surf;
+	DDSURFACEDESCX surf;
 
 	memset(&surf, 0, sizeof(surf));
-	surf.dwSize = sizeof(DDSURFACEDESC2);
+	surf.dwSize = sizeof(DDSURFACEDESCX);
 	DXAttempt(BinkSurface->Lock(0, &surf, DDLOCK_NOSYSLOCK, 0));
 	BinkCopyToBuffer(Bink, surf.lpSurface, surf.lPitch, Bink->num, 0, 0, BinkSurfaceType);
 	DXAttempt(BinkSurface->Unlock(0));

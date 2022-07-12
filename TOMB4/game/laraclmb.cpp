@@ -3,6 +3,7 @@
 #include "lara.h"
 #include "lara_states.h"
 #include "laramisc.h"
+#include "control.h"
 
 void lara_as_climbstnc(ITEM_INFO* item, COLL_INFO* coll)
 {
@@ -294,6 +295,33 @@ void lara_col_climbdown(ITEM_INFO* item, COLL_INFO* coll)
 	}
 }
 
+short GetClimbTrigger(long x, long y, long z, short room_number)
+{
+	FLOOR_INFO* floor;
+	short* data;
+
+	floor = GetFloor(x, y, z, &room_number);
+	GetHeight(floor, x, y, z);
+
+	if (!trigger_index)
+		return 0;
+
+	data = trigger_index;
+
+	if ((*data & 0x1F) == LAVA_TYPE)
+	{
+		if (*data & 0x8000)
+			return 0;
+
+		data++;
+	}
+
+	if ((*data & 0x1F) == CLIMB_TYPE)
+		return *data;
+
+	return 0;
+}
+
 void inject_laraclmb(bool replace)
 {
 	INJECT(0x0042C6C0, lara_as_climbstnc, replace);
@@ -307,4 +335,5 @@ void inject_laraclmb(bool replace)
 	INJECT(0x0042C770, lara_col_climbstnc, replace);
 	INJECT(0x0042D490, lara_col_climbing, replace);
 	INJECT(0x0042D600, lara_col_climbdown, replace);
+	INJECT(0x0042D7D0, GetClimbTrigger, replace);
 }

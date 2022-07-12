@@ -441,7 +441,7 @@ void TriggerFXFogBulb(long x, long y, long z, long FXRad, long density, long r, 
 	FogBulb->rad = 0;
 	FogBulb->sqrad = 0;
 #ifdef GENERAL_FIXES
-	FogBulb->inv_sqrad = 0;
+	FogBulb->inv_sqrad = NAN;
 #else
 	FogBulb->inv_sqrad = 1 / FogBulb->sqrad;
 #endif

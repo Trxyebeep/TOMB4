@@ -271,13 +271,13 @@ void OpenStreamFile(char* name)
 		return;
 	}
 
-	SEEK(audio_stream_fp, 90, SEEK_SET);
+	fseek(audio_stream_fp, 90, SEEK_SET);
 	audio_fp_write_ptr = wav_file_buffer;
 	memset(wav_file_buffer, 0, 0x37000);
 
-	if (READ(wav_file_buffer, 1, 0x37000, audio_stream_fp) < 0x37000 && auido_play_mode == 1)
+	if (fread(wav_file_buffer, 1, 0x37000, audio_stream_fp) < 0x37000 && auido_play_mode == 1)
 	{
-		SEEK(audio_stream_fp, 90, SEEK_SET);
+		fseek(audio_stream_fp, 90, SEEK_SET);
 		Log(0, "FileReset In OpenStreamFile");
 	}
 }
@@ -289,10 +289,10 @@ void GetADPCMData()
 
 	memset(audio_fp_write_ptr, 0, 0x5800);
 
-	if (READ(audio_fp_write_ptr, 1, 0x5800, audio_stream_fp) < 0x5800 && auido_play_mode == 1)
+	if (fread(audio_fp_write_ptr, 1, 0x5800, audio_stream_fp) < 0x5800 && auido_play_mode == 1)
 	{
 		Log(0, "FileReset In GetADPCMData");
-		SEEK(audio_stream_fp, 90, 0);
+		fseek(audio_stream_fp, 90, SEEK_SET);
 	}
 
 	audio_fp_write_ptr += 0x5800;
@@ -451,12 +451,12 @@ void FillADPCMBuffer(char* p, long track)
 		return;
 	}
 
-	READ(p, 1, 0x5800, audio_stream_fp);
+	fread(p, 1, 0x5800, audio_stream_fp);
 
-	if (audio_stream_fp && feof(audio_stream_fp))	//feof doesnt act properly
+	if (audio_stream_fp && feof(audio_stream_fp))
 	{
 		if (auido_play_mode == 1)
-			SEEK(audio_stream_fp, 90, SEEK_SET);
+			fseek(audio_stream_fp, 90, SEEK_SET);
 		else
 		{
 			audio_counter++;
@@ -575,7 +575,7 @@ bool ACMInit()
 	desc.dwFlags = DSBCAPS_LOCSOFTWARE | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLPOSITIONNOTIFY | DSBCAPS_GETCURRENTPOSITION2;
 	desc.lpwfxFormat = &wav_format;
 	App.dx.lpDS->CreateSoundBuffer(&desc, &DSBuffer, 0);
-	DSBuffer->QueryInterface(IID_IDirectSoundNotify, (LPVOID*)&DSNotify);
+	DSBuffer->QueryInterface(DSNGUID, (LPVOID*)&DSNotify);
 
 	ACMSetupNotifications();
 	acmStreamOpen(&hACMStream, hACMDriver, (LPWAVEFORMATEX)&source_wav_format, &wav_format, 0, 0, 0, 0);
@@ -671,7 +671,7 @@ void S_CDStop()
 		DSBuffer->Stop();
 		DSBuffer->SetCurrentPosition(0);
 		while (reading_audio_file) {};
-		CLOSE(audio_stream_fp);
+		fclose(audio_stream_fp);
 		audio_stream_fp = 0;
 		audio_counter = 0;
 		XAFlag = 7;
@@ -693,7 +693,7 @@ void inject_audio(bool replace)
 	INJECT(0x0046E180, ACMEmulateCDPlay, replace);
 	INJECT(0x0046D800, ACMEnumCallBack, replace);
 	INJECT(0x0046D890, ACMSetupNotifications, replace);
-	INJECT(0x0046DF50, FillADPCMBuffer, 0);	//inject me when FILE* stuff are moved to dll
+	INJECT(0x0046DF50, FillADPCMBuffer, replace);
 	INJECT(0x0046E340, ACMHandleNotifications, replace);
 	INJECT(0x0046D9C0, ACMInit, replace);
 	INJECT(0x0046DD00, ACMClose, replace);
