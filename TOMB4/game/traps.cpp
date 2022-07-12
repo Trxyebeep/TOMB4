@@ -12,6 +12,8 @@
 #include "../specific/3dmath.h"
 #include "../specific/output.h"
 #include "sphere.h"
+#include "lara_states.h"
+#include "collide.h"
 
 short SPxzoffs[8] = { 0, 0, 0x200, 0, 0, 0, -0x200, 0 };
 short SPyoffs[8] = { -0x400, 0, -0x200, 0, 0, 0, -0x200, 0 };
@@ -538,6 +540,58 @@ void ControlMineHelicopter(short item_number)
 	}
 }
 
+void MineCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* mines;
+
+	item = &items[item_number];
+
+	if (item->trigger_flags || item->item_flags[3])
+		return;
+
+	if (l->anim_number == ANIM_MINEDETECT && l->frame_number >= anims[ANIM_MINEDETECT].frame_base + 57)
+	{
+		for (int i = 0; i < level_items; i++)
+		{
+			mines = &items[i];
+
+			if (mines->object_number != MINE || mines->status == ITEM_INVISIBLE || mines->trigger_flags)
+				continue;
+
+			TriggerExplosionSparks(mines->pos.x_pos, mines->pos.y_pos, mines->pos.z_pos, 3, -2, 0, mines->room_number);
+
+			for (int j = 0; j < 2; j++)
+				TriggerExplosionSparks(mines->pos.x_pos, mines->pos.y_pos, mines->pos.z_pos, 3, -1, 0, mines->room_number);
+
+			mines->mesh_bits = 1;
+			ExplodeItemNode(mines, 0, 0, -32);
+			KillItem(i);
+
+			if (!(GetRandomControl() & 3))
+				SoundEffect(SFX_MINE_EXP_OVERLAY, &mines->pos, SFX_DEFAULT);
+
+			mines->status = ITEM_INVISIBLE;
+		}
+	}
+	else if (TestBoundsCollide(item, l, 512))
+	{
+		TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -2, 0, item->room_number);
+
+		for (int i = 0; i < 2; i++)
+			TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 3, -1, 0, item->room_number);
+
+		item->mesh_bits = 1;
+		ExplodeItemNode(item, 0, 0, 128);
+		KillItem(item_number);
+		l->anim_number = ANIM_MINEDEATH;
+		l->frame_number = anims[ANIM_MINEDEATH].frame_base;
+		l->current_anim_state = AS_DEATH;
+		l->speed = 0;
+		SoundEffect(SFX_MINE_EXP_OVERLAY, &item->pos, SFX_DEFAULT);
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -550,4 +604,5 @@ void inject_traps(bool replace)
 	INJECT(0x00415DB0, ControlSlicerDicer, replace);
 	INJECT(0x00417FC0, ControlSprinkler, replace);
 	INJECT(0x00417DB0, ControlMineHelicopter, replace);
+	INJECT(0x00417BB0, MineCollision, replace);
 }

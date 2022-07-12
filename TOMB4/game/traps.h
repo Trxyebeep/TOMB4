@@ -15,6 +15,7 @@ void DrawScaledSpike(ITEM_INFO* item);
 void ControlSlicerDicer(short item_number);
 void ControlSprinkler(short item_number);
 void ControlMineHelicopter(short item_number);
+void MineCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 
 #define LaraBurn	( (void(__cdecl*)()) 0x00414EE0 )
 #define CloseTrapDoor	( (void(__cdecl*)(ITEM_INFO*)) 0x004135A0 )
