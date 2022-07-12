@@ -753,7 +753,7 @@ void TrapObjects()
 	obj->HitEffect = 3;
 
 	obj = &objects[SPRINKLER];
-//	obj->control = ControlSprinkler;
+	obj->control = ControlSprinkler;
 //	obj->collision = FireCollision;
 	obj->save_flags = 1;
 

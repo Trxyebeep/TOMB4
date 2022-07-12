@@ -360,6 +360,116 @@ void ControlSlicerDicer(short item_number)
 	AnimateItem(item);
 }
 
+void ControlSprinkler(short item_number)
+{
+	ITEM_INFO* item;
+	DRIP_STRUCT* drip;
+	SPARKS* sptr;
+	SMOKE_SPARKS* smokeptr;
+	long vel, size;
+
+	item = &items[item_number];
+
+	if (item->item_flags[0] < 1200)
+	{
+		item->item_flags[0]++;
+
+		if (!(wibble & 0xF) && (item->item_flags[0] <= 600 || GetRandomControl() % (item->item_flags[0] - 600) < 100))
+		{
+			drip = &Drips[GetFreeDrip()];
+			drip->x = (GetRandomControl() & 0x1F) + item->pos.x_pos - 16;
+			drip->y = (GetRandomControl() & 0x1F) + item->pos.y_pos - 944;
+			drip->z = (GetRandomControl() & 0x1F) + item->pos.z_pos - 16;
+			drip->On = 1;
+			drip->R = 112;
+			drip->G = (GetRandomControl() & 0x1F) + 128;
+			drip->B = (GetRandomControl() & 0x1F) + 128;
+			drip->Yvel = (GetRandomControl() & 0xF) + 16;
+			drip->Gravity = (GetRandomControl() & 0x1F) + 32;
+			drip->Life = (GetRandomControl() & 0x1F) + 16;
+			drip->RoomNumber = item->room_number;
+		}
+	}
+
+	if (item->item_flags[0] <= 600)
+	{
+		SoundEffect(SFX_SANDHAM_IN_THE_HOUSE, &item->pos, SFX_DEFAULT);
+
+		for (int i = 0; i < 3; i++)
+		{
+			sptr = &spark[GetFreeSpark()];
+			sptr->On = 1;
+			sptr->sR = 112;
+			sptr->sG = (GetRandomControl() & 0x1F) + 128;
+			sptr->sB = (GetRandomControl() & 0x1F) + 128;
+			sptr->dR = sptr->sR >> 1;
+			sptr->dG = sptr->sG >> 1;
+			sptr->dB = sptr->sB >> 1;
+			sptr->ColFadeSpeed = 4;
+			sptr->FadeToBlack = 8;
+			sptr->Life = 20;
+			sptr->sLife = 20;
+			sptr->TransType = 2;
+			vel = ((GlobalCounter & 3) << 10) + (GetRandomControl() & 0x3FF);
+			sptr->Xvel = -rcossin_tbl[vel << 1] >> 2;
+			sptr->Xvel = (sptr->Xvel * (GetRandomControl() & 0xFF)) >> 8;
+			sptr->Yvel = -32 - (GetRandomControl() & 0x1F);
+			sptr->Zvel = rcossin_tbl[(vel << 1) + 1] >> 2;
+			sptr->Zvel = (sptr->Zvel * (GetRandomControl() & 0xFF)) >> 8;
+			sptr->x = item->pos.x_pos + (sptr->Xvel >> 3);
+			sptr->y = (sptr->Yvel >> 5) + item->pos.y_pos - 928;
+			sptr->z = item->pos.z_pos + (sptr->Zvel >> 3);
+			sptr->Friction = 4;
+			sptr->Flags = GetRandomControl() & 0x20;
+			sptr->Gravity = (GetRandomControl() & 0x3F) + 64;
+			sptr->MaxYvel = 0;
+		}
+
+		for (int i = 0; i < 1; i++)
+		{
+			smokeptr = &smoke_spark[GetFreeSmokeSpark()];
+			smokeptr->On = 1;
+			smokeptr->sShade = 0;
+			smokeptr->dShade = (GetRandomControl() & 0x1F) + 32;
+			smokeptr->ColFadeSpeed = 4;
+			smokeptr->FadeToBlack = 8 - (GetRandomControl() & 3);
+			smokeptr->TransType = 2;
+			smokeptr->Life = (GetRandomControl() & 3) + 24;
+			smokeptr->sLife = smokeptr->Life;
+			smokeptr->x = (GetRandomControl() & 0x1F) + item->pos.x_pos - 16;
+			smokeptr->y = (GetRandomControl() & 0x1F) + item->pos.y_pos - 944;
+			smokeptr->z = (GetRandomControl() & 0x1F) + item->pos.z_pos - 16;
+			smokeptr->Xvel = 2 * (GetRandomControl() & 0x1FF) - 512;
+
+			if (i)
+				smokeptr->Yvel = (GetRandomControl() & 0x1F) - 16;
+			else
+				smokeptr->Yvel = 2 * (GetRandomControl() & 0x1FF) + 512;
+
+			smokeptr->Zvel = 2 * (GetRandomControl() & 0x1FF) - 512;
+			smokeptr->Friction = 3;
+			smokeptr->Flags = 16;
+			smokeptr->RotAng = GetRandomControl() & 0xFFF;
+
+			if (GetRandomControl() & 1)
+				smokeptr->RotAdd = -64 - (GetRandomControl() & 0x3F);
+			else
+				smokeptr->RotAdd = (GetRandomControl() & 0x3F) + 64;
+
+			smokeptr->MaxYvel = 0;
+			smokeptr->Gravity = -4 - (GetRandomControl() & 3);
+			size = (GetRandomControl() & 0xF) + 16;
+
+			if (!i)
+				size <<= 2;
+
+			smokeptr->dSize = (uchar)size;
+			smokeptr->sSize = smokeptr->dSize >> 3;
+			smokeptr->Size = smokeptr->dSize >> 3;
+		}
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -370,4 +480,5 @@ void inject_traps(bool replace)
 	INJECT(0x00415750, ControlJobySpike, replace);
 	INJECT(0x004158E0, DrawScaledSpike, replace);
 	INJECT(0x00415DB0, ControlSlicerDicer, replace);
+	INJECT(0x00417FC0, ControlSprinkler, replace);
 }

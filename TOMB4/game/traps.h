@@ -13,6 +13,7 @@ void ControlTwoBlockPlatform(short item_number);
 void ControlJobySpike(short item_number);
 void DrawScaledSpike(ITEM_INFO* item);
 void ControlSlicerDicer(short item_number);
+void ControlSprinkler(short item_number);
 
 #define LaraBurn	( (void(__cdecl*)()) 0x00414EE0 )
 #define CloseTrapDoor	( (void(__cdecl*)(ITEM_INFO*)) 0x004135A0 )
