@@ -619,6 +619,30 @@ void FallingSquishyBlockCollision(short item_number, ITEM_INFO* l, COLL_INFO* co
 	}
 }
 
+void ControlFallingSquishyBlock(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (TriggerActive(item))
+	{
+		if (item->item_flags[0] < 60)
+		{
+			SoundEffect(SFX_EARTHQUAKE_LOOP, &item->pos, SFX_DEFAULT);
+			camera.bounce = (item->item_flags[0] - 92) >> 1;
+			item->item_flags[0]++;
+		}
+		else
+		{
+			if (item->frame_number - anims[item->anim_number].frame_base == 8)
+				camera.bounce = -96;
+
+			AnimateItem(item);
+		}
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -633,4 +657,5 @@ void inject_traps(bool replace)
 	INJECT(0x00417DB0, ControlMineHelicopter, replace);
 	INJECT(0x00417BB0, MineCollision, replace);
 	INJECT(0x004173A0, FallingSquishyBlockCollision, replace);
+	INJECT(0x00417310, ControlFallingSquishyBlock, replace);
 }

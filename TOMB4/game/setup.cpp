@@ -341,7 +341,7 @@ void ObjectObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[SQUISHY_BLOCK2];
-//	obj->control = ControlFallingSquishyBlock;
+	obj->control = ControlFallingSquishyBlock;
 	obj->collision = FallingSquishyBlockCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
