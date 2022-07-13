@@ -335,7 +335,7 @@ void ObjectObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[SQUISHY_BLOCK1];
-//	obj->control = ControlLRSquishyBlock;
+	obj->control = ControlLRSquishyBlock;
 	obj->collision = ObjectCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
