@@ -592,6 +592,33 @@ void MineCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void FallingSquishyBlockCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO * item;
+
+	item = &items[item_number];
+
+	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l))
+	{
+		if (item->frame_number - anims[item->anim_number].frame_base <= 8)
+		{
+			item->frame_number += 2;
+			l->hit_points = 0;
+			l->current_anim_state = AS_DEATH;
+			l->goal_anim_state = AS_DEATH;
+			l->anim_number = ANIM_FBLOCK_DEATH;
+			l->frame_number = anims[ANIM_FBLOCK_DEATH].frame_base + 50;
+			l->fallspeed = 0;
+			l->speed = 0;
+
+			for (int i = 0; i < 12; i++)
+				TriggerBlood(l->pos.x_pos, l->pos.y_pos - 128, l->pos.z_pos, GetRandomControl() << 1, 3);
+		}
+		else if (l->hit_points > 0)
+			ItemPushLara(item, l, coll, 0, 1);
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -605,4 +632,5 @@ void inject_traps(bool replace)
 	INJECT(0x00417FC0, ControlSprinkler, replace);
 	INJECT(0x00417DB0, ControlMineHelicopter, replace);
 	INJECT(0x00417BB0, MineCollision, replace);
+	INJECT(0x004173A0, FallingSquishyBlockCollision, replace);
 }
