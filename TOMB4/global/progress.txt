@@ -1127,7 +1127,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0040D040		InitialiseSas
 0x0040D0A0		SasControl
 0x0040DA00	+	InitialiseInjuredSas
-0x0040DA70		InjuredSasControl
+0x0040DA70	+	InjuredSasControl
 0x0040DAF0		SasFireGrenade
 0x0040DCD0		DragSASCollision
 
