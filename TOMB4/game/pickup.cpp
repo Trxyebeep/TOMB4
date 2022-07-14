@@ -6,6 +6,7 @@
 #include "health.h"
 #include "objects.h"
 #include "newinv.h"
+#include "control.h"
 
 static short SarcophagusBounds[12] = { -512, 512, -100, 100, -512, 0, -1820, 1820, -5460, 5460, 0, 0 };
 static short KeyHoleBounds[12] = { -256, 256, 0, 0, 0, 412, -1820, 1820, -5460, 5460, -1820, 1820 };
@@ -150,10 +151,17 @@ void PuzzleDone(ITEM_INFO* item, short item_number)
 	item->status = ITEM_ACTIVE;
 }
 
+void AnimatingPickUp(short item_number)
+{
+	if ((items[item_number].trigger_flags & 0x3F) == 2)
+		AnimateItem(&items[item_number]);
+}
+
 void inject_pickup(bool replace)
 {
 	INJECT(0x004587E0, SarcophagusCollision, replace);
 	INJECT(0x00458090, KeyHoleCollision, replace);
 	INJECT(0x00458260, PuzzleDoneCollision, replace);
 	INJECT(0x00458690, PuzzleDone, replace);
+	INJECT(0x00457610, AnimatingPickUp, replace);
 }

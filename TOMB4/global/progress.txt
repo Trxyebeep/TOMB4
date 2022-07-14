@@ -1082,7 +1082,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/pickup.cpp
 
-0x00457610		AnimatingPickUp
+0x00457610	+	AnimatingPickUp
 0x00457650		RegeneratePickups
 0x00457720		PickUpCollision
 0x00457F30		FindPlinth
