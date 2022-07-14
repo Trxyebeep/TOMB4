@@ -1086,7 +1086,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00457650		RegeneratePickups
 0x00457720		PickUpCollision
 0x00457F30		FindPlinth
-0x00458090		KeyHoleCollision
+0x00458090	+	KeyHoleCollision
 0x00458260		PuzzleDoneCollision
 0x004582A0		PuzzleHoleCollision
 0x00458690		PuzzleDone

@@ -4,9 +4,13 @@
 #include "collide.h"
 #include "items.h"
 #include "health.h"
+#include "objects.h"
+#include "newinv.h"
 
 static short SarcophagusBounds[12] = { -512, 512, -100, 100, -512, 0, -1820, 1820, -5460, 5460, 0, 0 };
+static short KeyHoleBounds[12] = { -256, 256, 0, 0, 0, 412, -1820, 1820, -5460, 5460, -1820, 1820 };
 static PHD_VECTOR  SarcophagusPos = { 0, 0, -300 };
+static PHD_VECTOR KeyHolePosition = { 0, 0, 362 };
 
 void SarcophagusCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
@@ -66,7 +70,69 @@ void SarcophagusCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		ObjectCollision(item_number, l, coll);
 }
 
+void KeyHoleCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	short key, hole;
+
+	item = &items[item_number];
+
+	if ((input & IN_ACTION || GLOBAL_inventoryitemchosen != NO_ITEM) && !BinocularRange && lara.gun_status == LG_NO_ARMS &&
+		l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH || lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+	{
+		key = GLOBAL_inventoryitemchosen - KEY_ITEM1;
+		hole = item->object_number - KEY_HOLE1;
+
+		if (TestLaraPosition(KeyHoleBounds, item, l))
+		{
+			if (!lara.IsMoving)
+			{
+				if (item->status == ITEM_INVISIBLE)
+					return;
+
+				if (GLOBAL_inventoryitemchosen == NO_ITEM)
+				{
+					if (have_i_got_object(hole + KEY_ITEM1))
+						GLOBAL_enterinventory = hole + KEY_ITEM1;
+
+					return;
+				}
+
+				if (key != hole)
+					return;
+			}
+
+			if (MoveLaraPosition(&KeyHolePosition, item, l))
+			{
+				remove_inventory_item(hole + KEY_ITEM1);
+				l->anim_number = ANIM_USEKEY;
+				l->frame_number = anims[l->anim_number].frame_base;
+				l->current_anim_state = AS_USEKEY;
+				lara.IsMoving = 0;
+				lara.head_x_rot = 0;
+				lara.head_y_rot = 0;
+				lara.torso_x_rot = 0;
+				lara.torso_y_rot = 0;
+				lara.gun_status = LG_HANDS_BUSY;
+				item->status = ITEM_ACTIVE;
+			}
+			else
+				lara.GeneralPtr = (void*)item_number;
+
+			GLOBAL_inventoryitemchosen = NO_ITEM;
+		}
+		else if (lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+		{
+			lara.IsMoving = 0;
+			lara.gun_status = LG_NO_ARMS;
+		}
+	}
+	else if (item->object_number <= KEY_HOLE6)
+		ObjectCollision(item_number, l, coll);
+}
+
 void inject_pickup(bool replace)
 {
 	INJECT(0x004587E0, SarcophagusCollision, replace);
+	INJECT(0x00458090, KeyHoleCollision, replace);
 }

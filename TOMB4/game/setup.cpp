@@ -285,7 +285,7 @@ void ObjectObjects()
 	for (int i = KEY_HOLE1; i <= KEY_HOLE12; i++)
 	{
 		obj = &objects[i];
-	//	obj->collision = KeyHoleCollision;
+		obj->collision = KeyHoleCollision;
 		obj->save_flags = 1;
 	}
 
