@@ -83,6 +83,7 @@
 #include "../game/mirror.h"
 #include "../game/troops.h"
 #include "../game/mummy.h"
+#include "../game/laraskin.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -185,6 +186,7 @@ void inject_all(bool replace)
 	inject_mirror(replace);
 	inject_troops(replace);
 	inject_mummy(replace);
+	inject_laraskin(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

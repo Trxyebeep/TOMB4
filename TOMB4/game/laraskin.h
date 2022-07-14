@@ -1,4 +1,9 @@
 #pragma once
 #include "../global/vars.h"
 
-#define CreateSkinningData	( (void(__cdecl*)()) 0x00430F70 )
+void inject_laraskin(bool replace);
+
+void PushXYZ();
+void PopXYZ();
+void CreateSkinningData();
+void OptomiseSkinningData();

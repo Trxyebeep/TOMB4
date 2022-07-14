@@ -889,10 +889,10 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/laraskin.cpp
 
-0x00430F70		CreateSkinningData
-0x00431760		PushXYZ
-0x00431790		PopXYZ
-0x004317A0		OptomiseSkinningData
+0x00430F70	+	CreateSkinningData
+0x00431760	+	PushXYZ
+0x00431790	+	PopXYZ
+0x004317A0	+	OptomiseSkinningData
 
 
 		game/larasurf.cpp
