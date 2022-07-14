@@ -1089,7 +1089,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00458090	+	KeyHoleCollision
 0x00458260	+	PuzzleDoneCollision
 0x004582A0		PuzzleHoleCollision
-0x00458690		PuzzleDone
+0x00458690	+	PuzzleDone
 0x00458710		KeyTrigger
 0x00458780		PickupTrigger
 0x004587E0	+	SarcophagusCollision
