@@ -34,6 +34,7 @@
 #include "laraflar.h"
 #include "troops.h"
 #include "mummy.h"
+#include "laramisc.h"
 
 void ObjectObjects()
 {
@@ -788,7 +789,7 @@ void BaddyObjects()
 	OBJECT_INFO* obj;
 
 	obj = &objects[LARA];
-//	obj->initialise = InitialiseLaraLoad;
+	obj->initialise = InitialiseLaraLoad;
 	obj->draw_routine = 0;
 	obj->shadow_size = 160;
 	obj->hit_points = 1000;
