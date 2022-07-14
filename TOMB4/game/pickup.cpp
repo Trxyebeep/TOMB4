@@ -131,8 +131,15 @@ void KeyHoleCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		ObjectCollision(item_number, l, coll);
 }
 
+void PuzzleDoneCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
+{
+	if (items[item_num].trigger_flags != 999)
+		ObjectCollision(item_num, l, coll);
+}
+
 void inject_pickup(bool replace)
 {
 	INJECT(0x004587E0, SarcophagusCollision, replace);
 	INJECT(0x00458090, KeyHoleCollision, replace);
+	INJECT(0x00458260, PuzzleDoneCollision, replace);
 }

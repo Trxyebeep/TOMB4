@@ -298,6 +298,15 @@ void ObjectObjects()
 		obj->save_anim = 1;
 	}
 
+	for (int i = PUZZLE_DONE1; i <= PUZZLE_DONE12; i++)
+	{
+		obj = &objects[i];
+		obj->control = ControlAnimatingSlots;
+		obj->collision = PuzzleDoneCollision;
+		obj->save_flags = 1;
+		obj->save_anim = 1;
+	}
+
 	obj = &objects[SARCOPHAGUS];
 	obj->control = ControlAnimatingSlots;
 	obj->collision = SarcophagusCollision;
