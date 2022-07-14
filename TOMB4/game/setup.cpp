@@ -35,6 +35,7 @@
 #include "troops.h"
 #include "mummy.h"
 #include "laramisc.h"
+#include "sas.h"
 
 void ObjectObjects()
 {
@@ -693,7 +694,7 @@ void TrapObjects()
 
 	obj = &objects[SAS_DRAG_BLOKE];
 	obj->control = ControlAnimatingSlots;
-//	obj->collision = DragSASCollision;
+	obj->collision = DragSASCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
@@ -1360,8 +1361,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseSas;
-//		obj->control = SasControl;
+		obj->initialise = InitialiseSas;
+		obj->control = SasControl;
 //		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
@@ -1610,8 +1611,8 @@ void BaddyObjects()
 
 		if (obj->loaded)
 		{
-//			obj->initialise = InitialiseInjuredSas;
-//			obj->control = InjuredSasControl;
+			obj->initialise = InitialiseInjuredSas;
+			obj->control = InjuredSasControl;
 //			obj->collision = ObjectCollision;
 			obj->save_flags = 1;
 			obj->save_anim = 1;
