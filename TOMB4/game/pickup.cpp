@@ -7,6 +7,7 @@
 #include "objects.h"
 #include "newinv.h"
 #include "control.h"
+#include "draw.h"
 
 static short SarcophagusBounds[12] = { -512, 512, -100, 100, -512, 0, -1820, 1820, -5460, 5460, 0, 0 };
 static short KeyHoleBounds[12] = { -256, 256, 0, 0, 0, 412, -1820, 1820, -5460, 5460, -1820, 1820 };
@@ -157,6 +158,56 @@ void AnimatingPickUp(short item_number)
 		AnimateItem(&items[item_number]);
 }
 
+short* FindPlinth(ITEM_INFO* item)
+{
+	ITEM_INFO* plinth;
+	ROOM_INFO* r;
+	MESH_INFO* mesh;
+	short* p;
+	short* o;
+	long i;
+	short item_num;
+
+	o = 0;
+	r = &room[item->room_number];
+	mesh = r->mesh;
+
+	for (i = r->num_meshes; i > 0; i--)
+	{
+		if (mesh->Flags & 1 && item->pos.x_pos == mesh->x && item->pos.z_pos == mesh->z)
+		{
+			p = GetBestFrame(item);
+			o = &static_objects[mesh->static_number].x_minc;
+
+			if (p[0] <= o[1] && p[1] >= o[0] && p[4] <= o[5] && p[5] >= o[4] && (o[0] || o[1]))
+				break;
+		}
+
+		mesh++;
+	}
+
+	if (i)
+		return o;
+
+	item_num = r->item_number;
+
+	while (1)
+	{
+		plinth = &items[item_num];
+
+		if (item != plinth && objects[plinth->object_number].collision != PickUpCollision &&
+			item->pos.x_pos == plinth->pos.x_pos && item->pos.y_pos <= plinth->pos.y_pos && item->pos.z_pos == plinth->pos.z_pos)
+			break;
+
+		item_num = plinth->next_item;
+
+		if (item_num == NO_ITEM)
+			return 0;
+	}
+
+	return GetBestFrame(&items[item_num]);
+}
+
 void inject_pickup(bool replace)
 {
 	INJECT(0x004587E0, SarcophagusCollision, replace);
@@ -164,4 +215,5 @@ void inject_pickup(bool replace)
 	INJECT(0x00458260, PuzzleDoneCollision, replace);
 	INJECT(0x00458690, PuzzleDone, replace);
 	INJECT(0x00457610, AnimatingPickUp, replace);
+	INJECT(0x00457F30, FindPlinth, replace);
 }
