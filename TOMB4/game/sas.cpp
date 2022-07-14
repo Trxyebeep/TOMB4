@@ -9,6 +9,7 @@
 #include "collide.h"
 #include "sphere.h"
 #include "tomb4fx.h"
+#include "box.h"
 
 static short DragSASBounds[12] = { -256, 256, -100, 100, -512, -460, -1820, 1820, -5460, 5460, 0, 0 };
 static PHD_VECTOR DragSASPos = { 0, 0, -460 };
@@ -170,10 +171,23 @@ static void SasFireGrenade(ITEM_INFO* sas, short xrot, short yrot)
 	AddActiveItem(item_number);
 }
 
+void InitialiseSas(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	InitialiseCreature(item_number);
+	item->anim_number = objects[SAS].anim_index + 12;
+	item->frame_number = anims[item->anim_number].frame_base;
+	item->current_anim_state = 1;
+	item->goal_anim_state = 1;
+}
+
 void inject_sas(bool replace)
 {
 	INJECT(0x0040DA00, InitialiseInjuredSas, replace);
 	INJECT(0x0040DA70, InjuredSasControl, replace);
 	INJECT(0x0040DCD0, DragSASCollision, replace);
 	INJECT(0x0040DAF0, SasFireGrenade, replace);
+	INJECT(0x0040D040, InitialiseSas, replace);
 }

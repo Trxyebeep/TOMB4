@@ -1124,7 +1124,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/sas.cpp
 
-0x0040D040		InitialiseSas
+0x0040D040	+	InitialiseSas
 0x0040D0A0		SasControl
 0x0040DA00	+	InitialiseInjuredSas
 0x0040DA70	+	InjuredSasControl
