@@ -82,6 +82,7 @@
 #include "../game/objlight.h"
 #include "../game/mirror.h"
 #include "../game/troops.h"
+#include "../game/mummy.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -183,6 +184,7 @@ void inject_all(bool replace)
 	inject_objlight(replace);
 	inject_mirror(replace);
 	inject_troops(replace);
+	inject_mummy(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

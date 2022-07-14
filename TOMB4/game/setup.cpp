@@ -33,6 +33,7 @@
 #include "objlight.h"
 #include "laraflar.h"
 #include "troops.h"
+#include "mummy.h"
 
 void ObjectObjects()
 {
@@ -1058,7 +1059,7 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseMummy;
+		obj->initialise = InitialiseMummy;
 //		obj->control = MummyControl;
 //		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;

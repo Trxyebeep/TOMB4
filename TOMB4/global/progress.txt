@@ -971,7 +971,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/mummy.cpp
 
-0x0040A930		InitialiseMummy
+0x0040A930	+	InitialiseMummy
 0x0040A9D0		MummyControl
 
 

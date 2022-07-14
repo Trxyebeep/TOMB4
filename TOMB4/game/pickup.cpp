@@ -80,7 +80,7 @@ void KeyHoleCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	if ((input & IN_ACTION || GLOBAL_inventoryitemchosen != NO_ITEM) && !BinocularRange && lara.gun_status == LG_NO_ARMS &&
 		l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH || lara.IsMoving && lara.GeneralPtr == (void*)item_number)
 	{
-		key = GLOBAL_inventoryitemchosen - KEY_ITEM1;
+		key = short(GLOBAL_inventoryitemchosen - KEY_ITEM1);
 		hole = item->object_number - KEY_HOLE1;
 
 		if (TestLaraPosition(KeyHoleBounds, item, l))
