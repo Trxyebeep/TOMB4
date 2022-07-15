@@ -678,6 +678,46 @@ void ControlLRSquishyBlock(short item_number)
 		AnimateItem(item);
 }
 
+void ControlSethBlade(short item_number)
+{
+	ITEM_INFO* item;
+	short frame;
+
+	item = &items[item_number];
+	*(long*)&item->item_flags[0] = 0;
+
+	if (!TriggerActive(item))
+		return;
+
+	if (item->current_anim_state == 2)
+	{
+		if (item->item_flags[2] > 1)
+			item->item_flags[2]--;
+		else if (item->item_flags[2] == 1)
+		{
+			item->goal_anim_state = 1;
+			item->item_flags[2] = 0;
+		}
+		else if (!item->item_flags[2] && item->trigger_flags > 0)
+			item->item_flags[2] = item->trigger_flags;
+	}
+	else
+	{
+		frame = item->frame_number - anims[item->anim_number].frame_base;
+
+		if (frame && frame <= 6)
+			*(long*)&item->item_flags[0] = -1;
+		else if (frame >= 7 && frame <= 15)
+			*(long*)&item->item_flags[0] = 448;
+		else
+			*(long*)&item->item_flags[0] = 0;
+
+		item->item_flags[3] = 1000;
+	}
+
+	AnimateItem(item);
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -694,4 +734,5 @@ void inject_traps(bool replace)
 	INJECT(0x004173A0, FallingSquishyBlockCollision, replace);
 	INJECT(0x00417310, ControlFallingSquishyBlock, replace);
 	INJECT(0x00417200, ControlLRSquishyBlock, replace);
+	INJECT(0x00417100, ControlSethBlade, replace);
 }

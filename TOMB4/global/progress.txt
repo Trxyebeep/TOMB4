@@ -1404,7 +1404,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00416F90		ControlCatwalkBlade
 0x00417020		ControlMovingBlade
 0x00417080		ControlPlinthBlade
-0x00417100		ControlSethBlade
+0x00417100	+	ControlSethBlade
 0x00417200	+	ControlLRSquishyBlock
 0x00417310	+	ControlFallingSquishyBlock
 0x004173A0	+	FallingSquishyBlockCollision

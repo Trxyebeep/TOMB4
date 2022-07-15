@@ -627,7 +627,7 @@ void TrapObjects()
 
 	obj = &objects[SETH_BLADE];
 	obj->initialise = InitialiseSethBlade;
-//	obj->control = ControlSethBlade;
+	obj->control = ControlSethBlade;
 	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
