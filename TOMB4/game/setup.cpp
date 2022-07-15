@@ -576,7 +576,7 @@ void TrapObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[SPIKEBALL];
-//	obj->control = ControlSpikeball;
+	obj->control = ControlSpikeball;
 	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
