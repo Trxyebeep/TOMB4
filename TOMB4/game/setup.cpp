@@ -590,13 +590,13 @@ void TrapObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[FLOOR_4BLADE];
-//	obj->control = Control4xFloorRoofBlade;
+	obj->control = Control4xFloorRoofBlade;
 	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[ROOF_4BLADE];
-//	obj->control = Control4xFloorRoofBlade;
+	obj->control = Control4xFloorRoofBlade;
 	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;

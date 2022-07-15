@@ -24,6 +24,7 @@ void ControlPlinthBlade(short item_number);
 void ControlMovingBlade(short item_number);
 void ControlCatwalkBlade(short item_number);
 void ControlBirdBlade(short item_number);
+void Control4xFloorRoofBlade(short item_number);
 
 #define LaraBurn	( (void(__cdecl*)()) 0x00414EE0 )
 #define CloseTrapDoor	( (void(__cdecl*)(ITEM_INFO*)) 0x004135A0 )

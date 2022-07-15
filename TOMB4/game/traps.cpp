@@ -796,6 +796,38 @@ void ControlBirdBlade(short item_number)
 	}
 }
 
+void Control4xFloorRoofBlade(short item_number)
+{
+	ITEM_INFO* item;
+	short frame;
+
+	item = &items[item_number];
+
+	if (TriggerActive(item))
+	{
+		frame = item->frame_number - anims[item->anim_number].frame_base;
+
+		if (frame <= 5 || frame >= 58 || frame >= 8 && frame <= 54)
+			*(long*)&item->item_flags[0] = 0;
+		else
+		{
+			if (frame > 7)
+				item->item_flags[3] = 200;
+			else
+				item->item_flags[3] = 20;
+
+			*(long*)&item->item_flags[0] = 30;
+		}
+
+		AnimateItem(item);
+	}
+	else
+	{
+		item->frame_number = anims[item->anim_number].frame_base;
+		*(long*)&item->item_flags[0] = 0;
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -817,4 +849,5 @@ void inject_traps(bool replace)
 	INJECT(0x00417020, ControlMovingBlade, replace);
 	INJECT(0x00416F90, ControlCatwalkBlade, replace);
 	INJECT(0x00416F00, ControlBirdBlade, replace);
+	INJECT(0x00416E40, Control4xFloorRoofBlade, replace);
 }
