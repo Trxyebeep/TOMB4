@@ -36,6 +36,7 @@
 #include "mummy.h"
 #include "laramisc.h"
 #include "sas.h"
+#include "hammerhead.h"
 
 void ObjectObjects()
 {
@@ -1191,8 +1192,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseHammerhead;
-//		obj->control = HammerheadControl;
+		obj->initialise = InitialiseHammerhead;
+		obj->control = HammerheadControl;
 //		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 45;
