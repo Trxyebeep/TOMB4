@@ -614,7 +614,7 @@ void TrapObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[MOVING_BLADE];
-//	obj->control = ControlMovingBlade;
+	obj->control = ControlMovingBlade;
 	obj->collision = GenericDeadlyBoundingBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
