@@ -1401,7 +1401,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00416D70		ControlSpikeball
 0x00416E40		Control4xFloorRoofBlade
 0x00416F00		ControlBirdBlade
-0x00416F90		ControlCatwalkBlade
+0x00416F90	+	ControlCatwalkBlade
 0x00417020	+	ControlMovingBlade
 0x00417080	+	ControlPlinthBlade
 0x00417100	+	ControlSethBlade

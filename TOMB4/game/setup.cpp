@@ -608,7 +608,7 @@ void TrapObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[CATWALK_BLADE];
-//	obj->control = ControlCatwalkBlade;
+	obj->control = ControlCatwalkBlade;
 	obj->collision = GenericDeadlyBoundingBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
