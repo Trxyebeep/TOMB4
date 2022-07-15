@@ -718,6 +718,25 @@ void ControlSethBlade(short item_number)
 	AnimateItem(item);
 }
 
+void ControlPlinthBlade(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (TriggerActive(item))
+	{
+		if (item->frame_number == anims[item->anim_number].frame_end)
+			item->item_flags[3] = 0;
+		else
+			item->item_flags[3] = 200;
+
+		AnimateItem(item);
+	}
+	else
+		item->frame_number = anims[item->anim_number].frame_base;
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -735,4 +754,5 @@ void inject_traps(bool replace)
 	INJECT(0x00417310, ControlFallingSquishyBlock, replace);
 	INJECT(0x00417200, ControlLRSquishyBlock, replace);
 	INJECT(0x00417100, ControlSethBlade, replace);
+	INJECT(0x00417080, ControlPlinthBlade, replace);
 }

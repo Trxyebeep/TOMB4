@@ -620,7 +620,7 @@ void TrapObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[PLINTH_BLADE];
-//	obj->control = ControlPlinthBlade;
+	obj->control = ControlPlinthBlade;
 	obj->collision = GenericDeadlyBoundingBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;

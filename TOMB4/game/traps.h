@@ -20,6 +20,7 @@ void FallingSquishyBlockCollision(short item_number, ITEM_INFO* l, COLL_INFO* co
 void ControlFallingSquishyBlock(short item_number);
 void ControlLRSquishyBlock(short item_number);
 void ControlSethBlade(short item_number);
+void ControlPlinthBlade(short item_number);
 
 #define LaraBurn	( (void(__cdecl*)()) 0x00414EE0 )
 #define CloseTrapDoor	( (void(__cdecl*)(ITEM_INFO*)) 0x004135A0 )
