@@ -501,7 +501,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/hammerhead.cpp
 
-0x00407000		InitialiseHammerhead
+0x00407000	+	InitialiseHammerhead
 0x00407060		HammerheadControl
 
 
