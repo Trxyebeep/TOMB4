@@ -602,7 +602,7 @@ void TrapObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[BIRD_BLADE];
-//	obj->control = ControlBirdBlade;
+	obj->control = ControlBirdBlade;
 	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;

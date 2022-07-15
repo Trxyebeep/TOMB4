@@ -771,6 +771,31 @@ void ControlCatwalkBlade(short item_number)
 		item->frame_number = anims[item->anim_number].frame_base;
 }
 
+void ControlBirdBlade(short item_number)
+{
+	ITEM_INFO* item;
+	short frame;
+
+	item = &items[item_number];
+
+	if (TriggerActive(item))
+	{
+		frame = item->frame_number - anims[item->anim_number].frame_base;
+
+		if (frame <= 14 || frame >= 31)
+			*(long*)&item->item_flags[0] = 0;
+		else
+			*(long*)&item->item_flags[0] = 6;
+
+		AnimateItem(item);
+	}
+	else
+	{
+		item->frame_number = anims[item->anim_number].frame_base;
+		*(long*)&item->item_flags[0] = 0;
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -791,4 +816,5 @@ void inject_traps(bool replace)
 	INJECT(0x00417080, ControlPlinthBlade, replace);
 	INJECT(0x00417020, ControlMovingBlade, replace);
 	INJECT(0x00416F90, ControlCatwalkBlade, replace);
+	INJECT(0x00416F00, ControlBirdBlade, replace);
 }
