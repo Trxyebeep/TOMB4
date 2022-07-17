@@ -1016,6 +1016,39 @@ void ControlPlough(short item_number)
 		*(long*)&item->item_flags[0] = 0;
 }
 
+void ControlChain(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	
+	if (item->trigger_flags)
+	{
+		item->item_flags[2] = 1;
+		item->item_flags[3] = 75;
+
+		if (TriggerActive(item))
+		{
+			*(long*)&item->item_flags[0] = 0x3F000;
+			AnimateItem(item);
+			return;
+		}
+	}
+	else
+	{
+		item->item_flags[3] = 25;
+
+		if (TriggerActive(item))
+		{
+			*(long*)&item->item_flags[0] = 0x780;
+			AnimateItem(item);
+			return;
+		}
+	}
+
+	*(long*)&item->item_flags[0] = 0;
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -1042,4 +1075,5 @@ void inject_traps(bool replace)
 	INJECT(0x00416A00, ControlHammer, replace);
 	INJECT(0x004169A0, ControlStargate, replace);
 	INJECT(0x00416950, ControlPlough, replace);
+	INJECT(0x004168D0, ControlChain, replace);
 }

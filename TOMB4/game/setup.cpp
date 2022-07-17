@@ -539,7 +539,7 @@ void TrapObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[CHAIN];
-//	obj->control = ControlChain;
+	obj->control = ControlChain;
 	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
