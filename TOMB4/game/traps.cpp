@@ -19,6 +19,36 @@ short SPxzoffs[8] = { 0, 0, 0x200, 0, 0, 0, -0x200, 0 };
 short SPyoffs[8] = { -0x400, 0, -0x200, 0, 0, 0, -0x200, 0 };
 short SPDETyoffs[8] = { 0x400, 0x200, 0x200, 0x200, 0, 0x200, 0x200, 0x200 };
 
+short floor_fires[16 * 3] =		//16 points on the burning floor that spawn fires!
+{
+	//xoff, zoff, size
+	-96, 1216, 2,
+	560, 736, 2,
+	-432, -976, 2,
+	-64, -128, 2,
+	824, 64, 2,
+	456, -352, 1,
+	392, 352, 1,
+	1096, 608, 1,
+	-424, -416, 1,
+	520, 1152, 1,
+	-248, 516, 1,
+	-808, 80, 1,
+	-1192, -384, 0,
+	-904, -864, 0,
+	-136, -912, 0,
+	184, 608, 0
+};
+
+short deadly_floor_fires[4 * 2] =	//4 points on the burning floor that kill Lara if she is too close at explode time
+{
+	//xoff, zoff
+	-512, -512,
+	0, 0,
+	512, 512,
+	0, 768
+};
+
 void FlameEmitterControl(short item_number)
 {
 	ITEM_INFO* item;
@@ -1049,6 +1079,142 @@ void ControlChain(short item_number)
 	*(long*)&item->item_flags[0] = 0;
 }
 
+void ControlBurningFloor(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* torch;
+	SPHERE* sphere;
+	long nSpheres, dx, dy, dz;
+	short torch_num, xoff, zoff, size;
+
+	item = &items[item_number];
+
+	if (!item->item_flags[3])
+	{
+		nSpheres = 0;
+		torch_num = room[item->room_number].item_number;
+
+		while (1)
+		{
+			torch = &items[torch_num];
+
+			if (torch->object_number == BURNING_TORCH_ITEM && !torch->speed && !torch->fallspeed && torch->item_flags[3])
+			{
+				if (!nSpheres)
+				{
+					nSpheres = GetSpheres(item, Slist, 1);
+
+					for (int i = 0; i < nSpheres; i++)
+					{
+						sphere = &Slist[i];
+						dx = sphere->x - torch->pos.x_pos;
+						dy = sphere->y - torch->pos.y_pos;
+						dz = sphere->z - torch->pos.z_pos;
+
+						if (SQUARE(dx) + SQUARE(dy) + SQUARE(dz) > SQUARE(sphere->r + 32))
+						{
+							item->item_flags[3] = 1;
+							KillItem(torch_num);
+							return;
+						}
+					}
+				}
+			}
+
+			torch_num = torch->next_item;
+
+			if (torch_num == NO_ITEM)
+				return;
+		}
+	}
+
+	for (int i = 0; i < 15; i++)
+	{
+		xoff = floor_fires[(i * 3) + 0];
+		zoff = floor_fires[(i * 3) + 1];
+		size = floor_fires[(i * 3) + 2];
+
+		if (item->item_flags[size])
+			AddFire(item->pos.x_pos + xoff, item->pos.y_pos - (size << 6) - 64, item->pos.z_pos + zoff,
+				size, item->room_number, item->item_flags[size]);
+	}
+
+	if (!lara.burn)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			xoff = floor_fires[(i * 2) + 0];
+			zoff = floor_fires[(i * 2) + 1];
+			dx = ABS(item->pos.x_pos + xoff - lara_item->pos.x_pos);
+			dy = ABS(item->pos.y_pos - lara_item->pos.y_pos);
+			dz = ABS(item->pos.z_pos + xoff - lara_item->pos.z_pos);	//ORIGINAL BUG uses xoff instead of zoff, only affects last test
+
+			if (dx < 200 && dy < 200 && dz < 200)
+			{
+				LaraBurn();
+				lara_item->hit_points = 100;
+				item->item_flags[3] = 450;
+				item->item_flags[0] = 2;
+				item->item_flags[1] = 2;
+				item->item_flags[2] = 2;
+				FlashFadeR = 255;
+				FlashFadeG = 64;
+				FlashFadeB = 0;
+				FlashFader = 32;
+			}
+		}
+	}
+
+	if (item->item_flags[3] < 450)
+	{
+		item->item_flags[0] += 4;
+
+		if (item->item_flags[3] > 30)
+			item->item_flags[1] += 4;
+
+		if (item->item_flags[3] > 60)
+			item->item_flags[2] += 8;
+
+		if (item->item_flags[0] > 255)
+			item->item_flags[0] = 255;
+
+		if (item->item_flags[1] > 255)
+			item->item_flags[1] = 255;
+
+		if (item->item_flags[2] > 255)
+			item->item_flags[2] = 255;
+
+		item->item_flags[3]++;
+		item->required_anim_state = 127 - item->item_flags[3] / 6;
+	}
+	else
+	{
+		item->item_flags[0] -= 4;
+		item->item_flags[1] -= 3;
+		item->item_flags[2] -= 2;
+
+		if (item->item_flags[0] < 2)
+			item->item_flags[0] = 2;
+
+		if (item->item_flags[1] < 2)
+			item->item_flags[1] = 2;
+
+		if (item->item_flags[2] < 2)
+			item->item_flags[2] = 2;
+
+		if (item->item_flags[0] == 2 && item->item_flags[1] == 2 && item->item_flags[2] == 2)
+		{
+			FlipMap(0);
+			ExplodeItemNode(item, 0, 1, -24);
+			ExplodeItemNode(item, 1, 1, -24);
+			ExplodeItemNode(item, 2, 1, -24);
+			ExplodeItemNode(item, 3, 1, -24);
+			ExplodeItemNode(item, 4, 1, -32);
+			KillItem(item_number);
+		}
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -1076,4 +1242,5 @@ void inject_traps(bool replace)
 	INJECT(0x004169A0, ControlStargate, replace);
 	INJECT(0x00416950, ControlPlough, replace);
 	INJECT(0x004168D0, ControlChain, replace);
+	INJECT(0x00416550, ControlBurningFloor, replace);
 }

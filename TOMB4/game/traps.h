@@ -30,6 +30,7 @@ void ControlHammer(short item_number);
 void ControlStargate(short item_number);
 void ControlPlough(short item_number);
 void ControlChain(short item_number);
+void ControlBurningFloor(short item_number);
 
 #define LaraBurn	( (void(__cdecl*)()) 0x00414EE0 )
 #define CloseTrapDoor	( (void(__cdecl*)(ITEM_INFO*)) 0x004135A0 )

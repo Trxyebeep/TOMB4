@@ -564,7 +564,7 @@ void TrapObjects()
 
 	obj = &objects[BURNING_FLOOR];
 	obj->initialise = InitialiseBurningFloor;
-//	obj->control = ControlBurningFloor;
+	obj->control = ControlBurningFloor;
 //	obj->collision = empty func here;
 	obj->save_position = 1;
 	obj->save_flags = 1;
