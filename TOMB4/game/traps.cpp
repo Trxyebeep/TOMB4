@@ -1143,8 +1143,8 @@ void ControlBurningFloor(short item_number)
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			xoff = floor_fires[(i * 2) + 0];
-			zoff = floor_fires[(i * 2) + 1];
+			xoff = deadly_floor_fires[(i * 2) + 0];
+			zoff = deadly_floor_fires[(i * 2) + 1];
 			dx = ABS(item->pos.x_pos + xoff - lara_item->pos.x_pos);
 			dy = ABS(item->pos.y_pos - lara_item->pos.y_pos);
 			dz = ABS(item->pos.z_pos + xoff - lara_item->pos.z_pos);	//ORIGINAL BUG uses xoff instead of zoff, only affects last test
