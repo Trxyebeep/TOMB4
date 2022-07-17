@@ -342,7 +342,7 @@ void ObjectObjects()
 
 	obj = &objects[EXPANDING_PLATFORM];
 //	obj->initialise = InitialiseRaisingBlock;
-//	obj->control = ControlRaisingBlock;
+	obj->control = ControlRaisingBlock;
 	obj->draw_routine = DrawScaledSpike;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
@@ -435,7 +435,7 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 		obj->initialise = InitialiseRaisingBlock;
-	//	obj->control = ControlRaisingBlock;
+		obj->control = ControlRaisingBlock;
 		obj->collision = 0;
 		obj->draw_routine = DrawScaledSpike;
 		obj->using_drawanimating_item = 0;

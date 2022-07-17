@@ -298,7 +298,7 @@ void DrawScaledSpike(ITEM_INFO* item)
 	short* frm[2];
 	long rate, clip, lp;
 
-	if (item->object_number == TEETH_SPIKES || item->item_flags[1])
+	if (item->object_number != TEETH_SPIKES || item->item_flags[1])
 	{
 		if ((item->object_number == RAISING_BLOCK1 || item->object_number == RAISING_BLOCK2) && item->trigger_flags && !item->item_flags[0])
 		{
@@ -339,11 +339,11 @@ void DrawScaledSpike(ITEM_INFO* item)
 			{
 				scale.x = 16384;
 				scale.y = 16384;
-				scale.z = 4 * item->item_flags[1];
+				scale.z = item->item_flags[1] << 2;
 			}
 			else
 			{
-				scale.y = 4 * item->item_flags[1];
+				scale.y = item->item_flags[1] << 2;
 
 				if (item->object_number != JOBY_SPIKES)
 				{
@@ -1215,6 +1215,65 @@ void ControlBurningFloor(short item_number)
 	}
 }
 
+void ControlRaisingBlock(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (TriggerActive(item))
+	{
+		if (!item->item_flags[2])
+		{
+			if (item->object_number == RAISING_BLOCK2)
+				AlterFloorHeight(item, -2048);
+			else
+				AlterFloorHeight(item, -1024);
+
+			item->item_flags[2] = 1;
+		}
+
+		if (item->item_flags[1] < 4096)
+		{
+			SoundEffect(SFX_RUMBLE_NEXTDOOR, &item->pos, SFX_DEFAULT);
+			item->item_flags[1] += 64;
+
+			if (item->trigger_flags && ABS(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
+				ABS(item->pos.y_pos - lara_item->pos.y_pos) < 10240 && ABS(item->pos.z_pos - lara_item->pos.z_pos) < 10240)
+			{
+				if (item->item_flags[1] == 64 || item->item_flags[1] == 4096)
+					camera.bounce = -32;
+				else
+					camera.bounce = -16;
+			}
+		}
+	}
+	else if (item->item_flags[1] > 0)
+	{
+		SoundEffect(SFX_RUMBLE_NEXTDOOR, &item->pos, SFX_DEFAULT);
+
+		if (item->trigger_flags && ABS(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
+			ABS(item->pos.y_pos - lara_item->pos.y_pos) < 10240 && ABS(item->pos.z_pos - lara_item->pos.z_pos) < 10240)
+		{
+			if (item->item_flags[1] == 64 || item->item_flags[1] == 4096)
+				camera.bounce = -32;
+			else
+				camera.bounce = -16;
+		}
+
+		item->item_flags[1] -= 64;
+	}
+	else if (item->item_flags[2])
+	{
+		if (item->object_number == RAISING_BLOCK2)
+			AlterFloorHeight(item, 2048);
+		else
+			AlterFloorHeight(item, 1024);
+
+		item->item_flags[2] = 0;
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -1243,4 +1302,5 @@ void inject_traps(bool replace)
 	INJECT(0x00416950, ControlPlough, replace);
 	INJECT(0x004168D0, ControlChain, replace);
 	INJECT(0x00416550, ControlBurningFloor, replace);
+	INJECT(0x00416390, ControlRaisingBlock, replace);
 }
