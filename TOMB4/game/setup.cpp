@@ -557,7 +557,7 @@ void TrapObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[HAMMER];
-//	obj->control = ControlHammer;
+	obj->control = ControlHammer;
 	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;

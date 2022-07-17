@@ -863,6 +863,126 @@ void ControlSpikeball(short item_number)
 	}
 }
 
+void ControlHammer(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+	long hammered;		//hammer touched a pushable (Senet lose path)
+	short frame, target_item;
+
+	item = &items[item_number];
+	frame = item->frame_number - anims[item->anim_number].frame_base;
+	item->item_flags[3] = 150;
+
+	if (!TriggerActive(item))
+	{
+		*(long*)&item->item_flags[0] = 0;
+		return;
+	}
+
+	hammered = 0;
+
+	if (!item->trigger_flags)
+	{
+		if (frame < 52)
+			*(long*)&item->item_flags[0] = 0xE0;
+		else
+			*(long*)&item->item_flags[0] = 0;
+	}
+	else if (item->current_anim_state == 1 && item->goal_anim_state == 1)
+	{
+		if (item->item_flags[2])
+		{
+			if (item->trigger_flags == 3)
+			{
+				item->flags &= ~IFL_CODEBITS;
+				item->item_flags[2] = 0;
+			}
+			else if (item->trigger_flags == 4)
+				item->item_flags[2]--;
+			else
+				item->item_flags[2] = 0;
+		}
+		else
+		{
+			item->anim_number = objects[HAMMER].anim_index + 1;
+			item->frame_number = anims[item->anim_number].frame_base;
+			item->current_anim_state = 2;
+			item->goal_anim_state = 2;
+			item->item_flags[2] = 60;
+		}
+	}
+	else
+	{
+		item->goal_anim_state = 1;
+
+		if (frame < 52)
+			*(long*)&item->item_flags[0] = 0x7E0;
+		else
+			*(long*)&item->item_flags[0] = 0;
+
+		if (frame == 8)
+		{
+			if (item->trigger_flags == 2)
+			{
+				for (target_item = room[item->room_number].item_number; target_item != NO_ITEM; target_item = item2->next_item)
+				{
+					item2 = &items[target_item];
+
+					if (item2->object_number == OBELISK &&
+						item2->pos.y_rot == -0x4000 &&
+						items[item2->item_flags[0]].pos.y_rot == 0x4000 &&
+						!items[item2->item_flags[1]].pos.y_rot)
+					{
+						item2->flags |= IFL_CODEBITS;
+						items[item2->item_flags[0]].flags |= IFL_CODEBITS;
+						items[item2->item_flags[1]].flags |= IFL_CODEBITS;
+						break;
+					}
+				}
+
+				SoundEffect(SFX_DOOR_GEN_THUD, &item->pos, SFX_DEFAULT);
+				SoundEffect(SFX_EXPLOSION2, &item->pos, SFX_DEFAULT);
+			}
+			else
+			{
+				for (target_item = room[item->room_number].item_number; target_item != NO_ITEM; target_item = item2->next_item)
+				{
+					item2 = &items[target_item];
+
+					if (item2->object_number >= PUSHABLE_OBJECT1 && item2->object_number <= PUSHABLE_OBJECT4 &&
+						item2->pos.x_pos == item->pos.x_pos && item2->pos.z_pos == item->pos.z_pos)
+					{
+						ExplodeItemNode(item2, 0, 0, 128);
+						KillItem(target_item);
+						hammered = 1;
+					}
+				}
+
+				if (hammered)
+				{
+					for (target_item = room[item->room_number].item_number; target_item != NO_ITEM; target_item = item2->next_item)
+					{
+						item2 = &items[target_item];
+
+						if (item2->object_number == PUZZLE_ITEM4_COMBO1 ||
+							item2->object_number == PUZZLE_ITEM4_COMBO2 ||
+							item2->object_number == PUZZLE_ITEM5)
+						{
+							if (item2->pos.x_pos == item->pos.x_pos && item2->pos.z_pos == item->pos.z_pos)
+								item2->status = ITEM_INACTIVE;
+						}
+					}
+				}
+			}
+		}
+		else if (frame > 52 && item->trigger_flags == 2)
+			item->flags &= ~IFL_CODEBITS;
+	}
+
+	AnimateItem(item);
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -886,4 +1006,5 @@ void inject_traps(bool replace)
 	INJECT(0x00416F00, ControlBirdBlade, replace);
 	INJECT(0x00416E40, Control4xFloorRoofBlade, replace);
 	INJECT(0x00416D70, ControlSpikeball, replace);
+	INJECT(0x00416A00, ControlHammer, replace);
 }

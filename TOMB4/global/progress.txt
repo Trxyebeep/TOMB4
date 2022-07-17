@@ -1397,7 +1397,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004168D0		ControlChain
 0x00416950		ControlPlough
 0x004169A0		ControlStargate
-0x00416A00		ControlHammer
+0x00416A00	+	ControlHammer
 0x00416D70	+	ControlSpikeball
 0x00416E40	+	Control4xFloorRoofBlade
 0x00416F00	+	ControlBirdBlade
