@@ -1000,6 +1000,22 @@ void ControlStargate(short item_number)
 		*(long*)&item->item_flags[0] = 0;
 }
 
+void ControlPlough(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->item_flags[3] = 50;
+
+	if (TriggerActive(item))
+	{
+		*(long*)&item->item_flags[0] = 0x3F000;
+		AnimateItem(item);
+	}
+	else
+		*(long*)&item->item_flags[0] = 0;
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -1025,4 +1041,5 @@ void inject_traps(bool replace)
 	INJECT(0x00416D70, ControlSpikeball, replace);
 	INJECT(0x00416A00, ControlHammer, replace);
 	INJECT(0x004169A0, ControlStargate, replace);
+	INJECT(0x00416950, ControlPlough, replace);
 }

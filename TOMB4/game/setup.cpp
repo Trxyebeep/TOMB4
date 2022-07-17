@@ -545,7 +545,7 @@ void TrapObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[PLOUGH];
-//	obj->control = ControlPlough;
+	obj->control = ControlPlough;
 	obj->collision = GenericSphereBoxCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
