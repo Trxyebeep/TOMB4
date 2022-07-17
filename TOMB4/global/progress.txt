@@ -1391,7 +1391,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00415C30	+	ControlTwoBlockPlatform
 0x00415DB0	+	ControlSlicerDicer
 0x00415EC0		TestBoundsCollideTeethSpikes
-0x00415FD0		ControlScaledSpike
+0x00415FD0	+	ControlScaledSpike
 0x00416390	+	ControlRaisingBlock
 0x00416550	+	ControlBurningFloor
 0x004168D0	+	ControlChain

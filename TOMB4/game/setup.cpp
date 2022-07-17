@@ -406,7 +406,7 @@ void ObjectObjects()
 
 	obj = &objects[TEETH_SPIKES];
 	obj->initialise = InitialiseScaledSpike;
-//	obj->control = ControlScaledSpike;
+	obj->control = ControlScaledSpike;
 	obj->draw_routine = DrawScaledSpike;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
