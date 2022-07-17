@@ -983,6 +983,23 @@ void ControlHammer(short item_number)
 	AnimateItem(item);
 }
 
+void ControlStargate(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->item_flags[3] = 50;
+
+	if (TriggerActive(item))
+	{
+		SoundEffect(SFX_STARGATE_SWIRL, &item->pos, SFX_DEFAULT);
+		*(long*)&item->item_flags[0] = 0x36DB600;
+		AnimateItem(item);
+	}
+	else
+		*(long*)&item->item_flags[0] = 0;
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -1007,4 +1024,5 @@ void inject_traps(bool replace)
 	INJECT(0x00416E40, Control4xFloorRoofBlade, replace);
 	INJECT(0x00416D70, ControlSpikeball, replace);
 	INJECT(0x00416A00, ControlHammer, replace);
+	INJECT(0x004169A0, ControlStargate, replace);
 }
