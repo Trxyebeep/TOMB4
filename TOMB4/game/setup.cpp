@@ -147,7 +147,7 @@ void ObjectObjects()
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
-	for (int i = DOOR_TYPE1; i <= DOOR_TYPE8; i++)	//skips over MIPs
+	for (int i = DOOR_TYPE1; i <= DOOR_TYPE8; i++)
 	{
 		obj = &objects[i];
 		obj->initialise = InitialiseDoor;
@@ -834,7 +834,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseSkeleton;
 //		obj->control = SkeletonControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 15;
 		obj->pivot_length = 50;
@@ -861,7 +861,7 @@ void BaddyObjects()
 		if (gfCurrentLevel != 1)
 			obj->control = VoncroyRaceControl;
 
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->pivot_length = 0;
 		obj->shadow_size = 128;
 		obj->hit_points = 15;
@@ -900,7 +900,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseGuide;
 //		obj->control = GuideControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = -16384;
 		obj->pivot_length = 0;
@@ -938,7 +938,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseRaghead;
 //		obj->control = RagheadControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 25;
 		obj->pivot_length = 50;
@@ -983,7 +983,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseRaghead;
 //		obj->control = RagheadControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 35;
 		obj->pivot_length = 50;
@@ -1025,7 +1025,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseScorpion;
 //		obj->control = ScorpionControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 80;
 		obj->pivot_length = 50;
@@ -1045,7 +1045,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseSmlscorp;
 //		obj->control = SmlscorpControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 8;
 		obj->pivot_length = 20;
@@ -1064,7 +1064,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseMummy;
 		obj->control = MummyControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
 		obj->hit_points = 15;
@@ -1088,7 +1088,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseTemplar;
 //		obj->control = TemplarControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
 		obj->hit_points = 15;
@@ -1112,7 +1112,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseSphinx;
 		obj->control = SphinxControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 1000;
 		obj->pivot_length = 500;
@@ -1133,7 +1133,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseSeth;
 //		obj->control = SethControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 500;
 		obj->pivot_length = 50;
@@ -1153,7 +1153,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseLaraDouble;
 		obj->control = LaraDoubleControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 1000;
 		obj->pivot_length = 50;
@@ -1172,7 +1172,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseHorseman;
 //		obj->control = HorsemanControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 25;
 		obj->pivot_length = 50;
@@ -1194,7 +1194,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseHammerhead;
 		obj->control = HammerheadControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 45;
 		obj->pivot_length = 300;
@@ -1219,7 +1219,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseCroc;
 		obj->control = CrocControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 36;
 		obj->pivot_length = 300;
@@ -1244,7 +1244,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseDemigod;
 		obj->control = DemigodControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
 		obj->hit_points = 200;
@@ -1269,7 +1269,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseDemigod;
 		obj->control = DemigodControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
 		obj->hit_points = 200;
@@ -1292,7 +1292,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseDemigod;
 		obj->control = DemigodControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
 		obj->hit_points = 200;
@@ -1315,7 +1315,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseCrocgod;
 		obj->control = CrocgodControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
 		obj->hit_points = 15;
@@ -1339,7 +1339,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseTroop;
 		obj->control = TroopControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
 		obj->hit_points = 40;
@@ -1364,7 +1364,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseSas;
 		obj->control = SasControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
 		obj->hit_points = 40;
@@ -1389,7 +1389,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseHarpy;
 		obj->control = HarpyControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 60;
 		obj->pivot_length = 50;
@@ -1409,7 +1409,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseWildboar;
 		obj->control = WildboarControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
 		obj->hit_points = 40;
@@ -1432,7 +1432,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseDog;
 //		obj->control = DogControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 16;
 		obj->pivot_length = 300;
@@ -1455,7 +1455,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseAhmet;
 		obj->control = AhmetControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 80;
 		obj->pivot_length = 300;
@@ -1478,7 +1478,7 @@ void BaddyObjects()
 		{
 			obj->initialise = InitialiseBaboon;
 			obj->control = BaboonControl;
-//			obj->collision = CreatureCollision;
+			obj->collision = CreatureCollision;
 			obj->shadow_size = 128;
 			obj->hit_points = 30;
 			obj->pivot_length = 200;
@@ -1503,7 +1503,7 @@ void BaddyObjects()
 		{
 			obj->initialise = InitialiseTrainJeep;
 			obj->control = TrainJeepControl;
-//			obj->collision = CreatureCollision;
+			obj->collision = CreatureCollision;
 			obj->save_flags = 1;
 			obj->save_anim = 1;
 			obj->save_hitpoints = 1;
@@ -1513,7 +1513,7 @@ void BaddyObjects()
 		{
 			obj->initialise = InitialiseEnemyJeep;
 			obj->control = EnemyJeepControl;
-//			obj->collision = CreatureCollision;
+			obj->collision = CreatureCollision;
 			obj->shadow_size = 128;
 			obj->hit_points = 40;
 			obj->pivot_length = 500;
@@ -1538,7 +1538,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseBat;
 		obj->control = BatControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 5;
 		obj->pivot_length = 10;
@@ -1557,7 +1557,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseScarab;
 //		obj->control = ScarabControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 30;
 		obj->pivot_length = 50;
@@ -1577,7 +1577,7 @@ void BaddyObjects()
 	{
 //		obj->initialise = InitialiseAutogun;
 //		obj->control = AutogunControl;
-//		obj->collision = CreatureCollision;
+		obj->collision = CreatureCollision;
 		obj->radius = 204;
 		obj->shadow_size = 128;
 		obj->hit_points = 30;
