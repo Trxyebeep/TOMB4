@@ -430,6 +430,37 @@ long GetFreeFireSpark()
 	return min_life_num;
 }
 
+void TriggerGlobalStaticFlame()
+{
+	FIRE_SPARKS* sptr;
+
+	sptr = &fire_spark[0];
+	sptr->On = 1;
+	sptr->dR = (GetRandomControl() & 0x3F) - 64;
+	sptr->dB = 64;
+	sptr->dG = (GetRandomControl() & 0x3F) + 96;
+	sptr->sR = sptr->dR;
+	sptr->sG = sptr->dG;
+	sptr->sB = sptr->dB;
+	sptr->ColFadeSpeed = 1;
+	sptr->FadeToBlack = 0;
+	sptr->Life = 8;
+	sptr->sLife = 8;
+	sptr->x = (GetRandomControl() & 7) - 4;
+	sptr->y = 0;
+	sptr->z = (GetRandomControl() & 7) - 4;
+	sptr->MaxYvel = 0;
+	sptr->Gravity = 0;
+	sptr->Friction = 0;
+	sptr->Xvel = 0;
+	sptr->Yvel = 0;
+	sptr->Zvel = 0;
+	sptr->Flags = 0;
+	sptr->dSize = (GetRandomControl() & 0x1F) + 0x80;
+	sptr->sSize = sptr->dSize;
+	sptr->Size = sptr->dSize;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -439,4 +470,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x004398B0, LaraBubbles, replace);
 	INJECT(0x00439F80, UpdateDrips, replace);
 	INJECT(0x00437E60, GetFreeFireSpark, replace);
+	INJECT(0x00438420, TriggerGlobalStaticFlame, replace);
 }

@@ -10,6 +10,7 @@ void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, lo
 void LaraBubbles(ITEM_INFO* item);
 void UpdateDrips();
 long GetFreeFireSpark();
+void TriggerGlobalStaticFlame();
 
 #define ClearFires	( (void(__cdecl*)()) 0x004384F0 )
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
