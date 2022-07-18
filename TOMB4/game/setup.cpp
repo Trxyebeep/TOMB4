@@ -1712,9 +1712,136 @@ void BaddyObjects()
 	}
 }
 
+void BuildOutsideTable()
+{
+	ROOM_INFO* r;
+	char* pTable;
+	char* oTable;
+	char* cTable;
+	long max_slots, roomx, roomy, cont, offset, z, z2;
+	char flipped[256];
+
+	max_slots = 0;
+	OutsideRoomOffsets = (short*)MALLOC(0x5B2);
+	OutsideRoomTable = (char*)MALLOC(0xB640);
+	memset(OutsideRoomTable, 0xFF, 0xB640);
+	memset(flipped, 0, 255);
+
+	for (int i = 0; i < number_rooms; i++)
+	{
+		r = &room[i];
+
+		if (r->flipped_room != -1)
+			flipped[r->flipped_room] = 1;
+	}
+
+	r = &room[0];
+	printf("X %d, Y %d, Z %d, Xs %d, Ys %d\n", r->x, r->y, r->z, r->x_size, r->y_size);
+
+	for (int y = 0; y < 108; y += 4)
+	{
+		for (int x = 0; x < 108; x += 4)
+		{
+			for (int i = 0; i < number_rooms; i++)
+			{
+				r = &room[i];
+
+				if (!flipped[i])
+				{
+					roomx = (r->z >> 10) + 1;
+					roomy = (r->x >> 10) + 1;
+					cont = 0;
+
+					for (int ry = 0; ry < 4; ry++)
+					{
+						for (int rx = 0; rx < 4; rx++)
+						{
+							if (x + rx >= roomx && x + rx < roomx + r->x_size - 2 && y + ry >= roomy && y + ry < roomy + r->y_size - 2)
+							{
+								cont = 1;
+								break;
+							}
+						}
+					}
+
+					if (cont)
+					{
+						pTable = &OutsideRoomTable[64 * ((x >> 2) + 27 * (y >> 2))];
+
+						for (int j = 0; j < 64; j++)
+						{
+							if (pTable[j] == -1)
+							{
+								pTable[j] = i;
+
+								if (j > max_slots)
+									max_slots = j;
+
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	oTable = OutsideRoomTable;
+
+	for (int y = 0; y < 27; y++)
+	{
+		for (int x = 0; x < 27; x++)
+		{
+			z = 0;
+			offset = x + y * 27;
+			pTable = &OutsideRoomTable[64 * (x + 27 * y)];
+			while (pTable[z] != -1) z++;
+
+			if (!z)
+				OutsideRoomOffsets[offset] = -1;
+			else if (z==1)
+				OutsideRoomOffsets[offset] = *pTable | 0x8000;
+			else
+			{
+				cTable = OutsideRoomTable;
+
+				while (cTable < oTable)
+				{
+					if (!memcmp(cTable, pTable, z))
+					{
+						OutsideRoomOffsets[offset] = short((long)cTable - (long)OutsideRoomTable);
+						break;
+					}
+
+					z2 = 0;
+					while (cTable[z2] != -1) z2++;
+					cTable += z2 + 1;
+				}
+
+				if (cTable >= oTable)
+				{
+					OutsideRoomOffsets[offset] = short((long)oTable - (long)OutsideRoomTable);
+
+					do
+					{
+						*oTable++ = *pTable++;
+						z--;
+
+					} while (z);
+
+					*oTable++ = -1;
+				}
+			}
+		}
+	}
+
+	printf("Ouside room table = %d bytes, max_slots = %d\n", oTable - OutsideRoomTable, max_slots);
+}
+
 void inject_setup(bool replace)
 {
 	INJECT(0x0045E1F0, ObjectObjects, 0);
 	INJECT(0x0045DC10, TrapObjects, 0);
 	INJECT(0x0045C1E0, BaddyObjects, 0);
+	INJECT(0x0045ED30, BuildOutsideTable, replace);
 }
