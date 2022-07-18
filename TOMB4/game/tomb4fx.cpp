@@ -381,6 +381,55 @@ void UpdateDrips()
 	}
 }
 
+long GetFreeFireSpark()
+{
+	FIRE_SPARKS* sptr;
+	long min_life, min_life_num;
+
+	sptr = &fire_spark[next_fire_spark];
+	min_life = 4095;
+	min_life_num = 0;
+
+	for (int free = next_fire_spark, i = 0; i < 20; i++)
+	{
+		if (sptr->On)
+		{
+			if (sptr->Life < min_life)
+			{
+				min_life_num = free;
+				min_life = sptr->Life;
+			}
+
+			if (free == 19)
+			{
+				sptr = &fire_spark[1];
+				free = 1;
+			}
+			else
+			{
+				free++;
+				sptr++;
+			}
+		}
+		else
+		{
+			next_fire_spark = free + 1;
+
+			if (next_fire_spark >= 20)
+				next_fire_spark = 1;
+
+			return free;
+		}
+	}
+
+	next_fire_spark = min_life_num + 1;
+
+	if (next_fire_spark >= 20)
+		next_fire_spark = 1;
+
+	return min_life_num;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -389,4 +438,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00438940, TriggerGunSmoke, replace);
 	INJECT(0x004398B0, LaraBubbles, replace);
 	INJECT(0x00439F80, UpdateDrips, replace);
+	INJECT(0x00437E60, GetFreeFireSpark, replace);
 }
