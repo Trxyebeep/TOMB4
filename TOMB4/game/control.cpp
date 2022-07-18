@@ -1372,7 +1372,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 
 	do
 	{
-		type = *(data++);
+		type = *data++;
 
 		switch (type & 0x1F)
 		{
@@ -1393,15 +1393,15 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 			tiltxoff = xoff;
 			tiltyoff = yoff;
 
-			if ((ABS(xoff)) > 2 || (ABS(yoff)) > 2)
+			if (ABS(xoff) > 2 || ABS(yoff) > 2)
 				height_type = BIG_SLOPE;
 			else
 				height_type = SMALL_SLOPE;
 
 			if (xoff < 0)
-				height -= (xoff * (z & 1023) >> 2);
+				height -= xoff * (z & 1023) >> 2;
 			else
-				height += (xoff * ((-1 - z) & 1023) >> 2);
+				height += xoff * ((-1 - z) & 1023) >> 2;
 
 			if (yoff < 0)
 				height -= yoff * (x & 1023) >> 2;
@@ -1420,7 +1420,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 
 			do
 			{
-				trigger = *(data++);
+				trigger = *data++;
 
 				if ((trigger & 0x3C00) != (TO_OBJECT << 10))
 				{
