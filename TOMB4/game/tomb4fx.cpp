@@ -896,6 +896,17 @@ void TriggerShatterSmoke(long x, long y, long z)
 	sptr->Size = sptr->dSize >> 3;
 }
 
+void DrawLensFlares(ITEM_INFO* item)
+{
+	GAME_VECTOR sun;
+
+	sun.x = item->pos.x_pos;
+	sun.y = item->pos.y_pos;
+	sun.z = item->pos.z_pos;
+	sun.room_number = item->room_number;
+	SetUpLensFlare(0, 0, 0, &sun);
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -915,4 +926,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00438690, GetFreeSmokeSpark, replace);
 	INJECT(0x00438700, UpdateSmokeSparks, replace);
 	INJECT(0x00438BA0, TriggerShatterSmoke, replace);
+	INJECT(0x0043B5F0, DrawLensFlares, replace);
 }
