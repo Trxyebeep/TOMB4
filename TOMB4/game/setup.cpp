@@ -37,6 +37,7 @@
 #include "laramisc.h"
 #include "sas.h"
 #include "hammerhead.h"
+#include "tomb4fx.h"
 
 void ObjectObjects()
 {
@@ -1838,10 +1839,41 @@ void BuildOutsideTable()
 	printf("Ouside room table = %d bytes, max_slots = %d\n", oTable - OutsideRoomTable, max_slots);
 }
 
+void reset_cutseq_vars()
+{
+	cutseq_num = 0;
+	cutseq_trig = 0;
+	GLOBAL_playing_cutseq = 0;
+	GLOBAL_cutseq_frame = 0;
+	SetFadeClip(0, 1);
+}
+
+void ClearFootPrints()
+{
+	for (int i = 0; i < 32; i++)
+		FootPrint[i].Active = 0;
+
+	FootPrintNum = 0;
+}
+
+void InitialiseGameFlags()
+{
+	memset(flipmap, 0, sizeof(flipmap));
+	memset(flip_stats, 0, sizeof(flip_stats));
+	memset(cd_flags, 0, sizeof(cd_flags));
+	flipeffect = -1;
+	flip_status = 0;
+	IsAtmospherePlaying = 0;
+	camera.underwater = 0;
+}
+
 void inject_setup(bool replace)
 {
 	INJECT(0x0045E1F0, ObjectObjects, 0);
 	INJECT(0x0045DC10, TrapObjects, 0);
 	INJECT(0x0045C1E0, BaddyObjects, 0);
 	INJECT(0x0045ED30, BuildOutsideTable, replace);
+	INJECT(0x0045F1C0, reset_cutseq_vars, replace);
+	INJECT(0x0045F1A0, ClearFootPrints, replace);
+	INJECT(0x0045F050, InitialiseGameFlags, replace);
 }

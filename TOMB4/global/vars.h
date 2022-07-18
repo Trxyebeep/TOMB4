@@ -607,6 +607,7 @@
 #define CharDef	ARRAY_(0x004AEDB0, CHARDEF, [106])
 #define ShadeFromTo	ARRAY_(0x004AFF48, CVECTOR, [10][2])
 #define FontShades	ARRAY_(0x004BF704, CVECTOR, [10][32])
+#define cd_flags	ARRAY_(0x007FE180, char, [128])
 
 
 /*Fog stuff*/
