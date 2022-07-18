@@ -8,6 +8,7 @@ void FlipMap(long FlipNumber);
 void RemoveRoomFlipItems(ROOM_INFO* r);
 void AddRoomFlipItems(ROOM_INFO* r);
 void TestTriggers(short* data, long heavy, long HeavyFlags);
+short GetDoor(FLOOR_INFO* floor);
 
 #define UpdateSky	( (void(__cdecl*)()) 0x00449390 )
 #define GetFloor	( (FLOOR_INFO*(__cdecl*)(long, long, long, short*)) 0x0044A1A0 )
@@ -21,7 +22,6 @@ void TestTriggers(short* data, long heavy, long HeavyFlags);
 #define ExplodeItemNode	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x0044DE50 )
 #define IsRoomOutside	( (long(__cdecl*)(long, long, long)) 0x0044C9C0 )
 #define GetTargetOnLOS	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*, long, long)) 0x0044D890 )
-#define GetDoor	( (short(__cdecl*)(FLOOR_INFO*)) 0x0044BB20 )
 #define AlterFloorHeight	( (void(__cdecl*)(ITEM_INFO*, long)) 0x0044A0D0 )
 #define LOS	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*)) 0x0044BBE0 )
 #define RefreshCamera	( (void(__cdecl*)(short, short*)) 0x0044AA20 )

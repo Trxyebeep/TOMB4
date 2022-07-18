@@ -1013,6 +1013,43 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 	}
 }
 
+short GetDoor(FLOOR_INFO* floor)
+{
+	short* data;
+	short type;
+
+	if (!floor->index)
+		return 255;
+
+	data = &floor_data[floor->index];
+	type = *data++;
+
+	if ((type & 0x1F) == TILT_TYPE || (type & 0x1F) == SPLIT1 || (type & 0x1F) == SPLIT2 || (type & 0x1F) == NOCOLF1B ||
+		(type & 0x1F) == NOCOLF1T || (type & 0x1F) == NOCOLF2B || (type & 0x1F) == NOCOLF2T)
+	{
+		if (type & 0x8000)
+			return 255;
+
+		data++;
+		type = *data++;
+	}
+
+	if ((type & 0x1F) == ROOF_TYPE || (type & 0x1F) == SPLIT3 || (type & 0x1F) == SPLIT4 || (type & 0x1F) == NOCOLC1B ||
+		(type & 0x1F) == NOCOLC1T || (type & 0x1F) == NOCOLC2B || (type & 0x1F) == NOCOLC2T)
+	{
+		if (type & 0x8000)
+			return 255;
+
+		data++;
+		type = *data++;
+	}
+
+	if ((type & 0x1F) == DOOR_TYPE)
+		return *data;
+
+	return 255;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1020,4 +1057,5 @@ void inject_control(bool replace)
 	INJECT(0x0044C670, RemoveRoomFlipItems, replace);
 	INJECT(0x0044C6F0, AddRoomFlipItems, replace);
 	INJECT(0x0044AB50, TestTriggers, replace);
+	INJECT(0x0044BB20, GetDoor, replace);
 }
