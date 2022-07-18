@@ -559,6 +559,87 @@ void keep_those_fires_burning()
 	}
 }
 
+void UpdateFireSparks()
+{
+	FIRE_SPARKS* sptr;
+	long fade;
+
+	keep_those_fires_burning();
+
+	for (int i = 0; i < 20; i++)
+	{
+		sptr = &fire_spark[i];
+
+		if (!sptr->On)
+			continue;
+
+		sptr->Life--;
+
+		if (!sptr->Life)
+		{
+			sptr->On = 0;
+			continue;
+		}
+
+		if (sptr->sLife - sptr->Life < sptr->ColFadeSpeed)
+		{
+			fade = ((sptr->sLife - sptr->Life) << 16) / sptr->ColFadeSpeed;
+			sptr->R = sptr->sR + uchar((fade * (sptr->dR - sptr->sR)) >> 16);
+			sptr->G = sptr->sG + uchar((fade * (sptr->dG - sptr->sG)) >> 16);
+			sptr->B = sptr->sB + uchar((fade * (sptr->dB - sptr->sB)) >> 16);
+		}
+		else if (sptr->Life < sptr->FadeToBlack)
+		{
+			fade = ((sptr->Life - sptr->FadeToBlack) << 16) / sptr->FadeToBlack + 0x10000;
+			sptr->R = uchar((fade * sptr->dR) >> 16);
+			sptr->G = uchar((fade * sptr->dG) >> 16);
+			sptr->B = uchar((fade * sptr->dB) >> 16);
+
+			if (sptr->R < 8 && sptr->G < 8 && sptr->B < 8)
+			{
+				sptr->On = 0;
+				continue;
+			}
+		}
+		else
+		{
+			sptr->R = sptr->dR;
+			sptr->G = sptr->dG;
+			sptr->B = sptr->dB;
+		}
+
+		if (sptr->Flags & 0x10)
+			sptr->RotAng = (sptr->RotAng + sptr->RotAdd) & 0xFFF;
+
+		if (sptr->R < 24 && sptr->G < 24 && sptr->B < 24)
+			sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 2);
+		else if (sptr->R < 80 && sptr->G < 80 && sptr->B < 80)
+			sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 1);
+		else
+			sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
+
+		fade = ((sptr->sLife - sptr->Life) << 16) / sptr->sLife;
+		sptr->Yvel += sptr->Gravity;
+
+		if (sptr->MaxYvel)
+		{
+			if (sptr->Yvel < 0 && sptr->Yvel < sptr->MaxYvel << 5 || sptr->Yvel > 0 && sptr->Yvel > sptr->MaxYvel << 5)
+				sptr->Yvel = sptr->MaxYvel << 5;
+		}
+
+		if (sptr->Friction)
+		{
+			sptr->Xvel -= sptr->Xvel >> sptr->Friction;
+			sptr->Zvel -= sptr->Zvel >> sptr->Friction;
+		}
+
+		sptr->x += sptr->Xvel >> 5;
+		sptr->y += sptr->Yvel >> 5;
+		sptr->z += sptr->Zvel >> 5;
+		sptr->Size = sptr->sSize + uchar((fade * (sptr->dSize - sptr->sSize)) >> 16);
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -571,4 +652,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00438420, TriggerGlobalStaticFlame, replace);
 	INJECT(0x004382C0, TriggerGlobalFireFlame, replace);
 	INJECT(0x00437EF0, keep_those_fires_burning, replace);
+	INJECT(0x00437F20, UpdateFireSparks, replace);
 }
