@@ -19,6 +19,7 @@ void AddFire(long x, long y, long z, long size, short room_number, short fade);
 void S_DrawFires();
 long GetFreeSmokeSpark();
 void UpdateSmokeSparks();
+void TriggerShatterSmoke(long x, long y, long z);
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )
@@ -38,7 +39,6 @@ void UpdateSmokeSparks();
 #define TriggerBlood	( (void(__cdecl*)(long, long, long, long, long)) 0x00438F00 )
 #define TriggerShockwave	( (void(__cdecl*)(PHD_VECTOR*, long, long, long, long)) 0x0043AA90 )
 #define TriggerFlashSmoke	( (void(__cdecl*)(long, long, long, long)) 0x0043B420 )
-#define TriggerShatterSmoke	( (void(__cdecl*)(long, long, long)) 0x00438BA0 )
 #define Fade	( (void(__cdecl*)()) 0x00439E40 )
 #define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )
 #define CalcLightningSpline	( (void(__cdecl*)(PHD_VECTOR*, SVECTOR*, LIGHTNING_STRUCT*)) 0x0043B0D0 )
