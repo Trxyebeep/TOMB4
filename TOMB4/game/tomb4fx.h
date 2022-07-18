@@ -16,6 +16,7 @@ void keep_those_fires_burning();
 void UpdateFireSparks();
 void ClearFires();
 void AddFire(long x, long y, long z, long size, short room_number, short fade);
+void S_DrawFires();
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )
@@ -31,7 +32,6 @@ void AddFire(long x, long y, long z, long size, short room_number, short fade);
 #define	SetScreenFadeIn	( (void(__cdecl*)(long)) 0x00439E00 )
 #define SetGunFlash	( (void(__cdecl*)(short)) 0x00439B80 )
 #define DrawGunflashes	( (void(__cdecl*)()) 0x00439C00 )
-#define S_DrawFires	( (void(__cdecl*)()) 0x00438560 )
 #define	CreateBubble	( (void(__cdecl*)(PHD_3DPOS*, short, long, long, long, long, long , long)) 0x004397F0 )
 #define GetFreeDrip	( (long(__cdecl*)()) 0x00439F10 )
 #define TriggerBlood	( (void(__cdecl*)(long, long, long, long, long)) 0x00438F00 )

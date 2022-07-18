@@ -9,6 +9,7 @@
 #include "sound.h"
 #include "delstuff.h"
 #include "control.h"
+#include "../specific/specificfx.h"
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments)
 {
@@ -676,6 +677,60 @@ void AddFire(long x, long y, long z, long size, short room_number, short fade)
 	}
 }
 
+void S_DrawFires()
+{
+	FIRE_LIST* fire;
+	ROOM_INFO* r;
+	short* bounds;
+	short size;
+
+	bounds = (short*)&scratchpad[0];
+
+	for (int i = 0; i < 32; i++)
+	{
+		fire = &fires[i];
+
+		if (!fire->on)
+			continue;
+
+		if (fire->size == 2)
+			size = 256;
+		else
+			size = 384;
+
+		bounds[0] = -size;
+		bounds[1] = size;
+		bounds[2] = -size * 6;
+		bounds[3] = size;
+		bounds[4] = -size;
+		bounds[5] = size;
+
+		r = &room[fire->room_number];
+		phd_left = r->left;
+		phd_right = r->right;
+		phd_top = r->top;
+		phd_bottom = r->bottom;
+
+		phd_PushMatrix();
+		phd_TranslateAbs(fire->x, fire->y, fire->z);
+
+		if (S_GetObjectBounds(bounds))
+		{
+			if (fire->on == 1)
+				S_DrawFireSparks((uchar)fire->size, 255);
+			else
+				S_DrawFireSparks((uchar)fire->size, fire->on & 0xFF);
+		}
+
+		phd_PopMatrix();
+	}
+
+	phd_top = 0;
+	phd_left = 0;
+	phd_right = phd_winwidth;
+	phd_bottom = phd_winheight;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -691,4 +746,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00437F20, UpdateFireSparks, replace);
 	INJECT(0x004384F0, ClearFires, replace);
 	INJECT(0x00438510, AddFire, replace);
+	INJECT(0x00438560, S_DrawFires, replace);
 }
