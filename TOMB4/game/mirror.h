@@ -1,4 +1,6 @@
 #pragma once
 #include "../global/vars.h"
 
-#define Draw_Mirror_Lara	( (void(__cdecl*)()) 0x00455800 )
+void inject_mirror(bool replace);
+
+void Draw_Mirror_Lara();

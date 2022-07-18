@@ -6,6 +6,7 @@
 #include "../specific/function_stubs.h"
 #include "effects.h"
 #include "sphere.h"
+#include "../specific/3dmath.h"
 
 void ShiftItem(ITEM_INFO* item, COLL_INFO* coll)
 {
@@ -306,10 +307,52 @@ void GenericSphereBoxCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void CreatureCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	short* bounds;
+	long x, z, rx, rz, c, s;
+
+	item = &items[item_number];
+
+	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l))
+	{
+#ifdef GENERAL_FIXES
+		if (lara.water_status != LW_UNDERWATER && lara.water_status != LW_SURFACE)
+#else
+		if (lara.water_status != LW_UNDERWATER && !lara.water_status != LW_SURFACE)	//dumb
+#endif
+		{
+			if (coll->enable_baddie_push)
+				ItemPushLara(item, l, coll, coll->enable_spaz, 0);
+			else if (coll->enable_spaz)
+			{
+				bounds = GetBestFrame(item);
+				s = phd_sin(l->pos.y_rot);
+				c = phd_cos(l->pos.y_rot);
+				x = (bounds[0] + bounds[1]) >> 1;
+				z = (bounds[3] - bounds[2]) >> 1;
+				rx = (l->pos.x_pos - item->pos.x_pos) - ((c * x + s * z) >> W2V_SHIFT);
+				rz = (l->pos.z_pos - item->pos.z_pos) - ((c * z - s * x) >> W2V_SHIFT);
+
+				if (bounds[3] - bounds[2] > 256)
+				{
+					lara.hit_direction = ushort((l->pos.y_rot - phd_atan(rz, rx) - 0x6000)) >> W2V_SHIFT;
+					lara.hit_frame++;
+
+					if (lara.hit_frame > 30)
+						lara.hit_frame = 30;
+				}
+			}
+		}
+	}
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
 	INJECT(0x00448DA0, GetCollidedObjects, replace);
 	INJECT(0x00448840, GenericDeadlyBoundingBoxCollision, replace);
 	INJECT(0x004485A0, GenericSphereBoxCollision, replace);
+	INJECT(0x00447470, CreatureCollision, replace);
 }

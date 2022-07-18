@@ -6,9 +6,15 @@
 #include "objects.h"
 #include "sphere.h"
 #include "../specific/3dmath.h"
+#include "box.h"
+#include "people.h"
+#include "effects.h"
 
 static BITE_INFO right_hand = { 0, 128, 0, 2 };
 static BITE_INFO left_hand = { 0, 128, 0, 4 };
+static BITE_INFO right_hit = { 0, 0, 0, 2 };
+static BITE_INFO left_hit = { 0, 0, 0, 4 };
+static BITE_INFO tail_hit = { 0, 0, 0, 15 };
 
 void TriggerHarpyMissileFlame(short fx_number, long xv, long yv, long zv)
 {
@@ -256,6 +262,289 @@ void DoHarpyEffects(ITEM_INFO* item, short item_number)
 	}
 }
 
+void InitialiseHarpy(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	InitialiseCreature(item_number);
+	item->anim_number = objects[HARPY].anim_index + 4;
+	item->frame_number = anims[item->anim_number].frame_base;
+	item->current_anim_state = 1;
+	item->goal_anim_state = 1;
+}
+
+void HarpyControl(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* enemy;
+	CREATURE_INFO* harpy;
+	CREATURE_INFO* baddie;
+	AI_INFO info;
+	long dx, dy, dz, dist, max_dist;
+	short angle, head, torso_x, torso_y;
+
+	if (!CreatureActive(item_number))
+		return;
+
+	item = &items[item_number];
+	harpy = (CREATURE_INFO*)item->data;
+	angle = 0;
+	head = 0;
+	torso_x = 0;
+	torso_y = 0;
+
+	if (item->hit_points <= 0)
+	{
+		item->hit_points = 0;
+
+		if (item->current_anim_state != 9)
+		{
+			if (item->current_anim_state != 10)
+			{
+				if (item->current_anim_state == 11)
+				{
+					item->pos.x_rot = 0;
+					item->pos.y_pos = item->floor;
+				}
+				else
+				{
+					item->anim_number = objects[HARPY].anim_index + 5;
+					item->frame_number = anims[item->anim_number].frame_base;
+					item->current_anim_state = 9;
+					item->gravity_status = 1;
+					item->speed = 0;
+					item->pos.x_rot = 0;
+				}
+			}
+		}
+		else
+			item->goal_anim_state = 10;
+
+		if (item->current_anim_state == 10)
+		{
+			if (item->pos.y_pos >= item->floor)
+			{
+				item->pos.y_pos = item->floor;
+				item->fallspeed = 0;
+				item->goal_anim_state = 11;
+				item->gravity_status = 0;
+			}
+
+			item->pos.x_rot = 0;
+		}
+	}
+	else
+	{
+		if (item->ai_bits)
+			GetAITarget(harpy);
+
+		harpy->enemy = 0;
+		max_dist = 0x7FFFFFFF;
+
+		for (int i = 0; i < 5; i++)
+		{
+			baddie = &baddie_slots[i];
+
+			if (baddie->item_num != NO_ITEM && baddie->item_num != item_number)
+			{
+				enemy = &items[baddie->item_num];
+
+				if (enemy->object_number == LARA_DOUBLE)
+				{
+					dx = enemy->pos.x_pos - item->pos.x_pos;
+					dz = enemy->pos.z_pos - item->pos.z_pos;
+					dist = SQUARE(dx) + SQUARE(dz);
+
+					if (dist < max_dist)
+					{
+						harpy->enemy = enemy;
+						max_dist = dist;
+					}
+				}
+			}
+		}
+
+		CreatureAIInfo(item, &info);
+		enemy = harpy->enemy;
+
+		if (enemy != lara_item)
+			phd_atan(lara_item->pos.z_pos - item->pos.z_pos, lara_item->pos.x_pos - item->pos.x_pos);
+
+		GetCreatureMood(item, &info, 1);
+		CreatureMood(item, &info, 1);
+		angle = CreatureTurn(item, harpy->maximum_turn);
+
+		if (info.ahead)
+		{
+			head = info.angle >> 1;
+			torso_y = info.angle >> 1;
+			torso_x = info.x_angle;
+		}
+
+		switch (item->current_anim_state)
+		{
+		case 1:
+			harpy->flags = 0;
+			harpy->maximum_turn = 1274;
+
+			if (enemy)
+			{
+				dy = item->pos.y_pos + 2048;
+
+				if (enemy->pos.y_pos > dy && item->floor > dy)
+				{
+					item->goal_anim_state = 3;
+					break;
+				}
+			}
+
+			if (info.ahead)
+			{
+				dy = ABS(enemy->pos.y_pos - item->pos.y_pos);
+
+				if (dy <= 1024 && info.distance < 0x1C639)
+				{
+					item->goal_anim_state = 6;
+					break;
+				}
+
+				if (dy <= 1024 && info.distance < 0x400000)
+				{
+					item->goal_anim_state = 4;
+					break;
+				}
+			}
+
+			if (harpy->enemy == lara_item && Targetable(item, &info) && info.distance > 0xC40000 && GetRandomControl() & 1)
+			{
+				item->goal_anim_state = 8;
+				item->item_flags[0] = 0;
+			}
+			else
+				item->goal_anim_state = 2;
+
+			break;
+
+		case 2:
+			harpy->maximum_turn = 1274;
+			harpy->flags = 0;
+
+			if (item->required_anim_state)
+			{
+				item->goal_anim_state = item->required_anim_state;
+
+				if (item->goal_anim_state == 8)
+					item->item_flags[0] = 0;
+			}
+			else if (item->hit_status)
+				item->goal_anim_state = 7;
+			else if (!info.ahead)
+			{
+				if (GetRandomControl() & 1)
+					item->goal_anim_state = 7;
+				else if (!info.ahead)
+					item->goal_anim_state = 4;
+			}
+			else if (info.distance < 0x1C639)
+				item->goal_anim_state = 6;
+			else if (!info.ahead || info.distance < 0x400000 || info.distance <= 0xC40000 || !(GetRandomControl() & 1))
+				item->goal_anim_state = 4;
+			else
+			{
+				item->goal_anim_state = 8;
+				item->item_flags[0] = 0;
+			}
+
+			break;
+
+		case 3:
+			dy = item->pos.y_pos + 2048;
+
+			if (!enemy || enemy->pos.y_pos < dy || item->floor < dy)
+				item->goal_anim_state = 1;
+
+			break;
+
+		case 4:
+			harpy->maximum_turn = 364;
+
+			if (info.ahead && info.distance < 0x400000)
+				item->goal_anim_state = 5;
+			else
+				item->goal_anim_state = 13;
+
+			break;
+
+		case 5:
+			harpy->maximum_turn = 364;
+			item->goal_anim_state = 2;
+			dy = ABS(enemy->pos.y_pos - item->pos.y_pos);
+
+			if (item->touch_bits & 0x14 || enemy && enemy != lara_item && dy <= 1024 && info.distance < 0x40000)
+			{
+				lara_item->hit_points -= 10;
+				lara_item->hit_status = 1;
+
+				if (item->touch_bits & 0x10)
+					CreatureEffectT(item, &left_hit, 5, -1, DoBloodSplat);
+				else
+					CreatureEffectT(item, &right_hit, 5, -1, DoBloodSplat);
+			}
+
+			break;
+
+		case 6:
+			harpy->maximum_turn = 364;
+
+			if (!harpy->flags)
+			{
+				dy = ABS(enemy->pos.y_pos - item->pos.y_pos);
+
+				if (item->touch_bits & 0x300000 || enemy && enemy != lara_item && dy <= 1024 && info.distance < 0x40000)
+				{
+					lara_item->hit_points -= 100;
+					lara_item->hit_status = 1;
+					CreatureEffectT(item, &tail_hit, 10, -1, DoBloodSplat);
+
+					if (enemy == lara_item)
+						lara.dpoisoned += 2048;
+
+					harpy->flags = 1;
+				}
+			}
+
+			break;
+
+		case 8:
+			DoHarpyEffects(item, item_number);
+			break;
+
+		case 12:
+
+			if (info.ahead && info.distance > 0xC40000)
+			{
+				item->goal_anim_state = 2;
+				item->required_anim_state = 8;
+			}
+			else if (GetRandomControl() & 1)
+				item->goal_anim_state = 1;
+
+			break;
+
+		case 13:
+			item->goal_anim_state = 2;
+			break;
+		}
+	}
+
+	CreatureTilt(item, 0);
+	CreatureJoint(item, 0, head);
+	CreatureJoint(item, 1, torso_y);
+	CreatureJoint(item, 2, torso_x);
+	CreatureAnimation(item_number, angle, 0);
+}
+
 void inject_harpy(bool replace)
 {
 	INJECT(0x00407290, TriggerHarpyMissileFlame, replace);
@@ -263,4 +552,6 @@ void inject_harpy(bool replace)
 	INJECT(0x004077B0, TriggerHarpySparks, replace);
 	INJECT(0x004078A0, TriggerHarpyFlame, replace);
 	INJECT(0x004073F0, DoHarpyEffects, replace);
+	INJECT(0x00407A30, InitialiseHarpy, replace);
+	INJECT(0x00407A90, HarpyControl, replace);
 }

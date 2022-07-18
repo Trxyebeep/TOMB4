@@ -123,7 +123,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00446FB0		UpdateLaraRoom
 0x00447010		GetTiltType
 0x004471B0		LaraBaddieCollision
-0x00447470		CreatureCollision
+0x00447470	+	CreatureCollision
 0x004475F0		ObjectCollision
 0x00447660		ObjectCollisionNoBigPush
 0x004476D0		TrapCollision
@@ -501,8 +501,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/hammerhead.cpp
 
-0x00407000		InitialiseHammerhead
-0x00407060		HammerheadControl
+0x00407000	+	InitialiseHammerhead
+0x00407060	+	HammerheadControl
 
 
 		game/harpy.cpp
@@ -512,8 +512,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00407700	+	TriggerHarpyMissile
 0x004077B0	+	TriggerHarpySparks
 0x004078A0	+	TriggerHarpyFlame
-0x00407A30		InitialiseHarpy
-0x00407A90		HarpyControl
+0x00407A30	+	InitialiseHarpy
+0x00407A90	+	HarpyControl
 
 
 		game/health.cpp
@@ -877,22 +877,22 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/laramisc.cpp
 
-0x00430140		LaraInitialiseMeshes
+0x00430140	+	LaraInitialiseMeshes
 0x004301F0	+	LaraCheatGetStuff
 0x00430250		LaraControl
 0x004309B0	+	LaraCheat
 0x00430A50	+	LaraCheatyBits
 0x00430B60		AnimateLara
-0x00430EB0		InitialiseLaraLoad
-0x00430EE0		InitialiseLaraAnims
+0x00430EB0	+	InitialiseLaraLoad
+0x00430EE0	+	InitialiseLaraAnims
 
 
 		game/laraskin.cpp
 
-0x00430F70		CreateSkinningData
-0x00431760		PushXYZ
-0x00431790		PopXYZ
-0x004317A0		OptomiseSkinningData
+0x00430F70	+	CreateSkinningData
+0x00431760	+	PushXYZ
+0x00431790	+	PopXYZ
+0x004317A0	+	OptomiseSkinningData
 
 
 		game/larasurf.cpp
@@ -947,7 +947,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/mirror.cpp
 
-0x00455800		Draw_Mirror_Lara
+0x00455800	+	Draw_Mirror_Lara
 
 
 		game/missle.cpp
@@ -971,8 +971,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/mummy.cpp
 
-0x0040A930		InitialiseMummy
-0x0040A9D0		MummyControl
+0x0040A930	+	InitialiseMummy
+0x0040A9D0	+	MummyControl
 
 
 		game/newinv.cpp
@@ -1082,14 +1082,14 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/pickup.cpp
 
-0x00457610		AnimatingPickUp
+0x00457610	+	AnimatingPickUp
 0x00457650		RegeneratePickups
 0x00457720		PickUpCollision
-0x00457F30		FindPlinth
-0x00458090		KeyHoleCollision
-0x00458260		PuzzleDoneCollision
+0x00457F30	+	FindPlinth
+0x00458090	+	KeyHoleCollision
+0x00458260	+	PuzzleDoneCollision
 0x004582A0		PuzzleHoleCollision
-0x00458690		PuzzleDone
+0x00458690	+	PuzzleDone
 0x00458710		KeyTrigger
 0x00458780		PickupTrigger
 0x004587E0	+	SarcophagusCollision
@@ -1124,12 +1124,12 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/sas.cpp
 
-0x0040D040		InitialiseSas
-0x0040D0A0		SasControl
-0x0040DA00		InitialiseInjuredSas
-0x0040DA70		InjuredSasControl
-0x0040DAF0		SasFireGrenade
-0x0040DCD0		DragSASCollision
+0x0040D040	+	InitialiseSas
+0x0040D0A0	+	SasControl
+0x0040DA00	+	InitialiseInjuredSas
+0x0040DA70	+	InjuredSasControl
+0x0040DAF0	+	SasFireGrenade
+0x0040DCD0	+	DragSASCollision
 
 
 		game/savegame.cpp
@@ -1391,33 +1391,33 @@ x for functions decompiled but not injected, for one reason or another.
 0x00415C30	+	ControlTwoBlockPlatform
 0x00415DB0	+	ControlSlicerDicer
 0x00415EC0		TestBoundsCollideTeethSpikes
-0x00415FD0		ControlScaledSpike
-0x00416390		ControlRaisingBlock
-0x00416550		ControlBurningFloor
-0x004168D0		ControlChain
-0x00416950		ControlPlough
-0x004169A0		ControlStargate
-0x00416A00		ControlHammer
-0x00416D70		ControlSpikeball
-0x00416E40		Control4xFloorRoofBlade
-0x00416F00		ControlBirdBlade
-0x00416F90		ControlCatwalkBlade
-0x00417020		ControlMovingBlade
-0x00417080		ControlPlinthBlade
-0x00417100		ControlSethBlade
-0x00417200		ControlLRSquishyBlock
-0x00417310		ControlFallingSquishyBlock
-0x004173A0		FallingSquishyBlockCollision
+0x00415FD0	+	ControlScaledSpike
+0x00416390	+	ControlRaisingBlock
+0x00416550	+	ControlBurningFloor
+0x004168D0	+	ControlChain
+0x00416950	+	ControlPlough
+0x004169A0	+	ControlStargate
+0x00416A00	+	ControlHammer
+0x00416D70	+	ControlSpikeball
+0x00416E40	+	Control4xFloorRoofBlade
+0x00416F00	+	ControlBirdBlade
+0x00416F90	+	ControlCatwalkBlade
+0x00417020	+	ControlMovingBlade
+0x00417080	+	ControlPlinthBlade
+0x00417100	+	ControlSethBlade
+0x00417200	+	ControlLRSquishyBlock
+0x00417310	+	ControlFallingSquishyBlock
+0x004173A0	+	FallingSquishyBlockCollision
 0x004174A0		ControlObelisk
-0x00417BB0		MineCollision
-0x00417DB0		ControlMineHelicopter
-0x00417FC0		ControlSprinkler
+0x00417BB0	+	MineCollision
+0x00417DB0	+	ControlMineHelicopter
+0x00417FC0	+	ControlSprinkler
 
 
 		game/troops.cpp
 
-0x004183B0		InitialiseTroop
-0x00418430		TroopControl
+0x004183B0	+	InitialiseTroop
+0x00418430	+	TroopControl
 
 
 		game/voncroy.cpp

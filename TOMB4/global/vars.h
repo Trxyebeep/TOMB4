@@ -642,6 +642,20 @@
 #define Bink	VAR_U_(0x007E6E08, BINK_STRUCT*)
 
 
+/*skin bs*/
+#define SkinXYZPtr	VAR_U_(0x0080DBCC, PHD_VECTOR*)
+#define BelowMeshXYZ	VAR_U_(0x0080DBE0, PHD_VECTOR)
+#define JointMeshXYZ	VAR_U_(0x0080DBD0, PHD_VECTOR)
+#define AboveMeshXYZ	VAR_U_(0x0080DBC0, PHD_VECTOR)
+
+#define XYZList	ARRAY_(0x0080DC00, PHD_VECTOR, [32])
+#define HairSkinVertNums	ARRAY_(0x004ADDB0, char, [6][12])
+#define HairScratchVertNums	ARRAY_(0x004ADDF8, char, [3][12])
+#define PointsToCalc ARRAY_(0x0080DD80, uchar, [26][12])
+#define SkinJoints ARRAY_(0x004ADD78, uchar, [14][4])
+
+
+
 #define NO_HEIGHT	-32512
 #define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)

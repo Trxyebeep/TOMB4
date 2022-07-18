@@ -168,9 +168,62 @@ void LaraCheat(ITEM_INFO* item, COLL_INFO* coll)
 	}
 }
 
+void InitialiseLaraLoad(short item_number)
+{
+	lara.item_number = item_number;
+	lara_item = &items[item_number];
+}
+
+void InitialiseLaraAnims(ITEM_INFO* item)
+{
+	if (room[item->room_number].flags & ROOM_UNDERWATER)
+	{
+		item->anim_number = ANIM_TREAD;
+		item->frame_number = anims[ANIM_TREAD].frame_base;
+		item->current_anim_state = AS_TREAD;
+		item->goal_anim_state = AS_TREAD;
+		lara.water_status = LW_UNDERWATER;
+		item->fallspeed = 0;
+	}
+	else
+	{
+		item->anim_number = ANIM_STOP;
+		item->frame_number = anims[ANIM_STOP].frame_base;
+		item->current_anim_state = AS_STOP;
+		item->goal_anim_state = AS_STOP;
+		lara.water_status = LW_ABOVE_WATER;
+	}
+}
+
+void LaraInitialiseMeshes()
+{
+	for (int i = 0; i < 15; i++)
+	{
+		meshes[objects[LARA].mesh_index + i * 2] = meshes[objects[LARA_SKIN].mesh_index + i * 2];
+		lara.mesh_ptrs[i] = meshes[objects[LARA].mesh_index + i * 2];
+	}
+
+	if (lara.gun_type == WEAPON_GRENADE)
+		lara.back_gun = WEAPON_GRENADE;
+	else if (lara.shotgun_type_carried)
+		lara.back_gun = WEAPON_UZI;
+	else if (lara.grenade_type_carried)
+		lara.back_gun = WEAPON_GRENADE;
+
+	lara.gun_status = LG_NO_ARMS;
+	lara.left_arm.frame_number = 0;
+	lara.right_arm.frame_number = 0;
+	lara.target = 0;
+	lara.right_arm.lock = 0;
+	lara.left_arm.lock = 0;
+}
+
 void inject_laramisc(bool replace)
 {
 	INJECT(0x004301F0, LaraCheatGetStuff, replace);
 	INJECT(0x00430A50, LaraCheatyBits, replace);
 	INJECT(0x004309B0, LaraCheat, replace);
+	INJECT(0x00430EB0, InitialiseLaraLoad, replace);
+	INJECT(0x00430EE0, InitialiseLaraAnims, replace);
+	INJECT(0x00430140, LaraInitialiseMeshes, replace);
 }
