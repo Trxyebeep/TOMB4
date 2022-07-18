@@ -154,7 +154,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044A060		TranslateItem
 0x0044A0D0		AlterFloorHeight
 0x0044A1A0	+	GetFloor
-0x0044A390		GetWaterHeight
+0x0044A390	+	GetWaterHeight
 0x0044A530		GetHeight
 0x0044AA20		RefreshCamera
 0x0044AB50	+	TestTriggers
