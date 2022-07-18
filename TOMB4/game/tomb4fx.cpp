@@ -731,6 +731,47 @@ void S_DrawFires()
 	phd_bottom = phd_winheight;
 }
 
+long GetFreeSmokeSpark()
+{
+	SMOKE_SPARKS* sptr;
+	long min_life, min_life_num;
+
+	sptr = &smoke_spark[next_smoke_spark];
+	min_life = 4095;
+	min_life_num = 0;
+
+	for (int free = next_smoke_spark, i = 0; i < 32; i++)
+	{
+		if (sptr->On)
+		{
+			if (sptr->Life < min_life)
+			{
+				min_life_num = free;
+				min_life = sptr->Life;
+			}
+
+			if (free == 31)
+			{
+				sptr = &smoke_spark[0];
+				free = 0;
+			}
+			else
+			{
+				free++;
+				sptr++;
+			}
+		}
+		else
+		{
+			next_smoke_spark = (free + 1) & 0x1F;
+			return free;
+		}
+	}
+
+	next_smoke_spark = (min_life_num + 1) & 0x1F;
+	return min_life_num;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -747,4 +788,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x004384F0, ClearFires, replace);
 	INJECT(0x00438510, AddFire, replace);
 	INJECT(0x00438560, S_DrawFires, replace);
+	INJECT(0x00438690, GetFreeSmokeSpark, replace);
 }
