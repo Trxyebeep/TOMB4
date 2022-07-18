@@ -1162,6 +1162,95 @@ long CheckNoColCeilingTriangle(FLOOR_INFO* floor, long x, long z)
 	return 0;
 }
 
+FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
+{
+	ROOM_INFO* r;
+	FLOOR_INFO* floor;
+	long x_floor, y_floor;
+	short door;
+
+	r = &room[*room_number];
+
+	do
+	{
+		x_floor = (z - r->z) >> 10;
+		y_floor = (x - r->x) >> 10;
+
+		if (x_floor <= 0)
+		{
+			x_floor = 0;
+
+			if (y_floor < 1)
+				y_floor = 1;
+			else if (y_floor > r->y_size - 2)
+				y_floor = r->y_size - 2;
+		}
+		else if (x_floor >= r->x_size - 1)
+		{
+			x_floor = r->x_size - 1;
+
+			if (y_floor < 1)
+				y_floor = 1;
+			else if (y_floor > r->y_size - 2)
+				y_floor = r->y_size - 2;
+		}
+		else if (y_floor < 0)
+			y_floor = 0;
+		else if (y_floor >= r->y_size)
+			y_floor = r->y_size - 1;
+
+		floor = &r->floor[x_floor + y_floor * r->x_size];
+		door = GetDoor(floor);
+
+		if (door == 255)
+			break;
+
+		*room_number = door;
+		r = &room[door];
+
+	} while (door != 255);
+
+	if (y < floor->floor << 8)
+	{
+		if (y < floor->ceiling << 8 && floor->sky_room != 255)
+		{
+			do
+			{
+				if (CheckNoColCeilingTriangle(floor, x, z) == 1 || CheckNoColCeilingTriangle(floor, x, z) == -1 && y >= r->maxceiling)
+					break;
+
+				*room_number = floor->sky_room;
+				r = &room[floor->sky_room];
+				floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
+
+				if (y >= floor->ceiling << 8)
+					break;
+
+			} while (floor->sky_room != 255);
+		}
+	}
+	else if (floor->pit_room != 255)
+	{
+		while (1)
+		{
+			if (CheckNoColFloorTriangle(floor, x, z) == 1 || CheckNoColFloorTriangle(floor, x, z) == -1 && y < r->minfloor)
+				break;
+
+			*room_number = floor->pit_room;
+			r = &room[floor->pit_room];
+			floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
+
+			if (y < floor->floor << 8)
+				break;
+
+			if (floor->pit_room == 255)
+				return floor;
+		}
+	}
+
+	return floor;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1172,4 +1261,5 @@ void inject_control(bool replace)
 	INJECT(0x0044BB20, GetDoor, replace);
 	INJECT(0x0044C820, CheckNoColFloorTriangle, replace);
 	INJECT(0x0044C8D0, CheckNoColCeilingTriangle, replace);
+	INJECT(0x0044A1A0, GetFloor, replace);
 }
