@@ -13,9 +13,9 @@ long CheckNoColFloorTriangle(FLOOR_INFO* floor, long x, long z);
 long CheckNoColCeilingTriangle(FLOOR_INFO* floor, long x, long z);
 FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number);
 long GetWaterHeight(long x, long y, long z, short room_number);
+long GetHeight(FLOOR_INFO* floor, long x, long y, long z);
 
 #define UpdateSky	( (void(__cdecl*)()) 0x00449390 )
-#define GetHeight	( (long(__cdecl*)(FLOOR_INFO*, long, long, long)) 0x0044A530 )
 #define GetCeiling	( (long(__cdecl*)(FLOOR_INFO*, long, long, long)) 0x0044B690 )
 #define KillMoveItems	( (void(__cdecl*)()) 0x004492D0)
 #define KillMoveEffects	( (void(__cdecl*)()) 0x00449330 )

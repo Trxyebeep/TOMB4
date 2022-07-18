@@ -1335,6 +1335,220 @@ long GetWaterHeight(long x, long y, long z, short room_number)
 	return NO_HEIGHT;
 }
 
+long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
+{
+	ITEM_INFO* item;
+	ROOM_INFO* r;
+	short* data;
+	long height;
+	ushort trigger;
+	short type, dx, dz, xoff, yoff, tilt, hadj, tilt0, tilt1, tilt2, tilt3;
+
+	tiltxoff = 0;
+	tiltyoff = 0;
+	OnObject = 0;
+	height_type = WALL;
+
+	while (floor->pit_room != 255)
+	{
+		if (CheckNoColFloorTriangle(floor, x, z) == 1)
+			break;
+
+		r = &room[floor->pit_room];
+		floor = &r->floor[((z - r->z) >> 10) + ((x - r->x) >> 10) * r->x_size];
+	}
+
+	height = floor->floor << 8;
+
+	if (height == NO_HEIGHT)
+		return height;
+
+	trigger_index = 0;
+
+	if (!floor->index)
+		return height;
+
+	data = &floor_data[floor->index];
+
+	do
+	{
+		type = *(data++);
+
+		switch (type & 0x1F)
+		{
+		case DOOR_TYPE:
+		case ROOF_TYPE:
+		case SPLIT3:
+		case SPLIT4:
+		case NOCOLC1T:
+		case NOCOLC1B:
+		case NOCOLC2T:
+		case NOCOLC2B:
+			data++;
+			break;
+
+		case TILT_TYPE:
+			xoff = *data >> 8;
+			yoff = *(char*)data;
+			tiltxoff = xoff;
+			tiltyoff = yoff;
+
+			if ((ABS(xoff)) > 2 || (ABS(yoff)) > 2)
+				height_type = BIG_SLOPE;
+			else
+				height_type = SMALL_SLOPE;
+
+			if (xoff < 0)
+				height -= (xoff * (z & 1023) >> 2);
+			else
+				height += (xoff * ((-1 - z) & 1023) >> 2);
+
+			if (yoff < 0)
+				height -= yoff * (x & 1023) >> 2;
+			else
+				height += yoff * ((-1 - x) & 1023) >> 2;
+
+			data++;
+			break;
+
+		case TRIGGER_TYPE:
+
+			if (!trigger_index)
+				trigger_index = data - 1;
+
+			data++;
+
+			do
+			{
+				trigger = *(data++);
+
+				if ((trigger & 0x3C00) != (TO_OBJECT << 10))
+				{
+					if ((trigger & 0x3C00) == (TO_CAMERA << 10) || (trigger & 0x3C00) == (TO_FLYBY << 10))
+						trigger = *data++;
+
+					continue;
+				}
+
+				item = &items[trigger & 0x3FF];
+
+				if (objects[item->object_number].floor && !(item->flags & 0x8000))
+					objects[item->object_number].floor(item, x, y, z, &height);
+
+			} while (!(trigger & 0x8000));
+
+			break;
+
+		case LAVA_TYPE:
+			trigger_index = data - 1;
+			break;
+
+		case CLIMB_TYPE:
+		case MONKEY_TYPE:
+		case TRIGTRIGGER_TYPE:
+		case MINER_TYPE:
+
+			if (!trigger_index)
+				trigger_index = data - 1;
+
+			break;
+
+		case SPLIT1:
+		case SPLIT2:
+		case NOCOLF1T:
+		case NOCOLF1B:
+		case NOCOLF2T:
+		case NOCOLF2B:
+			tilt = *data;
+			tilt0 = tilt & 0xF;
+			tilt1 = (tilt >> 4) & 0xF;
+			tilt2 = (tilt >> 8) & 0xF;
+			tilt3 = (tilt >> 12) & 0xF;
+			dx = x & 1023;
+			dz = z & 1023;
+			height_type = SPLIT_TRI;
+
+			if ((type & 0x1F) == SPLIT1 || (type & 0x1F) == NOCOLF1T || (type & 0x1F) == NOCOLF1B)
+			{
+				if (dx > (1024 - dz))
+				{
+					hadj = (type >> 5) & 0x1F;
+
+					if ((type >> 5) & 0x10)
+						hadj |= 0xFFF0;
+
+					height += hadj << 8;
+					xoff = tilt3 - tilt0;
+					yoff = tilt3 - tilt2;
+				}
+				else
+				{
+					hadj = (type >> 10) & 0x1F;
+
+					if ((type >> 10) & 0x10)
+						hadj |= 0xFFF0;
+
+					height += hadj << 8;
+					xoff = tilt2 - tilt1;
+					yoff = tilt0 - tilt1;
+				}
+			}
+			else
+			{
+				if (dx > dz)
+				{
+					hadj = (type >> 5) & 0x1F;
+
+					if ((type >> 5) & 0x10)
+						hadj |= 0xFFF0;
+
+					height += hadj << 8;
+					xoff = tilt3 - tilt0;
+					yoff = tilt0 - tilt1;
+				}
+				else
+				{
+
+					hadj = (type >> 10) & 0x1F;
+
+					if ((type >> 10) & 0x10)
+						hadj |= 0xFFF0;
+
+					height += hadj << 8;
+					xoff = tilt2 - tilt1;
+					yoff = tilt3 - tilt2;
+				}
+			}
+
+			tiltxoff = xoff;
+			tiltyoff = yoff;
+
+			if (ABS(xoff) > 2 || ABS(yoff) > 2)
+				height_type = DIAGONAL;
+
+			if (xoff >= 0)
+				height += xoff * ((-1 - z) & 1023) >> 2;
+			else
+				height -= xoff * (z & 1023) >> 2;
+
+			if (yoff >= 0)
+				height += yoff * ((-1 - x) & 1023) >> 2;
+			else
+				height -= yoff * (x & 1023) >> 2;
+
+			data++;
+			break;
+
+		default:
+			S_ExitSystem("GetHeight(): Unknown type");
+			break;
+		}
+
+	} while (!(type & 0x8000));
+
+	return height;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1347,4 +1561,5 @@ void inject_control(bool replace)
 	INJECT(0x0044C8D0, CheckNoColCeilingTriangle, replace);
 	INJECT(0x0044A1A0, GetFloor, replace);
 	INJECT(0x0044A390, GetWaterHeight, replace);
+	INJECT(0x0044A530, GetHeight, replace);
 }
