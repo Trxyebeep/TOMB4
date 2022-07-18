@@ -11,6 +11,7 @@ void LaraBubbles(ITEM_INFO* item);
 void UpdateDrips();
 long GetFreeFireSpark();
 void TriggerGlobalStaticFlame();
+void TriggerGlobalFireFlame();
 
 #define ClearFires	( (void(__cdecl*)()) 0x004384F0 )
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )

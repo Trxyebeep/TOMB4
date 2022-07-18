@@ -1303,7 +1303,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00437E60	+	GetFreeFireSpark
 0x00437EF0		keep_those_fires_burning
 0x00437F20		UpdateFireSparks
-0x004382C0		TriggerGlobalFireFlame
+0x004382C0	+	TriggerGlobalFireFlame
 0x00438420	+	TriggerGlobalStaticFlame
 0x004384F0		ClearFires
 0x00438510		AddFire
