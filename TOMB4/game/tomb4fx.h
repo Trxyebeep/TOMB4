@@ -18,10 +18,10 @@ void ClearFires();
 void AddFire(long x, long y, long z, long size, short room_number, short fade);
 void S_DrawFires();
 long GetFreeSmokeSpark();
+void UpdateSmokeSparks();
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )
-#define UpdateSmokeSparks	( (void(__cdecl*)()) 0x00438700 )
 #define UpdateBubbles	( (void(__cdecl*)()) 0x00439970 )
 #define UpdateBlood	( (void(__cdecl*)()) 0x00438D90 )
 #define UpdateGunShells	( (void(__cdecl*)()) 0x00439340 )

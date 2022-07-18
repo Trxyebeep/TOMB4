@@ -772,6 +772,87 @@ long GetFreeSmokeSpark()
 	return min_life_num;
 }
 
+void UpdateSmokeSparks()
+{
+	SMOKE_SPARKS* sptr;
+	long fade;
+
+	for (int i = 0; i < 32; i++)
+	{
+		sptr = &smoke_spark[i];
+
+		if (!sptr->On)
+			continue;
+
+		sptr->Life -= 2;
+
+		if (sptr->Life <= 0)
+		{
+			sptr->On = 0;
+			continue;
+		}
+
+		if (sptr->sLife - sptr->Life < sptr->ColFadeSpeed)
+		{
+			fade = ((sptr->sLife - sptr->Life) << 16) / sptr->ColFadeSpeed;
+			sptr->Shade = sptr->sShade + uchar(((sptr->dShade - sptr->sShade) * fade) >> 16);
+		}
+		else if (sptr->Life < sptr->FadeToBlack)
+		{
+			fade = ((sptr->Life - sptr->FadeToBlack) << 16) / sptr->FadeToBlack + 0x10000;
+			sptr->Shade = uchar((sptr->dShade * fade) >> 16);
+
+			if (sptr->Shade < 8)
+			{
+				sptr->On = 0;
+				continue;
+			}
+		}
+		else
+			sptr->Shade = sptr->dShade;
+
+		if (sptr->Shade < 24)
+			sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 2);
+		else if (sptr->Shade < 80)
+			sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 1);
+		else
+			sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
+
+		if (sptr->Flags & 0x10)
+			sptr->RotAng = (sptr->RotAng + sptr->RotAdd) & 0xFFF;
+
+		fade = ((sptr->sLife - sptr->Life) << 16) / sptr->sLife;
+		sptr->Yvel += sptr->Gravity;
+
+		if (sptr->MaxYvel)
+		{
+			if (sptr->Yvel < 0 && sptr->Yvel < sptr->MaxYvel << 5 || sptr->Yvel > 0 && sptr->Yvel > sptr->MaxYvel << 5)
+				sptr->Yvel = sptr->MaxYvel << 5;
+		}
+
+		if (sptr->Friction & 0xF)
+		{
+			sptr->Xvel -= sptr->Xvel >> (sptr->Friction & 0xF);
+			sptr->Zvel -= sptr->Zvel >> (sptr->Friction & 0xF);
+		}
+
+		if (sptr->Friction & 0xF0)
+			sptr->Yvel -= sptr->Yvel >> (sptr->Friction >> 4);
+
+		sptr->x += sptr->Xvel >> 5;
+		sptr->y += sptr->Yvel >> 5;
+		sptr->z += sptr->Zvel >> 5;
+
+		if (sptr->Flags & 0x100)
+		{
+			sptr->x += SmokeWindX >> 1;
+			sptr->z += SmokeWindZ >> 1;
+		}
+
+		sptr->Size = sptr->sSize + uchar((fade * (sptr->dSize - sptr->sSize)) >> 16);
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -789,4 +870,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00438510, AddFire, replace);
 	INJECT(0x00438560, S_DrawFires, replace);
 	INJECT(0x00438690, GetFreeSmokeSpark, replace);
+	INJECT(0x00438700, UpdateSmokeSparks, replace);
 }
