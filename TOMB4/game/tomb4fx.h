@@ -12,6 +12,7 @@ void UpdateDrips();
 long GetFreeFireSpark();
 void TriggerGlobalStaticFlame();
 void TriggerGlobalFireFlame();
+void keep_those_fires_burning();
 
 #define ClearFires	( (void(__cdecl*)()) 0x004384F0 )
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
