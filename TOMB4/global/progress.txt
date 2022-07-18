@@ -1306,7 +1306,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004382C0	+	TriggerGlobalFireFlame
 0x00438420	+	TriggerGlobalStaticFlame
 0x004384F0	+	ClearFires
-0x00438510		AddFire
+0x00438510	+	AddFire
 0x00438560		S_DrawFires
 0x00438690		GetFreeSmokeSpark
 0x00438700		UpdateSmokeSparks

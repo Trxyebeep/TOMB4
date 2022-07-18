@@ -651,6 +651,31 @@ void ClearFires()
 	}
 }
 
+void AddFire(long x, long y, long z, long size, short room_number, short fade)
+{
+	FIRE_LIST* fire;
+
+	for (int i = 0; i < 32; i++)
+	{
+		fire = &fires[i];
+
+		if (fire->on)
+			continue;
+
+		if (fade)
+			fire->on = (char)fade;
+		else
+			fire->on = 1;
+
+		fire->x = x;
+		fire->y = y;
+		fire->z = z;
+		fire->size = (char)size;
+		fire->room_number = room_number;
+		break;
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -665,4 +690,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00437EF0, keep_those_fires_burning, replace);
 	INJECT(0x00437F20, UpdateFireSparks, replace);
 	INJECT(0x004384F0, ClearFires, replace);
+	INJECT(0x00438510, AddFire, replace);
 }

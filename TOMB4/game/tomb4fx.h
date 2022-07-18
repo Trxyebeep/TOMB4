@@ -15,6 +15,7 @@ void TriggerGlobalFireFlame();
 void keep_those_fires_burning();
 void UpdateFireSparks();
 void ClearFires();
+void AddFire(long x, long y, long z, long size, short room_number, short fade);
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )
@@ -33,7 +34,6 @@ void ClearFires();
 #define S_DrawFires	( (void(__cdecl*)()) 0x00438560 )
 #define	CreateBubble	( (void(__cdecl*)(PHD_3DPOS*, short, long, long, long, long, long , long)) 0x004397F0 )
 #define GetFreeDrip	( (long(__cdecl*)()) 0x00439F10 )
-#define AddFire	( (void(__cdecl*)(long, long, long, long, short, short)) 0x00438510 )
 #define TriggerBlood	( (void(__cdecl*)(long, long, long, long, long)) 0x00438F00 )
 #define GetFreeSmokeSpark	( (long(__cdecl*)()) 0x00438690 )
 #define TriggerShockwave	( (void(__cdecl*)(PHD_VECTOR*, long, long, long, long)) 0x0043AA90 )
