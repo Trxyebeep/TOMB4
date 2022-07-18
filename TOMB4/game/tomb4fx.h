@@ -14,8 +14,8 @@ void TriggerGlobalStaticFlame();
 void TriggerGlobalFireFlame();
 void keep_those_fires_burning();
 void UpdateFireSparks();
+void ClearFires();
 
-#define ClearFires	( (void(__cdecl*)()) 0x004384F0 )
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )
 #define UpdateSmokeSparks	( (void(__cdecl*)()) 0x00438700 )

@@ -640,6 +640,17 @@ void UpdateFireSparks()
 	}
 }
 
+void ClearFires()
+{
+	FIRE_LIST* fire;
+
+	for (int i = 0; i < 32; i++)
+	{
+		fire = &fires[i];
+		fire->on = 0;
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -653,4 +664,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x004382C0, TriggerGlobalFireFlame, replace);
 	INJECT(0x00437EF0, keep_those_fires_burning, replace);
 	INJECT(0x00437F20, UpdateFireSparks, replace);
+	INJECT(0x004384F0, ClearFires, replace);
 }

@@ -2122,6 +2122,16 @@ struct GUNFLASH_STRUCT
 	short on;
 };
 
+struct FIRE_LIST
+{
+	long x;
+	long y;
+	long z;
+	char on;
+	char size;
+	short room_number;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {
