@@ -263,14 +263,14 @@ void ObjectObjects()
 	obj->initialise = 0;
 //	obj->control = ControlCrossbow;
 	obj->collision = 0;
-//	obj->draw_routine = DrawWeaponMissile;
+	obj->draw_routine = DrawWeaponMissile;
 	obj->using_drawanimating_item = 0;
 
 	obj = &objects[GRENADE];
 	obj->initialise = 0;
 //	obj->control = ControlCrossbow;
 	obj->collision = 0;
-//	obj->draw_routine = DrawWeaponMissile;
+	obj->draw_routine = DrawWeaponMissile;
 	obj->using_drawanimating_item = 0;
 
 	obj = &objects[FLARE_INV_ITEM];

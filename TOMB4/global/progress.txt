@@ -1348,7 +1348,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0043B330		TriggerLightningGlow
 0x0043B420		TriggerFlashSmoke
 0x0043B5F0	+	DrawLensFlares
-0x0043B630		DrawWeaponMissile
+0x0043B630	+	DrawWeaponMissile
 
 
 		game/train.cpp

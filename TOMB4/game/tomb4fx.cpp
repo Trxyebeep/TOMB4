@@ -907,6 +907,24 @@ void DrawLensFlares(ITEM_INFO* item)
 	SetUpLensFlare(0, 0, 0, &sun);
 }
 
+void DrawWeaponMissile(ITEM_INFO* item)
+{
+	phd_PushMatrix();
+	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+	phd_PutPolygons_train(meshes[objects[item->object_number].mesh_index], 0);
+	phd_PopMatrix();
+
+	if (gfLevelFlags & GF_MIRROR && item->room_number == gfMirrorRoom)
+	{
+		phd_PushMatrix();
+		phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, 2 * gfMirrorZPlane - item->pos.z_pos);
+		phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+		phd_PutPolygons_train(meshes[objects[item->object_number].mesh_index], 0);
+		phd_PopMatrix();
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -927,4 +945,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00438700, UpdateSmokeSparks, replace);
 	INJECT(0x00438BA0, TriggerShatterSmoke, replace);
 	INJECT(0x0043B5F0, DrawLensFlares, replace);
+	INJECT(0x0043B630, DrawWeaponMissile, replace);
 }

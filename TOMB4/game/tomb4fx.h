@@ -21,6 +21,7 @@ long GetFreeSmokeSpark();
 void UpdateSmokeSparks();
 void TriggerShatterSmoke(long x, long y, long z);
 void DrawLensFlares(ITEM_INFO* item);
+void DrawWeaponMissile(ITEM_INFO* item);
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )
