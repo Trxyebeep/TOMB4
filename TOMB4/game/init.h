@@ -28,3 +28,4 @@ void InitialisePickUp(short item_number);
 void CreateRope(ROPE_STRUCT* rope, PHD_VECTOR* pos, PHD_VECTOR* dir, long slength, ITEM_INFO* item);
 void InitialiseRope(short item_number);
 void init_all_ropes();
+void InitialiseEffects();

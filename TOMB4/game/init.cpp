@@ -8,6 +8,7 @@
 #include "traps.h"
 #include "draw.h"
 #include "rope.h"
+#include "scarab.h"
 
 void InitialiseMapper(short item_number)
 {
@@ -556,6 +557,37 @@ void init_all_ropes()
 	nRope = 0;
 }
 
+void InitialiseEffects()
+{
+	memset(spark, 0, sizeof(spark));
+	memset(fire_spark, 0, sizeof(fire_spark));
+	memset(smoke_spark, 0, sizeof(smoke_spark));
+	memset(Gunshells, 0, sizeof(Gunshells));
+	memset(Gunflashes, 0, sizeof(Gunflashes));
+	memset(debris, 0, sizeof(debris));
+	memset(blood, 0, sizeof(blood));
+	memset(splashes, 0, sizeof(splashes));
+	memset(ripples, 0, sizeof(ripples));
+	memset(Bubbles, 0, sizeof(Bubbles));
+	memset(Drips, 0, sizeof(Drips));
+	memset(ShockWaves, 0, sizeof(ShockWaves));
+
+	for (int i = 0; i < 256; i++)
+		spark[i].Dynamic = -1;
+
+	next_fire_spark = 1;
+	next_smoke_spark = 0;
+	next_gunshell = 0;
+	next_bubble = 0;
+	next_drip = 0;
+	next_debris = 0;
+	next_blood = 0;
+	ClearScarabs();
+
+	for (int i = 0; i < 64; i++)
+		Locusts[i].On = 0;
+}
+
 void inject_init(bool replace)
 {
 	INJECT(0x004537D0, InitialiseMapper, replace);
@@ -583,4 +615,5 @@ void inject_init(bool replace)
 	INJECT(0x00453F60, CreateRope, replace);
 	INJECT(0x00454070, InitialiseRope, replace);
 	INJECT(0x00453F30, init_all_ropes, replace);
+	INJECT(0x004538A0, InitialiseEffects, replace);
 }

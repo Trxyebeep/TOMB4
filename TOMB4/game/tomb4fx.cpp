@@ -9,6 +9,7 @@
 #include "sound.h"
 #include "delstuff.h"
 #include "control.h"
+#include "../specific/specificfx.h"
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments)
 {
@@ -381,6 +382,549 @@ void UpdateDrips()
 	}
 }
 
+long GetFreeFireSpark()
+{
+	FIRE_SPARKS* sptr;
+	long min_life, min_life_num;
+
+	sptr = &fire_spark[next_fire_spark];
+	min_life = 4095;
+	min_life_num = 0;
+
+	for (int free = next_fire_spark, i = 0; i < 20; i++)
+	{
+		if (sptr->On)
+		{
+			if (sptr->Life < min_life)
+			{
+				min_life_num = free;
+				min_life = sptr->Life;
+			}
+
+			if (free == 19)
+			{
+				sptr = &fire_spark[1];
+				free = 1;
+			}
+			else
+			{
+				free++;
+				sptr++;
+			}
+		}
+		else
+		{
+			next_fire_spark = free + 1;
+
+			if (next_fire_spark >= 20)
+				next_fire_spark = 1;
+
+			return free;
+		}
+	}
+
+	next_fire_spark = min_life_num + 1;
+
+	if (next_fire_spark >= 20)
+		next_fire_spark = 1;
+
+	return min_life_num;
+}
+
+void TriggerGlobalStaticFlame()
+{
+	FIRE_SPARKS* sptr;
+
+	sptr = &fire_spark[0];
+	sptr->On = 1;
+	sptr->dR = (GetRandomControl() & 0x3F) - 64;
+	sptr->dG = (GetRandomControl() & 0x3F) + 96;
+	sptr->dB = 64;
+	sptr->sR = sptr->dR;
+	sptr->sG = sptr->dG;
+	sptr->sB = sptr->dB;
+	sptr->ColFadeSpeed = 1;
+	sptr->FadeToBlack = 0;
+	sptr->Life = 8;
+	sptr->sLife = 8;
+	sptr->x = (GetRandomControl() & 7) - 4;
+	sptr->y = 0;
+	sptr->z = (GetRandomControl() & 7) - 4;
+	sptr->MaxYvel = 0;
+	sptr->Gravity = 0;
+	sptr->Friction = 0;
+	sptr->Xvel = 0;
+	sptr->Yvel = 0;
+	sptr->Zvel = 0;
+	sptr->Flags = 0;
+	sptr->dSize = (GetRandomControl() & 0x1F) + 0x80;
+	sptr->sSize = sptr->dSize;
+	sptr->Size = sptr->dSize;
+}
+
+void TriggerGlobalFireFlame()
+{
+	FIRE_SPARKS* sptr;
+
+	sptr = &fire_spark[GetFreeFireSpark()];
+	sptr->On = 1;
+	sptr->sR = 255;
+	sptr->sG = (GetRandomControl() & 0x1F) + 48;
+	sptr->sB = 48;
+	sptr->dR = (GetRandomControl() & 0x3F) + 192;
+	sptr->dG = (GetRandomControl() & 0x3F) + 128;
+	sptr->dB = 32;
+	sptr->FadeToBlack = 8;
+	sptr->ColFadeSpeed = (GetRandomControl() & 3) + 8;
+	sptr->Life = (GetRandomControl() & 7) + 32;
+	sptr->sLife = sptr->Life;
+	sptr->x = 4 * (GetRandomControl() & 0x1F) - 64;
+	sptr->y = 0;
+	sptr->z = 4 * (GetRandomControl() & 0x1F) - 64;
+	sptr->Xvel = 2 * (GetRandomControl() & 0xFF) - 256;
+	sptr->Yvel = -16 - (GetRandomControl() & 0xF);
+	sptr->Zvel = 2 * (GetRandomControl() & 0xFF) - 256;
+	sptr->Friction = 5;
+	sptr->Gravity = -32 - (GetRandomControl() & 0x1F);
+	sptr->MaxYvel = -16 - (GetRandomControl() & 7);
+
+	if (GetRandomControl() & 1)
+	{
+		sptr->Flags = 16;
+		sptr->RotAng = GetRandomControl() & 0xFFF;
+
+		if (GetRandomControl() & 1)
+			sptr->RotAdd = -16 - (GetRandomControl() & 0xF);
+		else
+			sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
+	}
+	else
+		sptr->Flags = 0;
+
+	sptr->Size = (GetRandomControl() & 0x1F) + 128;
+	sptr->sSize = sptr->Size;
+	sptr->dSize = sptr->Size >> 4;
+}
+
+void keep_those_fires_burning()
+{
+	FIRE_SPARKS* sptr;
+
+	TriggerGlobalStaticFlame();
+
+	if (!(wibble & 0xF))
+	{
+		TriggerGlobalFireFlame();
+
+		if (!(wibble & 0x1F))
+		{
+			sptr = &fire_spark[GetFreeFireSpark()];
+			sptr->On = 1;
+			sptr->sR = 0;
+			sptr->sG = 0;
+			sptr->sB = 0;
+			sptr->dR = 32;
+			sptr->dG = 32;
+			sptr->dB = 32;
+			sptr->FadeToBlack = 16;
+			sptr->ColFadeSpeed = (GetRandomControl() & 7) + 32;
+			sptr->Life = (GetRandomControl() & 0xF) + 57;
+			sptr->sLife = sptr->Life;
+			sptr->x = (GetRandomControl() & 0xF) - 8;
+			sptr->y = -256 - (GetRandomControl() & 0x7F);
+			sptr->z = (GetRandomControl() & 0xF) - 8;
+			sptr->Xvel = (GetRandomControl() & 0xFF) - 128;
+			sptr->Yvel = -16 - (GetRandomControl() & 0xF);
+			sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
+			sptr->Friction = 4;
+			
+			if (GetRandomControl() & 1)
+			{
+				sptr->Flags = 16;
+				sptr->RotAng = GetRandomControl() & 0xFFF;
+
+				if (GetRandomControl() & 1)
+					sptr->RotAdd = -16 - (GetRandomControl() & 0xF);
+				else
+					sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
+			}
+			else
+				sptr->Flags = 0;
+
+			sptr->Gravity = -16 - (GetRandomControl() & 0xF);
+			sptr->MaxYvel = -8 - (GetRandomControl() & 7);
+			sptr->dSize = (GetRandomControl() & 0x7F) + 128;
+			sptr->sSize = sptr->dSize >> 2;
+			sptr->Size = sptr->dSize >> 2;
+		}
+	}
+}
+
+void UpdateFireSparks()
+{
+	FIRE_SPARKS* sptr;
+	long fade;
+
+	keep_those_fires_burning();
+
+	for (int i = 0; i < 20; i++)
+	{
+		sptr = &fire_spark[i];
+
+		if (!sptr->On)
+			continue;
+
+		sptr->Life--;
+
+		if (!sptr->Life)
+		{
+			sptr->On = 0;
+			continue;
+		}
+
+		if (sptr->sLife - sptr->Life < sptr->ColFadeSpeed)
+		{
+			fade = ((sptr->sLife - sptr->Life) << 16) / sptr->ColFadeSpeed;
+			sptr->R = sptr->sR + uchar((fade * (sptr->dR - sptr->sR)) >> 16);
+			sptr->G = sptr->sG + uchar((fade * (sptr->dG - sptr->sG)) >> 16);
+			sptr->B = sptr->sB + uchar((fade * (sptr->dB - sptr->sB)) >> 16);
+		}
+		else if (sptr->Life < sptr->FadeToBlack)
+		{
+			fade = ((sptr->Life - sptr->FadeToBlack) << 16) / sptr->FadeToBlack + 0x10000;
+			sptr->R = uchar((fade * sptr->dR) >> 16);
+			sptr->G = uchar((fade * sptr->dG) >> 16);
+			sptr->B = uchar((fade * sptr->dB) >> 16);
+
+			if (sptr->R < 8 && sptr->G < 8 && sptr->B < 8)
+			{
+				sptr->On = 0;
+				continue;
+			}
+		}
+		else
+		{
+			sptr->R = sptr->dR;
+			sptr->G = sptr->dG;
+			sptr->B = sptr->dB;
+		}
+
+		if (sptr->Flags & 0x10)
+			sptr->RotAng = (sptr->RotAng + sptr->RotAdd) & 0xFFF;
+
+		if (sptr->R < 24 && sptr->G < 24 && sptr->B < 24)
+			sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 2);
+		else if (sptr->R < 80 && sptr->G < 80 && sptr->B < 80)
+			sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 1);
+		else
+			sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
+
+		fade = ((sptr->sLife - sptr->Life) << 16) / sptr->sLife;
+		sptr->Yvel += sptr->Gravity;
+
+		if (sptr->MaxYvel)
+		{
+			if (sptr->Yvel < 0 && sptr->Yvel < sptr->MaxYvel << 5 || sptr->Yvel > 0 && sptr->Yvel > sptr->MaxYvel << 5)
+				sptr->Yvel = sptr->MaxYvel << 5;
+		}
+
+		if (sptr->Friction)
+		{
+			sptr->Xvel -= sptr->Xvel >> sptr->Friction;
+			sptr->Zvel -= sptr->Zvel >> sptr->Friction;
+		}
+
+		sptr->x += sptr->Xvel >> 5;
+		sptr->y += sptr->Yvel >> 5;
+		sptr->z += sptr->Zvel >> 5;
+		sptr->Size = sptr->sSize + uchar((fade * (sptr->dSize - sptr->sSize)) >> 16);
+	}
+}
+
+void ClearFires()
+{
+	FIRE_LIST* fire;
+
+	for (int i = 0; i < 32; i++)
+	{
+		fire = &fires[i];
+		fire->on = 0;
+	}
+}
+
+void AddFire(long x, long y, long z, long size, short room_number, short fade)
+{
+	FIRE_LIST* fire;
+
+	for (int i = 0; i < 32; i++)
+	{
+		fire = &fires[i];
+
+		if (fire->on)
+			continue;
+
+		if (fade)
+			fire->on = (char)fade;
+		else
+			fire->on = 1;
+
+		fire->x = x;
+		fire->y = y;
+		fire->z = z;
+		fire->size = (char)size;
+		fire->room_number = room_number;
+		break;
+	}
+}
+
+void S_DrawFires()
+{
+	FIRE_LIST* fire;
+	ROOM_INFO* r;
+	short* bounds;
+	short size;
+
+	bounds = (short*)&scratchpad[0];
+
+	for (int i = 0; i < 32; i++)
+	{
+		fire = &fires[i];
+
+		if (!fire->on)
+			continue;
+
+		if (fire->size == 2)
+			size = 256;
+		else
+			size = 384;
+
+		bounds[0] = -size;
+		bounds[1] = size;
+		bounds[2] = -size * 6;
+		bounds[3] = size;
+		bounds[4] = -size;
+		bounds[5] = size;
+
+		r = &room[fire->room_number];
+		phd_left = r->left;
+		phd_right = r->right;
+		phd_top = r->top;
+		phd_bottom = r->bottom;
+
+		phd_PushMatrix();
+		phd_TranslateAbs(fire->x, fire->y, fire->z);
+
+		if (S_GetObjectBounds(bounds))
+		{
+			if (fire->on == 1)
+				S_DrawFireSparks((uchar)fire->size, 255);
+			else
+				S_DrawFireSparks((uchar)fire->size, fire->on & 0xFF);
+		}
+
+		phd_PopMatrix();
+	}
+
+	phd_top = 0;
+	phd_left = 0;
+	phd_right = phd_winwidth;
+	phd_bottom = phd_winheight;
+}
+
+long GetFreeSmokeSpark()
+{
+	SMOKE_SPARKS* sptr;
+	long min_life, min_life_num;
+
+	sptr = &smoke_spark[next_smoke_spark];
+	min_life = 4095;
+	min_life_num = 0;
+
+	for (int free = next_smoke_spark, i = 0; i < 32; i++)
+	{
+		if (sptr->On)
+		{
+			if (sptr->Life < min_life)
+			{
+				min_life_num = free;
+				min_life = sptr->Life;
+			}
+
+			if (free == 31)
+			{
+				sptr = &smoke_spark[0];
+				free = 0;
+			}
+			else
+			{
+				free++;
+				sptr++;
+			}
+		}
+		else
+		{
+			next_smoke_spark = (free + 1) & 0x1F;
+			return free;
+		}
+	}
+
+	next_smoke_spark = (min_life_num + 1) & 0x1F;
+	return min_life_num;
+}
+
+void UpdateSmokeSparks()
+{
+	SMOKE_SPARKS* sptr;
+	long fade;
+
+	for (int i = 0; i < 32; i++)
+	{
+		sptr = &smoke_spark[i];
+
+		if (!sptr->On)
+			continue;
+
+		sptr->Life -= 2;
+
+		if (sptr->Life <= 0)
+		{
+			sptr->On = 0;
+			continue;
+		}
+
+		if (sptr->sLife - sptr->Life < sptr->ColFadeSpeed)
+		{
+			fade = ((sptr->sLife - sptr->Life) << 16) / sptr->ColFadeSpeed;
+			sptr->Shade = sptr->sShade + uchar(((sptr->dShade - sptr->sShade) * fade) >> 16);
+		}
+		else if (sptr->Life < sptr->FadeToBlack)
+		{
+			fade = ((sptr->Life - sptr->FadeToBlack) << 16) / sptr->FadeToBlack + 0x10000;
+			sptr->Shade = uchar((sptr->dShade * fade) >> 16);
+
+			if (sptr->Shade < 8)
+			{
+				sptr->On = 0;
+				continue;
+			}
+		}
+		else
+			sptr->Shade = sptr->dShade;
+
+		if (sptr->Shade < 24)
+			sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 2);
+		else if (sptr->Shade < 80)
+			sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 1);
+		else
+			sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
+
+		if (sptr->Flags & 0x10)
+			sptr->RotAng = (sptr->RotAng + sptr->RotAdd) & 0xFFF;
+
+		fade = ((sptr->sLife - sptr->Life) << 16) / sptr->sLife;
+		sptr->Yvel += sptr->Gravity;
+
+		if (sptr->MaxYvel)
+		{
+			if (sptr->Yvel < 0 && sptr->Yvel < sptr->MaxYvel << 5 || sptr->Yvel > 0 && sptr->Yvel > sptr->MaxYvel << 5)
+				sptr->Yvel = sptr->MaxYvel << 5;
+		}
+
+		if (sptr->Friction & 0xF)
+		{
+			sptr->Xvel -= sptr->Xvel >> (sptr->Friction & 0xF);
+			sptr->Zvel -= sptr->Zvel >> (sptr->Friction & 0xF);
+		}
+
+		if (sptr->Friction & 0xF0)
+			sptr->Yvel -= sptr->Yvel >> (sptr->Friction >> 4);
+
+		sptr->x += sptr->Xvel >> 5;
+		sptr->y += sptr->Yvel >> 5;
+		sptr->z += sptr->Zvel >> 5;
+
+		if (sptr->Flags & 0x100)
+		{
+			sptr->x += SmokeWindX >> 1;
+			sptr->z += SmokeWindZ >> 1;
+		}
+
+		sptr->Size = sptr->sSize + uchar((fade * (sptr->dSize - sptr->sSize)) >> 16);
+	}
+}
+
+void TriggerShatterSmoke(long x, long y, long z)
+{
+	SMOKE_SPARKS* sptr;
+
+	sptr = &smoke_spark[GetFreeSmokeSpark()];
+	sptr->On = 1;
+	sptr->sShade = 0;
+	sptr->dShade = (GetRandomControl() & 0x1F) + 64;
+	sptr->ColFadeSpeed = 4;
+	sptr->FadeToBlack = 24 - (GetRandomControl() & 7);
+	sptr->TransType = 2;
+	sptr->Life = (GetRandomControl() & 7) + 48;
+	sptr->sLife = sptr->Life;
+	sptr->x = (GetRandomControl() & 0x1F) + x - 16;
+	sptr->y = (GetRandomControl() & 0x1F) + y - 16;
+	sptr->z = (GetRandomControl() & 0x1F) + z - 16;
+	sptr->Xvel = 2 * (GetRandomControl() & 0x1FF) - 512;
+	sptr->Yvel = 2 * (GetRandomControl() & 0x1FF) - 512;
+	sptr->Zvel = 2 * (GetRandomControl() & 0x1FF) - 512;
+	sptr->Friction = 7;
+	
+	if (GetRandomControl() & 1)
+	{
+		sptr->Flags = 16;
+		sptr->RotAng = GetRandomControl() & 0xFFF;
+
+		if (GetRandomControl() & 1)
+			sptr->RotAdd = -64 - (GetRandomControl() & 0x3F);
+		else
+			sptr->RotAdd = (GetRandomControl() & 0x3F) + 64;
+	}
+	else if (room[lara_item->room_number].flags & ROOM_NOT_INSIDE)
+		sptr->Flags = 256;
+	else
+		sptr->Flags = 0;
+
+	sptr->Gravity = -4 - (GetRandomControl() & 3);
+	sptr->MaxYvel = -4 - (GetRandomControl() & 3);
+	sptr->dSize = (GetRandomControl() & 0x3F) + 64;
+	sptr->sSize = sptr->dSize >> 3;
+	sptr->Size = sptr->dSize >> 3;
+}
+
+void DrawLensFlares(ITEM_INFO* item)
+{
+	GAME_VECTOR sun;
+
+	sun.x = item->pos.x_pos;
+	sun.y = item->pos.y_pos;
+	sun.z = item->pos.z_pos;
+	sun.room_number = item->room_number;
+	SetUpLensFlare(0, 0, 0, &sun);
+}
+
+void DrawWeaponMissile(ITEM_INFO* item)
+{
+	phd_PushMatrix();
+	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+	phd_PutPolygons_train(meshes[objects[item->object_number].mesh_index], 0);
+	phd_PopMatrix();
+
+	if (gfLevelFlags & GF_MIRROR && item->room_number == gfMirrorRoom)
+	{
+		phd_PushMatrix();
+		phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, 2 * gfMirrorZPlane - item->pos.z_pos);
+		phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+		phd_PutPolygons_train(meshes[objects[item->object_number].mesh_index], 0);
+		phd_PopMatrix();
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -389,4 +933,17 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00438940, TriggerGunSmoke, replace);
 	INJECT(0x004398B0, LaraBubbles, replace);
 	INJECT(0x00439F80, UpdateDrips, replace);
+	INJECT(0x00437E60, GetFreeFireSpark, replace);
+	INJECT(0x00438420, TriggerGlobalStaticFlame, replace);
+	INJECT(0x004382C0, TriggerGlobalFireFlame, replace);
+	INJECT(0x00437EF0, keep_those_fires_burning, replace);
+	INJECT(0x00437F20, UpdateFireSparks, replace);
+	INJECT(0x004384F0, ClearFires, replace);
+	INJECT(0x00438510, AddFire, replace);
+	INJECT(0x00438560, S_DrawFires, replace);
+	INJECT(0x00438690, GetFreeSmokeSpark, replace);
+	INJECT(0x00438700, UpdateSmokeSparks, replace);
+	INJECT(0x00438BA0, TriggerShatterSmoke, replace);
+	INJECT(0x0043B5F0, DrawLensFlares, replace);
+	INJECT(0x0043B630, DrawWeaponMissile, replace);
 }

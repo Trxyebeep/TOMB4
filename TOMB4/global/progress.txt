@@ -153,14 +153,14 @@ x for functions decompiled but not injected, for one reason or another.
 0x00449FC0		GetChange
 0x0044A060		TranslateItem
 0x0044A0D0		AlterFloorHeight
-0x0044A1A0		GetFloor
-0x0044A390		GetWaterHeight
-0x0044A530		GetHeight
+0x0044A1A0	+	GetFloor
+0x0044A390	+	GetWaterHeight
+0x0044A530	+	GetHeight
 0x0044AA20		RefreshCamera
 0x0044AB50	+	TestTriggers
 0x0044B620		TriggerActive
-0x0044B690		GetCeiling
-0x0044BB20		GetDoor
+0x0044B690	+	GetCeiling
+0x0044BB20	+	GetDoor
 0x0044BBE0		LOS
 0x0044BC80		xLOS
 0x0044BFD0		zLOS
@@ -170,8 +170,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044C6F0	+	AddRoomFlipItems
 0x0044C770		TriggerCDTrack
 0x0044C790		TriggerNormalCDTrack
-0x0044C820		CheckNoColFloorTriangle
-0x0044C8D0		CheckNoColCeilingTriangle
+0x0044C820	+	CheckNoColFloorTriangle
+0x0044C8D0	+	CheckNoColCeilingTriangle
 0x0044C9C0		IsRoomOutside
 0x0044CBE0		ObjectOnLOS2
 0x0044CDF0		DoRayBox
@@ -555,7 +555,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004537D0	+	InitialiseMapper
 0x00453800	+	InitialiseLightningConductor
 0x00453870	+	InitialiseStatuePlinth
-0x004538A0		InitialiseEffects
+0x004538A0	+	InitialiseEffects
 0x00453980	+	InitialiseSmokeEmitter
 0x00453A30	+	InitialiseDoor
 0x00453E40	+	InitialisePulley
@@ -1214,12 +1214,12 @@ x for functions decompiled but not injected, for one reason or another.
 0x0045E1F0	+	ObjectObjects
 0x0045EB40		GetCarriedItems
 0x0045EC50		GetAIPickups
-0x0045ED30		BuildOutsideTable
-0x0045F050		InitialiseGameFlags
+0x0045ED30	+	BuildOutsideTable
+0x0045F050	+	InitialiseGameFlags
 0x0045F0A0		SetupGame
 0x0045F110		InitTarget
-0x0045F1A0		ClearFootPrints
-0x0045F1C0		reset_cutseq_vars
+0x0045F1A0	+	ClearFootPrints
+0x0045F1C0	+	reset_cutseq_vars
 
 
 		game/skeleton.cpp
@@ -1300,18 +1300,18 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/tomb4fx.cpp
 
-0x00437E60		GetFreeFireSpark
-0x00437EF0		keep_those_fires_burning
-0x00437F20		UpdateFireSparks
-0x004382C0		TriggerGlobalFireFlame
-0x00438420		TriggerGlobalStaticFlame
-0x004384F0		ClearFires
-0x00438510		AddFire
-0x00438560		S_DrawFires
-0x00438690		GetFreeSmokeSpark
-0x00438700		UpdateSmokeSparks
+0x00437E60	+	GetFreeFireSpark
+0x00437EF0	+	keep_those_fires_burning
+0x00437F20	+	UpdateFireSparks
+0x004382C0	+	TriggerGlobalFireFlame
+0x00438420	+	TriggerGlobalStaticFlame
+0x004384F0	+	ClearFires
+0x00438510	+	AddFire
+0x00438560	+	S_DrawFires
+0x00438690	+	GetFreeSmokeSpark
+0x00438700	+	UpdateSmokeSparks
 0x00438940	+	TriggerGunSmoke
-0x00438BA0		TriggerShatterSmoke
+0x00438BA0	+	TriggerShatterSmoke
 0x00438D20		GetFreeBlood
 0x00438D90		UpdateBlood
 0x00438F00		TriggerBlood
@@ -1347,8 +1347,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x0043B0D0		CalcLightningSpline
 0x0043B330		TriggerLightningGlow
 0x0043B420		TriggerFlashSmoke
-0x0043B5F0		DrawLensFlares
-0x0043B630		DrawWeaponMissile
+0x0043B5F0	+	DrawLensFlares
+0x0043B630	+	DrawWeaponMissile
 
 
 		game/train.cpp
