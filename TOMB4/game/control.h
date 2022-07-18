@@ -9,6 +9,7 @@ void RemoveRoomFlipItems(ROOM_INFO* r);
 void AddRoomFlipItems(ROOM_INFO* r);
 void TestTriggers(short* data, long heavy, long HeavyFlags);
 short GetDoor(FLOOR_INFO* floor);
+long CheckNoColFloorTriangle(FLOOR_INFO* floor, long x, long z);
 
 #define UpdateSky	( (void(__cdecl*)()) 0x00449390 )
 #define GetFloor	( (FLOOR_INFO*(__cdecl*)(long, long, long, short*)) 0x0044A1A0 )

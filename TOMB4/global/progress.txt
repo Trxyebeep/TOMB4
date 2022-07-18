@@ -170,7 +170,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044C6F0	+	AddRoomFlipItems
 0x0044C770		TriggerCDTrack
 0x0044C790		TriggerNormalCDTrack
-0x0044C820		CheckNoColFloorTriangle
+0x0044C820	+	CheckNoColFloorTriangle
 0x0044C8D0		CheckNoColCeilingTriangle
 0x0044C9C0		IsRoomOutside
 0x0044CBE0		ObjectOnLOS2

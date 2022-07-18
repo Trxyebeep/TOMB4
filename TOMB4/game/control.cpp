@@ -1050,6 +1050,57 @@ short GetDoor(FLOOR_INFO* floor)
 	return 255;
 }
 
+long CheckNoColFloorTriangle(FLOOR_INFO* floor, long x, long z)
+{
+	short type;
+
+	if (!floor->index)
+		return 0;
+
+	type = floor_data[floor->index] & 0x1F;
+
+	if (type == NOCOLF1T || type == NOCOLF1B || type == NOCOLF2T || type == NOCOLF2B)
+	{
+		x &= 0x3FF;
+		z &= 0x3FF;
+
+		switch (type)
+		{
+		case NOCOLF1T:
+
+			if (x <= 1024 - z)
+				return -1;
+
+			break;
+
+		case NOCOLF1B:
+
+			if (x > 1024 - z)
+				return -1;
+
+			break;
+
+		case NOCOLF2T:
+
+			if (x <= z)
+				return -1;
+
+			break;
+
+		case NOCOLF2B:
+
+			if (x > z)
+				return -1;
+
+			break;
+		}
+
+		return 1;
+	}
+
+	return 0;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1058,4 +1109,5 @@ void inject_control(bool replace)
 	INJECT(0x0044C6F0, AddRoomFlipItems, replace);
 	INJECT(0x0044AB50, TestTriggers, replace);
 	INJECT(0x0044BB20, GetDoor, replace);
+	INJECT(0x0044C820, CheckNoColFloorTriangle, replace);
 }
