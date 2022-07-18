@@ -2116,6 +2116,12 @@ struct STRINGHEADER
 	ushort PCStringWadLen;
 };
 
+struct GUNFLASH_STRUCT
+{
+	long mx[12];
+	short on;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

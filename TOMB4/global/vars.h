@@ -493,6 +493,12 @@
 #define audio_counter	VAR_U_(0x004BFE70, long)
 #define sound_active	VAR_U_(0x004BF6DC, long)
 #define CurrentPendulum	VAR_U_(0x007FD1A0, PENDULUM)
+#define next_fire_spark	VAR_U_(0x004ADF5C, long)
+#define next_smoke_spark	VAR_U_(0x004BF390, long)
+#define next_gunshell	VAR_U_(0x004BF398, long)
+#define next_bubble	VAR_U_(0x004BF39C, long)
+#define next_drip	VAR_U_(0x004BF3A0, long)
+#define next_blood	VAR_U_(0x004BF394, long)
 
 
 
@@ -608,6 +614,7 @@
 #define ShadeFromTo	ARRAY_(0x004AFF48, CVECTOR, [10][2])
 #define FontShades	ARRAY_(0x004BF704, CVECTOR, [10][32])
 #define cd_flags	ARRAY_(0x007FE180, char, [128])
+#define Gunflashes	ARRAY_(0x00800CE0, GUNFLASH_STRUCT, [4])
 
 
 /*Fog stuff*/
