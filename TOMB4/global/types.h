@@ -1950,8 +1950,8 @@ struct SAMPLE_INFO
 {
 	short number;
 	uchar volume;
-	char radius;
-	char randomness;
+	uchar radius;
+	uchar randomness;
 	char pitch;
 	short flags;
 };
@@ -2130,6 +2130,17 @@ struct FIRE_LIST
 	char on;
 	char size;
 	short room_number;
+};
+
+struct SoundSlot
+{
+	long OrigVolume;
+	long nVolume;
+	long nPan;
+	long nPitch;
+	long nSampleInfo;
+	ulong distance;
+	PHD_VECTOR pos;
 };
 
 #ifdef IMPROVED_BARS

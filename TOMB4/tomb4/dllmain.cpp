@@ -87,6 +87,7 @@
 #include "../game/sas.h"
 #include "../game/hammerhead.h"
 #include "../game/sphere.h"
+#include "../game/sound.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -193,6 +194,7 @@ void inject_all(bool replace)
 	inject_sas(replace);
 	inject_hammerhead(replace);
 	inject_sphere(replace);
+	inject_sound(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
