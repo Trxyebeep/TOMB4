@@ -711,6 +711,37 @@ void ControlEnemyMissile(short fx_number)
 	}
 }
 
+void SetupRipple(long x, long y, long z, long size, long flags)
+{
+	RIPPLE_STRUCT* ripple;
+	long num;
+
+	num = 0;
+
+	while (ripples[num].flags & 1)
+	{
+		num++;
+
+		if (num >= 16)
+			return;
+	}
+
+	ripple = &ripples[num];
+	ripple->flags = (char)flags | 1;
+	ripple->size = (uchar)size;
+	ripple->life = (GetRandomControl() & 0xF) + 48;
+	ripple->init = 1;
+	ripple->x = x;
+	ripple->y = y;
+	ripple->z = z;
+
+	if (flags & 0x40)
+	{
+		ripple->x += (GetRandomControl() & 0x7F) - 64;
+		ripple->z += (GetRandomControl() & 0x7F) - 64;
+	}
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -721,4 +752,5 @@ void inject_effect2(bool replace)
 	INJECT(0x00436250, TriggerDynamic_MIRROR, replace);
 	INJECT(0x00436320, ClearDynamics, replace);
 	INJECT(0x004369B0, ControlEnemyMissile, replace);
+	INJECT(0x00435B70, SetupRipple, replace);
 }
