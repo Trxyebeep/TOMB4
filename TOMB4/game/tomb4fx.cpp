@@ -925,6 +925,55 @@ void DrawWeaponMissile(ITEM_INFO* item)
 	}
 }
 
+long GetFreeGunshell()
+{
+	GUNSHELL_STRUCT* shell;
+	long min_life, min_life_num;
+
+	shell = &Gunshells[next_gunshell];
+	min_life = 4095;
+	min_life_num = 0;
+
+	for (int free = next_gunshell, i = 0; i < 24; i++)
+	{
+		if (shell->counter)
+		{
+			if (shell->counter < min_life)
+			{
+				min_life_num = free;
+				min_life = shell->counter;
+			}
+
+			if (free == 23)
+			{
+				shell = &Gunshells[0];
+				free = 0;
+			}
+			else
+			{
+				free++;
+				shell++;
+			}
+		}
+		else
+		{
+			next_gunshell = free + 1;
+
+			if (next_gunshell >= 24)
+				next_gunshell = 0;
+
+			return free;
+		}
+	}
+
+	next_gunshell = min_life_num + 1;
+
+	if (next_gunshell >= 24)
+		next_gunshell = 0;
+
+	return min_life_num;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -946,4 +995,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00438BA0, TriggerShatterSmoke, replace);
 	INJECT(0x0043B5F0, DrawLensFlares, replace);
 	INJECT(0x0043B630, DrawWeaponMissile, replace);
+	INJECT(0x00439060, GetFreeGunshell, replace);
 }
