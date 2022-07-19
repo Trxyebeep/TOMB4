@@ -170,8 +170,17 @@ long TestCollision(ITEM_INFO* item, ITEM_INFO* l)
 	return touch_bits;
 }
 
+void InitInterpolate2(long frac, long rate)
+{
+	IM_frac = frac;
+	IM_rate = rate;
+	IMptr = &IMstack[384];
+	memcpy(IMptr, phd_mxptr, 48);
+}
+
 void inject_sphere(bool replace)
 {
 	INJECT(0x0045FC90, GetSpheres, replace);
 	INJECT(0x0045FB10, TestCollision, replace);
+	INJECT(0x00460270, InitInterpolate2, replace);
 }
