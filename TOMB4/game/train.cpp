@@ -128,7 +128,7 @@ void TrainJeepControl(short item_number)
 	else if (item->item_flags[2] > 1024)
 		item->item_flags[2] -= 512;
 
-	SoundEffect(SFX_JEEP_MOVE, &item->pos, (item->item_flags[2] << 9) + (0x1000000 | SFX_SETVOL));
+	SoundEffect(SFX_JEEP_MOVE, &item->pos, (item->item_flags[2] << 9) + (0x1000000 | SFX_SETPITCH));
 	item->pos.x_pos += item->item_flags[0];
 	AnimateItem(item);
 	room_number = item->room_number;

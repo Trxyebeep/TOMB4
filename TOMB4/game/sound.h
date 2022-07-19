@@ -7,17 +7,16 @@ void GetPanVolume(SoundSlot* slot);
 void StopSoundEffect(long sfx);
 void SOUND_Init();
 void SOUND_Stop();
+long SoundEffect(long sfx, PHD_3DPOS* pos, long flags);
 
 #define SayNo	( (void(__cdecl*)()) 0x0045FAD0 )
-#define SoundEffect	( (long(__cdecl*)(long, PHD_3DPOS*, long)) 0x0045F1F0 )
 
 enum sfx_options
 {
     SFX_DEFAULT     = 0,
     SFX_WATER       = 1,
     SFX_ALWAYS      = 2,
-    SFX_SETPITCH    = 4,
-    SFX_SETVOL      = 8
+    SFX_SETPITCH    = 4
 };
 
 enum sound_effect_names

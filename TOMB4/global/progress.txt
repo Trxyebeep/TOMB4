@@ -1231,7 +1231,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/sound.cpp
 
-0x0045F1F0		SoundEffect
+0x0045F1F0	+	SoundEffect
 0x0045F7F0	+	GetPanVolume
 0x0045FA10	+	StopSoundEffect
 0x0045FA70	+	SOUND_Stop
