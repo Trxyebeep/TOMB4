@@ -1195,6 +1195,39 @@ void TriggerSmallSplash(long x, long y, long z, long num)
 	}
 }
 
+void TriggerGunflash(SVECTOR* pos)
+{
+	GUNFLASH_STRUCT* flash;
+	long num;
+
+	num = 0;
+
+	while (Gunflashes[num].on)
+	{
+		num++;
+
+		if (num >= 4)
+			return;
+	}
+
+	flash = &Gunflashes[num];
+	phd_TranslateRel(pos->x, pos->y, pos->z);
+	phd_RotX(-0x4000);
+	flash->mx[0] = phd_mxptr[M00];
+	flash->mx[1] = phd_mxptr[M01];
+	flash->mx[2] = phd_mxptr[M02];
+	flash->mx[3] = phd_mxptr[M03];
+	flash->mx[4] = phd_mxptr[M10];
+	flash->mx[5] = phd_mxptr[M11];
+	flash->mx[6] = phd_mxptr[M12];
+	flash->mx[7] = phd_mxptr[M13];
+	flash->mx[8] = phd_mxptr[M20];
+	flash->mx[9] = phd_mxptr[M21];
+	flash->mx[10] = phd_mxptr[M22];
+	flash->mx[11] = phd_mxptr[M23];
+	flash->on = 1;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1220,4 +1253,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x004390F0, TriggerGunShell, replace);
 	INJECT(0x00439340, UpdateGunShells, replace);
 	INJECT(0x00439660, TriggerSmallSplash, replace);
+	INJECT(0x00439AE0, TriggerGunflash, replace);
 }

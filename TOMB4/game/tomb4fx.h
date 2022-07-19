@@ -26,6 +26,7 @@ long GetFreeGunshell();
 void TriggerGunShell(short leftright, short objnum, long weapon);
 void UpdateGunShells();
 void TriggerSmallSplash(long x, long y, long z, long num);
+void TriggerGunflash(SVECTOR* pos);
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )
