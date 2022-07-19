@@ -8,8 +8,7 @@ void StopSoundEffect(long sfx);
 void SOUND_Init();
 void SOUND_Stop();
 long SoundEffect(long sfx, PHD_3DPOS* pos, long flags);
-
-#define SayNo	( (void(__cdecl*)()) 0x0045FAD0 )
+void SayNo();
 
 enum sfx_options
 {

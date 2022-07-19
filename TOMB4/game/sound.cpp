@@ -350,6 +350,20 @@ long SoundEffect(long sfx, PHD_3DPOS* pos, long flags)
 	return 0;
 }
 
+void SayNo()
+{
+	long fx;
+
+	fx = SFX_LARA_NO;
+
+	if (Gameflow->Language == FRENCH)
+		fx = SFX_LARA_NO_FRENCH;
+	else if (Gameflow->Language == JAPAN)
+		fx = SFX_LARA_NO_JAPAN;
+
+	SoundEffect(fx, 0, SFX_ALWAYS);
+}
+
 void inject_sound(bool replace)
 {
 	INJECT(0x0045F7F0, GetPanVolume, replace);
@@ -357,4 +371,5 @@ void inject_sound(bool replace)
 	INJECT(0x0045FAA0, SOUND_Init, replace);
 	INJECT(0x0045FA70, SOUND_Stop, replace);
 	INJECT(0x0045F1F0, SoundEffect, replace);
+	INJECT(0x0045FAD0, SayNo, replace);
 }

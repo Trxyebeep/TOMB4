@@ -1236,7 +1236,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0045FA10	+	StopSoundEffect
 0x0045FA70	+	SOUND_Stop
 0x0045FAA0	+	SOUND_Init
-0x0045FAD0		SayNo
+0x0045FAD0	+	SayNo
 
 
 		game/sphere.cpp
