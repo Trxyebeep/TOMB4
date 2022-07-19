@@ -82,8 +82,31 @@ void StopSoundEffect(long sfx)
 	}
 }
 
+void SOUND_Init()
+{
+	//empty func call here
+
+	for (int i = 0; i < 32; i++)
+		LaSlot[i].nSampleInfo = -1;
+
+	sound_active = 1;
+}
+
+void SOUND_Stop()
+{
+	if (sound_active)
+	{
+		S_SoundStopAllSamples();
+
+		for (int i = 0; i < 32; i++)
+			LaSlot[i].nSampleInfo = -1;
+	}
+}
+
 void inject_sound(bool replace)
 {
 	INJECT(0x0045F7F0, GetPanVolume, replace);
 	INJECT(0x0045FA10, StopSoundEffect, replace);
+	INJECT(0x0045FAA0, SOUND_Init, replace);
+	INJECT(0x0045FA70, SOUND_Stop, replace);
 }
