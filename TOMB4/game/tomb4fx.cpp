@@ -1228,6 +1228,45 @@ void TriggerGunflash(SVECTOR* pos)
 	flash->on = 1;
 }
 
+void SetGunFlash(short weapon)
+{
+	SVECTOR pos;
+
+	switch (weapon)
+	{
+	case WEAPON_REVOLVER:
+		pos.x = 0;
+#ifdef GENERAL_FIXES
+		pos.y = 190;
+		pos.z = 50;
+#else
+		pos.y = 215;
+		pos.z = 65;
+#endif
+		break;
+
+	case WEAPON_UZI:
+		pos.x = 0;
+		pos.y = 190;
+		pos.z = 50;
+		break;
+
+	case WEAPON_SHOTGUN:
+	case WEAPON_GRENADE:
+	case WEAPON_CROSSBOW:
+	case WEAPON_FLARE:
+		return;
+
+	default:	//pistols
+		pos.x = 0;
+		pos.y = 180;
+		pos.z = 40;
+		break;
+	}
+
+	TriggerGunflash(&pos);
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1254,4 +1293,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00439340, UpdateGunShells, replace);
 	INJECT(0x00439660, TriggerSmallSplash, replace);
 	INJECT(0x00439AE0, TriggerGunflash, replace);
+	INJECT(0x00439B80, SetGunFlash, replace);
 }
