@@ -974,6 +974,97 @@ long GetFreeGunshell()
 	return min_life_num;
 }
 
+void TriggerGunShell(short leftright, short objnum, long weapon)
+{
+	GUNSHELL_STRUCT* shell;
+	PHD_VECTOR pos;
+	long shade;
+
+	if (leftright)
+	{
+		switch (weapon)
+		{
+		case WEAPON_PISTOLS:
+			pos.x = 8;
+			pos.y = 48;
+			pos.z = 40;
+			break;
+
+		case WEAPON_UZI:
+			pos.x = 8;
+			pos.y = 35;
+			pos.z = 48;
+			break;
+
+		case WEAPON_SHOTGUN:
+			pos.x = 16;
+			pos.y = 114;
+			pos.z = 32;
+			break;
+		}
+
+		GetLaraJointPos(&pos, 11);
+	}
+	else
+	{
+		switch (weapon)
+		{
+		case WEAPON_PISTOLS:
+			pos.x = -12;
+			pos.y = 48;
+			pos.z = 40;
+			break;
+
+		case WEAPON_UZI:
+			pos.x = -16;
+			pos.y = 35;
+			pos.z = 48;
+			break;
+		}
+
+		GetLaraJointPos(&pos, 14);
+	}
+
+	if (lara_item->mesh_bits)
+	{
+		if (weapon == WEAPON_SHOTGUN)
+			shade = 24;
+		else
+			shade = 16;
+
+		TriggerGunSmoke(pos.x, pos.y, pos.z, 0, 0, 0, 0, weapon, shade);
+	}
+
+	shell = &Gunshells[GetFreeGunshell()];
+	shell->pos.x_pos = pos.x;
+	shell->pos.y_pos = pos.y;
+	shell->pos.z_pos = pos.z;
+	shell->room_number = lara_item->room_number;
+	shell->pos.x_rot = 0;
+	shell->pos.y_rot = 0;
+	shell->pos.z_rot = (short)GetRandomControl();
+	shell->speed = (GetRandomControl() & 0x1F) + 16;
+	shell->object_number = objnum;
+	shell->fallspeed = -48 - (GetRandomControl() & 7);
+	shell->counter = (GetRandomControl() & 0x1F) + 60;
+
+	if (leftright)
+	{
+		if (weapon == WEAPON_SHOTGUN)
+		{
+			shell->DirXrot = lara.torso_y_rot + lara_item->pos.y_rot - (GetRandomControl() & 0xFFF) + lara.left_arm.y_rot + 0x2800;
+			shell->pos.y_rot += lara.left_arm.y_rot + lara.torso_y_rot + lara_item->pos.y_rot;
+
+			if (shell->speed < 24)
+				shell->speed += 24;
+		}
+		else
+			shell->DirXrot = lara_item->pos.y_rot - (GetRandomControl() & 0xFFF) + lara.left_arm.y_rot + 0x4800;
+	}
+	else
+		shell->DirXrot = lara_item->pos.y_rot + (GetRandomControl() & 0xFFF) + lara.left_arm.y_rot - 0x4800;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -996,4 +1087,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x0043B5F0, DrawLensFlares, replace);
 	INJECT(0x0043B630, DrawWeaponMissile, replace);
 	INJECT(0x00439060, GetFreeGunshell, replace);
+	INJECT(0x004390F0, TriggerGunShell, replace);
 }
