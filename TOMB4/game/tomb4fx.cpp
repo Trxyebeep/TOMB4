@@ -1213,18 +1213,18 @@ void TriggerGunflash(SVECTOR* pos)
 	flash = &Gunflashes[num];
 	phd_TranslateRel(pos->x, pos->y, pos->z);
 	phd_RotX(-0x4000);
-	flash->mx[0] = phd_mxptr[M00];
-	flash->mx[1] = phd_mxptr[M01];
-	flash->mx[2] = phd_mxptr[M02];
-	flash->mx[3] = phd_mxptr[M03];
-	flash->mx[4] = phd_mxptr[M10];
-	flash->mx[5] = phd_mxptr[M11];
-	flash->mx[6] = phd_mxptr[M12];
-	flash->mx[7] = phd_mxptr[M13];
-	flash->mx[8] = phd_mxptr[M20];
-	flash->mx[9] = phd_mxptr[M21];
-	flash->mx[10] = phd_mxptr[M22];
-	flash->mx[11] = phd_mxptr[M23];
+	flash->mx[M00] = phd_mxptr[M00];
+	flash->mx[M01] = phd_mxptr[M01];
+	flash->mx[M02] = phd_mxptr[M02];
+	flash->mx[M03] = phd_mxptr[M03];
+	flash->mx[M10] = phd_mxptr[M10];
+	flash->mx[M11] = phd_mxptr[M11];
+	flash->mx[M12] = phd_mxptr[M12];
+	flash->mx[M13] = phd_mxptr[M13];
+	flash->mx[M20] = phd_mxptr[M20];
+	flash->mx[M21] = phd_mxptr[M21];
+	flash->mx[M22] = phd_mxptr[M22];
+	flash->mx[M23] = phd_mxptr[M23];
 	flash->on = 1;
 }
 
@@ -1267,6 +1267,51 @@ void SetGunFlash(short weapon)
 	TriggerGunflash(&pos);
 }
 
+void DrawGunflashes()
+{
+	GUNFLASH_STRUCT* flash;
+
+	if (!Gunflashes[0].on)
+		return;
+
+	phd_top = 0;
+	phd_left = 0;
+	phd_right = phd_winwidth;
+	phd_bottom = phd_winheight;
+	phd_PushMatrix();
+	GetRandomDraw();
+	GetRandomDraw();
+	GetRandomDraw();
+	GetRandomDraw();
+
+	for (int i = 0; i < 4; i++)
+	{
+		flash = &Gunflashes[i];
+
+		if (!flash->on)
+			break;
+
+		phd_mxptr[M00] = flash->mx[M00];
+		phd_mxptr[M01] = flash->mx[M01];
+		phd_mxptr[M02] = flash->mx[M02];
+		phd_mxptr[M03] = flash->mx[M03];
+		phd_mxptr[M10] = flash->mx[M10];
+		phd_mxptr[M11] = flash->mx[M11];
+		phd_mxptr[M12] = flash->mx[M12];
+		phd_mxptr[M13] = flash->mx[M13];
+		phd_mxptr[M20] = flash->mx[M20];
+		phd_mxptr[M21] = flash->mx[M21];
+		phd_mxptr[M22] = flash->mx[M22];
+		phd_mxptr[M23] = flash->mx[M23];
+		phd_RotZ(short(GetRandomDraw() << 1));
+		GlobalAmbient = 0xFF2F2F00;
+		phd_PutPolygons(meshes[objects[GUN_FLASH].mesh_index], -1);
+		flash->on = 0;
+	}
+
+	phd_PopMatrix();
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1294,4 +1339,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00439660, TriggerSmallSplash, replace);
 	INJECT(0x00439AE0, TriggerGunflash, replace);
 	INJECT(0x00439B80, SetGunFlash, replace);
+	INJECT(0x00439C00, DrawGunflashes, replace);
 }

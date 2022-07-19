@@ -28,6 +28,7 @@ void UpdateGunShells();
 void TriggerSmallSplash(long x, long y, long z, long num);
 void TriggerGunflash(SVECTOR* pos);
 void SetGunFlash(short weapon);
+void DrawGunflashes();
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )
@@ -39,7 +40,6 @@ void SetGunFlash(short weapon);
 #define	SetFadeClip	( (void(__cdecl*)(short, short)) 0x00439D40 )
 #define	SetScreenFadeOut	( (void(__cdecl*)(long, long)) 0x00439DB0 )
 #define	SetScreenFadeIn	( (void(__cdecl*)(long)) 0x00439E00 )
-#define DrawGunflashes	( (void(__cdecl*)()) 0x00439C00 )
 #define	CreateBubble	( (void(__cdecl*)(PHD_3DPOS*, short, long, long, long, long, long , long)) 0x004397F0 )
 #define GetFreeDrip	( (long(__cdecl*)()) 0x00439F10 )
 #define TriggerBlood	( (void(__cdecl*)(long, long, long, long, long)) 0x00438F00 )
