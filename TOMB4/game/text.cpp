@@ -89,7 +89,42 @@ void InitFont()
 #endif
 }
 
+void UpdatePulseColour()
+{
+	D3DTLVERTEX v;
+	static uchar PulseCnt = 0;
+	uchar c, r, g, b;
+
+	PulseCnt = (PulseCnt + 1) & 0x1F;
+
+	if (PulseCnt > 16)
+		c = -PulseCnt;
+	else
+		c = PulseCnt;
+
+	c <<= 3;
+	CalcColorSplit(RGBONLY(c, c, c), &v.color);
+
+	for (int i = 0; i < 16; i++)
+	{
+		r = CLRR(v.color);
+		g = CLRG(v.color);
+		b = CLRB(v.color);
+		FontShades[1][i << 1].r = r;
+		FontShades[1][i << 1].g = g;
+		FontShades[1][i << 1].b = b;
+
+		r = CLRR(v.specular);
+		g = CLRG(v.specular);
+		b = CLRB(v.specular);
+		FontShades[1][(i << 1) + 1].r = r;
+		FontShades[1][(i << 1) + 1].g = g;
+		FontShades[1][(i << 1) + 1].b = b;
+	}
+}
+
 void inject_text(bool replace)
 {
 	INJECT(0x00463650, InitFont, replace);
+	INJECT(0x00463930, UpdatePulseColour, replace);
 }
