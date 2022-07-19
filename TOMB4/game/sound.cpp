@@ -1,6 +1,7 @@
 #include "../tomb4/pch.h"
 #include "sound.h"
 #include "../specific/3dmath.h"
+#include "../specific/dxsound.h"
 
 void GetPanVolume(SoundSlot* slot)
 {
@@ -62,7 +63,27 @@ void GetPanVolume(SoundSlot* slot)
 	}
 }
 
+void StopSoundEffect(long sfx)
+{
+	long lut;
+
+	if (sound_active)
+	{
+		lut = sample_lut[sfx];
+
+		for (int i = 0; i < 32; i++)
+		{
+			if (LaSlot[i].nSampleInfo >= lut && LaSlot[i].nSampleInfo < (lut + ((sample_infos[lut].flags >> 2) & 0xF)))
+			{
+				S_SoundStopSample(i);
+				LaSlot[i].nSampleInfo = -1;
+			}
+		}
+	}
+}
+
 void inject_sound(bool replace)
 {
 	INJECT(0x0045F7F0, GetPanVolume, replace);
+	INJECT(0x0045FA10, StopSoundEffect, replace);
 }

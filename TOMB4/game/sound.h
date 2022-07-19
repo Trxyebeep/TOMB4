@@ -4,10 +4,10 @@
 void inject_sound(bool replace);
 
 void GetPanVolume(SoundSlot* slot);
+void StopSoundEffect(long sfx);
 
 #define SayNo	( (void(__cdecl*)()) 0x0045FAD0 )
 #define SoundEffect	( (long(__cdecl*)(long, PHD_3DPOS*, long)) 0x0045F1F0 )
-#define StopSoundEffect	( (void(__cdecl*)(long)) 0x0045FA10 )
 #define SOUND_Stop  ( (void(__cdecl*)()) 0x0045FA70 )
 #define SOUND_Init  ( (void(__cdecl*)()) 0x0045FAA0 )
 

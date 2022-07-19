@@ -618,6 +618,7 @@
 #define cd_flags	ARRAY_(0x007FE180, char, [128])
 #define Gunflashes	ARRAY_(0x00800CE0, GUNFLASH_STRUCT, [4])
 #define fires	ARRAY_(0x007FFF60, FIRE_LIST, [32])
+#define LaSlot	ARRAY_(0x007F7220, SoundSlot, [32])
 
 
 /*Fog stuff*/
