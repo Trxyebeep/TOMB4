@@ -208,6 +208,38 @@ short* FindPlinth(ITEM_INFO* item)
 	return GetBestFrame(&items[item_num]);
 }
 
+long KeyTrigger(short item_num)
+{
+	ITEM_INFO* item;
+	long oldkey;
+
+	item = &items[item_num];
+
+	if ((item->status != ITEM_ACTIVE || lara.gun_status == LG_HANDS_BUSY) && (!KeyTriggerActive || lara.gun_status != LG_HANDS_BUSY))
+		return -1;
+
+	oldkey = KeyTriggerActive;
+
+	if (!KeyTriggerActive)
+		item->status = ITEM_DEACTIVATED;
+
+	KeyTriggerActive = 0;
+	return oldkey;
+}
+
+long PickupTrigger(short item_num)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_num];
+
+	if (item->flags & IFL_CLEARBODY || item->status != ITEM_INVISIBLE || item->item_flags[3] != 1 || item->trigger_flags & 128)
+		return 0;
+
+	KillItem(item_num);
+	return 1;
+}
+
 void inject_pickup(bool replace)
 {
 	INJECT(0x004587E0, SarcophagusCollision, replace);
@@ -216,4 +248,6 @@ void inject_pickup(bool replace)
 	INJECT(0x00458690, PuzzleDone, replace);
 	INJECT(0x00457610, AnimatingPickUp, replace);
 	INJECT(0x00457F30, FindPlinth, replace);
+	INJECT(0x00458710, KeyTrigger, replace);
+	INJECT(0x00458780, PickupTrigger, replace);
 }
