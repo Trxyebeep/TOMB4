@@ -23,6 +23,7 @@ void KillMoveEffects();
 void KillMoveItems();
 void RefreshCamera(short type, short* data);
 long TriggerActive(ITEM_INFO* item);
+void TriggerNormalCDTrack(short value, short flags, short type);
 
 #define AnimateItem	( (void(__cdecl*)(ITEM_INFO*)) 0x00449B90 )
 #define ExplodeItemNode	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x0044DE50 )

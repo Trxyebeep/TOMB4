@@ -1958,6 +1958,33 @@ long TriggerActive(ITEM_INFO* item)
 	return !reverse;
 }
 
+void TriggerNormalCDTrack(short value, short flags, short type)
+{
+	long code;
+
+	if (value >= 105 && value <= 111 || value == 102 || value == 97)
+	{
+		if (CurrentAtmosphere != value)
+		{
+			CurrentAtmosphere = (uchar)value;
+
+			if (IsAtmospherePlaying)
+				S_CDPlay(value, 1);
+		}
+	}
+	else
+	{
+		code = (flags >> 8) & 0x3F;	//(IFL_CODEBITS | IFL_INVISIBLE)= 0x3F00, then >> 8, 3F
+
+		if ((cd_flags[value] & code) != code)
+		{
+			cd_flags[value] |= code;
+			S_CDPlay(value, 0);
+			IsAtmospherePlaying = 0;
+		}
+	}
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1980,4 +2007,5 @@ void inject_control(bool replace)
 	INJECT(0x004492D0, KillMoveItems, replace);
 	INJECT(0x0044AA20, RefreshCamera, replace);
 	INJECT(0x0044B620, TriggerActive, replace);
+	INJECT(0x0044C790, TriggerNormalCDTrack, replace);
 }
