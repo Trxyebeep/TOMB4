@@ -1827,6 +1827,29 @@ long GetChange(ITEM_INFO* item, ANIM_STRUCT* anim)
 	return 0;
 }
 
+void UpdateSky()
+{
+	if (gfLevelFlags & GF_LAYER1)
+	{
+		SkyPos += gfLayer1Vel;
+
+		if (SkyPos > 0x2C00)
+			SkyPos -= 0x2C00;
+		else if (SkyPos < 0)
+			SkyPos += 0x2C00;
+	}
+
+	if (gfLevelFlags & GF_LAYER2)
+	{
+		SkyPos2 += gfLayer2Vel;
+
+		if (SkyPos2 > 0x2C00)
+			SkyPos2 -= 0x2C00;
+		else if (SkyPos2 < 0)
+			SkyPos2 += 0x2C00;
+	}
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1844,4 +1867,5 @@ void inject_control(bool replace)
 	INJECT(0x0044A0D0, AlterFloorHeight, replace);
 	INJECT(0x0044A060, TranslateItem, replace);
 	INJECT(0x00449FC0, GetChange, replace);
+	INJECT(0x00449390, UpdateSky, replace);
 }

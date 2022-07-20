@@ -147,7 +147,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x004492D0		KillMoveItems
 0x00449330		KillMoveEffects
-0x00449390		UpdateSky
+0x00449390	+	UpdateSky
 0x00449410	+	ControlPhase
 0x00449B90		AnimateItem
 0x00449FC0	+	GetChange
