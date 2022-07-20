@@ -24,13 +24,13 @@ void KillMoveItems();
 void RefreshCamera(short type, short* data);
 long TriggerActive(ITEM_INFO* item);
 void TriggerNormalCDTrack(short value, short flags, short type);
+void TriggerCDTrack(short value, short flags, short type);
 
 #define AnimateItem	( (void(__cdecl*)(ITEM_INFO*)) 0x00449B90 )
 #define ExplodeItemNode	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x0044DE50 )
 #define IsRoomOutside	( (long(__cdecl*)(long, long, long)) 0x0044C9C0 )
 #define GetTargetOnLOS	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*, long, long)) 0x0044D890 )
 #define LOS	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*)) 0x0044BBE0 )
-#define TriggerCDTrack	( (void(__cdecl*)(short, short, short)) 0x0044C770 )
 
 #ifdef GENERAL_FIXES
 extern char DeathMenuActive;

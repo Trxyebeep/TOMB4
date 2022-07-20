@@ -1985,6 +1985,12 @@ void TriggerNormalCDTrack(short value, short flags, short type)
 	}
 }
 
+void TriggerCDTrack(short value, short flags, short type)
+{
+	if (value < 128)
+		TriggerNormalCDTrack(value, flags, type);
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -2008,4 +2014,5 @@ void inject_control(bool replace)
 	INJECT(0x0044AA20, RefreshCamera, replace);
 	INJECT(0x0044B620, TriggerActive, replace);
 	INJECT(0x0044C790, TriggerNormalCDTrack, replace);
+	INJECT(0x0044C770, TriggerCDTrack, replace);
 }
