@@ -1850,6 +1850,19 @@ void UpdateSky()
 	}
 }
 
+void KillMoveEffects()
+{
+	for (int i = 0; i < ItemNewRoomNo; i++)
+	{
+		if (ItemNewRooms[i][0] & 0x8000)
+			KillEffect(ItemNewRooms[i][0] & 0x7FFF);
+		else
+			EffectNewRoom(ItemNewRooms[i][0], ItemNewRooms[i][1]);
+	}
+
+	ItemNewRoomNo = 0;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1868,4 +1881,5 @@ void inject_control(bool replace)
 	INJECT(0x0044A060, TranslateItem, replace);
 	INJECT(0x00449FC0, GetChange, replace);
 	INJECT(0x00449390, UpdateSky, replace);
+	INJECT(0x00449330, KillMoveEffects, replace);
 }

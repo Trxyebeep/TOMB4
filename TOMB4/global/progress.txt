@@ -146,7 +146,7 @@ x for functions decompiled but not injected, for one reason or another.
 		game/control.cpp
 
 0x004492D0		KillMoveItems
-0x00449330		KillMoveEffects
+0x00449330	+	KillMoveEffects
 0x00449390	+	UpdateSky
 0x00449410	+	ControlPhase
 0x00449B90		AnimateItem

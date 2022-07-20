@@ -502,6 +502,7 @@
 #define next_blood	VAR_U_(0x004BF394, long)
 #define ScaleFlag	VAR_U_(0x004BFC04, uchar)
 #define ShatterItem	VAR_U_(0x007FE960, SHATTER_ITEM)
+#define ItemNewRoomNo	VAR_U_(0x004BF3F6, short)
 
 
 
@@ -621,6 +622,7 @@
 #define Gunflashes	ARRAY_(0x00800CE0, GUNFLASH_STRUCT, [4])
 #define fires	ARRAY_(0x007FFF60, FIRE_LIST, [32])
 #define LaSlot	ARRAY_(0x007F7220, SoundSlot, [32])
+#define ItemNewRooms	ARRAY_(0x007FE3A0, short, [256][2])
 
 
 /*Fog stuff*/
