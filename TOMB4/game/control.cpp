@@ -1863,6 +1863,19 @@ void KillMoveEffects()
 	ItemNewRoomNo = 0;
 }
 
+void KillMoveItems()
+{
+	for (int i = 0; i < ItemNewRoomNo; i++)
+	{
+		if (ItemNewRooms[i][0] & 0x8000)
+			KillItem(ItemNewRooms[i][0] & 0x7FFF);
+		else
+			ItemNewRoom(ItemNewRooms[i][0], ItemNewRooms[i][1]);
+	}
+
+	ItemNewRoomNo = 0;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1882,4 +1895,5 @@ void inject_control(bool replace)
 	INJECT(0x00449FC0, GetChange, replace);
 	INJECT(0x00449390, UpdateSky, replace);
 	INJECT(0x00449330, KillMoveEffects, replace);
+	INJECT(0x004492D0, KillMoveItems, replace);
 }

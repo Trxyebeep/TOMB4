@@ -20,8 +20,8 @@ void TranslateItem(ITEM_INFO* item, short x, short y, short z);
 long GetChange(ITEM_INFO* item, ANIM_STRUCT* anim);
 void UpdateSky();
 void KillMoveEffects();
+void KillMoveItems();
 
-#define KillMoveItems	( (void(__cdecl*)()) 0x004492D0)
 #define TriggerActive	( (long(__cdecl*)(ITEM_INFO*)) 0x0044B620 )
 #define AnimateItem	( (void(__cdecl*)(ITEM_INFO*)) 0x00449B90 )
 #define ExplodeItemNode	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x0044DE50 )
