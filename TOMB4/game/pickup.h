@@ -11,6 +11,6 @@ void AnimatingPickUp(short item_number);
 short* FindPlinth(ITEM_INFO* item);
 long KeyTrigger(short item_num);
 long PickupTrigger(short item_num);
+void RegeneratePickups();
 
-#define RegeneratePickups	( (void(__cdecl*)()) 0x00457650 )
 #define PickUpCollision	( (void(__cdecl*)(short, ITEM_INFO*, COLL_INFO*)) 0x00457720 )
