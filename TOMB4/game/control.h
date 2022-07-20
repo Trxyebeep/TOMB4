@@ -22,8 +22,8 @@ void UpdateSky();
 void KillMoveEffects();
 void KillMoveItems();
 void RefreshCamera(short type, short* data);
+long TriggerActive(ITEM_INFO* item);
 
-#define TriggerActive	( (long(__cdecl*)(ITEM_INFO*)) 0x0044B620 )
 #define AnimateItem	( (void(__cdecl*)(ITEM_INFO*)) 0x00449B90 )
 #define ExplodeItemNode	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x0044DE50 )
 #define IsRoomOutside	( (long(__cdecl*)(long, long, long)) 0x0044C9C0 )

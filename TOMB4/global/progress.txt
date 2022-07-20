@@ -158,7 +158,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044A530	+	GetHeight
 0x0044AA20	+	RefreshCamera
 0x0044AB50	+	TestTriggers
-0x0044B620		TriggerActive
+0x0044B620	+	TriggerActive
 0x0044B690	+	GetCeiling
 0x0044BB20	+	GetDoor
 0x0044BBE0		LOS

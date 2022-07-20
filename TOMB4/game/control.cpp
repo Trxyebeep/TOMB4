@@ -1925,6 +1925,39 @@ void RefreshCamera(short type, short* data)
 		camera.timer = -1;
 }
 
+long TriggerActive(ITEM_INFO* item)
+{
+	long reverse;
+
+	reverse = (item->flags & IFL_REVERSE) ? 1 : 0;
+
+	if ((item->flags & IFL_CODEBITS) != IFL_CODEBITS)
+		return reverse;
+
+	if (!item->timer)
+		return !reverse;
+
+	if (item->timer > 0)
+	{
+		item->timer--;
+
+		if (!item->timer)
+			item->timer = -1;
+	}
+	else if (item->timer < -1)
+	{
+		item->timer++;
+
+		if (item->timer == -1)
+			item->timer = 0;
+	}
+
+	if (item->timer <= -1)
+		return reverse;
+
+	return !reverse;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1946,4 +1979,5 @@ void inject_control(bool replace)
 	INJECT(0x00449330, KillMoveEffects, replace);
 	INJECT(0x004492D0, KillMoveItems, replace);
 	INJECT(0x0044AA20, RefreshCamera, replace);
+	INJECT(0x0044B620, TriggerActive, replace);
 }
