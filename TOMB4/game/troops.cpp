@@ -176,7 +176,7 @@ void TroopControl(short item_number)
 					item->pos.y_rot += 1820;
 			}
 
-			if (item->ai_bits & 1)
+			if (item->ai_bits & GUARD)
 			{
 				head = AIGuard(troop);
 
@@ -188,7 +188,7 @@ void TroopControl(short item_number)
 						item->goal_anim_state = 1;
 				}
 			}
-			else if (item->ai_bits & 4)
+			else if (item->ai_bits & PATROL1)
 			{
 				item->goal_anim_state = 2;
 				head = 0;
@@ -206,7 +206,7 @@ void TroopControl(short item_number)
 			}
 			else
 			{
-				if ((troop->alerted || troop->mood != BORED_MOOD) && (!(item->ai_bits & 0x10) || !troop->reached_goal && iDistance <= 0x400000))
+				if ((troop->alerted || troop->mood != BORED_MOOD) && (!(item->ai_bits & FOLLOW) || !troop->reached_goal && iDistance <= 0x400000))
 				{
 					if (troop->mood == BORED_MOOD || info.distance <= 0x400000)
 						item->goal_anim_state = 2;
@@ -224,11 +224,11 @@ void TroopControl(short item_number)
 			troop->flags = 0;
 			troop->maximum_turn = 910;
 
-			if (item->ai_bits & 4)
+			if (item->ai_bits & PATROL1)
 				item->goal_anim_state = 2;
 			else if (troop->mood == ESCAPE_MOOD)
 				item->goal_anim_state = 3;
-			else if (item->ai_bits & 1 || item->ai_bits & 0x10 && (troop->reached_goal || iDistance > 0x400000))
+			else if (item->ai_bits & GUARD || item->ai_bits & FOLLOW && (troop->reached_goal || iDistance > 0x400000))
 				item->goal_anim_state = 1;
 			else if (Targetable(item, &info))
 			{
@@ -255,13 +255,13 @@ void TroopControl(short item_number)
 			troop->maximum_turn = 1820;
 			tilt = angle >> 1;
 
-			if (item->ai_bits & 1 || item->ai_bits & 0x10 && (troop->reached_goal || iDistance > 0x400000))
+			if (item->ai_bits & GUARD || item->ai_bits & FOLLOW && (troop->reached_goal || iDistance > 0x400000))
 				item->goal_anim_state = 2;
 			else if (troop->mood != ESCAPE_MOOD)
 			{
 				if (Targetable(item, &info))
 					item->goal_anim_state = 2;
-				else if (troop->mood == BORED_MOOD || troop->mood == STALK_MOOD && !(item->ai_bits & 0x10) && info.distance < 0x400000)
+				else if (troop->mood == BORED_MOOD || troop->mood == STALK_MOOD && !(item->ai_bits & FOLLOW) && info.distance < 0x400000)
 					item->goal_anim_state = 2;
 			}
 
@@ -272,7 +272,7 @@ void TroopControl(short item_number)
 			troop->flags = 0;
 			troop->maximum_turn = 0;
 
-			if (item->ai_bits & 1)
+			if (item->ai_bits & GUARD)
 			{
 				head = AIGuard(troop);
 

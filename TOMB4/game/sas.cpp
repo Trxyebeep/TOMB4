@@ -281,7 +281,7 @@ void SasControl(short item_number)
 				else
 					item->pos.y_rot += 1820;
 			}
-			else if (item->ai_bits == 8 || lara.vehicle)
+			else if (item->ai_bits == MODIFY || lara.vehicle)
 			{
 				if (ABS(info.angle) < 364)
 					item->pos.y_rot += info.angle;
@@ -291,7 +291,7 @@ void SasControl(short item_number)
 					item->pos.y_rot += 364;
 			}
 
-			if (item->ai_bits & 1)
+			if (item->ai_bits & GUARD)
 			{
 				head = AIGuard(sas);
 
@@ -303,7 +303,7 @@ void SasControl(short item_number)
 						item->goal_anim_state = 1;
 				}
 			}
-			else if (item->ai_bits & 4 && item->ai_bits != 8 && !lara.vehicle)
+			else if (item->ai_bits & PATROL1 && item->ai_bits != MODIFY && !lara.vehicle)
 			{
 				item->goal_anim_state = 2;
 				head = 0;
@@ -312,7 +312,7 @@ void SasControl(short item_number)
 			{
 				if (info.distance >= 0x900000 && info.zone_number == info.enemy_zone)
 				{
-					if (item->ai_bits != 8)
+					if (item->ai_bits != MODIFY)
 						item->goal_anim_state = 2;
 				}
 				else if (GetRandomControl() & 1)
@@ -322,11 +322,11 @@ void SasControl(short item_number)
 				else
 					item->goal_anim_state = 12;
 			}
-			else if (item->ai_bits == 8)
+			else if (item->ai_bits == MODIFY)
 				item->goal_anim_state = 1;
 			else if (sas->mood == ESCAPE_MOOD)
 				item->goal_anim_state = 3;
-			else if ((sas->alerted || sas->mood != BORED_MOOD) && (!(item->ai_bits & 16) || !sas->reached_goal && iDistance <= 0x400000))
+			else if ((sas->alerted || sas->mood != BORED_MOOD) && (!(item->ai_bits & FOLLOW) || !sas->reached_goal && iDistance <= 0x400000))
 			{
 				if (sas->mood != BORED_MOOD && info.distance > 0x400000)
 					item->goal_anim_state = 3;
@@ -343,13 +343,13 @@ void SasControl(short item_number)
 			sas->flags = 0;
 			sas->maximum_turn = 910;
 
-			if (item->ai_bits & 4)
+			if (item->ai_bits & PATROL1)
 				item->goal_anim_state = 2;
-			else if (lara.vehicle && (item->ai_bits == 8 || !item->ai_bits))
+			else if (lara.vehicle && (item->ai_bits == MODIFY || !item->ai_bits))
 				item->goal_anim_state = 1;
 			else if (sas->mood == ESCAPE_MOOD)
 				item->goal_anim_state = 3;
-			else if (item->ai_bits & 1 || item->ai_bits & 16 && (sas->reached_goal || iDistance > 0x400000))
+			else if (item->ai_bits & GUARD || item->ai_bits & FOLLOW && (sas->reached_goal || iDistance > 0x400000))
 				item->goal_anim_state = 1;
 			else if (Targetable(item, &info))
 			{
@@ -378,20 +378,20 @@ void SasControl(short item_number)
 
 			if (lara.vehicle)
 			{
-				if (item->ai_bits == 8 || !item->ai_bits)
+				if (item->ai_bits == MODIFY || !item->ai_bits)
 				{
 					item->goal_anim_state = 2;
 					break;
 				}
 			}
 
-			if (item->ai_bits & 1 || item->ai_bits & 16 && (sas->reached_goal || iDistance > 0x400000))
+			if (item->ai_bits & GUARD || item->ai_bits & FOLLOW && (sas->reached_goal || iDistance > 0x400000))
 				item->goal_anim_state = 2;
 			else if (sas->mood != ESCAPE_MOOD)
 			{
 				if (Targetable(item, &info))
 					item->goal_anim_state = 2;
-				else if (sas->mood == BORED_MOOD || sas->mood == STALK_MOOD && !(item->ai_bits & 16) && info.distance < 0x400000)
+				else if (sas->mood == BORED_MOOD || sas->mood == STALK_MOOD && !(item->ai_bits & FOLLOW) && info.distance < 0x400000)
 					item->goal_anim_state = 2;
 			}
 
@@ -402,14 +402,14 @@ void SasControl(short item_number)
 			sas->flags = 0;
 			sas->maximum_turn = 0;
 
-			if (item->ai_bits & 1)
+			if (item->ai_bits & GUARD)
 			{
 				head = AIGuard(sas);
 
 				if (!(GetRandomControl() & 0xFF))
 					item->goal_anim_state = 1;
 			}
-			else if (Targetable(item, &info) || sas->mood || !info.ahead || item->ai_bits & 8 || lara.vehicle)
+			else if (Targetable(item, &info) || sas->mood || !info.ahead || item->ai_bits & MODIFY || lara.vehicle)
 				item->goal_anim_state = 1;
 
 			break;

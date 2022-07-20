@@ -492,7 +492,7 @@ void VoncroyRaceControl(short item_number)
 				VonCroy->reached_goal = 0;
 				VonCroy->enemy = 0;
 				item->item_flags[3] += ifl3;
-				item->ai_bits = 16;
+				item->ai_bits = FOLLOW;
 				break;
 
 			case 1:
@@ -542,7 +542,7 @@ void VoncroyRaceControl(short item_number)
 				VonCroy->reached_goal = 0;
 				VonCroy->enemy = 0;
 				item->item_flags[3] += ifl3;
-				item->ai_bits = 16;
+				item->ai_bits = FOLLOW;
 				break;
 
 			case 4:
@@ -560,7 +560,7 @@ void VoncroyRaceControl(short item_number)
 				VonCroy->reached_goal = 0;
 				VonCroy->enemy = 0;
 				item->item_flags[3] += ifl3;
-				item->ai_bits = 16;
+				item->ai_bits = FOLLOW;
 				break;
 
 			case 6:
@@ -571,7 +571,7 @@ void VoncroyRaceControl(short item_number)
 					VonCroy->reached_goal = 0;
 					VonCroy->enemy = 0;
 					item->item_flags[3] += ifl3;
-					item->ai_bits = 16;
+					item->ai_bits = FOLLOW;
 				}
 				else if (item->meshswap_meshbits & 0x40080)
 					item->goal_anim_state = 6;
@@ -588,7 +588,7 @@ void VoncroyRaceControl(short item_number)
 					VonCroy->reached_goal = 0;
 					VonCroy->enemy = 0;
 					item->item_flags[3] += ifl3;
-					item->ai_bits = 16;
+					item->ai_bits = FOLLOW;
 				}
 
 				item->goal_anim_state = 20;
@@ -602,7 +602,7 @@ void VoncroyRaceControl(short item_number)
 					VonCroy->reached_goal = 0;
 					VonCroy->enemy = 0;
 					item->item_flags[3] += ifl3;
-					item->ai_bits = 16;
+					item->ai_bits = FOLLOW;
 				}
 
 				item->goal_anim_state = 7;
@@ -616,7 +616,7 @@ void VoncroyRaceControl(short item_number)
 					VonCroy->reached_goal = 0;
 					VonCroy->enemy = 0;
 					item->item_flags[3] += ifl3;
-					item->ai_bits = 16;
+					item->ai_bits = FOLLOW;
 				}
 
 				item->goal_anim_state = 32;
@@ -630,7 +630,7 @@ void VoncroyRaceControl(short item_number)
 					VonCroy->reached_goal = 0;
 					VonCroy->enemy = 0;
 					item->item_flags[3] += ifl3;
-					item->ai_bits = 16;
+					item->ai_bits = FOLLOW;
 				}
 
 				item->goal_anim_state = 11;
@@ -726,7 +726,7 @@ void VoncroyRaceControl(short item_number)
 			VonCroy->reached_goal = 0;
 			VonCroy->enemy = 0;
 			item->item_flags[3] += ifl3;
-			item->ai_bits = 16;
+			item->ai_bits = FOLLOW;
 		}
 		else
 			item->goal_anim_state = 1;
@@ -778,7 +778,7 @@ void VoncroyRaceControl(short item_number)
 				VonCroy->reached_goal = 0;
 				VonCroy->enemy = 0;
 				item->item_flags[3] += ifl3;
-				item->ai_bits = 16;
+				item->ai_bits = FOLLOW;
 			}
 			else if (info.distance < 0x4000)
 			{
@@ -895,7 +895,7 @@ void VoncroyRaceControl(short item_number)
 			VonCroy->reached_goal = 0;
 			VonCroy->enemy = 0;
 			item->item_flags[3] += ifl3;
-			item->ai_bits = 16;
+			item->ai_bits = FOLLOW;
 		}
 
 		break;
@@ -945,7 +945,7 @@ void VoncroyRaceControl(short item_number)
 			VonCroy->reached_goal = 0;
 			VonCroy->enemy = 0;
 			item->item_flags[3] += ifl3;
-			item->ai_bits = 16;
+			item->ai_bits = FOLLOW;
 		}
 		else if (!VonCroy->flags)
 		{
@@ -995,7 +995,7 @@ void VoncroyRaceControl(short item_number)
 		VonCroy->reached_goal = 0;
 		VonCroy->enemy = 0;
 		item->item_flags[3] += ifl3;
-		item->ai_bits = 16;
+		item->ai_bits = FOLLOW;
 		break;
 
 	case 34:
@@ -1121,7 +1121,7 @@ void VoncroyControl(short item_number)
 	else
 		long_jump_ahead = 1;
 
-	item->ai_bits = 16;
+	item->ai_bits = FOLLOW;
 	GetAITarget(VonCroy);
 	target = 0;
 
@@ -1230,7 +1230,7 @@ void VoncroyControl(short item_number)
 		VonCroy->enemy = 0;
 		item->item_flags[3] = 53;
 		lara.location = 53;
-		item->ai_bits = 16;
+		item->ai_bits = FOLLOW;
 	}
 
 	if (lara.locationPad != 9 && lara.locationPad != 10)
@@ -1315,7 +1315,7 @@ void VoncroyControl(short item_number)
 					VonCroy->reached_goal = 0;
 					VonCroy->enemy = 0;
 					item->item_flags[3] += ifl3;
-					item->ai_bits = 16;
+					item->ai_bits = FOLLOW;
 				}
 			}
 		}
@@ -1417,7 +1417,7 @@ void VoncroyControl(short item_number)
 				VonCroy->reached_goal = 0;
 				VonCroy->enemy = 0;
 				item->item_flags[3] += ifl3;
-				item->ai_bits = 16;
+				item->ai_bits = FOLLOW;
 			}
 			else if (GetRandomControl() & 0xF)
 				item->item_flags[2] = 0;
@@ -1441,7 +1441,7 @@ void VoncroyControl(short item_number)
 						VonCroy->reached_goal = 0;
 						VonCroy->enemy = 0;
 						item->item_flags[3] += ifl3;
-						item->ai_bits = 16;
+						item->ai_bits = FOLLOW;
 					}
 
 					break;
@@ -1454,7 +1454,7 @@ void VoncroyControl(short item_number)
 						VonCroy->reached_goal = 0;
 						VonCroy->enemy = 0;
 						item->item_flags[3] += ifl3;
-						item->ai_bits = 16;
+						item->ai_bits = FOLLOW;
 					}
 
 					break;
@@ -1483,7 +1483,7 @@ void VoncroyControl(short item_number)
 					VonCroy->reached_goal = 0;
 					VonCroy->enemy = 0;
 					item->item_flags[3] += ifl3;
-					item->ai_bits = 16;
+					item->ai_bits = FOLLOW;
 					break;
 
 				case 255:
@@ -1491,7 +1491,7 @@ void VoncroyControl(short item_number)
 					VonCroy->reached_goal = 0;
 					VonCroy->enemy = 0;
 					item->item_flags[3] += ifl3;
-					item->ai_bits = 16;
+					item->ai_bits = FOLLOW;
 					break;
 				}
 			}
@@ -1506,7 +1506,7 @@ void VoncroyControl(short item_number)
 					VonCroy->reached_goal = 0;
 					VonCroy->enemy = 0;
 					item->item_flags[3] += ifl3;
-					item->ai_bits = 16;
+					item->ai_bits = FOLLOW;
 					break;
 
 				case 2:
@@ -1523,7 +1523,7 @@ void VoncroyControl(short item_number)
 					VonCroy->reached_goal = 0;
 					VonCroy->enemy = 0;
 					item->item_flags[3] += ifl3;
-					item->ai_bits = 16;
+					item->ai_bits = FOLLOW;
 					break;
 
 				case 4:
@@ -1541,7 +1541,7 @@ void VoncroyControl(short item_number)
 					VonCroy->reached_goal = 0;
 					VonCroy->enemy = 0;
 					item->item_flags[3] += ifl3;
-					item->ai_bits = 16;
+					item->ai_bits = FOLLOW;
 					break;
 
 				case 8:
@@ -1574,7 +1574,7 @@ void VoncroyControl(short item_number)
 					VonCroy->reached_goal = 0;
 					VonCroy->enemy = 0;
 					item->item_flags[3] += ifl3;
-					item->ai_bits = 16;
+					item->ai_bits = FOLLOW;
 					break;
 				}
 			}
@@ -1586,7 +1586,7 @@ void VoncroyControl(short item_number)
 				VonCroy->reached_goal = 0;
 				VonCroy->enemy = 0;
 				item->item_flags[3] += ifl3;
-				item->ai_bits = 16;
+				item->ai_bits = FOLLOW;
 			}
 		}
 
@@ -1618,7 +1618,7 @@ void VoncroyControl(short item_number)
 				VonCroy->reached_goal = 0;
 				VonCroy->enemy = 0;
 				item->item_flags[3] += ifl3;
-				item->ai_bits = 16;
+				item->ai_bits = FOLLOW;
 			}
 			else
 				item->goal_anim_state = 1;
@@ -1667,7 +1667,7 @@ void VoncroyControl(short item_number)
 				VonCroy->reached_goal = 0;
 				VonCroy->enemy = 0;
 				item->item_flags[3] += ifl3;
-				item->ai_bits = 16;
+				item->ai_bits = FOLLOW;
 			}
 			else  if (VonCroyAI.distance < 512)
 			{
@@ -1761,7 +1761,7 @@ void VoncroyControl(short item_number)
 			VonCroy->reached_goal = 0;
 			VonCroy->enemy = 0;
 			item->item_flags[3] += ifl3;
-			item->ai_bits = 16;
+			item->ai_bits = FOLLOW;
 		}
 
 		break;
@@ -1797,7 +1797,7 @@ void VoncroyControl(short item_number)
 			VonCroy->reached_goal = 0;
 			VonCroy->enemy = 0;
 			item->item_flags[3] += ifl3;
-			item->ai_bits = 16;
+			item->ai_bits = FOLLOW;
 		}
 
 		break;
@@ -1825,7 +1825,7 @@ void VoncroyControl(short item_number)
 					oEnemy->hit_points -= 40;
 
 					if (oEnemy->hit_points <= 0)
-						item->ai_bits = 16;
+						item->ai_bits = FOLLOW;
 
 					oEnemy->hit_status = 1;
 					VonCroy->flags = 1;
@@ -1858,7 +1858,7 @@ void VoncroyControl(short item_number)
 			VonCroy->reached_goal = 0;
 			VonCroy->enemy = 0;
 			item->item_flags[3] += ifl3;
-			item->ai_bits = 16;
+			item->ai_bits = FOLLOW;
 		}
 		else
 			item->goal_anim_state = 28;
@@ -1891,7 +1891,7 @@ void VoncroyControl(short item_number)
 			VonCroy->reached_goal = 0;
 			VonCroy->enemy = 0;
 			item->item_flags[3] += ifl3;
-			item->ai_bits = 16;
+			item->ai_bits = FOLLOW;
 		}
 		else if (!VonCroy->flags && oEnemy)
 		{
@@ -1904,7 +1904,7 @@ void VoncroyControl(short item_number)
 					oEnemy->hit_points -= 20;
 
 					if (oEnemy->hit_points <= 0)
-						item->ai_bits = 16;
+						item->ai_bits = FOLLOW;
 
 					oEnemy->hit_status = 1;
 					VonCroy->flags = 1;
@@ -1941,7 +1941,7 @@ void VoncroyControl(short item_number)
 		VonCroy->reached_goal = 0;
 		VonCroy->enemy = 0;
 		item->item_flags[3] += ifl3;
-		item->ai_bits = 16;
+		item->ai_bits = FOLLOW;
 		break;
 
 	case 33:
@@ -1963,14 +1963,14 @@ void VoncroyControl(short item_number)
 			VonCroy->reached_goal = 0;
 			VonCroy->enemy = 0;
 			item->item_flags[3] += ifl3;
-			item->ai_bits = 16;
+			item->ai_bits = FOLLOW;
 		}
 		else if (ifl3)
 		{
 			VonCroy->reached_goal = 0;
 			VonCroy->enemy = 0;
 			item->item_flags[3] += ifl3;
-			item->ai_bits = 16;
+			item->ai_bits = FOLLOW;
 		}
 
 		break;

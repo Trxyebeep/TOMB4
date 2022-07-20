@@ -83,6 +83,15 @@ do \
 #define DSNGUID					IID_IDirectSoundNotify
 	/**********************************/
 
+enum ai_bits
+{
+	GUARD = 1 << 0,
+	AMBUSH = 1 << 1,
+	PATROL1 = 1 << 2,
+	MODIFY = 1 << 3,
+	FOLLOW = 1 << 4
+};
+
 enum win_commands
 {
 	KA_ALTENTER = 8,

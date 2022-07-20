@@ -1991,7 +1991,7 @@ void GetAIPickups()
 		{
 			item->ai_bits = 0;
 
-			for (int aiObjNum = 0; aiObjNum < nAIObjects; aiObjNum++)
+			for (aiObjNum = 0; aiObjNum < nAIObjects; aiObjNum++)
 			{
 				aiObj = &AIObjects[aiObjNum];
 

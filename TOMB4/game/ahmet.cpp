@@ -322,12 +322,12 @@ void AhmetControl(short item_number)
 			ahmet->maximum_turn = 0;
 			ahmet->flags = 0;
 
-			if (item->ai_bits & 1)
+			if (item->ai_bits & GUARD)
 			{
 				head = AIGuard(ahmet);
 				item->goal_anim_state = 1;
 			}
-			else if (item->ai_bits & 4)
+			else if (item->ai_bits & PATROL1)
 			{
 				item->goal_anim_state = 2;
 				head = 0;
@@ -360,7 +360,7 @@ void AhmetControl(short item_number)
 		case 2:
 			ahmet->maximum_turn = 910;
 
-			if (item->ai_bits & 4)
+			if (item->ai_bits & PATROL1)
 			{
 				item->goal_anim_state = 2;
 				head = 0;
@@ -375,7 +375,7 @@ void AhmetControl(short item_number)
 		case 3:
 			ahmet->maximum_turn = 1456;
 
-			if (item->ai_bits & 1 || ahmet->mood == BORED_MOOD || ahmet->mood == ESCAPE_MOOD &&
+			if (item->ai_bits & GUARD || ahmet->mood == BORED_MOOD || ahmet->mood == ESCAPE_MOOD &&
 				lara.target != item && info.ahead || info.bite && info.distance < 0x190000)
 				item->goal_anim_state = 1;
 			else if (info.distance < 0x640000 && info.ahead && (info.enemy_facing < -0x4000 || info.enemy_facing > 0x4000))
