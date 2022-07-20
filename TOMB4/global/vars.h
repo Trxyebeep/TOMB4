@@ -501,6 +501,7 @@
 #define next_drip	VAR_U_(0x004BF3A0, long)
 #define next_blood	VAR_U_(0x004BF394, long)
 #define ScaleFlag	VAR_U_(0x004BFC04, uchar)
+#define ShatterItem	VAR_U_(0x007FE960, SHATTER_ITEM)
 
 
 
