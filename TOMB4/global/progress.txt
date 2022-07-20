@@ -178,7 +178,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044D530		RayBoxIntersect
 0x0044D820	+	FireCrossBowFromLaserSight
 0x0044D890		GetTargetOnLOS
-0x0044DE50		ExplodeItemNode
+0x0044DE50	+	ExplodeItemNode
 
 
 		game/croc.cpp

@@ -30,6 +30,7 @@
 #include "gameflow.h"
 #include "../tomb4/tomb4.h"
 #include "lara1gun.h"
+#include "sphere.h"
 
 #ifdef GENERAL_FIXES
 char DeathMenuActive;
@@ -2335,6 +2336,35 @@ void FireCrossBowFromLaserSight(GAME_VECTOR* start, GAME_VECTOR* target)
 	FireCrossbow(&pos);
 }
 
+long ExplodeItemNode(ITEM_INFO* item, long Node, long NoXZVel, long bits)
+{
+	OBJECT_INFO* object;
+	short** meshpp;
+
+	if (!(item->mesh_bits & (1 << Node)))
+		return 0;
+
+	if (bits == 256)
+		bits = -64;
+	else
+		SoundEffect(SFX_HIT_ROCK, &item->pos, SFX_DEFAULT);
+
+	GetSpheres(item, Slist, 3);
+	object = &objects[item->object_number];
+	meshpp = &meshes[object->mesh_index + Node * 2];
+	ShatterItem.Bit = 1 << Node;
+	ShatterItem.meshp = *meshpp;
+	ShatterItem.Sphere.x = Slist[Node].x;
+	ShatterItem.Sphere.y = Slist[Node].y;
+	ShatterItem.Sphere.z = Slist[Node].z;
+	ShatterItem.YRot = item->pos.y_rot;
+	ShatterItem.il = &item->il;
+	ShatterItem.Flags = item->object_number != CROSSBOW_BOLT ? 0 : 1024;
+	ShatterObject(&ShatterItem, 0, (short)bits, item->room_number, NoXZVel);
+	item->mesh_bits &= ~ShatterItem.Bit;
+	return 1;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -2364,4 +2394,5 @@ void inject_control(bool replace)
 	INJECT(0x0044BC80, zLOS, replace);
 	INJECT(0x0044BBE0, LOS, replace);
 	INJECT(0x0044D820, FireCrossBowFromLaserSight, replace);
+	INJECT(0x0044DE50, ExplodeItemNode, replace);
 }
