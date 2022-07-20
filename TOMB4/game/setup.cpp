@@ -41,6 +41,7 @@
 #include "draw.h"
 #include "hair.h"
 #include "items.h"
+#include "../specific/function_stubs.h"
 
 void ObjectObjects()
 {
@@ -2062,6 +2063,23 @@ void InitTarget()
 	}
 }
 
+void SetupGame()
+{
+	SeedRandomDraw(0xD371F947);
+	SeedRandomControl(0xD371F947);
+	wibble = 0;
+	ClearFootPrints();
+	InitBinoculars();
+	InitTarget();
+	trainmappos = 0;
+	InitialiseGameFlags();
+	InitialiseLara();
+	GetCarriedItems();
+	GetAIPickups();
+	SeedRandomDraw(0xD371F947);
+	SeedRandomControl(0xD371F947);
+}
+
 void inject_setup(bool replace)
 {
 	INJECT(0x0045E1F0, ObjectObjects, 0);
@@ -2076,4 +2094,5 @@ void inject_setup(bool replace)
 	INJECT(0x0045EC50, GetAIPickups, replace);
 	INJECT(0x0045EB40, GetCarriedItems, replace);
 	INJECT(0x0045F110, InitTarget, replace);
+	INJECT(0x0045F0A0, SetupGame, replace);
 }
