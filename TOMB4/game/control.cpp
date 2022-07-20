@@ -1876,6 +1876,55 @@ void KillMoveItems()
 	ItemNewRoomNo = 0;
 }
 
+void RefreshCamera(short type, short* data)
+{
+	short trigger, value, target_ok;
+
+	target_ok = 2;
+
+	do
+	{
+		trigger = *data++;
+		value = trigger & 0x3FF;
+
+		if (((trigger >> 10) & 0xF) == TO_CAMERA)
+		{
+			data++;
+
+			if (value == camera.last)
+			{
+				camera.number = trigger & 0x3FF;
+
+				if (camera.timer >= 0 && (camera.type != LOOK_CAMERA && camera.type != COMBAT_CAMERA || camera.fixed[camera.number].flags & 3))
+				{
+					camera.type = FIXED_CAMERA;
+					target_ok = 1;
+					continue;
+				}
+
+				camera.timer = -1;
+			}
+
+			target_ok = 0;
+		}
+		else if (((trigger >> 10) & 0xF) == TO_TARGET)
+		{
+			if (camera.type != LOOK_CAMERA && camera.type != COMBAT_CAMERA || camera.number == NO_ITEM || camera.fixed[camera.number].flags & 1)
+				camera.item = &items[value];
+		}
+
+	} while (!(trigger & 0x8000));
+
+	if (camera.item)
+	{
+		if (!target_ok || target_ok == 2 && camera.item->looked_at && camera.item != camera.last_item)
+			camera.item = 0;
+	}
+
+	if (camera.number == -1 && camera.timer > 0)
+		camera.timer = -1;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1896,4 +1945,5 @@ void inject_control(bool replace)
 	INJECT(0x00449390, UpdateSky, replace);
 	INJECT(0x00449330, KillMoveEffects, replace);
 	INJECT(0x004492D0, KillMoveItems, replace);
+	INJECT(0x0044AA20, RefreshCamera, replace);
 }
