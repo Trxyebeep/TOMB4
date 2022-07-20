@@ -1785,6 +1785,17 @@ void AlterFloorHeight(ITEM_INFO* item, long height)
 	}
 }
 
+void TranslateItem(ITEM_INFO* item, short x, short y, short z)
+{
+	long s, c;
+
+	c = phd_cos(item->pos.y_rot);
+	s = phd_sin(item->pos.y_rot);
+	item->pos.x_pos += (z * s + x * c) >> W2V_SHIFT;
+	item->pos.y_pos += y;
+	item->pos.z_pos += (z * c - x * s) >> W2V_SHIFT;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1800,4 +1811,5 @@ void inject_control(bool replace)
 	INJECT(0x0044A530, GetHeight, replace);
 	INJECT(0x0044B690, GetCeiling, replace);
 	INJECT(0x0044A0D0, AlterFloorHeight, replace);
+	INJECT(0x0044A060, TranslateItem, replace);
 }

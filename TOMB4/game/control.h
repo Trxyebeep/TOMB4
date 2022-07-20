@@ -16,6 +16,7 @@ long GetWaterHeight(long x, long y, long z, short room_number);
 long GetHeight(FLOOR_INFO* floor, long x, long y, long z);
 long GetCeiling(FLOOR_INFO* floor, long x, long y, long z);
 void AlterFloorHeight(ITEM_INFO* item, long height);
+void TranslateItem(ITEM_INFO* item, short x, short y, short z);
 
 #define UpdateSky	( (void(__cdecl*)()) 0x00449390 )
 #define KillMoveItems	( (void(__cdecl*)()) 0x004492D0)
