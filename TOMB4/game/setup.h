@@ -14,5 +14,6 @@ void InitialiseLara();
 void InitialiseObjects();
 void GetAIPickups();
 void GetCarriedItems();
+void InitTarget();
 
 #define SetupGame	( (void(__cdecl*)()) 0x0045F0A0 )

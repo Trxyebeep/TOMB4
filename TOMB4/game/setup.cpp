@@ -2042,6 +2042,26 @@ void GetCarriedItems()
 	}
 }
 
+void InitTarget()
+{
+	short** meshpp;
+	short* meshp;
+	short nVtx;
+
+	meshpp = &meshes[objects[TARGET_GRAPHICS].mesh_index];
+	meshp = *meshpp;
+	targetMeshP = (MESH_DATA*)meshp;
+	nVtx = meshp[4] & 0xFF;
+	meshp += 6;
+
+	for (int i = 0; i < nVtx; i++)
+	{
+		meshp[0] = short(phd_centerx + 80 * meshp[0] / 96);
+		meshp[1] = short(phd_centery + 60 * meshp[1] / 224);
+		meshp += 4;
+	}
+}
+
 void inject_setup(bool replace)
 {
 	INJECT(0x0045E1F0, ObjectObjects, 0);
@@ -2055,4 +2075,5 @@ void inject_setup(bool replace)
 	INJECT(0x0045C0D0, InitialiseObjects, replace);
 	INJECT(0x0045EC50, GetAIPickups, replace);
 	INJECT(0x0045EB40, GetCarriedItems, replace);
+	INJECT(0x0045F110, InitTarget, replace);
 }

@@ -1217,7 +1217,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0045ED30	+	BuildOutsideTable
 0x0045F050	+	InitialiseGameFlags
 0x0045F0A0		SetupGame
-0x0045F110		InitTarget
+0x0045F110	+	InitTarget
 0x0045F1A0	+	ClearFootPrints
 0x0045F1C0	+	reset_cutseq_vars
 
