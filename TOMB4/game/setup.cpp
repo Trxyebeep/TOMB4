@@ -1977,6 +1977,36 @@ void InitialiseObjects()
 	}
 }
 
+void GetAIPickups()
+{
+	ITEM_INFO* item;
+	AIOBJECT* aiObj;
+	short aiObjNum;
+
+	for (int i = 0; i < level_items; i++)
+	{
+		item = &items[i];
+
+		if (objects[item->object_number].intelligent)
+		{
+			item->ai_bits = 0;
+
+			for (int aiObjNum = 0; aiObjNum < nAIObjects; aiObjNum++)
+			{
+				aiObj = &AIObjects[aiObjNum];
+
+				if (aiObj->x == item->pos.x_pos && aiObj->z == item->pos.z_pos &&
+					aiObj->room_number == item->room_number && aiObj->object_number < AI_PATROL2)
+				{
+					item->ai_bits |= 1 << (aiObj->object_number - AI_GUARD);
+					item->item_flags[3] = aiObj->trigger_flags;
+					aiObj->room_number = 255;
+				}
+			}
+		}
+	}
+}
+
 void inject_setup(bool replace)
 {
 	INJECT(0x0045E1F0, ObjectObjects, 0);
@@ -1988,4 +2018,5 @@ void inject_setup(bool replace)
 	INJECT(0x0045F050, InitialiseGameFlags, replace);
 	INJECT(0x0045BFB0, InitialiseLara, replace);
 	INJECT(0x0045C0D0, InitialiseObjects, replace);
+	INJECT(0x0045EC50, GetAIPickups, replace);
 }

@@ -1213,7 +1213,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0045DC10	+	TrapObjects
 0x0045E1F0	+	ObjectObjects
 0x0045EB40		GetCarriedItems
-0x0045EC50		GetAIPickups
+0x0045EC50	+	GetAIPickups
 0x0045ED30	+	BuildOutsideTable
 0x0045F050	+	InitialiseGameFlags
 0x0045F0A0		SetupGame

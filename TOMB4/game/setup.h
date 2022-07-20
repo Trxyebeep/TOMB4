@@ -12,5 +12,6 @@ void ClearFootPrints();
 void InitialiseGameFlags();
 void InitialiseLara();
 void InitialiseObjects();
+void GetAIPickups();
 
 #define SetupGame	( (void(__cdecl*)()) 0x0045F0A0 )
