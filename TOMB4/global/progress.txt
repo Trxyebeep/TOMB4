@@ -1077,7 +1077,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0040B050	+	GunShot
 0x0040B060	+	GunHit
 0x0040B120	+	GunMiss
-0x0040B1D0		ShotLara
+0x0040B1D0	+	ShotLara
 
 
 		game/pickup.cpp

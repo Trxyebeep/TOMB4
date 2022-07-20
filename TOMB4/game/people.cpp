@@ -8,6 +8,7 @@
 #include "control.h"
 #include "objects.h"
 #include "effect2.h"
+#include "box.h"
 
 short GunShot(long x, long y, long z, short speed, short yrot, short room_number)
 {
@@ -100,6 +101,75 @@ long Targetable(ITEM_INFO* item, AI_INFO* info)
 	return LOS(&start, &target);
 }
 
+long ShotLara(ITEM_INFO* item, AI_INFO* info, BITE_INFO* gun, short extra_rotation, long damage)
+{
+	ITEM_INFO* enemy;
+	CREATURE_INFO* creature;
+	PHD_VECTOR pos;
+	long hit, targetable, random, distance;
+
+	creature = (CREATURE_INFO*)item->data;
+	enemy = creature->enemy;
+
+	if (info->distance <= 0x4000000 && Targetable(item, info))
+	{
+		distance = phd_sin(info->enemy_facing) * enemy->speed * 0x4000000 / 300 >> 14;
+		distance = info->distance + SQUARE(distance);
+
+		if (distance <= 0x4000000)
+		{
+			random = (0x4000000 - info->distance) / 3276 + 0x2000;
+			hit = (GetRandomControl() < random);
+		}
+		else
+			hit = 0;
+
+		targetable = 1;
+	}
+	else
+	{
+		hit = 0;
+		targetable = 0;
+	}
+
+	if (damage)
+	{
+		if (enemy == lara_item)
+		{
+			if (hit)
+			{
+				CreatureEffect(item, gun, GunHit);
+				lara_item->hit_points -= (short)damage;
+				lara_item->hit_status = 1;
+			}
+			else if (targetable)
+				CreatureEffect(item, gun, GunMiss);
+		}
+		else
+		{
+			CreatureEffect(item, gun, GunShot);
+
+			if (hit)
+			{
+				enemy->hit_points -= short(damage / 10);
+				enemy->hit_status = 1;
+				random = GetRandomControl() & 0xF;
+
+				if (random > 14)
+					random = 0;
+
+				pos.x = 0;
+				pos.y = 0;
+				pos.z = 0;
+				GetJointAbsPosition(enemy, &pos, random);
+				DoBloodSplat(pos.x, pos.y, pos.z, (GetRandomControl() & 3) + 4, enemy->pos.y_rot, enemy->room_number);
+			}
+		}
+	}
+
+	return targetable;
+}
+
 void inject_people(bool replace)
 {
 	INJECT(0x0040B050, GunShot, replace);
@@ -107,4 +177,5 @@ void inject_people(bool replace)
 	INJECT(0x0040B120, GunMiss, replace);
 	INJECT(0x0040AEB0, TargetVisible, replace);
 	INJECT(0x0040AF80, Targetable, replace);
+	INJECT(0x0040B1D0, ShotLara, replace);
 }
