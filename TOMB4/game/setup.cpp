@@ -38,6 +38,8 @@
 #include "sas.h"
 #include "hammerhead.h"
 #include "tomb4fx.h"
+#include "draw.h"
+#include "hair.h"
 
 void ObjectObjects()
 {
@@ -1916,6 +1918,65 @@ void InitialiseLara()
 	DashTimer = 120;
 }
 
+void InitialiseObjects()
+{
+	OBJECT_INFO* obj;
+
+	for (int i = 0; i < NUMBER_OBJECTS; i++)
+	{
+		obj = &objects[i];
+		obj->initialise = 0;
+		obj->collision = 0;
+		obj->control = 0;
+		obj->intelligent = 0;
+		obj->save_position = 0;
+		obj->save_hitpoints = 0;
+		obj->save_flags = 0;
+		obj->save_anim = 0;
+		obj->water_creature = 0;
+		obj->using_drawanimating_item = 1;
+		obj->save_mesh = 0;
+		obj->draw_routine = DrawAnimatingItem;
+		obj->ceiling = 0;
+		obj->floor = 0;
+		obj->pivot_length = 0;
+		obj->radius = 10;
+		obj->shadow_size = 0;
+		obj->hit_points = -16384;
+		obj->explodable_meshbits = 0;
+		obj->draw_routine_extra = 0;
+		obj->frame_base = (short*)((long)obj->frame_base + (char*)frames);
+		obj->object_mip = 0;
+	}
+
+	BaddyObjects();
+	ObjectObjects();
+	TrapObjects();
+	InitialiseHair();
+	InitialiseEffects();
+
+	for (int i = 0; i < 6; i++)
+		SequenceUsed[i] = 0;
+
+	for (int i = 0; i < 8; i++)
+		LibraryTab[i] = 0;
+
+	NumRPickups = 0;
+	CurrentSequence = 0;
+	SequenceResults[0][1][2] = 0;
+	SequenceResults[0][2][1] = 1;
+	SequenceResults[1][0][2] = 2;
+	SequenceResults[1][2][0] = 3;
+	SequenceResults[2][0][1] = 4;
+	SequenceResults[2][1][0] = 5;
+
+	for (int i = 0; i < gfNumMips; i++)
+	{
+		obj = &objects[((gfMips[i] & 0xF) << 1) + ANIMATING1];
+		obj->object_mip = (gfMips[i] & 0xF0) << 6;
+	}
+}
+
 void inject_setup(bool replace)
 {
 	INJECT(0x0045E1F0, ObjectObjects, 0);
@@ -1926,4 +1987,5 @@ void inject_setup(bool replace)
 	INJECT(0x0045F1A0, ClearFootPrints, replace);
 	INJECT(0x0045F050, InitialiseGameFlags, replace);
 	INJECT(0x0045BFB0, InitialiseLara, replace);
+	INJECT(0x0045C0D0, InitialiseObjects, replace);
 }
