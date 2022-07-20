@@ -953,7 +953,7 @@ x for functions decompiled but not injected, for one reason or another.
 		game/missle.cpp
 
 0x00409180	+	ExplodeFX
-0x00409200		ControlBodyPart
+0x00409200	+	ControlBodyPart
 
 
 		game/moveblok.cpp
