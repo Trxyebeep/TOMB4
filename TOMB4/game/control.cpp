@@ -1796,6 +1796,37 @@ void TranslateItem(ITEM_INFO* item, short x, short y, short z)
 	item->pos.z_pos += (z * c - x * s) >> W2V_SHIFT;
 }
 
+long GetChange(ITEM_INFO* item, ANIM_STRUCT* anim)
+{
+	CHANGE_STRUCT* change;
+	RANGE_STRUCT* range;
+
+	if (item->current_anim_state == item->goal_anim_state || anim->number_changes <= 0)
+		return 0;
+
+	change = &changes[anim->change_index];
+
+	for (int i = 0; i < anim->number_changes; i++, change++)
+	{
+		if (change->goal_anim_state == item->goal_anim_state && change->number_ranges > 0)
+		{
+			range = &ranges[change->range_index];
+
+			for (int j = 0; j < change->number_ranges; j++, range++)
+			{
+				if (item->frame_number >= range->start_frame && item->frame_number <= range->end_frame)
+				{
+					item->anim_number = range->link_anim_num;
+					item->frame_number = range->link_frame_num;
+					return 1;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1812,4 +1843,5 @@ void inject_control(bool replace)
 	INJECT(0x0044B690, GetCeiling, replace);
 	INJECT(0x0044A0D0, AlterFloorHeight, replace);
 	INJECT(0x0044A060, TranslateItem, replace);
+	INJECT(0x00449FC0, GetChange, replace);
 }

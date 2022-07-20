@@ -17,6 +17,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z);
 long GetCeiling(FLOOR_INFO* floor, long x, long y, long z);
 void AlterFloorHeight(ITEM_INFO* item, long height);
 void TranslateItem(ITEM_INFO* item, short x, short y, short z);
+long GetChange(ITEM_INFO* item, ANIM_STRUCT* anim);
 
 #define UpdateSky	( (void(__cdecl*)()) 0x00449390 )
 #define KillMoveItems	( (void(__cdecl*)()) 0x004492D0)
