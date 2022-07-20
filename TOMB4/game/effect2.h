@@ -21,3 +21,4 @@ void SetupRipple(long x, long y, long z, long size, long flags);
 #define TriggerFireFlame	( (void(__cdecl*)(long, long, long, long, long)) 0x00435130 )
 #define TriggerSuperJetFlame	( (void(__cdecl*)(ITEM_INFO*, long, long)) 0x00435570 )
 #define TriggerWaterfallMist	( (void(__cdecl*)(long, long, long, long)) 0x00435C60 )
+#define Richochet	( (void(__cdecl*)(GAME_VECTOR*)) 0x00437140 )

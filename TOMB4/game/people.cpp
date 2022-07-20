@@ -7,6 +7,7 @@
 #include "draw.h"
 #include "control.h"
 #include "objects.h"
+#include "effect2.h"
 
 short GunShot(long x, long y, long z, short speed, short yrot, short room_number)
 {
@@ -29,6 +30,18 @@ short GunHit(long x, long y, long z, short speed, short yrot, short room_number)
 	SoundEffect(SFX_UNDERWATER_DOOR, &lara_item->pos, SFX_DEFAULT);
 #endif
 
+	return GunShot(x, y, z, speed, yrot, room_number);
+}
+
+short GunMiss(long x, long y, long z, short speed, short yrot, short room_number)
+{
+	GAME_VECTOR pos;
+
+	pos.x = lara_item->pos.x_pos + ((GetRandomControl() - 0x4000) << 9) / 0x7FFF;
+	pos.y = lara_item->floor;
+	pos.z = lara_item->pos.z_pos + ((GetRandomControl() - 0x4000) << 9) / 0x7FFF;
+	pos.room_number = lara_item->room_number;
+	Richochet(&pos);
 	return GunShot(x, y, z, speed, yrot, room_number);
 }
 
@@ -91,6 +104,7 @@ void inject_people(bool replace)
 {
 	INJECT(0x0040B050, GunShot, replace);
 	INJECT(0x0040B060, GunHit, replace);
+	INJECT(0x0040B120, GunMiss, replace);
 	INJECT(0x0040AEB0, TargetVisible, replace);
 	INJECT(0x0040AF80, Targetable, replace);
 }
