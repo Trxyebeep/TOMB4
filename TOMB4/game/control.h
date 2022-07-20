@@ -27,6 +27,7 @@ void TriggerNormalCDTrack(short value, short flags, short type);
 void TriggerCDTrack(short value, short flags, short type);
 long ClipTarget(GAME_VECTOR* start, GAME_VECTOR* target);
 long xLOS(GAME_VECTOR* start, GAME_VECTOR* target);
+long zLOS(GAME_VECTOR* start, GAME_VECTOR* target);
 
 #define AnimateItem	( (void(__cdecl*)(ITEM_INFO*)) 0x00449B90 )
 #define ExplodeItemNode	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x0044DE50 )
