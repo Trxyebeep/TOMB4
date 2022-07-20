@@ -13,5 +13,6 @@ void InitialiseGameFlags();
 void InitialiseLara();
 void InitialiseObjects();
 void GetAIPickups();
+void GetCarriedItems();
 
 #define SetupGame	( (void(__cdecl*)()) 0x0045F0A0 )

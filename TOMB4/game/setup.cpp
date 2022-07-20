@@ -40,6 +40,7 @@
 #include "tomb4fx.h"
 #include "draw.h"
 #include "hair.h"
+#include "items.h"
 
 void ObjectObjects()
 {
@@ -2007,6 +2008,40 @@ void GetAIPickups()
 	}
 }
 
+void GetCarriedItems()
+{
+	ITEM_INFO* baddy;
+	ITEM_INFO* pickup;
+	short item_num;
+
+	for (int i = 0; i < level_items; i++)
+	{
+		baddy = &items[i];
+		baddy->carried_item = NO_ITEM;
+
+		if (objects[baddy->object_number].intelligent && baddy->object_number != SCORPION)
+		{
+			item_num = room[baddy->room_number].item_number;
+
+			while (item_num != NO_ITEM)
+			{
+				pickup = &items[item_num];
+
+				if (baddy->pos.x_pos == pickup->pos.x_pos && ABS(baddy->pos.y_pos - pickup->pos.y_pos) < 256 &&
+					baddy->pos.z_pos == pickup->pos.z_pos && objects[pickup->object_number].collision == PickUpCollision)
+				{
+					pickup->carried_item = baddy->carried_item;
+					baddy->carried_item = item_num;
+					RemoveDrawnItem(item_num);
+					pickup->room_number = 255;
+				}
+
+				item_num = pickup->next_item;
+			}
+		}
+	}
+}
+
 void inject_setup(bool replace)
 {
 	INJECT(0x0045E1F0, ObjectObjects, 0);
@@ -2019,4 +2054,5 @@ void inject_setup(bool replace)
 	INJECT(0x0045BFB0, InitialiseLara, replace);
 	INJECT(0x0045C0D0, InitialiseObjects, replace);
 	INJECT(0x0045EC50, GetAIPickups, replace);
+	INJECT(0x0045EB40, GetCarriedItems, replace);
 }
