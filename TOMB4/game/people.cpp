@@ -4,6 +4,9 @@
 #include "../specific/function_stubs.h"
 #include "effects.h"
 #include "sound.h"
+#include "draw.h"
+#include "control.h"
+#include "objects.h"
 
 short GunShot(long x, long y, long z, short speed, short yrot, short room_number)
 {
@@ -29,8 +32,65 @@ short GunHit(long x, long y, long z, short speed, short yrot, short room_number)
 	return GunShot(x, y, z, speed, yrot, room_number);
 }
 
+long TargetVisible(ITEM_INFO* item, AI_INFO* info)
+{
+	ITEM_INFO* enemy;
+	CREATURE_INFO* creature;
+	GAME_VECTOR start;
+	GAME_VECTOR target;
+	short* bounds;
+
+	creature = (CREATURE_INFO*)item->data;
+	enemy = creature->enemy;
+
+	if (!enemy || enemy->hit_points <= 0 || !enemy->data || info->angle - creature->joint_rotation[2] <= -0x4000 ||
+		info->angle - creature->joint_rotation[2] >= 0x4000 || info->distance >= 0x4000000)
+		return 0;
+
+	bounds = GetBestFrame(enemy);
+
+	start.x = item->pos.x_pos;
+	start.y = item->pos.y_pos - 768;
+	start.z = item->pos.z_pos;
+	start.room_number = item->room_number;
+
+	target.x = enemy->pos.x_pos;
+	target.y = enemy->pos.y_pos + ((bounds[3] + 3 * bounds[2]) >> 2);
+	target.z = enemy->pos.z_pos;
+	return LOS(&start, &target);
+}
+
+long Targetable(ITEM_INFO* item, AI_INFO* info)
+{
+	ITEM_INFO* enemy;
+	CREATURE_INFO* creature;
+	GAME_VECTOR start;
+	GAME_VECTOR target;
+	short* bounds;
+
+	creature = (CREATURE_INFO*)item->data;
+	enemy = creature->enemy;
+
+	if (!enemy || enemy->hit_points <= 0 || !enemy->data || !info->ahead || info->distance >= 0x4000000 && item->object_number != SETHA)
+		return 0;
+
+	bounds = GetBestFrame(item);
+	start.x = item->pos.x_pos;
+	start.y = item->pos.y_pos + ((bounds[3] + 3 * bounds[2]) >> 2);
+	start.z = item->pos.z_pos;
+	start.room_number = item->room_number;
+
+	bounds = GetBestFrame(enemy);
+	target.x = enemy->pos.x_pos;
+	target.y = enemy->pos.y_pos + ((bounds[3] + 3 * bounds[2]) >> 2);
+	target.z = enemy->pos.z_pos;
+	return LOS(&start, &target);
+}
+
 void inject_people(bool replace)
 {
 	INJECT(0x0040B050, GunShot, replace);
 	INJECT(0x0040B060, GunHit, replace);
+	INJECT(0x0040AEB0, TargetVisible, replace);
+	INJECT(0x0040AF80, Targetable, replace);
 }
