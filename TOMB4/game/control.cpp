@@ -2050,6 +2050,127 @@ long ClipTarget(GAME_VECTOR* start, GAME_VECTOR* target)
 	return 1;
 }
 
+long xLOS(GAME_VECTOR* start, GAME_VECTOR* target)
+{
+	FLOOR_INFO* floor;
+	long dx, dy, dz, x, y, z;
+	short room_number, last_room;
+
+	dx = target->x - start->x;
+
+	if (!dx)
+		return 1;
+
+	dy = 1024 * (target->y - start->y) / dx;
+	dz = 1024 * (target->z - start->z) / dx;
+	number_los_rooms = 1;
+	los_rooms[0] = start->room_number;
+	room_number = start->room_number;
+	last_room = start->room_number;
+
+	if (dx < 0)
+	{
+		x = start->x & ~1023;
+		y = ((x - start->x) * dy >> 10) + start->y;
+		z = ((x - start->x) * dz >> 10) + start->z;
+
+		while (x > target->x)
+		{
+			floor = GetFloor(x, y, z, &room_number);
+
+			if (room_number != last_room)
+			{
+				last_room = room_number;
+				los_rooms[number_los_rooms] = room_number;
+				number_los_rooms++;
+			}
+
+			if (y > GetHeight(floor, x, y, z) || y < GetCeiling(floor, x, y, z))
+			{
+				target->x = x;
+				target->y = y;
+				target->z = z;
+				target->room_number = room_number;
+				return -1;
+			}
+
+			floor = GetFloor(x - 1, y, z, &room_number);
+
+			if (room_number != last_room)
+			{
+				last_room = room_number;
+				los_rooms[number_los_rooms] = room_number;
+				number_los_rooms++;
+			}
+
+			if (y > GetHeight(floor, x - 1, y, z) || y < GetCeiling(floor, x - 1, y, z))
+			{
+				target->x = x;
+				target->y = y;
+				target->z = z;
+				target->room_number = last_room;
+				return 0;
+			}
+
+			x -= 1024;
+			y -= dy;
+			z -= dz;
+		}
+	}
+	else
+	{
+		x = start->x | 0x3FF;
+		y = ((x - start->x) * dy >> 10) + start->y;
+		z = ((x - start->x) * dz >> 10) + start->z;
+
+		while (x < target->x)
+		{
+			floor = GetFloor(x, y, z, &room_number);
+
+			if (room_number != last_room)
+			{
+				last_room = room_number;
+				los_rooms[number_los_rooms] = room_number;
+				number_los_rooms++;
+			}
+
+			if (y > GetHeight(floor, x, y, z) || y < GetCeiling(floor, x, y, z))
+			{
+				target->x = x;
+				target->y = y;
+				target->z = z;
+				target->room_number = room_number;
+				return -1;
+			}
+
+			floor = GetFloor(x + 1, y, z, &room_number);
+
+			if (room_number != last_room)
+			{
+				last_room = room_number;
+				los_rooms[number_los_rooms] = room_number;
+				number_los_rooms++;
+			}
+
+			if (y > GetHeight(floor, x + 1, y, z) || y < GetCeiling(floor, x + 1, y, z))
+			{
+				target->x = x;
+				target->y = y;
+				target->z = z;
+				target->room_number = last_room;
+				return 0;
+			}
+
+			x += 1024;
+			y += dy;
+			z += dz;
+		}
+	}
+
+	target->room_number = room_number;
+	return 1;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -2075,4 +2196,5 @@ void inject_control(bool replace)
 	INJECT(0x0044C790, TriggerNormalCDTrack, replace);
 	INJECT(0x0044C770, TriggerCDTrack, replace);
 	INJECT(0x0044C320, ClipTarget, replace);
+	INJECT(0x0044BFD0, xLOS, replace);
 }

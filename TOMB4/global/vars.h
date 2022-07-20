@@ -503,6 +503,7 @@
 #define ScaleFlag	VAR_U_(0x004BFC04, uchar)
 #define ShatterItem	VAR_U_(0x007FE960, SHATTER_ITEM)
 #define ItemNewRoomNo	VAR_U_(0x004BF3F6, short)
+#define number_los_rooms	VAR_U_(0x004BF418, long)
 
 
 
@@ -623,6 +624,7 @@
 #define fires	ARRAY_(0x007FFF60, FIRE_LIST, [32])
 #define LaSlot	ARRAY_(0x007F7220, SoundSlot, [32])
 #define ItemNewRooms	ARRAY_(0x007FE3A0, short, [256][2])
+#define los_rooms	ARRAY_(0x007FE260, short, [20])
 
 
 /*Fog stuff*/
