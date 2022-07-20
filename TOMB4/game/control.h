@@ -29,6 +29,7 @@ long ClipTarget(GAME_VECTOR* start, GAME_VECTOR* target);
 long xLOS(GAME_VECTOR* start, GAME_VECTOR* target);
 long zLOS(GAME_VECTOR* start, GAME_VECTOR* target);
 long LOS(GAME_VECTOR* start, GAME_VECTOR* target);
+void FireCrossBowFromLaserSight(GAME_VECTOR* start, GAME_VECTOR* target);
 
 #define AnimateItem	( (void(__cdecl*)(ITEM_INFO*)) 0x00449B90 )
 #define ExplodeItemNode	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x0044DE50 )

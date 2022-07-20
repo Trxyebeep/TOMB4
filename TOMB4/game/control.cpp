@@ -26,12 +26,12 @@
 #include "lara_states.h"
 #include "../specific/audio.h"
 #include "lot.h"
-
-#ifdef GENERAL_FIXES
 #include "../specific/output.h"
 #include "gameflow.h"
 #include "../tomb4/tomb4.h"
+#include "lara1gun.h"
 
+#ifdef GENERAL_FIXES
 char DeathMenuActive;
 
 static long S_Death()
@@ -2320,6 +2320,21 @@ long LOS(GAME_VECTOR* start, GAME_VECTOR* target)
 	return 0;
 }
 
+void FireCrossBowFromLaserSight(GAME_VECTOR* start, GAME_VECTOR* target)
+{
+	PHD_3DPOS pos;
+	short angles[2];
+
+	phd_GetVectorAngles(target->x - start->x, target->y - start->y, target->z - start->z, angles);
+	pos.x_pos = start->x;
+	pos.y_pos = start->y;
+	pos.z_pos = start->z;
+	pos.x_rot = angles[1];
+	pos.y_rot = angles[0];
+	pos.z_rot = 0;
+	FireCrossbow(&pos);
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -2348,4 +2363,5 @@ void inject_control(bool replace)
 	INJECT(0x0044BFD0, xLOS, replace);
 	INJECT(0x0044BC80, zLOS, replace);
 	INJECT(0x0044BBE0, LOS, replace);
+	INJECT(0x0044D820, FireCrossBowFromLaserSight, replace);
 }
