@@ -1867,6 +1867,55 @@ void InitialiseGameFlags()
 	camera.underwater = 0;
 }
 
+void InitialiseLara()
+{
+	short item_num, gun;
+
+	if (lara.item_number == NO_ITEM)
+		return;
+
+	lara_item->data = &lara;
+	lara_item->collidable = 0;
+	item_num = lara.item_number;
+	memset(&lara, 0, sizeof(LARA_INFO));
+	lara.look = 1;
+	lara.item_number = item_num;
+	lara.hit_direction = -1;
+	lara.air = 1800;
+	lara.vehicle = NO_ITEM;
+	lara.weapon_item = NO_ITEM;
+	lara.water_surface_dist = 100;
+	lara.holster = LARA_HOLSTERS_PISTOLS;
+	lara.location = -1;
+	lara.highest_location = -1;
+	lara.RopePtr = -1;
+	lara_item->hit_points = 1000;
+	lara.gun_status = LG_NO_ARMS;
+
+	if (gfLevelFlags & GF_YOUNGLARA)
+		gun = WEAPON_NONE;
+	else
+		gun = WEAPON_PISTOLS;
+	
+	lara.last_gun_type = gun;
+	lara.gun_type = gun;
+	lara.request_gun_type = gun;
+	LaraInitialiseMeshes();
+	lara.pistols_type_carried = 9;
+	lara.binoculars = 1;
+	lara.num_flares = 3;
+	lara.num_small_medipack = 3;
+	lara.num_large_medipack = 1;
+	lara.num_pistols_ammo = -1;
+
+	if (Gameflow->DemoDisc)
+		lara.crowbar = 1;
+
+	lara.beetle_uses = 3;
+	InitialiseLaraAnims(lara_item);
+	DashTimer = 120;
+}
+
 void inject_setup(bool replace)
 {
 	INJECT(0x0045E1F0, ObjectObjects, 0);
@@ -1876,4 +1925,5 @@ void inject_setup(bool replace)
 	INJECT(0x0045F1C0, reset_cutseq_vars, replace);
 	INJECT(0x0045F1A0, ClearFootPrints, replace);
 	INJECT(0x0045F050, InitialiseGameFlags, replace);
+	INJECT(0x0045BFB0, InitialiseLara, replace);
 }
