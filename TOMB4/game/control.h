@@ -15,6 +15,7 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number);
 long GetWaterHeight(long x, long y, long z, short room_number);
 long GetHeight(FLOOR_INFO* floor, long x, long y, long z);
 long GetCeiling(FLOOR_INFO* floor, long x, long y, long z);
+void AlterFloorHeight(ITEM_INFO* item, long height);
 
 #define UpdateSky	( (void(__cdecl*)()) 0x00449390 )
 #define KillMoveItems	( (void(__cdecl*)()) 0x004492D0)
@@ -24,7 +25,6 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z);
 #define ExplodeItemNode	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x0044DE50 )
 #define IsRoomOutside	( (long(__cdecl*)(long, long, long)) 0x0044C9C0 )
 #define GetTargetOnLOS	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*, long, long)) 0x0044D890 )
-#define AlterFloorHeight	( (void(__cdecl*)(ITEM_INFO*, long)) 0x0044A0D0 )
 #define LOS	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*)) 0x0044BBE0 )
 #define RefreshCamera	( (void(__cdecl*)(short, short*)) 0x0044AA20 )
 #define TriggerCDTrack	( (void(__cdecl*)(short, short, short)) 0x0044C770 )

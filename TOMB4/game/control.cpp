@@ -1756,6 +1756,35 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 	return height;
 }
 
+void AlterFloorHeight(ITEM_INFO* item, long height)
+{
+	FLOOR_INFO* floor;
+	FLOOR_INFO* ceiling;
+	short room_num;
+
+	room_num = item->room_number;
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_num);
+	ceiling = GetFloor(item->pos.x_pos, item->pos.y_pos + height - 1024, item->pos.z_pos, &room_num);
+
+	if (floor->floor == -127)
+		floor->floor = ceiling->ceiling + char(height >> 8);
+	else
+	{
+		floor->floor += char(height >> 8);
+
+		if (floor->floor == ceiling->ceiling)
+			floor->floor = -127;
+	}
+
+	if (boxes[floor->box].overlap_index & 0x8000)
+	{
+		if (height >= 0)
+			boxes[floor->box].overlap_index &= ~0x4000;
+		else
+			boxes[floor->box].overlap_index |= 0x4000;
+	}
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1770,4 +1799,5 @@ void inject_control(bool replace)
 	INJECT(0x0044A390, GetWaterHeight, replace);
 	INJECT(0x0044A530, GetHeight, replace);
 	INJECT(0x0044B690, GetCeiling, replace);
+	INJECT(0x0044A0D0, AlterFloorHeight, replace);
 }
