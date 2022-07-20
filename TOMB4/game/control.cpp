@@ -1991,6 +1991,65 @@ void TriggerCDTrack(short value, short flags, short type)
 		TriggerNormalCDTrack(value, flags, type);
 }
 
+long ClipTarget(GAME_VECTOR* start, GAME_VECTOR* target)
+{
+	GAME_VECTOR src;
+	long dx, dy, dz;
+	short room_no;
+
+	room_no = target->room_number;
+
+	if (target->y > GetHeight(GetFloor(target->x, target->y, target->z, &room_no), target->x, target->y, target->z))
+	{
+		src.x = (7 * (target->x - start->x) >> 3) + start->x;
+		src.y = (7 * (target->y - start->y) >> 3) + start->y;
+		src.z = (7 * (target->z - start->z) >> 3) + start->z;
+
+		for (int i = 3; i > 0; i--)
+		{
+			dx = ((target->x - src.x) * i >> 2) + src.x;
+			dy = ((target->y - src.y) * i >> 2) + src.y;
+			dz = ((target->z - src.z) * i >> 2) + src.z;
+
+			if (dy < GetHeight(GetFloor(dx, dy, dz, &room_no), dx, dy, dz))
+				break;
+		}
+
+		target->x = dx;
+		target->y = dy;
+		target->z = dz;
+		target->room_number = room_no;
+		return 0;
+	}
+
+	room_no = target->room_number;
+
+	if (target->y < GetCeiling(GetFloor(target->x, target->y, target->z, &room_no), target->x, target->y, target->z))
+	{
+		src.x = (7 * (target->x - start->x) >> 3) + start->x;
+		src.y = (7 * (target->y - start->y) >> 3) + start->y;
+		src.z = (7 * (target->z - start->z) >> 3) + start->z;
+
+		for (int i = 3; i > 0; i--)
+		{
+			dx = ((target->x - src.x) * i >> 2) + src.x;
+			dy = ((target->y - src.y) * i >> 2) + src.y;
+			dz = ((target->z - src.z) * i >> 2) + src.z;
+
+			if (dy > GetCeiling(GetFloor(dx, dy, dz, &room_no), dx, dy, dz))
+				break;
+		}
+
+		target->x = dx;
+		target->y = dy;
+		target->z = dz;
+		target->room_number = room_no;
+		return 0;
+	}
+
+	return 1;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -2015,4 +2074,5 @@ void inject_control(bool replace)
 	INJECT(0x0044B620, TriggerActive, replace);
 	INJECT(0x0044C790, TriggerNormalCDTrack, replace);
 	INJECT(0x0044C770, TriggerCDTrack, replace);
+	INJECT(0x0044C320, ClipTarget, replace);
 }

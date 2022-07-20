@@ -164,7 +164,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044BBE0		LOS
 0x0044BC80		xLOS
 0x0044BFD0		zLOS
-0x0044C320		ClipTarget
+0x0044C320	+	ClipTarget
 0x0044C570	+	FlipMap
 0x0044C670	+	RemoveRoomFlipItems
 0x0044C6F0	+	AddRoomFlipItems
