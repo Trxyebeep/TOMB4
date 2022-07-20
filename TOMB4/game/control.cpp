@@ -2292,6 +2292,34 @@ long zLOS(GAME_VECTOR* start, GAME_VECTOR* target)
 	return 1;
 }
 
+long LOS(GAME_VECTOR* start, GAME_VECTOR* target)
+{
+	long los1, los2;
+
+	target->room_number = start->room_number;
+
+	if (ABS(target->z - start->z) > ABS(target->x - start->x))
+	{
+		los1 = xLOS(start, target);
+		los2 = zLOS(start, target);
+	}
+	else
+	{
+		los1 = zLOS(start, target);
+		los2 = xLOS(start, target);
+	}
+
+	if (los2)
+	{
+		GetFloor(target->x, target->y, target->z, &target->room_number);
+
+		if (ClipTarget(start, target) && los1 == 1 && los2 == 1)
+			return 1;
+	}
+
+	return 0;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -2319,4 +2347,5 @@ void inject_control(bool replace)
 	INJECT(0x0044C320, ClipTarget, replace);
 	INJECT(0x0044BFD0, xLOS, replace);
 	INJECT(0x0044BC80, zLOS, replace);
+	INJECT(0x0044BBE0, LOS, replace);
 }
