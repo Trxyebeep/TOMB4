@@ -31,6 +31,7 @@
 #include "../tomb4/tomb4.h"
 #include "lara1gun.h"
 #include "sphere.h"
+#include "draw.h"
 
 #ifdef GENERAL_FIXES
 char DeathMenuActive;
@@ -2438,6 +2439,69 @@ long IsRoomOutside(long x, long y, long z)
 	return -2;
 }
 
+long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, MESH_INFO** StaticMesh)
+{
+	ITEM_INFO* item;
+	MESH_INFO* mesh;
+	ROOM_INFO* r;
+	PHD_3DPOS ItemPos;
+	short* bounds;
+	long dx, dy, dz;
+	short item_number;
+
+	dx = target->x - start->x;
+	dy = target->y - start->y;
+	dz = target->z - start->z;
+	ClosestItem = 999;
+	ClosestDist = SQUARE(dx) + SQUARE(dy) + SQUARE(dz);
+
+	for (int i = 0; i < number_los_rooms; i++)
+	{
+		r = &room[los_rooms[i]];
+
+		for (item_number = r->item_number; item_number != NO_ITEM; item_number = item->next_item)
+		{
+			item = &items[item_number];
+
+			if (item->status != ITEM_DEACTIVATED && item->status != ITEM_INVISIBLE && item->object_number != LARA)
+			{
+				bounds = GetBoundsAccurate(item);
+				ItemPos.x_pos = item->pos.x_pos;
+				ItemPos.y_pos = item->pos.y_pos;
+				ItemPos.z_pos = item->pos.z_pos;
+				ItemPos.y_rot = item->pos.y_rot;
+
+				if (DoRayBox(start, target, bounds, &ItemPos, Coord, item_number))
+					target->room_number = los_rooms[i];
+			}
+		}
+
+		for (int j = 0; j < r->num_meshes; j++)
+		{
+			mesh = &r->mesh[j];
+
+			if (mesh->Flags & 1)
+			{
+				ItemPos.x_pos = mesh->x;
+				ItemPos.y_pos = mesh->y;
+				ItemPos.z_pos = mesh->z;
+				ItemPos.y_rot = mesh->y_rot;
+
+				if (DoRayBox(start, target, &static_objects[mesh->static_number].x_minc, &ItemPos, Coord, -1 - mesh->static_number))
+				{
+					*StaticMesh = mesh;
+					target->room_number = los_rooms[i];
+				}
+			}
+		}
+	}
+
+	Coord->x = ClosestCoord.x;
+	Coord->y = ClosestCoord.y;
+	Coord->z = ClosestCoord.z;
+	return ClosestItem;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -2469,4 +2533,5 @@ void inject_control(bool replace)
 	INJECT(0x0044D820, FireCrossBowFromLaserSight, replace);
 	INJECT(0x0044DE50, ExplodeItemNode, replace);
 	INJECT(0x0044C9C0, IsRoomOutside, replace);
+	INJECT(0x0044CBE0, ObjectOnLOS2, replace);
 }

@@ -504,6 +504,9 @@
 #define ShatterItem	VAR_U_(0x007FE960, SHATTER_ITEM)
 #define ItemNewRoomNo	VAR_U_(0x004BF3F6, short)
 #define number_los_rooms	VAR_U_(0x004BF418, long)
+#define ClosestDist VAR_U_(0x007FE380, long)
+#define ClosestCoord VAR_U_(0x007FE330, PHD_VECTOR)
+#define ClosestItem VAR_U_(0x007FE2E0, long)
 
 
 
