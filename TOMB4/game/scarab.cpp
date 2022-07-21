@@ -162,8 +162,51 @@ void ScarabControl(short item_number)
 	CreatureAnimation(item_number, angle, angle);
 }
 
+long GetFreeScarab()
+{
+	SCARAB_STRUCT* fx;
+	long lp, free;
+
+	free = next_scarab;
+	lp = 0;
+	fx = &Scarabs[free];
+
+	while (fx->On)
+	{
+		if (free == 127)
+		{
+			free = 0;
+			fx = Scarabs;
+		}
+		else
+		{
+			free++;
+			fx++;
+		}
+
+		lp++;
+
+		if (lp >= 128)
+			return -1;
+	}
+
+	next_scarab = (free + 1) & 0x7F;
+	return free;
+}
+
+void ClearScarabs()
+{
+	for (int i = 0; i < 128; i++)
+		Scarabs[i].On = 0;
+
+	next_scarab = 0;
+	flipeffect = -1;
+}
+
 void inject_scarab(bool replace)
 {
 	INJECT(0x0040DE90, InitialiseScarab, replace);
 	INJECT(0x0040DEF0, ScarabControl, replace);
+	INJECT(0x0040E250, GetFreeScarab, replace);
+	INJECT(0x0040E2A0, ClearScarabs, replace);
 }

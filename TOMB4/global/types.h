@@ -2168,6 +2168,16 @@ struct WEAPON_INFO
 	short sample_num;
 };
 
+struct SCARAB_STRUCT
+{
+	PHD_3DPOS pos;
+	short room_number;
+	short speed;
+	short fallspeed;
+	uchar On;
+	uchar flags;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

@@ -510,6 +510,7 @@
 #define ClosestCoord VAR_U_(0x007FE330, PHD_VECTOR)
 #define ClosestItem VAR_U_(0x007FE2E0, long)
 #define TorchItem	VAR_U_(0x004BF338, ITEM_INFO*)
+#define next_scarab	VAR_U_(0x004BF2F8, long)
 
 
 
@@ -632,6 +633,7 @@
 #define ItemNewRooms	ARRAY_(0x007FE3A0, short, [256][2])
 #define los_rooms	ARRAY_(0x007FE260, short, [20])
 #define	weapons	ARRAY_(0x004AD848, WEAPON_INFO, [9])
+#define Scarabs	ARRAY_(0x0080ED00, SCARAB_STRUCT, [128])
 
 
 /*Fog stuff*/
