@@ -1158,7 +1158,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0040DEF0	+	ScarabControl
 0x0040E250	+	GetFreeScarab
 0x0040E2A0	+	ClearScarabs
-0x0040E2D0		TriggerScarab
+0x0040E2D0	+	TriggerScarab
 0x0040E3C0		UpdateScarabs
 0x0040E630		DrawScarabs
 0x0040E6B0		InitialiseScarabGenerator

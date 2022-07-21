@@ -1702,7 +1702,7 @@ void BaddyObjects()
 	if (obj->loaded)
 	{
 //		obj->initialise = InitialiseScarabGenerator;
-//		obj->control = TriggerScarab;
+		obj->control = TriggerScarab;
 		obj->draw_routine = 0;
 		obj->using_drawanimating_item = 0;
 	}

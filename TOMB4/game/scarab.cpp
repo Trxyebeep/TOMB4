@@ -203,10 +203,56 @@ void ClearScarabs()
 	flipeffect = -1;
 }
 
+void TriggerScarab(short item_number)
+{
+	SCARAB_STRUCT* fx;
+	ITEM_INFO* item;
+	short fx_num;
+
+	item = &items[item_number];
+
+	if (item->trigger_flags && (!item->item_flags[2] || !(GetRandomControl() & 0xF)))
+	{
+		item->trigger_flags--;
+
+		if (item->item_flags[2] && GetRandomControl() & 0x1)
+			item->item_flags[2]--;
+
+		fx_num = (short)GetFreeScarab();
+
+		if (fx_num != -1)
+		{
+			fx = &Scarabs[fx_num];
+			fx->pos.x_pos = item->pos.x_pos;
+			fx->pos.y_pos = item->pos.y_pos;
+			fx->pos.z_pos = item->pos.z_pos;
+			fx->room_number = item->room_number;
+
+			if (item->item_flags[0])
+			{
+				fx->pos.y_rot = short(GetRandomControl() << 1);
+				fx->fallspeed = -16 - (GetRandomControl() & 0x1F);
+			}
+			else
+			{
+				fx->fallspeed = 0;
+				fx->pos.y_rot = (GetRandomControl() & 0x3FFF) + item->pos.y_rot - 8192;
+			}
+
+			fx->pos.x_rot = 0;
+			fx->pos.z_rot = 0;
+			fx->On = 1;
+			fx->flags = 0;
+			fx->speed = (GetRandomControl() & 0x1F) + 1;
+		}
+	}
+}
+
 void inject_scarab(bool replace)
 {
 	INJECT(0x0040DE90, InitialiseScarab, replace);
 	INJECT(0x0040DEF0, ScarabControl, replace);
 	INJECT(0x0040E250, GetFreeScarab, replace);
 	INJECT(0x0040E2A0, ClearScarabs, replace);
+	INJECT(0x0040E2D0, TriggerScarab, replace);
 }
