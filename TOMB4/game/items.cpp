@@ -2,6 +2,7 @@
 #include "items.h"
 #include "effect2.h"
 #include "objects.h"
+#include "../specific/function_stubs.h"
 
 void InitialiseItemArray(short num)
 {
@@ -289,6 +290,26 @@ void ItemNewRoom(short item_num, short room_num)
 	room[room_num].item_number = item_num;
 }
 
+void InitialiseFXArray(long allocmem)
+{
+	FX_INFO* fx;
+
+	if (allocmem)
+		effects = (FX_INFO*)game_malloc(sizeof(FX_INFO) * 24);
+
+	next_fx_active = NO_ITEM;
+	next_fx_free = 0;
+	fx = effects;
+
+	for (int i = 1; i < 24; i++)
+	{
+		fx->next_fx = i;
+		fx++;
+	}
+
+	fx->next_fx = NO_ITEM;
+}
+
 void inject_items(bool replace)
 {
 	INJECT(0x00454140, InitialiseItemArray, replace);
@@ -299,4 +320,5 @@ void inject_items(bool replace)
 	INJECT(0x004546A0, RemoveDrawnItem, replace);
 	INJECT(0x00454740, AddActiveItem, replace);
 	INJECT(0x004547B0, ItemNewRoom, replace);
+	INJECT(0x004548B0, InitialiseFXArray, replace);
 }

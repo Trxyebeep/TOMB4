@@ -63,6 +63,7 @@
 #define health_bar_timer	VAR_U_(0x004BF680, long)
 #define GameTimer	VAR_U_(0x007FD258, ulong)
 #define next_fx_active	VAR_U_(0x008012F0, short)
+#define next_fx_free	VAR_U_(0x008012E8, short)
 #define effects	VAR_U_(0x008012E0, FX_INFO*)
 #define trigger_index	VAR_U_(0x007FE248, short*)
 #define SmashedMeshCount	VAR_U_(0x004BF3FE, short)
