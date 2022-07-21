@@ -42,6 +42,7 @@
 #define NumLaraSpheres	VAR_U_(0x007F7100, long)
 #define InItemControlLoop	VAR_U_(0x004BF3F5, char)
 #define next_item_active	VAR_U_(0x007FD20A, short)
+#define next_item_free	VAR_U_(0x007FD208, short)
 #define KillEverythingFlag	VAR_U_(0x004BF364, long)
 #define wibble	VAR_U_(0x004BF360, long)
 #define SplashCount	VAR_U_(0x004BF36C, long)
