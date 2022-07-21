@@ -10,6 +10,7 @@
 #include "items.h"
 #include "laraflar.h"
 #include "delstuff.h"
+#include "larafire.h"
 
 static short FireBounds[12] = { 0, 0, 0, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
@@ -265,10 +266,89 @@ void GetFlameTorch()
 	lara.mesh_ptrs[LM_LHAND] = meshes[objects[TORCH_ANIM].mesh_index + LM_LHAND * 2];
 }
 
+void FlameTorchControl(short item_number)
+{
+	ITEM_INFO** itemlist;
+	MESH_INFO** meshlist;
+	ITEM_INFO* item;
+	STATIC_INFO* sinfo;
+	PHD_3DPOS pos;
+	long x, y, z, xv, yv, zv;
+
+	item = &items[item_number];
+
+	if (item->fallspeed)
+		item->pos.z_rot += 910;
+	else if (!item->speed)
+	{
+		item->pos.x_rot = 0;
+		item->pos.z_rot = 0;
+	}
+
+	x = item->pos.x_pos;
+	y = item->pos.y_pos;
+	z = item->pos.z_pos;
+	xv = item->speed * phd_sin(item->pos.y_rot) >> 14;
+	zv = item->speed * phd_cos(item->pos.y_rot) >> 14;
+	item->pos.x_pos += xv;
+	item->pos.z_pos += zv;
+
+	if (room[item->room_number].flags & ROOM_UNDERWATER)
+	{
+		item->fallspeed += (5 - item->fallspeed) >> 1;
+		item->speed += (5 - item->speed) >> 1;
+
+		if (item->item_flags[3])
+			item->item_flags[3] = 0;
+	}
+	else
+		item->fallspeed += 6;
+
+	yv = item->fallspeed;
+	item->pos.y_pos += yv;
+	DoProperDetection(item_number, x, y, z, xv, yv, zv);
+	itemlist = (ITEM_INFO**)&tsv_buffer[0];
+	meshlist = (MESH_INFO**)&tsv_buffer[1024];
+
+	if (GetCollidedObjects(item, 0, 1, itemlist, meshlist, 0))
+	{
+		mycoll.enable_baddie_push = 1;
+
+		if (itemlist[0])
+		{
+			if (!objects[itemlist[0]->object_number].intelligent)
+				ObjectCollision(itemlist[0] - items, item, &mycoll);
+		}
+		else
+		{
+			sinfo = &static_objects[meshlist[0]->static_number];
+			pos.x_pos = meshlist[0]->x;
+			pos.y_pos = meshlist[0]->y;
+			pos.z_pos = meshlist[0]->z;
+			pos.y_rot = meshlist[0]->y_rot;
+			ItemPushLaraStatic(item, (short*)&sinfo->x_minc, &pos, &mycoll);
+		}
+
+		item->speed >>= 1;
+	}
+
+	if (item->item_flags[3])
+	{
+		TriggerDynamic(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 12 - (GetRandomControl() & 1),
+			(GetRandomControl() & 0x3F) + 192, (GetRandomControl() & 0x1F) + 96, 0);
+
+		if (!(wibble & 7))
+			TriggerTorchFlame(item_number, 1);
+
+		TorchItem = item;
+	}
+}
+
 void inject_flmtorch(bool replace)
 {
 	INJECT(0x0041F390, TriggerTorchFlame, replace);
 	INJECT(0x0041F510, FireCollision, replace);
 	INJECT(0x0041F7C0, DoFlameTorch, replace);
 	INJECT(0x0041FAF0, GetFlameTorch, replace);
+	INJECT(0x0041FB80, FlameTorchControl, replace);
 }

@@ -246,7 +246,7 @@ void ObjectObjects()
 
 	obj = &objects[BURNING_TORCH_ITEM];
 	obj->initialise = 0;
-//	obj->control = FlameTorchControl;
+	obj->control = FlameTorchControl;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
