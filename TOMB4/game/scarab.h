@@ -8,6 +8,6 @@ void ScarabControl(short item_number);
 long GetFreeScarab();
 void ClearScarabs();
 void TriggerScarab(short item_number);
+void UpdateScarabs();
 
-#define UpdateScarabs	( (void(__cdecl*)()) 0x0040E3C0 )
 #define DrawScarabs	( (void(__cdecl*)()) 0x0040E630 )

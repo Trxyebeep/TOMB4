@@ -4,6 +4,8 @@
 #include "objects.h"
 #include "../specific/function_stubs.h"
 #include "effects.h"
+#include "../specific/3dmath.h"
+#include "control.h"
 
 static BITE_INFO beetle_bite = { 0, 0, 0, 12 };
 
@@ -248,6 +250,90 @@ void TriggerScarab(short item_number)
 	}
 }
 
+void UpdateScarabs()
+{
+	SCARAB_STRUCT* fx;
+	FLOOR_INFO* floor;
+	long h, dx, dy, dz, oldx, oldy, oldz;
+	short angle;
+
+	for (int i = 0; i < 128; i++)
+	{
+		fx = &Scarabs[i];
+
+		if (fx->On)
+		{
+			oldx = fx->pos.x_pos;
+			oldy = fx->pos.y_pos;
+			oldz = fx->pos.z_pos;
+			fx->pos.x_pos += fx->speed * phd_sin(fx->pos.y_rot) >> 14;
+			fx->pos.y_pos += fx->fallspeed;
+			fx->pos.z_pos += fx->speed * phd_cos(fx->pos.y_rot) >> 14;
+			fx->fallspeed += 6;
+			dx = lara_item->pos.x_pos - fx->pos.x_pos;
+			dy = lara_item->pos.y_pos - fx->pos.y_pos;
+			dz = lara_item->pos.z_pos - fx->pos.z_pos;
+			angle = (short)phd_atan(dz, dx) - fx->pos.y_rot;
+
+			if (ABS(dz) < 85 && ABS(dy) < 85 && ABS(dx) < 85)
+			{
+				lara_item->hit_points--;
+				lara_item->hit_status = 1;
+			}
+
+			if (fx->flags)
+			{
+				if (ABS(dx) + ABS(dz) > 1024)
+				{
+					if (fx->speed < (i & 0x1F) + 24)
+						fx->speed++;
+
+					if (ABS(angle) < 4096)
+						fx->pos.y_rot += short((wibble - i) << 3);
+					else if (angle < 0)
+						fx->pos.y_rot -= 1024;
+					else
+						fx->pos.y_rot += 1024;
+				}
+				else
+				{
+					fx->pos.y_rot += fx->speed & 1 ? 512 : -512;
+					fx->speed = 48 - (lara.LitTorch << 6) - (ABS(angle) >> 7);
+
+					if (fx->speed < -16)
+						fx->speed = i & 0xF;
+				}
+			}
+
+			floor = GetFloor(fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos, &fx->room_number);
+			h = GetHeight(floor, fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos);
+
+			if (h < fx->pos.y_pos - 1280 || h == NO_HEIGHT)
+			{
+				fx->pos.y_rot += angle > 0 ? 0x4000 : -0x4000;
+				fx->pos.x_pos = oldx;
+				fx->pos.y_pos = oldy;
+				fx->pos.z_pos = oldz;
+				fx->fallspeed = 0;
+			}
+			else if (fx->pos.y_pos > h)
+			{
+				fx->pos.y_pos = h;
+				fx->fallspeed = 0;
+				fx->flags = 1;
+			}
+			
+			if (fx->fallspeed < 500)
+				fx->pos.x_rot = -64 * fx->fallspeed;
+			else
+			{
+				fx->On = 0;
+				next_scarab = 0;
+			}
+		}
+	}
+}
+
 void inject_scarab(bool replace)
 {
 	INJECT(0x0040DE90, InitialiseScarab, replace);
@@ -255,4 +341,5 @@ void inject_scarab(bool replace)
 	INJECT(0x0040E250, GetFreeScarab, replace);
 	INJECT(0x0040E2A0, ClearScarabs, replace);
 	INJECT(0x0040E2D0, TriggerScarab, replace);
+	INJECT(0x0040E3C0, UpdateScarabs, replace);
 }
