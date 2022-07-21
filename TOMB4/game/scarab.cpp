@@ -6,6 +6,7 @@
 #include "effects.h"
 #include "../specific/3dmath.h"
 #include "control.h"
+#include "../specific/output.h"
 
 static BITE_INFO beetle_bite = { 0, 0, 0, 12 };
 
@@ -334,6 +335,28 @@ void UpdateScarabs()
 	}
 }
 
+void DrawScarabs()
+{
+	SCARAB_STRUCT* fx;
+	short** meshpp;
+
+	meshpp = &meshes[objects[LITTLE_BEETLE].mesh_index + (wibble >> 2 & 2)];
+
+	for (int i = 0; i < 128; i++)
+	{
+		fx = &Scarabs[i];
+
+		if (fx->On)
+		{
+			phd_PushMatrix();
+			phd_TranslateAbs(fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos);
+			phd_RotYXZ(fx->pos.y_rot, fx->pos.x_rot, fx->pos.z_rot);
+			phd_PutPolygons_train(*meshpp, 0);
+			phd_PopMatrix();
+		}
+	}
+}
+
 void inject_scarab(bool replace)
 {
 	INJECT(0x0040DE90, InitialiseScarab, replace);
@@ -342,4 +365,5 @@ void inject_scarab(bool replace)
 	INJECT(0x0040E2A0, ClearScarabs, replace);
 	INJECT(0x0040E2D0, TriggerScarab, replace);
 	INJECT(0x0040E3C0, UpdateScarabs, replace);
+	INJECT(0x0040E630, DrawScarabs, replace);
 }

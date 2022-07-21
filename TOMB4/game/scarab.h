@@ -9,5 +9,4 @@ long GetFreeScarab();
 void ClearScarabs();
 void TriggerScarab(short item_number);
 void UpdateScarabs();
-
-#define DrawScarabs	( (void(__cdecl*)()) 0x0040E630 )
+void DrawScarabs();
