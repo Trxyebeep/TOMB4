@@ -2365,6 +2365,79 @@ long ExplodeItemNode(ITEM_INFO* item, long Node, long NoXZVel, long bits)
 	return 1;
 }
 
+long IsRoomOutside(long x, long y, long z)
+{
+	ROOM_INFO* r;
+	FLOOR_INFO* floor;
+	uchar* pTable;
+	long h, c;
+	short offset, room_no;
+
+	if (x < 0 || z < 0)
+		return -2;
+
+	offset = OutsideRoomOffsets[27 * (x >> 12) + (z >> 12)];
+
+	if (offset == -1)
+		return -2;
+
+	if (offset < 0)
+	{
+		r = &room[offset & 0x7FFF];
+
+		if (y >= r->maxceiling && y <= r->minfloor &&
+			z >= r->z + 1024 && z <= (r->x_size << 10) + r->z - 1024 &&
+			x >= r->x + 1024 && x <= (r->y_size << 10) + r->x - 1024)
+		{
+			IsRoomOutsideNo = offset & 0x7FFF;
+			room_no = IsRoomOutsideNo;
+			floor = GetFloor(x, y, z, &room_no);
+			h = GetHeight(floor, x, y, z);
+			c = GetCeiling(floor, x, y, z);
+
+			if (h == NO_HEIGHT || y > h || y < c)
+				return -2;
+
+			if (r->flags & (ROOM_UNDERWATER | ROOM_NOT_INSIDE))
+				return 1;
+			else
+				return -3;
+		}
+	}
+	else
+	{
+		pTable = (uchar*)&OutsideRoomTable[offset];
+
+		while (*pTable != 255)
+		{
+			r = &room[*pTable];
+
+			if (y >= r->maxceiling && y <= r->minfloor &&
+				z >= r->z + 1024 && z <= (r->x_size << 10) + r->z - 1024 &&
+				x >= r->x + 1024 && x <= (r->y_size << 10) + r->x - 1024)
+			{
+				IsRoomOutsideNo = *pTable;
+				room_no = IsRoomOutsideNo;
+				floor = GetFloor(x, y, z, &room_no);
+				h = GetHeight(floor, x, y, z);
+				c = GetCeiling(floor, x, y, z);
+
+				if (h == NO_HEIGHT || y > h || y < c)
+					return -2;
+
+				if (r->flags & (ROOM_UNDERWATER | ROOM_NOT_INSIDE))
+					return 1;
+				else
+					return -3;
+			}
+
+			pTable++;
+		}
+	}
+
+	return -2;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -2395,4 +2468,5 @@ void inject_control(bool replace)
 	INJECT(0x0044BBE0, LOS, replace);
 	INJECT(0x0044D820, FireCrossBowFromLaserSight, replace);
 	INJECT(0x0044DE50, ExplodeItemNode, replace);
+	INJECT(0x0044C9C0, IsRoomOutside, replace);
 }

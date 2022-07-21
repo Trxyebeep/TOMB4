@@ -172,7 +172,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044C790	+	TriggerNormalCDTrack
 0x0044C820	+	CheckNoColFloorTriangle
 0x0044C8D0	+	CheckNoColCeilingTriangle
-0x0044C9C0		IsRoomOutside
+0x0044C9C0	+	IsRoomOutside
 0x0044CBE0		ObjectOnLOS2
 0x0044CDF0		DoRayBox
 0x0044D530		RayBoxIntersect

@@ -31,9 +31,9 @@ long zLOS(GAME_VECTOR* start, GAME_VECTOR* target);
 long LOS(GAME_VECTOR* start, GAME_VECTOR* target);
 void FireCrossBowFromLaserSight(GAME_VECTOR* start, GAME_VECTOR* target);
 long ExplodeItemNode(ITEM_INFO* item, long Node, long NoXZVel, long bits);
+long IsRoomOutside(long x, long y, long z);
 
 #define AnimateItem	( (void(__cdecl*)(ITEM_INFO*)) 0x00449B90 )
-#define IsRoomOutside	( (long(__cdecl*)(long, long, long)) 0x0044C9C0 )
 #define GetTargetOnLOS	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*, long, long)) 0x0044D890 )
 
 #ifdef GENERAL_FIXES
