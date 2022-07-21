@@ -628,6 +628,7 @@
 #define LaSlot	ARRAY_(0x007F7220, SoundSlot, [32])
 #define ItemNewRooms	ARRAY_(0x007FE3A0, short, [256][2])
 #define los_rooms	ARRAY_(0x007FE260, short, [20])
+#define	weapons	ARRAY_(0x004AD848, WEAPON_INFO, [9])
 
 
 /*Fog stuff*/
