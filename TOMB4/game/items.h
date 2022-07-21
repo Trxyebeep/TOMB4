@@ -4,8 +4,8 @@
 void inject_items(bool replace);
 
 void InitialiseItemArray(short num);
+void KillItem(short item_num);
 
-#define KillItem	( (void(__cdecl*)(short)) 0x004541B0 )
 #define KillEffect	( (void(__cdecl*)(short)) 0x00454970 )
 #define RemoveActiveItem	( (void(__cdecl*)(short)) 0x004545F0 )
 #define ItemNewRoom	( (void(__cdecl*)(short, short)) 0x004547B0 )
