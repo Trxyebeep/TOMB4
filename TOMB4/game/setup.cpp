@@ -42,6 +42,7 @@
 #include "hair.h"
 #include "items.h"
 #include "../specific/function_stubs.h"
+#include "flmtorch.h"
 
 void ObjectObjects()
 {
@@ -732,7 +733,7 @@ void TrapObjects()
 	obj = &objects[FLAME_EMITTER];
 	obj->initialise = InitialiseFlameEmitter;
 	obj->control = FlameEmitterControl;
-//	obj->collision = FireCollision;
+	obj->collision = FireCollision;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
@@ -740,7 +741,7 @@ void TrapObjects()
 	obj = &objects[FLAME_EMITTER2];
 	obj->initialise = InitialiseFlameEmitter2;
 //	obj->control = FlameEmitter2Control;
-//	obj->collision = FireCollision;
+	obj->collision = FireCollision;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
@@ -772,7 +773,7 @@ void TrapObjects()
 
 	obj = &objects[SPRINKLER];
 	obj->control = ControlSprinkler;
-//	obj->collision = FireCollision;
+	obj->collision = FireCollision;
 	obj->save_flags = 1;
 
 	obj = &objects[TRIGGER_TRIGGERER];
