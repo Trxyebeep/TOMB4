@@ -181,10 +181,35 @@ void InitialiseItem(short item_num)
 	item->il.pPrevLights = item->il.PrevLights;
 }
 
+void RemoveActiveItem(short item_num)
+{
+	short linknum;
+
+	if (!items[item_num].active)
+		return;
+
+	items[item_num].active = 0;
+
+	if (next_item_active == item_num)
+		next_item_active = items[item_num].next_active;
+	else
+	{
+		for (linknum = next_item_active; linknum != NO_ITEM; linknum = items[linknum].next_active)
+		{
+			if (items[linknum].next_active == item_num)
+			{
+				items[linknum].next_active = items[item_num].next_active;
+				break;
+			}
+		}
+	}
+}
+
 void inject_items(bool replace)
 {
 	INJECT(0x00454140, InitialiseItemArray, replace);
 	INJECT(0x004541B0, KillItem, replace);
 	INJECT(0x00454360, CreateItem, replace);
 	INJECT(0x004543B0, InitialiseItem, replace);
+	INJECT(0x004545F0, RemoveActiveItem, replace);
 }

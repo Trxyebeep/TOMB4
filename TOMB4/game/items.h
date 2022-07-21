@@ -7,9 +7,9 @@ void InitialiseItemArray(short num);
 void KillItem(short item_num);
 short CreateItem();
 void InitialiseItem(short item_num);
+void RemoveActiveItem(short item_num);
 
 #define KillEffect	( (void(__cdecl*)(short)) 0x00454970 )
-#define RemoveActiveItem	( (void(__cdecl*)(short)) 0x004545F0 )
 #define ItemNewRoom	( (void(__cdecl*)(short, short)) 0x004547B0 )
 #define EffectNewRoom	( (void(__cdecl*)(short, short)) 0x00454A90 )
 #define CreateEffect	( (short(__cdecl*)(short)) 0x00454900 )
