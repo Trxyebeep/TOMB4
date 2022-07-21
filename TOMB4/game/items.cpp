@@ -334,6 +334,55 @@ short CreateEffect(short room_num)
 	return fx_num;
 }
 
+void KillEffect(short fx_num)
+{
+	FX_INFO* fx;
+	short linknum;
+
+	if (InItemControlLoop)
+	{
+		ItemNewRooms[ItemNewRoomNo][0] = fx_num | 0x8000;
+		ItemNewRoomNo++;
+		return;
+	}
+
+	DetatchSpark(fx_num, 64);
+	fx = &effects[fx_num];
+
+	if (next_fx_active == fx_num)
+		next_fx_active = fx->next_active;
+	else
+	{
+		for (linknum = next_fx_active; linknum != NO_ITEM; linknum = effects[linknum].next_active)
+		{
+			if (effects[linknum].next_active == fx_num)
+			{
+				effects[linknum].next_active = fx->next_active;
+				break;
+			}
+		}
+	}
+
+	linknum = room[fx->room_number].fx_number;
+
+	if (linknum == fx_num)
+		room[fx->room_number].fx_number = fx->next_fx;
+	else
+	{
+		for (; linknum != NO_ITEM; linknum = effects[linknum].next_fx)
+		{
+			if (effects[linknum].next_fx == fx_num)
+			{
+				effects[linknum].next_fx = fx->next_fx;
+				break;
+			}
+		}
+	}
+
+	fx->next_fx = next_fx_free;
+	next_fx_free = fx_num;
+}
+
 void inject_items(bool replace)
 {
 	INJECT(0x00454140, InitialiseItemArray, replace);
@@ -346,4 +395,5 @@ void inject_items(bool replace)
 	INJECT(0x004547B0, ItemNewRoom, replace);
 	INJECT(0x004548B0, InitialiseFXArray, replace);
 	INJECT(0x00454900, CreateEffect, replace);
+	INJECT(0x00454970, KillEffect, replace);
 }
