@@ -43,6 +43,7 @@
 #include "items.h"
 #include "../specific/function_stubs.h"
 #include "flmtorch.h"
+#include "scarab.h"
 
 void ObjectObjects()
 {
@@ -1561,8 +1562,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseScarab;
-//		obj->control = ScarabControl;
+		obj->initialise = InitialiseScarab;
+		obj->control = ScarabControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 30;
