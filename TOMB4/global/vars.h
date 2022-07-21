@@ -509,6 +509,7 @@
 #define ClosestDist VAR_U_(0x007FE380, long)
 #define ClosestCoord VAR_U_(0x007FE330, PHD_VECTOR)
 #define ClosestItem VAR_U_(0x007FE2E0, long)
+#define TorchItem	VAR_U_(0x004BF338, ITEM_INFO*)
 
 
 
