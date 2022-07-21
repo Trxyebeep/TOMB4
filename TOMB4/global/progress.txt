@@ -464,7 +464,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/flmtorch.cpp
 
-0x0041F390		TriggerTorchFlame
+0x0041F390	+	TriggerTorchFlame
 0x0041F510		FireCollision
 0x0041F7C0		DoFlameTorch
 0x0041FAF0		GetFlameTorch
