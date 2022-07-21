@@ -14,5 +14,4 @@ void ItemNewRoom(short item_num, short room_num);
 void InitialiseFXArray(long allocmem);
 short CreateEffect(short room_num);
 void KillEffect(short fx_num);
-
-#define EffectNewRoom	( (void(__cdecl*)(short, short)) 0x00454A90 )
+void EffectNewRoom(short fx_num, short room_num);
