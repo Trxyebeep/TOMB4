@@ -7,6 +7,56 @@ long stash_font_height;
 long smol_font_height;
 #endif
 
+char AccentTable[46][2] =
+{
+	{'{', ' '},
+	{'u', '^'},
+	{'e', '\\'},
+	{'a', ']'},
+	{'a', '^'},
+	{'a', '['},
+	{'a', '\\'},
+	{'{', ' '},
+	{'e', ']'},
+	{'e', '^'},
+	{'e', '['},
+	{'|', '^'},
+	{'|', ']'},
+	{'|', '['},
+	{'A', '^'},
+	{'A', ']'},
+	{'E', '\\'},
+	{' ', ' '},
+	{' ', ' '},
+	{'o', ']'},
+	{'o', '^'},
+	{'o', '['},
+	{'u', ']'},
+	{'u', '['},
+	{'y', '^'},
+	{'O', '^'},
+	{'U', '^'},
+	{' ', ' '},
+	{'O', '\\'},
+	{' ', ' '},
+	{' ', ' '},
+	{' ', ' '},
+	{'a', '\\'},
+	{'|', '\\'},
+	{'o', '\\'},
+	{'u', '\\'},
+	{'n', '_'},
+	{'N', '_'},
+	{' ', ' '},
+	{' ', ' '},
+	{'}', ' '},
+	{' ', ' '},
+	{' ', ' '},
+	{' ', ' '},
+	{' ', ' '},
+	{'~', ' '}
+};
+
 void InitFont()
 {
 	D3DTLVERTEX v;
@@ -89,7 +139,130 @@ void InitFont()
 #endif
 }
 
+void UpdatePulseColour()
+{
+	D3DTLVERTEX v;
+	static uchar PulseCnt = 0;
+	uchar c, r, g, b;
+
+	PulseCnt = (PulseCnt + 1) & 0x1F;
+
+	if (PulseCnt > 16)
+		c = -PulseCnt;
+	else
+		c = PulseCnt;
+
+	c <<= 3;
+	CalcColorSplit(RGBONLY(c, c, c), &v.color);
+
+	for (int i = 0; i < 16; i++)
+	{
+		r = CLRR(v.color);
+		g = CLRG(v.color);
+		b = CLRB(v.color);
+		FontShades[1][i << 1].r = r;
+		FontShades[1][i << 1].g = g;
+		FontShades[1][i << 1].b = b;
+
+		r = CLRR(v.specular);
+		g = CLRG(v.specular);
+		b = CLRB(v.specular);
+		FontShades[1][(i << 1) + 1].r = r;
+		FontShades[1][(i << 1) + 1].g = g;
+		FontShades[1][(i << 1) + 1].b = b;
+	}
+}
+
+long GetStringLength(char* string, short* top, short* bottom)
+{
+	CHARDEF* def;
+	long s, accent, length;
+	short lowest, highest, y;
+
+	s = *string++;
+	length = 0;
+	accent = 0;
+	lowest = -1024;
+	highest = 1024;
+
+	while (s)
+	{
+		if (s == '\n')
+			break;
+
+		if (s == ' ')
+			length += long((float(phd_winxmax + 1) / 640.0F) * 8.0F);
+		else if (s == '\t')
+		{
+			length += 40;
+
+			if (top)
+			{
+				if (highest > -12)
+					highest = -12;
+			}
+
+			if (bottom)
+			{
+				if (lowest < 2)
+					lowest = 2;
+			}
+		}
+		else if (s >= 20)
+		{
+			if (s < ' ')
+				def = &CharDef[s + 74];
+			else
+			{
+				if (s >= 128 && s <= 173)
+				{
+					accent = 1;
+					s = AccentTable[s - 128][0];
+				}
+
+				def = &CharDef[s - '!'];
+			}
+
+			if (ScaleFlag)
+				length += def->w - def->w / 4;
+			else
+				length += def->w;
+
+			y = def->YOffset;
+
+			if (top)
+			{
+				if (y < highest)
+					highest = def->YOffset;
+			}
+
+			if (bottom)
+			{
+				if (def->h + y > lowest)
+					lowest = def->h + y;
+			}
+		}
+
+		s = *string++;
+	}
+
+	if (top)
+	{
+		if (accent)
+			highest -= 4;
+
+		*top = highest;
+	}
+
+	if (bottom)
+		*bottom = lowest;
+
+	return length;
+}
+
 void inject_text(bool replace)
 {
 	INJECT(0x00463650, InitFont, replace);
+	INJECT(0x00463930, UpdatePulseColour, replace);
+	INJECT(0x004639E0, GetStringLength, replace);
 }

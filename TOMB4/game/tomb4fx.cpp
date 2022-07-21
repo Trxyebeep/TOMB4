@@ -10,6 +10,7 @@
 #include "delstuff.h"
 #include "control.h"
 #include "../specific/specificfx.h"
+#include "effect2.h"
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments)
 {
@@ -925,6 +926,392 @@ void DrawWeaponMissile(ITEM_INFO* item)
 	}
 }
 
+long GetFreeGunshell()
+{
+	GUNSHELL_STRUCT* shell;
+	long min_life, min_life_num;
+
+	shell = &Gunshells[next_gunshell];
+	min_life = 4095;
+	min_life_num = 0;
+
+	for (int free = next_gunshell, i = 0; i < 24; i++)
+	{
+		if (shell->counter)
+		{
+			if (shell->counter < min_life)
+			{
+				min_life_num = free;
+				min_life = shell->counter;
+			}
+
+			if (free == 23)
+			{
+				shell = &Gunshells[0];
+				free = 0;
+			}
+			else
+			{
+				free++;
+				shell++;
+			}
+		}
+		else
+		{
+			next_gunshell = free + 1;
+
+			if (next_gunshell >= 24)
+				next_gunshell = 0;
+
+			return free;
+		}
+	}
+
+	next_gunshell = min_life_num + 1;
+
+	if (next_gunshell >= 24)
+		next_gunshell = 0;
+
+	return min_life_num;
+}
+
+void TriggerGunShell(short leftright, short objnum, long weapon)
+{
+	GUNSHELL_STRUCT* shell;
+	PHD_VECTOR pos;
+	long shade;
+
+	if (leftright)
+	{
+		switch (weapon)
+		{
+		case WEAPON_PISTOLS:
+			pos.x = 8;
+			pos.y = 48;
+			pos.z = 40;
+			break;
+
+		case WEAPON_UZI:
+			pos.x = 8;
+			pos.y = 35;
+			pos.z = 48;
+			break;
+
+		case WEAPON_SHOTGUN:
+			pos.x = 16;
+			pos.y = 114;
+			pos.z = 32;
+			break;
+		}
+
+		GetLaraJointPos(&pos, 11);
+	}
+	else
+	{
+		switch (weapon)
+		{
+		case WEAPON_PISTOLS:
+			pos.x = -12;
+			pos.y = 48;
+			pos.z = 40;
+			break;
+
+		case WEAPON_UZI:
+			pos.x = -16;
+			pos.y = 35;
+			pos.z = 48;
+			break;
+		}
+
+		GetLaraJointPos(&pos, 14);
+	}
+
+	if (lara_item->mesh_bits)
+	{
+		if (weapon == WEAPON_SHOTGUN)
+			shade = 24;
+		else
+			shade = 16;
+
+		TriggerGunSmoke(pos.x, pos.y, pos.z, 0, 0, 0, 0, weapon, shade);
+	}
+
+	shell = &Gunshells[GetFreeGunshell()];
+	shell->pos.x_pos = pos.x;
+	shell->pos.y_pos = pos.y;
+	shell->pos.z_pos = pos.z;
+	shell->room_number = lara_item->room_number;
+	shell->pos.x_rot = 0;
+	shell->pos.y_rot = 0;
+	shell->pos.z_rot = (short)GetRandomControl();
+	shell->speed = (GetRandomControl() & 0x1F) + 16;
+	shell->object_number = objnum;
+	shell->fallspeed = -48 - (GetRandomControl() & 7);
+	shell->counter = (GetRandomControl() & 0x1F) + 60;
+
+	if (leftright)
+	{
+		if (weapon == WEAPON_SHOTGUN)
+		{
+			shell->DirXrot = lara.torso_y_rot + lara_item->pos.y_rot - (GetRandomControl() & 0xFFF) + lara.left_arm.y_rot + 0x2800;
+			shell->pos.y_rot += lara.left_arm.y_rot + lara.torso_y_rot + lara_item->pos.y_rot;
+
+			if (shell->speed < 24)
+				shell->speed += 24;
+		}
+		else
+			shell->DirXrot = lara_item->pos.y_rot - (GetRandomControl() & 0xFFF) + lara.left_arm.y_rot + 0x4800;
+	}
+	else
+		shell->DirXrot = lara_item->pos.y_rot + (GetRandomControl() & 0xFFF) + lara.left_arm.y_rot - 0x4800;
+}
+
+void UpdateGunShells()
+{
+	GUNSHELL_STRUCT* shell;
+	FLOOR_INFO* floor;
+	long ox, oy, oz, c, h;
+	short oroom;
+
+	for (int i = 0; i < 24; i++)
+	{
+		shell = &Gunshells[i];
+
+		if (!shell->counter)
+			continue;
+
+		ox = shell->pos.x_pos;
+		oy = shell->pos.y_pos;
+		oz = shell->pos.z_pos;
+		oroom = shell->room_number;
+		shell->counter--;
+
+		if (room[oroom].flags & ROOM_UNDERWATER)
+		{
+			shell->fallspeed++;
+
+			if (shell->fallspeed > 8)
+				shell->fallspeed = 8;
+			else if (shell->fallspeed < 0)
+				shell->fallspeed >>= 1;
+
+			shell->speed -= shell->speed >> 1;
+		}
+		else
+			shell->fallspeed += 6;
+
+		shell->pos.x_rot += 182 * ((shell->speed >> 1) + 7);
+		shell->pos.y_rot += 182 * shell->speed;
+		shell->pos.z_rot += 4186;
+		shell->pos.x_pos += shell->speed * phd_sin(shell->DirXrot) >> (W2V_SHIFT + 1);
+		shell->pos.y_pos += shell->fallspeed;
+		shell->pos.z_pos += shell->speed * phd_cos(shell->DirXrot) >> (W2V_SHIFT + 1);
+		floor = GetFloor(shell->pos.x_pos, shell->pos.y_pos, shell->pos.z_pos, &shell->room_number);
+
+		if (room[shell->room_number].flags & ROOM_UNDERWATER && !(room[oroom].flags & ROOM_UNDERWATER))
+		{
+			TriggerSmallSplash(shell->pos.x_pos, room[shell->room_number].maxceiling, shell->pos.z_pos, 8);
+			SetupRipple(shell->pos.x_pos, room[shell->room_number].maxceiling, shell->pos.z_pos, (GetRandomControl() & 3) + 8, 2);
+			shell->fallspeed >>= 5;
+			continue;
+		}
+
+		c = GetCeiling(floor, shell->pos.x_pos, shell->pos.y_pos, shell->pos.z_pos);
+
+		if (shell->pos.y_pos < c)
+		{
+			SoundEffect(SFX_LARA_SHOTGUN_SHELL, &shell->pos, SFX_DEFAULT);
+			shell->speed -= 4;
+
+			if (shell->speed < 8)
+			{
+				shell->counter = 0;
+				continue;
+			}
+
+			shell->pos.y_pos = c;
+			shell->fallspeed = -shell->fallspeed;
+		}
+
+		h = GetHeight(floor, shell->pos.x_pos, shell->pos.y_pos, shell->pos.z_pos);
+
+		if (shell->pos.y_pos >= h)
+		{
+			SoundEffect(SFX_LARA_SHOTGUN_SHELL, &shell->pos, SFX_DEFAULT);
+			shell->speed -= 8;
+
+			if (shell->speed < 8)
+			{
+				shell->counter = 0;
+				continue;
+			}
+
+			if (oy <= h)
+				shell->fallspeed = -shell->fallspeed >> 1;
+			else
+			{
+				shell->DirXrot += 0x8000;
+				shell->pos.x_pos = ox;
+				shell->pos.z_pos = oz;
+			}
+
+			shell->pos.y_pos = oy;
+		}
+	}
+}
+
+void TriggerSmallSplash(long x, long y, long z, long num)
+{
+	SPARKS* sptr;
+	short ang;
+
+	while (num)
+	{
+		sptr = &spark[GetFreeSpark()];
+		sptr->On = 1;
+		sptr->sR = 112;
+		sptr->sG = (GetRandomControl() & 0x1F) + 128;
+		sptr->sB = (GetRandomControl() & 0x1F) + 128;
+		sptr->dR = sptr->sR >> 1;
+		sptr->dG = sptr->sG >> 1;
+		sptr->dB = sptr->sB >> 1;
+		sptr->ColFadeSpeed = 4;
+		sptr->FadeToBlack = 8;
+		sptr->Life = 24;
+		sptr->sLife = 24;
+		sptr->TransType = 2;
+		ang = GetRandomControl() & 0xFFF;
+		sptr->Xvel = -rcossin_tbl[ang << 1] >> 5;
+		sptr->Yvel = -640 - (GetRandomControl() & 0xFF);
+		sptr->Zvel = rcossin_tbl[(ang << 1) + 1] >> 5;
+		sptr->x = x + (sptr->Xvel >> 3);
+		sptr->y = y - (sptr->Yvel >> 5);
+		sptr->z = z + (sptr->Zvel >> 3);
+		sptr->Friction = 5;
+		sptr->Flags = 0;
+		sptr->MaxYvel = 0;
+		sptr->Gravity = (GetRandomControl() & 0xF) + 64;
+		num--;
+	}
+}
+
+void TriggerGunflash(SVECTOR* pos)
+{
+	GUNFLASH_STRUCT* flash;
+	long num;
+
+	num = 0;
+
+	while (Gunflashes[num].on)
+	{
+		num++;
+
+		if (num >= 4)
+			return;
+	}
+
+	flash = &Gunflashes[num];
+	phd_TranslateRel(pos->x, pos->y, pos->z);
+	phd_RotX(-0x4000);
+	flash->mx[M00] = phd_mxptr[M00];
+	flash->mx[M01] = phd_mxptr[M01];
+	flash->mx[M02] = phd_mxptr[M02];
+	flash->mx[M03] = phd_mxptr[M03];
+	flash->mx[M10] = phd_mxptr[M10];
+	flash->mx[M11] = phd_mxptr[M11];
+	flash->mx[M12] = phd_mxptr[M12];
+	flash->mx[M13] = phd_mxptr[M13];
+	flash->mx[M20] = phd_mxptr[M20];
+	flash->mx[M21] = phd_mxptr[M21];
+	flash->mx[M22] = phd_mxptr[M22];
+	flash->mx[M23] = phd_mxptr[M23];
+	flash->on = 1;
+}
+
+void SetGunFlash(short weapon)
+{
+	SVECTOR pos;
+
+	switch (weapon)
+	{
+	case WEAPON_REVOLVER:
+		pos.x = 0;
+#ifdef GENERAL_FIXES
+		pos.y = 190;
+		pos.z = 50;
+#else
+		pos.y = 215;
+		pos.z = 65;
+#endif
+		break;
+
+	case WEAPON_UZI:
+		pos.x = 0;
+		pos.y = 190;
+		pos.z = 50;
+		break;
+
+	case WEAPON_SHOTGUN:
+	case WEAPON_GRENADE:
+	case WEAPON_CROSSBOW:
+	case WEAPON_FLARE:
+		return;
+
+	default:	//pistols
+		pos.x = 0;
+		pos.y = 180;
+		pos.z = 40;
+		break;
+	}
+
+	TriggerGunflash(&pos);
+}
+
+void DrawGunflashes()
+{
+	GUNFLASH_STRUCT* flash;
+
+	if (!Gunflashes[0].on)
+		return;
+
+	phd_top = 0;
+	phd_left = 0;
+	phd_right = phd_winwidth;
+	phd_bottom = phd_winheight;
+	phd_PushMatrix();
+	GetRandomDraw();
+	GetRandomDraw();
+	GetRandomDraw();
+	GetRandomDraw();
+
+	for (int i = 0; i < 4; i++)
+	{
+		flash = &Gunflashes[i];
+
+		if (!flash->on)
+			break;
+
+		phd_mxptr[M00] = flash->mx[M00];
+		phd_mxptr[M01] = flash->mx[M01];
+		phd_mxptr[M02] = flash->mx[M02];
+		phd_mxptr[M03] = flash->mx[M03];
+		phd_mxptr[M10] = flash->mx[M10];
+		phd_mxptr[M11] = flash->mx[M11];
+		phd_mxptr[M12] = flash->mx[M12];
+		phd_mxptr[M13] = flash->mx[M13];
+		phd_mxptr[M20] = flash->mx[M20];
+		phd_mxptr[M21] = flash->mx[M21];
+		phd_mxptr[M22] = flash->mx[M22];
+		phd_mxptr[M23] = flash->mx[M23];
+		phd_RotZ(short(GetRandomDraw() << 1));
+		GlobalAmbient = 0xFF2F2F00;
+		phd_PutPolygons(meshes[objects[GUN_FLASH].mesh_index], -1);
+		flash->on = 0;
+	}
+
+	phd_PopMatrix();
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -946,4 +1333,11 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00438BA0, TriggerShatterSmoke, replace);
 	INJECT(0x0043B5F0, DrawLensFlares, replace);
 	INJECT(0x0043B630, DrawWeaponMissile, replace);
+	INJECT(0x00439060, GetFreeGunshell, replace);
+	INJECT(0x004390F0, TriggerGunShell, replace);
+	INJECT(0x00439340, UpdateGunShells, replace);
+	INJECT(0x00439660, TriggerSmallSplash, replace);
+	INJECT(0x00439AE0, TriggerGunflash, replace);
+	INJECT(0x00439B80, SetGunFlash, replace);
+	INJECT(0x00439C00, DrawGunflashes, replace);
 }

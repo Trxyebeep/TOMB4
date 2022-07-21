@@ -10,6 +10,9 @@ void BuildOutsideTable();
 void reset_cutseq_vars();
 void ClearFootPrints();
 void InitialiseGameFlags();
-
-#define InitialiseObjects	( (void(__cdecl*)()) 0x0045C0D0 )
-#define SetupGame	( (void(__cdecl*)()) 0x0045F0A0 )
+void InitialiseLara();
+void InitialiseObjects();
+void GetAIPickups();
+void GetCarriedItems();
+void InitTarget();
+void SetupGame();

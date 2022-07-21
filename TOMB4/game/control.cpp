@@ -26,12 +26,15 @@
 #include "lara_states.h"
 #include "../specific/audio.h"
 #include "lot.h"
-
-#ifdef GENERAL_FIXES
 #include "../specific/output.h"
 #include "gameflow.h"
 #include "../tomb4/tomb4.h"
+#include "lara1gun.h"
+#include "sphere.h"
+#include "draw.h"
+#include "larafire.h"
 
+#ifdef GENERAL_FIXES
 char DeathMenuActive;
 
 static long S_Death()
@@ -1756,6 +1759,899 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 	return height;
 }
 
+void AlterFloorHeight(ITEM_INFO* item, long height)
+{
+	FLOOR_INFO* floor;
+	FLOOR_INFO* ceiling;
+	short room_num;
+
+	room_num = item->room_number;
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_num);
+	ceiling = GetFloor(item->pos.x_pos, item->pos.y_pos + height - 1024, item->pos.z_pos, &room_num);
+
+	if (floor->floor == -127)
+		floor->floor = ceiling->ceiling + char(height >> 8);
+	else
+	{
+		floor->floor += char(height >> 8);
+
+		if (floor->floor == ceiling->ceiling)
+			floor->floor = -127;
+	}
+
+	if (boxes[floor->box].overlap_index & 0x8000)
+	{
+		if (height >= 0)
+			boxes[floor->box].overlap_index &= ~0x4000;
+		else
+			boxes[floor->box].overlap_index |= 0x4000;
+	}
+}
+
+void TranslateItem(ITEM_INFO* item, short x, short y, short z)
+{
+	long s, c;
+
+	c = phd_cos(item->pos.y_rot);
+	s = phd_sin(item->pos.y_rot);
+	item->pos.x_pos += (z * s + x * c) >> W2V_SHIFT;
+	item->pos.y_pos += y;
+	item->pos.z_pos += (z * c - x * s) >> W2V_SHIFT;
+}
+
+long GetChange(ITEM_INFO* item, ANIM_STRUCT* anim)
+{
+	CHANGE_STRUCT* change;
+	RANGE_STRUCT* range;
+
+	if (item->current_anim_state == item->goal_anim_state || anim->number_changes <= 0)
+		return 0;
+
+	change = &changes[anim->change_index];
+
+	for (int i = 0; i < anim->number_changes; i++, change++)
+	{
+		if (change->goal_anim_state == item->goal_anim_state && change->number_ranges > 0)
+		{
+			range = &ranges[change->range_index];
+
+			for (int j = 0; j < change->number_ranges; j++, range++)
+			{
+				if (item->frame_number >= range->start_frame && item->frame_number <= range->end_frame)
+				{
+					item->anim_number = range->link_anim_num;
+					item->frame_number = range->link_frame_num;
+					return 1;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+void UpdateSky()
+{
+	if (gfLevelFlags & GF_LAYER1)
+	{
+		SkyPos += gfLayer1Vel;
+
+		if (SkyPos > 0x2C00)
+			SkyPos -= 0x2C00;
+		else if (SkyPos < 0)
+			SkyPos += 0x2C00;
+	}
+
+	if (gfLevelFlags & GF_LAYER2)
+	{
+		SkyPos2 += gfLayer2Vel;
+
+		if (SkyPos2 > 0x2C00)
+			SkyPos2 -= 0x2C00;
+		else if (SkyPos2 < 0)
+			SkyPos2 += 0x2C00;
+	}
+}
+
+void KillMoveEffects()
+{
+	for (int i = 0; i < ItemNewRoomNo; i++)
+	{
+		if (ItemNewRooms[i][0] & 0x8000)
+			KillEffect(ItemNewRooms[i][0] & 0x7FFF);
+		else
+			EffectNewRoom(ItemNewRooms[i][0], ItemNewRooms[i][1]);
+	}
+
+	ItemNewRoomNo = 0;
+}
+
+void KillMoveItems()
+{
+	for (int i = 0; i < ItemNewRoomNo; i++)
+	{
+		if (ItemNewRooms[i][0] & 0x8000)
+			KillItem(ItemNewRooms[i][0] & 0x7FFF);
+		else
+			ItemNewRoom(ItemNewRooms[i][0], ItemNewRooms[i][1]);
+	}
+
+	ItemNewRoomNo = 0;
+}
+
+void RefreshCamera(short type, short* data)
+{
+	short trigger, value, target_ok;
+
+	target_ok = 2;
+
+	do
+	{
+		trigger = *data++;
+		value = trigger & 0x3FF;
+
+		if (((trigger >> 10) & 0xF) == TO_CAMERA)
+		{
+			data++;
+
+			if (value == camera.last)
+			{
+				camera.number = trigger & 0x3FF;
+
+				if (camera.timer >= 0 && (camera.type != LOOK_CAMERA && camera.type != COMBAT_CAMERA || camera.fixed[camera.number].flags & 3))
+				{
+					camera.type = FIXED_CAMERA;
+					target_ok = 1;
+					continue;
+				}
+
+				camera.timer = -1;
+			}
+
+			target_ok = 0;
+		}
+		else if (((trigger >> 10) & 0xF) == TO_TARGET)
+		{
+			if (camera.type != LOOK_CAMERA && camera.type != COMBAT_CAMERA || camera.number == NO_ITEM || camera.fixed[camera.number].flags & 1)
+				camera.item = &items[value];
+		}
+
+	} while (!(trigger & 0x8000));
+
+	if (camera.item)
+	{
+		if (!target_ok || target_ok == 2 && camera.item->looked_at && camera.item != camera.last_item)
+			camera.item = 0;
+	}
+
+	if (camera.number == -1 && camera.timer > 0)
+		camera.timer = -1;
+}
+
+long TriggerActive(ITEM_INFO* item)
+{
+	long reverse;
+
+	reverse = (item->flags & IFL_REVERSE) ? 1 : 0;
+
+	if ((item->flags & IFL_CODEBITS) != IFL_CODEBITS)
+		return reverse;
+
+	if (!item->timer)
+		return !reverse;
+
+	if (item->timer > 0)
+	{
+		item->timer--;
+
+		if (!item->timer)
+			item->timer = -1;
+	}
+	else if (item->timer < -1)
+	{
+		item->timer++;
+
+		if (item->timer == -1)
+			item->timer = 0;
+	}
+
+	if (item->timer <= -1)
+		return reverse;
+
+	return !reverse;
+}
+
+void TriggerNormalCDTrack(short value, short flags, short type)
+{
+	long code;
+
+	if (value >= 105 && value <= 111 || value == 102 || value == 97)
+	{
+		if (CurrentAtmosphere != value)
+		{
+			CurrentAtmosphere = (uchar)value;
+
+			if (IsAtmospherePlaying)
+				S_CDPlay(value, 1);
+		}
+	}
+	else
+	{
+		code = (flags >> 8) & 0x3F;	//(IFL_CODEBITS | IFL_INVISIBLE)= 0x3F00, then >> 8, 3F
+
+		if ((cd_flags[value] & code) != code)
+		{
+			cd_flags[value] |= code;
+			S_CDPlay(value, 0);
+			IsAtmospherePlaying = 0;
+		}
+	}
+}
+
+void TriggerCDTrack(short value, short flags, short type)
+{
+	if (value < 128)
+		TriggerNormalCDTrack(value, flags, type);
+}
+
+long ClipTarget(GAME_VECTOR* start, GAME_VECTOR* target)
+{
+	GAME_VECTOR src;
+	long dx, dy, dz;
+	short room_no;
+
+	room_no = target->room_number;
+
+	if (target->y > GetHeight(GetFloor(target->x, target->y, target->z, &room_no), target->x, target->y, target->z))
+	{
+		src.x = (7 * (target->x - start->x) >> 3) + start->x;
+		src.y = (7 * (target->y - start->y) >> 3) + start->y;
+		src.z = (7 * (target->z - start->z) >> 3) + start->z;
+
+		for (int i = 3; i > 0; i--)
+		{
+			dx = ((target->x - src.x) * i >> 2) + src.x;
+			dy = ((target->y - src.y) * i >> 2) + src.y;
+			dz = ((target->z - src.z) * i >> 2) + src.z;
+
+			if (dy < GetHeight(GetFloor(dx, dy, dz, &room_no), dx, dy, dz))
+				break;
+		}
+
+		target->x = dx;
+		target->y = dy;
+		target->z = dz;
+		target->room_number = room_no;
+		return 0;
+	}
+
+	room_no = target->room_number;
+
+	if (target->y < GetCeiling(GetFloor(target->x, target->y, target->z, &room_no), target->x, target->y, target->z))
+	{
+		src.x = (7 * (target->x - start->x) >> 3) + start->x;
+		src.y = (7 * (target->y - start->y) >> 3) + start->y;
+		src.z = (7 * (target->z - start->z) >> 3) + start->z;
+
+		for (int i = 3; i > 0; i--)
+		{
+			dx = ((target->x - src.x) * i >> 2) + src.x;
+			dy = ((target->y - src.y) * i >> 2) + src.y;
+			dz = ((target->z - src.z) * i >> 2) + src.z;
+
+			if (dy > GetCeiling(GetFloor(dx, dy, dz, &room_no), dx, dy, dz))
+				break;
+		}
+
+		target->x = dx;
+		target->y = dy;
+		target->z = dz;
+		target->room_number = room_no;
+		return 0;
+	}
+
+	return 1;
+}
+
+long xLOS(GAME_VECTOR* start, GAME_VECTOR* target)
+{
+	FLOOR_INFO* floor;
+	long dx, dy, dz, x, y, z;
+	short room_number, last_room;
+
+	dx = target->x - start->x;
+
+	if (!dx)
+		return 1;
+
+	dy = 1024 * (target->y - start->y) / dx;
+	dz = 1024 * (target->z - start->z) / dx;
+	number_los_rooms = 1;
+	los_rooms[0] = start->room_number;
+	room_number = start->room_number;
+	last_room = start->room_number;
+
+	if (dx < 0)
+	{
+		x = start->x & ~1023;
+		y = ((x - start->x) * dy >> 10) + start->y;
+		z = ((x - start->x) * dz >> 10) + start->z;
+
+		while (x > target->x)
+		{
+			floor = GetFloor(x, y, z, &room_number);
+
+			if (room_number != last_room)
+			{
+				last_room = room_number;
+				los_rooms[number_los_rooms] = room_number;
+				number_los_rooms++;
+			}
+
+			if (y > GetHeight(floor, x, y, z) || y < GetCeiling(floor, x, y, z))
+			{
+				target->x = x;
+				target->y = y;
+				target->z = z;
+				target->room_number = room_number;
+				return -1;
+			}
+
+			floor = GetFloor(x - 1, y, z, &room_number);
+
+			if (room_number != last_room)
+			{
+				last_room = room_number;
+				los_rooms[number_los_rooms] = room_number;
+				number_los_rooms++;
+			}
+
+			if (y > GetHeight(floor, x - 1, y, z) || y < GetCeiling(floor, x - 1, y, z))
+			{
+				target->x = x;
+				target->y = y;
+				target->z = z;
+				target->room_number = last_room;
+				return 0;
+			}
+
+			x -= 1024;
+			y -= dy;
+			z -= dz;
+		}
+	}
+	else
+	{
+		x = start->x | 1023;
+		y = ((x - start->x) * dy >> 10) + start->y;
+		z = ((x - start->x) * dz >> 10) + start->z;
+
+		while (x < target->x)
+		{
+			floor = GetFloor(x, y, z, &room_number);
+
+			if (room_number != last_room)
+			{
+				last_room = room_number;
+				los_rooms[number_los_rooms] = room_number;
+				number_los_rooms++;
+			}
+
+			if (y > GetHeight(floor, x, y, z) || y < GetCeiling(floor, x, y, z))
+			{
+				target->x = x;
+				target->y = y;
+				target->z = z;
+				target->room_number = room_number;
+				return -1;
+			}
+
+			floor = GetFloor(x + 1, y, z, &room_number);
+
+			if (room_number != last_room)
+			{
+				last_room = room_number;
+				los_rooms[number_los_rooms] = room_number;
+				number_los_rooms++;
+			}
+
+			if (y > GetHeight(floor, x + 1, y, z) || y < GetCeiling(floor, x + 1, y, z))
+			{
+				target->x = x;
+				target->y = y;
+				target->z = z;
+				target->room_number = last_room;
+				return 0;
+			}
+
+			x += 1024;
+			y += dy;
+			z += dz;
+		}
+	}
+
+	target->room_number = room_number;
+	return 1;
+}
+
+long zLOS(GAME_VECTOR* start, GAME_VECTOR* target)
+{
+	FLOOR_INFO* floor;
+	long dx, dy, dz, x, y, z;
+	short room_number, last_room;
+
+	dz = target->z - start->z;
+
+	if (!dz)
+		return 1;
+
+	dx = 1024 * (target->x - start->x) / dz;
+	dy = 1024 * (target->y - start->y) / dz;
+	number_los_rooms = 1;
+	los_rooms[0] = start->room_number;
+	room_number = start->room_number;
+	last_room = start->room_number;
+
+	if (dz < 0)
+	{
+		z = start->z & ~1023;
+		x = ((z - start->z) * dx >> 10) + start->x;
+		y = ((z - start->z) * dy >> 10) + start->y;
+
+		while (z > target->z)
+		{
+			floor = GetFloor(x, y, z, &room_number);
+
+			if (room_number != last_room)
+			{
+				last_room = room_number;
+				los_rooms[number_los_rooms] = room_number;
+				number_los_rooms++;
+			}
+
+			if (y > GetHeight(floor, x, y, z) || y < GetCeiling(floor, x, y, z))
+			{
+				target->x = x;
+				target->y = y;
+				target->z = z;
+				target->room_number = room_number;
+				return -1;
+			}
+
+			floor = GetFloor(x, y, z - 1, &room_number);
+
+			if (room_number != last_room)
+			{
+				last_room = room_number;
+				los_rooms[number_los_rooms] = room_number;
+				number_los_rooms++;
+			}
+
+			if (y > GetHeight(floor, x, y, z - 1) || y < GetCeiling(floor, x, y, z - 1))
+			{
+				target->x = x;
+				target->y = y;
+				target->z = z;
+				target->room_number = last_room;
+				return 0;
+			}
+
+			z -= 1024;
+			x -= dx;
+			y -= dy;
+		}
+	}
+	else
+	{
+		z = start->z | 1023;
+		x = ((z - start->z) * dx >> 10) + start->x;
+		y = ((z - start->z) * dy >> 10) + start->y;
+
+		while (z < target->z)
+		{
+			floor = GetFloor(x, y, z, &room_number);
+
+			if (room_number != last_room)
+			{
+				last_room = room_number;
+				los_rooms[number_los_rooms] = room_number;
+				number_los_rooms++;
+			}
+
+			if (y > GetHeight(floor, x, y, z) || y < GetCeiling(floor, x, y, z))
+			{
+				target->x = x;
+				target->y = y;
+				target->z = z;
+				target->room_number = room_number;
+				return -1;
+			}
+
+			floor = GetFloor(x, y, z + 1, &room_number);
+
+			if (room_number != last_room)
+			{
+				last_room = room_number;
+				los_rooms[number_los_rooms] = room_number;
+				number_los_rooms++;
+			}
+
+			if (y > GetHeight(floor, x, y, z + 1) || y < GetCeiling(floor, x, y, z + 1))
+			{
+				target->x = x;
+				target->y = y;
+				target->z = z;
+				target->room_number = last_room;
+				return 0;
+			}
+
+			z += 1024;
+			x += dx;
+			y += dy;
+		}
+	}
+
+	target->room_number = room_number;
+	return 1;
+}
+
+long LOS(GAME_VECTOR* start, GAME_VECTOR* target)
+{
+	long los1, los2;
+
+	target->room_number = start->room_number;
+
+	if (ABS(target->z - start->z) > ABS(target->x - start->x))
+	{
+		los1 = xLOS(start, target);
+		los2 = zLOS(start, target);
+	}
+	else
+	{
+		los1 = zLOS(start, target);
+		los2 = xLOS(start, target);
+	}
+
+	if (los2)
+	{
+		GetFloor(target->x, target->y, target->z, &target->room_number);
+
+		if (ClipTarget(start, target) && los1 == 1 && los2 == 1)
+			return 1;
+	}
+
+	return 0;
+}
+
+void FireCrossBowFromLaserSight(GAME_VECTOR* start, GAME_VECTOR* target)
+{
+	PHD_3DPOS pos;
+	short angles[2];
+
+	phd_GetVectorAngles(target->x - start->x, target->y - start->y, target->z - start->z, angles);
+	pos.x_pos = start->x;
+	pos.y_pos = start->y;
+	pos.z_pos = start->z;
+	pos.x_rot = angles[1];
+	pos.y_rot = angles[0];
+	pos.z_rot = 0;
+	FireCrossbow(&pos);
+}
+
+long ExplodeItemNode(ITEM_INFO* item, long Node, long NoXZVel, long bits)
+{
+	OBJECT_INFO* object;
+	short** meshpp;
+
+	if (!(item->mesh_bits & (1 << Node)))
+		return 0;
+
+	if (bits == 256)
+		bits = -64;
+	else
+		SoundEffect(SFX_HIT_ROCK, &item->pos, SFX_DEFAULT);
+
+	GetSpheres(item, Slist, 3);
+	object = &objects[item->object_number];
+	meshpp = &meshes[object->mesh_index + Node * 2];
+	ShatterItem.Bit = 1 << Node;
+	ShatterItem.meshp = *meshpp;
+	ShatterItem.Sphere.x = Slist[Node].x;
+	ShatterItem.Sphere.y = Slist[Node].y;
+	ShatterItem.Sphere.z = Slist[Node].z;
+	ShatterItem.YRot = item->pos.y_rot;
+	ShatterItem.il = &item->il;
+	ShatterItem.Flags = item->object_number != CROSSBOW_BOLT ? 0 : 1024;
+	ShatterObject(&ShatterItem, 0, (short)bits, item->room_number, NoXZVel);
+	item->mesh_bits &= ~ShatterItem.Bit;
+	return 1;
+}
+
+long IsRoomOutside(long x, long y, long z)
+{
+	ROOM_INFO* r;
+	FLOOR_INFO* floor;
+	uchar* pTable;
+	long h, c;
+	short offset, room_no;
+
+	if (x < 0 || z < 0)
+		return -2;
+
+	offset = OutsideRoomOffsets[27 * (x >> 12) + (z >> 12)];
+
+	if (offset == -1)
+		return -2;
+
+	if (offset < 0)
+	{
+		r = &room[offset & 0x7FFF];
+
+		if (y >= r->maxceiling && y <= r->minfloor &&
+			z >= r->z + 1024 && z <= (r->x_size << 10) + r->z - 1024 &&
+			x >= r->x + 1024 && x <= (r->y_size << 10) + r->x - 1024)
+		{
+			IsRoomOutsideNo = offset & 0x7FFF;
+			room_no = IsRoomOutsideNo;
+			floor = GetFloor(x, y, z, &room_no);
+			h = GetHeight(floor, x, y, z);
+			c = GetCeiling(floor, x, y, z);
+
+			if (h == NO_HEIGHT || y > h || y < c)
+				return -2;
+
+			if (r->flags & (ROOM_UNDERWATER | ROOM_NOT_INSIDE))
+				return 1;
+			else
+				return -3;
+		}
+	}
+	else
+	{
+		pTable = (uchar*)&OutsideRoomTable[offset];
+
+		while (*pTable != 255)
+		{
+			r = &room[*pTable];
+
+			if (y >= r->maxceiling && y <= r->minfloor &&
+				z >= r->z + 1024 && z <= (r->x_size << 10) + r->z - 1024 &&
+				x >= r->x + 1024 && x <= (r->y_size << 10) + r->x - 1024)
+			{
+				IsRoomOutsideNo = *pTable;
+				room_no = IsRoomOutsideNo;
+				floor = GetFloor(x, y, z, &room_no);
+				h = GetHeight(floor, x, y, z);
+				c = GetCeiling(floor, x, y, z);
+
+				if (h == NO_HEIGHT || y > h || y < c)
+					return -2;
+
+				if (r->flags & (ROOM_UNDERWATER | ROOM_NOT_INSIDE))
+					return 1;
+				else
+					return -3;
+			}
+
+			pTable++;
+		}
+	}
+
+	return -2;
+}
+
+long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, MESH_INFO** StaticMesh)
+{
+	ITEM_INFO* item;
+	MESH_INFO* mesh;
+	ROOM_INFO* r;
+	PHD_3DPOS ItemPos;
+	short* bounds;
+	long dx, dy, dz;
+	short item_number;
+
+	dx = target->x - start->x;
+	dy = target->y - start->y;
+	dz = target->z - start->z;
+	ClosestItem = 999;
+	ClosestDist = SQUARE(dx) + SQUARE(dy) + SQUARE(dz);
+
+	for (int i = 0; i < number_los_rooms; i++)
+	{
+		r = &room[los_rooms[i]];
+
+		for (item_number = r->item_number; item_number != NO_ITEM; item_number = item->next_item)
+		{
+			item = &items[item_number];
+
+			if (item->status != ITEM_DEACTIVATED && item->status != ITEM_INVISIBLE && item->object_number != LARA)
+			{
+				bounds = GetBoundsAccurate(item);
+				ItemPos.x_pos = item->pos.x_pos;
+				ItemPos.y_pos = item->pos.y_pos;
+				ItemPos.z_pos = item->pos.z_pos;
+				ItemPos.y_rot = item->pos.y_rot;
+
+				if (DoRayBox(start, target, bounds, &ItemPos, Coord, item_number))
+					target->room_number = los_rooms[i];
+			}
+		}
+
+		for (int j = 0; j < r->num_meshes; j++)
+		{
+			mesh = &r->mesh[j];
+
+			if (mesh->Flags & 1)
+			{
+				ItemPos.x_pos = mesh->x;
+				ItemPos.y_pos = mesh->y;
+				ItemPos.z_pos = mesh->z;
+				ItemPos.y_rot = mesh->y_rot;
+
+				if (DoRayBox(start, target, &static_objects[mesh->static_number].x_minc, &ItemPos, Coord, -1 - mesh->static_number))
+				{
+					*StaticMesh = mesh;
+					target->room_number = los_rooms[i];
+				}
+			}
+		}
+	}
+
+	Coord->x = ClosestCoord.x;
+	Coord->y = ClosestCoord.y;
+	Coord->z = ClosestCoord.z;
+	return ClosestItem;
+}
+
+long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long firing)
+{
+	ITEM_INFO* shotitem;
+	MESH_INFO* Mesh;
+	GAME_VECTOR target;
+	PHD_VECTOR v;
+	short item_no, hit, ricochet, room_number, TriggerItems[8], NumTrigs;
+
+	hit = 0;
+	target.x = dest->x;
+	target.y = dest->y;
+	target.z = dest->z;
+	ricochet = (short)LOS(src, &target);
+	GetFloor(target.x, target.y, target.z, &target.room_number);
+
+	if (firing && LaserSight)
+	{
+		if (lara.gun_type == WEAPON_REVOLVER)
+			SoundEffect(SFX_DESERT_EAGLE_FIRE, 0, SFX_DEFAULT);
+	}
+
+	item_no = (short)ObjectOnLOS2(src, dest, &v, &Mesh);
+
+	if (item_no != 999)
+	{
+		target.x = v.x - ((v.x - src->x) >> 5);
+		target.y = v.y - ((v.y - src->y) >> 5);
+		target.z = v.z - ((v.z - src->z) >> 5);
+
+#ifdef GENERAL_FIXES
+		if (item_no >= 0)
+			lara.target = &items[item_no];
+#endif
+
+		if (firing)
+		{
+			if (lara.gun_type != WEAPON_CROSSBOW)
+			{
+				if (item_no < 0)
+				{
+					if (Mesh->static_number >= SHATTER0 && Mesh->static_number < SHATTER8)
+					{
+						ShatterObject(0, Mesh, 128, target.room_number, 0);
+						SmashedMeshRoom[SmashedMeshCount] = target.room_number;
+						SmashedMesh[SmashedMeshCount] = Mesh;
+						SmashedMeshCount++;
+						Mesh->Flags &= ~1;
+						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)Mesh, SFX_DEFAULT);
+					}
+
+					TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, 0);
+					TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, 0);
+				}
+				else
+				{
+					shotitem = &items[item_no];
+
+					if (shotitem->object_number != SWITCH_TYPE7 && shotitem->object_number != SWITCH_TYPE8)
+					{
+						if (objects[shotitem->object_number].explodable_meshbits & ShatterItem.Bit && LaserSight)
+						{
+							ShatterObject(&ShatterItem, 0, 128, target.room_number, 0);
+							shotitem->mesh_bits &= ~ShatterItem.Bit;
+							TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, 0);
+						}
+						else if (DrawTarget && lara.gun_type == WEAPON_REVOLVER)
+						{
+							if (objects[shotitem->object_number].intelligent)
+								HitTarget(shotitem, &target, weapons[lara.gun_type].damage, 0);
+						}
+						else
+						{
+							if (objects[shotitem->object_number].HitEffect == 1)
+								DoBloodSplat(target.x, target.y, target.z, (GetRandomControl() & 3) + 3, shotitem->pos.y_rot, shotitem->room_number);
+							else if (objects[shotitem->object_number].HitEffect == 2)
+								TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, -5);
+							else if (objects[shotitem->object_number].HitEffect == 3)
+								TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, 0);
+
+							shotitem->hit_status = 1;
+
+							if (!objects[shotitem->object_number].undead)
+								shotitem->hit_points -= weapons[lara.gun_type].damage;
+						}
+					}
+					else
+					{
+						if (ShatterItem.Bit == 1 << (objects[shotitem->object_number].nmeshes - 1) && !(shotitem->flags & IFL_SWITCH_ONESHOT))
+						{
+							if (shotitem->object_number == SWITCH_TYPE7)
+								ExplodeItemNode(shotitem, objects[shotitem->object_number].nmeshes - 1, 0, 64);
+
+							if (shotitem->flags & IFL_CODEBITS && (shotitem->flags & IFL_CODEBITS) != IFL_CODEBITS)
+							{
+								room_number = shotitem->room_number;
+								GetHeight(GetFloor(shotitem->pos.x_pos, shotitem->pos.y_pos - 256, shotitem->pos.z_pos, &room_number), shotitem->pos.x_pos, shotitem->pos.y_pos - 256, shotitem->pos.z_pos);
+								TestTriggers(trigger_index, 1, shotitem->flags & IFL_CODEBITS);
+							}
+							else
+							{
+								NumTrigs = (short)GetSwitchTrigger(shotitem, TriggerItems, 1);
+
+								for (int i = NumTrigs - 1; i >= 0; i--)
+								{
+									AddActiveItem(TriggerItems[i]);
+									items[TriggerItems[i]].status = ITEM_ACTIVE;
+									items[TriggerItems[i]].flags |= IFL_CODEBITS;
+								}
+							}
+
+							AddActiveItem(item_no);
+							shotitem->status = ITEM_ACTIVE;
+							shotitem->flags |= IFL_SWITCH_ONESHOT | IFL_CODEBITS;
+						}
+
+						TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, 0);
+					}
+				}
+			}
+			else if (LaserSight)
+				FireCrossBowFromLaserSight(src, &target);
+		}
+
+		hit = 1;
+	}
+	else if (lara.gun_type != WEAPON_CROSSBOW)
+	{
+		target.x -= (target.x - src->x) >> 5;
+		target.y -= (target.y - src->y) >> 5;
+		target.z -= (target.z - src->z) >> 5;
+
+		if (firing && !ricochet)
+			TriggerRicochetSpark(&target, lara_item->pos.y_rot, 8, 0);
+	}
+	else if (firing && LaserSight)
+		FireCrossBowFromLaserSight(src, &target);
+
+	if (DrawTarget && (hit || !ricochet))
+	{
+		LaserSightActive = 1;
+		LaserSightX = target.x;
+		LaserSightY = target.y;
+		LaserSightZ = target.z;
+		TriggerDynamic(target.x, target.y, target.z, 16, 32, 0, 0);
+	}
+
+	return hit;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -1770,4 +2666,23 @@ void inject_control(bool replace)
 	INJECT(0x0044A390, GetWaterHeight, replace);
 	INJECT(0x0044A530, GetHeight, replace);
 	INJECT(0x0044B690, GetCeiling, replace);
+	INJECT(0x0044A0D0, AlterFloorHeight, replace);
+	INJECT(0x0044A060, TranslateItem, replace);
+	INJECT(0x00449FC0, GetChange, replace);
+	INJECT(0x00449390, UpdateSky, replace);
+	INJECT(0x00449330, KillMoveEffects, replace);
+	INJECT(0x004492D0, KillMoveItems, replace);
+	INJECT(0x0044AA20, RefreshCamera, replace);
+	INJECT(0x0044B620, TriggerActive, replace);
+	INJECT(0x0044C790, TriggerNormalCDTrack, replace);
+	INJECT(0x0044C770, TriggerCDTrack, replace);
+	INJECT(0x0044C320, ClipTarget, replace);
+	INJECT(0x0044BFD0, xLOS, replace);
+	INJECT(0x0044BC80, zLOS, replace);
+	INJECT(0x0044BBE0, LOS, replace);
+	INJECT(0x0044D820, FireCrossBowFromLaserSight, replace);
+	INJECT(0x0044DE50, ExplodeItemNode, replace);
+	INJECT(0x0044C9C0, IsRoomOutside, replace);
+	INJECT(0x0044CBE0, ObjectOnLOS2, replace);
+	INJECT(0x0044D890, GetTargetOnLOS, replace);
 }

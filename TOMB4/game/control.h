@@ -15,19 +15,28 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number);
 long GetWaterHeight(long x, long y, long z, short room_number);
 long GetHeight(FLOOR_INFO* floor, long x, long y, long z);
 long GetCeiling(FLOOR_INFO* floor, long x, long y, long z);
+void AlterFloorHeight(ITEM_INFO* item, long height);
+void TranslateItem(ITEM_INFO* item, short x, short y, short z);
+long GetChange(ITEM_INFO* item, ANIM_STRUCT* anim);
+void UpdateSky();
+void KillMoveEffects();
+void KillMoveItems();
+void RefreshCamera(short type, short* data);
+long TriggerActive(ITEM_INFO* item);
+void TriggerNormalCDTrack(short value, short flags, short type);
+void TriggerCDTrack(short value, short flags, short type);
+long ClipTarget(GAME_VECTOR* start, GAME_VECTOR* target);
+long xLOS(GAME_VECTOR* start, GAME_VECTOR* target);
+long zLOS(GAME_VECTOR* start, GAME_VECTOR* target);
+long LOS(GAME_VECTOR* start, GAME_VECTOR* target);
+void FireCrossBowFromLaserSight(GAME_VECTOR* start, GAME_VECTOR* target);
+long ExplodeItemNode(ITEM_INFO* item, long Node, long NoXZVel, long bits);
+long IsRoomOutside(long x, long y, long z);
+long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, MESH_INFO** StaticMesh);
+long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long firing);
 
-#define UpdateSky	( (void(__cdecl*)()) 0x00449390 )
-#define KillMoveItems	( (void(__cdecl*)()) 0x004492D0)
-#define KillMoveEffects	( (void(__cdecl*)()) 0x00449330 )
-#define TriggerActive	( (long(__cdecl*)(ITEM_INFO*)) 0x0044B620 )
 #define AnimateItem	( (void(__cdecl*)(ITEM_INFO*)) 0x00449B90 )
-#define ExplodeItemNode	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x0044DE50 )
-#define IsRoomOutside	( (long(__cdecl*)(long, long, long)) 0x0044C9C0 )
-#define GetTargetOnLOS	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*, long, long)) 0x0044D890 )
-#define AlterFloorHeight	( (void(__cdecl*)(ITEM_INFO*, long)) 0x0044A0D0 )
-#define LOS	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*)) 0x0044BBE0 )
-#define RefreshCamera	( (void(__cdecl*)(short, short*)) 0x0044AA20 )
-#define TriggerCDTrack	( (void(__cdecl*)(short, short, short)) 0x0044C770 )
+#define DoRayBox	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*, short*, PHD_3DPOS*, PHD_VECTOR*, short)) 0x0044CDF0 )
 
 #ifdef GENERAL_FIXES
 extern char DeathMenuActive;

@@ -183,7 +183,7 @@ long GetFreeDebris()
 	return eldestfree;
 }
 
-void ShatterObject(SHATTER_ITEM* ShatterItem, MESH_INFO* StaticMesh, short Num, short RoomNumber, long NoXZVel)
+void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num, short RoomNumber, long NoXZVel)
 {
 	MESH_DATA* mesh;
 	TEXTURESTRUCT* tex;
@@ -212,13 +212,13 @@ void ShatterObject(SHATTER_ITEM* ShatterItem, MESH_INFO* StaticMesh, short Num, 
 		rnd = 1;
 	}
 
-	if (ShatterItem)
+	if (shatter_item)
 	{
-		meshp = ShatterItem->meshp;
-		TPos.x = ShatterItem->Sphere.x;
-		TPos.y = ShatterItem->Sphere.y;
-		TPos.z = ShatterItem->Sphere.z;
-		RotY = ShatterItem->YRot;
+		meshp = shatter_item->meshp;
+		TPos.x = shatter_item->Sphere.x;
+		TPos.y = shatter_item->Sphere.y;
+		TPos.z = shatter_item->Sphere.z;
+		RotY = shatter_item->YRot;
 #ifdef GENERAL_FIXES
 		rgb = 0;					//uninitialized
 #endif
@@ -345,7 +345,7 @@ void ShatterObject(SHATTER_ITEM* ShatterItem, MESH_INFO* StaticMesh, short Num, 
 			vec.z += TPos.z;
 			c = rgb;
 
-			if (ShatterItem && ShatterItem->Flags & 0x400)
+			if (shatter_item && shatter_item->Flags & 0x400)
 				c = -rgb;
 
 			TriggerDebris(&vec, tex, offsets, Vels, c);
@@ -423,7 +423,7 @@ void ShatterObject(SHATTER_ITEM* ShatterItem, MESH_INFO* StaticMesh, short Num, 
 			vec.z += TPos.z;
 			c = rgb;
 
-			if (ShatterItem && ShatterItem->Flags & 0x400)
+			if (shatter_item && shatter_item->Flags & 0x400)
 				c = -rgb;
 
 			TriggerDebris(&vec, tex, offsets, Vels, c);

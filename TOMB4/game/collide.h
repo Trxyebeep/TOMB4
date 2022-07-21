@@ -19,3 +19,4 @@ void CreatureCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 #define ObjectCollision	( (void(__cdecl*)(short, ITEM_INFO*, COLL_INFO*)) 0x004475F0 )
 #define ObjectCollisionNoBigPush	( (void(__cdecl*)(short, ITEM_INFO*, COLL_INFO*)) 0x00447660 )
 #define AlignLaraPosition	( (void(__cdecl*)(PHD_VECTOR*, ITEM_INFO*, ITEM_INFO*)) 0x00448070 )
+#define ItemPushLaraStatic	( (void(__cdecl*)(ITEM_INFO*, short*, PHD_3DPOS*, COLL_INFO*)) 0x00447CE0 )

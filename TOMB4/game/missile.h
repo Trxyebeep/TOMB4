@@ -1,4 +1,7 @@
 #pragma once
 #include "../global/vars.h"
 
-#define ExplodeFX	( (void(__cdecl*)(FX_INFO*, long, long)) 0x00409180 )
+void inject_missile(bool replace);
+
+long ExplodeFX(FX_INFO* fx, long NoXZVel, short Num);
+void ControlBodyPart(short fx_number);

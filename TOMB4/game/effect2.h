@@ -11,6 +11,7 @@ void TriggerDynamic(long x, long y, long z, long falloff, long r, long g, long b
 void TriggerDynamic_MIRROR(long x, long y, long z, long falloff, long r, long g, long b);
 void ClearDynamics();
 void ControlEnemyMissile(short fx_number);
+void SetupRipple(long x, long y, long z, long size, long flags);
 
 #define KillEverything	( (void(__cdecl*)()) 0x00436050 )
 #define UpdateSparks	( (void(__cdecl*)()) 0x00433E10 )
@@ -20,3 +21,6 @@ void ControlEnemyMissile(short fx_number);
 #define TriggerFireFlame	( (void(__cdecl*)(long, long, long, long, long)) 0x00435130 )
 #define TriggerSuperJetFlame	( (void(__cdecl*)(ITEM_INFO*, long, long)) 0x00435570 )
 #define TriggerWaterfallMist	( (void(__cdecl*)(long, long, long, long)) 0x00435C60 )
+#define Richochet	( (void(__cdecl*)(GAME_VECTOR*)) 0x00437140 )
+#define TriggerRicochetSpark	( (void(__cdecl*)(GAME_VECTOR*, long, long, long)) 0x00434440 )
+#define DetatchSpark	( (void(__cdecl*)(long, long)) 0x00433C70 )

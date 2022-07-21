@@ -288,8 +288,8 @@ static void TiltHer(ITEM_INFO* item, long rad, long height)
 
 	if (!OnObject)
 	{
-		plane.x = -(float)tiltxoff / 4;
-		plane.y = -(float)tiltyoff / 4;
+		plane.x = -(float)tiltyoff / 4;
+		plane.y = -(float)tiltxoff / 4;
 	}
 	else
 	{

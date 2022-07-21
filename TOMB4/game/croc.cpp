@@ -131,7 +131,7 @@ void CrocControl(short item_number)
 		case 1:
 			croc->maximum_turn = 0;
 
-			if (item->ai_bits & 1)
+			if (item->ai_bits & GUARD)
 			{
 				rot = item->item_flags[0];
 				item->goal_anim_state = 1;

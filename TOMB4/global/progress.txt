@@ -145,40 +145,40 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/control.cpp
 
-0x004492D0		KillMoveItems
-0x00449330		KillMoveEffects
-0x00449390		UpdateSky
+0x004492D0	+	KillMoveItems
+0x00449330	+	KillMoveEffects
+0x00449390	+	UpdateSky
 0x00449410	+	ControlPhase
 0x00449B90		AnimateItem
-0x00449FC0		GetChange
-0x0044A060		TranslateItem
-0x0044A0D0		AlterFloorHeight
+0x00449FC0	+	GetChange
+0x0044A060	+	TranslateItem
+0x0044A0D0	+	AlterFloorHeight
 0x0044A1A0	+	GetFloor
 0x0044A390	+	GetWaterHeight
 0x0044A530	+	GetHeight
-0x0044AA20		RefreshCamera
+0x0044AA20	+	RefreshCamera
 0x0044AB50	+	TestTriggers
-0x0044B620		TriggerActive
+0x0044B620	+	TriggerActive
 0x0044B690	+	GetCeiling
 0x0044BB20	+	GetDoor
-0x0044BBE0		LOS
-0x0044BC80		xLOS
-0x0044BFD0		zLOS
-0x0044C320		ClipTarget
+0x0044BBE0	+	LOS
+0x0044BC80	+	zLOS
+0x0044BFD0	+	xLOS
+0x0044C320	+	ClipTarget
 0x0044C570	+	FlipMap
 0x0044C670	+	RemoveRoomFlipItems
 0x0044C6F0	+	AddRoomFlipItems
-0x0044C770		TriggerCDTrack
-0x0044C790		TriggerNormalCDTrack
+0x0044C770	+	TriggerCDTrack
+0x0044C790	+	TriggerNormalCDTrack
 0x0044C820	+	CheckNoColFloorTriangle
 0x0044C8D0	+	CheckNoColCeilingTriangle
-0x0044C9C0		IsRoomOutside
-0x0044CBE0		ObjectOnLOS2
+0x0044C9C0	+	IsRoomOutside
+0x0044CBE0	+	ObjectOnLOS2
 0x0044CDF0		DoRayBox
 0x0044D530		RayBoxIntersect
-0x0044D820		FireCrossBowFromLaserSight
-0x0044D890		GetTargetOnLOS
-0x0044DE50		ExplodeItemNode
+0x0044D820	+	FireCrossBowFromLaserSight
+0x0044D890	+	GetTargetOnLOS
+0x0044DE50	+	ExplodeItemNode
 
 
 		game/croc.cpp
@@ -399,7 +399,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004357C0		TriggerRocketSmoke
 0x00435920		SetupSplash
 0x004359E0		UpdateSplashes
-0x00435B70		SetupRipple
+0x00435B70	+	SetupRipple
 0x00435BF0		TriggerUnderwaterBlood
 0x00435C60		TriggerWaterfallMist
 0x00435E30		TriggerDartSmoke
@@ -464,11 +464,11 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/flmtorch.cpp
 
-0x0041F390		TriggerTorchFlame
-0x0041F510		FireCollision
-0x0041F7C0		DoFlameTorch
-0x0041FAF0		GetFlameTorch
-0x0041FB80		FlameTorchControl
+0x0041F390	+	TriggerTorchFlame
+0x0041F510	+	FireCollision
+0x0041F7C0	+	DoFlameTorch
+0x0041FAF0	+	GetFlameTorch
+0x0041FB80	+	FlameTorchControl
 
 
 		game/footprnt.cpp
@@ -567,18 +567,18 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/items.cpp
 
-0x00454140		InitialiseItemArray
-0x004541B0		KillItem
-0x00454360		CreateItem
-0x004543B0		InitialiseItem
-0x004545F0		RemoveActiveItem
-0x004546A0		RemoveDrawnItem
-0x00454740		AddActiveItem
-0x004547B0		ItemNewRoom
-0x004548B0		InitialiseFXArray
-0x00454900		CreateEffect
-0x00454970		KillEffect
-0x00454A90		EffectNewRoom
+0x00454140	+	InitialiseItemArray
+0x004541B0	+	KillItem
+0x00454360	+	CreateItem
+0x004543B0	+	InitialiseItem
+0x004545F0	+	RemoveActiveItem
+0x004546A0	+	RemoveDrawnItem
+0x00454740	+	AddActiveItem
+0x004547B0	+	ItemNewRoom
+0x004548B0	+	InitialiseFXArray
+0x00454900	+	CreateEffect
+0x00454970	+	KillEffect
+0x00454A90	+	EffectNewRoom
 
 
 		game/jean.cpp
@@ -791,7 +791,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00429260		FireShotgun
 0x00429480		FireGrenade
 0x00429710		ControlGrenade
-0x0042A270		FireCrossbow
+0x0042A270	+	FireCrossbow
 0x0042A490		CrossbowHitSwitchType78
 0x0042A850		ControlCrossbow
 0x0042AE50		draw_shotgun
@@ -952,8 +952,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/missle.cpp
 
-0x00409180		ExplodeFX
-0x00409200		ControlBodyPart
+0x00409180	+	ExplodeFX
+0x00409200	+	ControlBodyPart
 
 
 		game/moveblok.cpp
@@ -1072,26 +1072,26 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/people.cpp
 
-0x0040AEB0		TargetVisible
-0x0040AF80		Targetable
+0x0040AEB0	+	TargetVisible
+0x0040AF80	+	Targetable
 0x0040B050	+	GunShot
 0x0040B060	+	GunHit
-0x0040B120		GunMiss
-0x0040B1D0		ShotLara
+0x0040B120	+	GunMiss
+0x0040B1D0	+	ShotLara
 
 
 		game/pickup.cpp
 
 0x00457610	+	AnimatingPickUp
-0x00457650		RegeneratePickups
+0x00457650	+	RegeneratePickups
 0x00457720		PickUpCollision
 0x00457F30	+	FindPlinth
 0x00458090	+	KeyHoleCollision
 0x00458260	+	PuzzleDoneCollision
 0x004582A0		PuzzleHoleCollision
 0x00458690	+	PuzzleDone
-0x00458710		KeyTrigger
-0x00458780		PickupTrigger
+0x00458710	+	KeyTrigger
+0x00458780	+	PickupTrigger
 0x004587E0	+	SarcophagusCollision
 
 
@@ -1154,13 +1154,13 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/scarab.cpp
 
-0x0040DE90		InitialiseScarab
-0x0040DEF0		ScarabControl
-0x0040E250		GetFreeScarab
-0x0040E2A0		ClearScarabs
-0x0040E2D0		TriggerScarab
-0x0040E3C0		UpdateScarabs
-0x0040E630		DrawScarabs
+0x0040DE90	+	InitialiseScarab
+0x0040DEF0	+	ScarabControl
+0x0040E250	+	GetFreeScarab
+0x0040E2A0	+	ClearScarabs
+0x0040E2D0	+	TriggerScarab
+0x0040E3C0	+	UpdateScarabs
+0x0040E630	+	DrawScarabs
 0x0040E6B0		InitialiseScarabGenerator
 
 
@@ -1207,17 +1207,17 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/setup.cpp
 
-0x0045BFB0		InitialiseLara
-0x0045C0D0		InitialiseObjects
-0x0045C1E0	+	BaddyObjects
-0x0045DC10	+	TrapObjects
-0x0045E1F0	+	ObjectObjects
-0x0045EB40		GetCarriedItems
-0x0045EC50		GetAIPickups
+0x0045BFB0	+	InitialiseLara
+0x0045C0D0	+	InitialiseObjects
+0x0045C1E0	x	BaddyObjects
+0x0045DC10	x	TrapObjects
+0x0045E1F0	x	ObjectObjects
+0x0045EB40	+	GetCarriedItems
+0x0045EC50	+	GetAIPickups
 0x0045ED30	+	BuildOutsideTable
 0x0045F050	+	InitialiseGameFlags
-0x0045F0A0		SetupGame
-0x0045F110		InitTarget
+0x0045F0A0	+	SetupGame
+0x0045F110	+	InitTarget
 0x0045F1A0	+	ClearFootPrints
 0x0045F1C0	+	reset_cutseq_vars
 
@@ -1231,20 +1231,20 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/sound.cpp
 
-0x0045F1F0		SoundEffect
-0x0045F7F0		GetPanVolume
-0x0045FA10		StopSoundEffect
-0x0045FA70		SOUND_Stop
-0x0045FAA0		SOUND_Init
-0x0045FAD0		SayNo
+0x0045F1F0	+	SoundEffect
+0x0045F7F0	+	GetPanVolume
+0x0045FA10	+	StopSoundEffect
+0x0045FA70	+	SOUND_Stop
+0x0045FAA0	+	SOUND_Init
+0x0045FAD0	+	SayNo
 
 
 		game/sphere.cpp
 
-0x0045FB10		TestCollision
-0x0045FC90		GetSpheres
-0x0045FF80		GetJointAbsPosition
-0x00460270		InitInterpolate2
+0x0045FB10	+	TestCollision
+0x0045FC90	+	GetSpheres
+0x0045FF80	+	GetJointAbsPosition
+0x00460270	+	InitInterpolate2
 
 
 		game/sphinx.cpp
@@ -1292,8 +1292,8 @@ x for functions decompiled but not injected, for one reason or another.
 		game/text.cpp
 
 0x00463650	+	InitFont
-0x00463930		UpdatePulseColour
-0x004639E0		GetStringLength
+0x00463930	+	UpdatePulseColour
+0x004639E0	+	GetStringLength
 0x00463B50		PrintString
 0x00463DE0		DrawChar
 
@@ -1315,18 +1315,18 @@ x for functions decompiled but not injected, for one reason or another.
 0x00438D20		GetFreeBlood
 0x00438D90		UpdateBlood
 0x00438F00		TriggerBlood
-0x00439060		GetFreeGunshell
-0x004390F0		TriggerGunShell
-0x00439340		UpdateGunShells
+0x00439060	+	GetFreeGunshell
+0x004390F0	+	TriggerGunShell
+0x00439340	+	UpdateGunShells
 0x004395B0	+	DrawGunshells
-0x00439660		TriggerSmallSplash
+0x00439660	+	TriggerSmallSplash
 0x00439780		GetFreeBubble
 0x004397F0		CreateBubble
 0x004398B0	+	LaraBubbles
 0x00439970		UpdateBubbles
-0x00439AE0		TriggerGunflash
-0x00439B80		SetGunFlash
-0x00439C00		DrawGunflashes
+0x00439AE0	+	TriggerGunflash
+0x00439B80	+	SetGunFlash
+0x00439C00	+	DrawGunflashes
 0x00439D40		SetFadeClip
 0x00439D60		UpdateFadeClip
 0x00439DB0		SetScreenFadeOut
