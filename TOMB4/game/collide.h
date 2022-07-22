@@ -12,10 +12,11 @@ long FindGridShift(long src, long dst);
 short GetTiltType(FLOOR_INFO* floor, long x, long y, long z);
 long CollideStaticObjects(COLL_INFO* coll, long x, long y, long z, short room_number, long hite);
 void UpdateLaraRoom(ITEM_INFO* item, long height);
+void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll);
 
-#define LaraBaddieCollision	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004471B0 )
 #define GetCollisionInfo	( (void(__cdecl*)(COLL_INFO*, long, long, long, short, long)) 0x00446170 )
 #define	TestBoundsCollide	( (long(__cdecl*)(ITEM_INFO*, ITEM_INFO*, long)) 0x00447B00 )
+#define	TestBoundsCollideStatic	( (long(__cdecl*)(short*, PHD_3DPOS*, long)) 0x00447BE0 )
 #define	ItemPushLara	( (long(__cdecl*)(ITEM_INFO*, ITEM_INFO*, COLL_INFO*, long, long)) 0x00447750 )
 #define TestLaraPosition	( (long(__cdecl*)(short*, ITEM_INFO*, ITEM_INFO*)) 0x00447F30 )
 #define MoveLaraPosition	( (long(__cdecl*)(PHD_VECTOR*, ITEM_INFO*, ITEM_INFO*)) 0x004483E0 )
