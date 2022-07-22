@@ -660,6 +660,26 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 		lara.hit_frame = 0;
 }
 
+void ObjectCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l) && coll->enable_baddie_push)
+		ItemPushLara(item, l, coll, 0, 1);
+}
+
+void ObjectCollisionNoBigPush(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l) && coll->enable_baddie_push)
+		ItemPushLara(item, l, coll, 0, 0);
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -672,4 +692,6 @@ void inject_collide(bool replace)
 	INJECT(0x00446D20, CollideStaticObjects, replace);
 	INJECT(0x00446FB0, UpdateLaraRoom, replace);
 	INJECT(0x004471B0, LaraBaddieCollision, replace);
+	INJECT(0x004475F0, ObjectCollision, replace);
+	INJECT(0x00447660, ObjectCollisionNoBigPush, replace);
 }

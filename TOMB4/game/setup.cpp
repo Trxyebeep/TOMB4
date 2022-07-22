@@ -1608,7 +1608,7 @@ void BaddyObjects()
 	if (obj->loaded)
 	{
 //		obj->initialise = InitialiseHorse;
-//		obj->collision = ObjectCollision;
+		obj->collision = ObjectCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -1621,7 +1621,7 @@ void BaddyObjects()
 		{
 			obj->initialise = InitialiseInjuredSas;
 			obj->control = InjuredSasControl;
-//			obj->collision = ObjectCollision;
+			obj->collision = ObjectCollision;
 			obj->save_flags = 1;
 			obj->save_anim = 1;
 			obj->save_position = 1;
@@ -1634,7 +1634,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseJeanYves;
 		obj->control = JeanYvesControl;
-//		obj->collision = ObjectCollision;
+		obj->collision = ObjectCollision;
 		obj->object_mip = 10240;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
@@ -1649,7 +1649,7 @@ void BaddyObjects()
 		{
 			obj->initialise = InitialiseSenet;
 			obj->control = SenetControl;
-//			obj->collision = ObjectCollision;
+			obj->collision = ObjectCollision;
 			obj->save_flags = 1;
 			obj->save_hitpoints = 1;
 			obj->save_position = 1;
@@ -1660,7 +1660,7 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->collision = ObjectCollision;
+		obj->collision = ObjectCollision;
 		obj->save_flags = 1;
 		obj->save_position = 1;
 	}
