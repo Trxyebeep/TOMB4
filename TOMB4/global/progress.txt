@@ -134,7 +134,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00447F30	+	TestLaraPosition
 0x00448070	+	AlignLaraPosition
 0x00448140	+	Move3DPosTo3DPos
-0x004483E0		MoveLaraPosition
+0x004483E0	+	MoveLaraPosition
 0x004485A0	+	GenericSphereBoxCollision
 0x00448840	+	GenericDeadlyBoundingBoxCollision
 0x004489A0		TestBoundsCollide2

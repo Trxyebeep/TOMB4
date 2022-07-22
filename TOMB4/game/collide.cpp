@@ -1050,6 +1050,45 @@ long Move3DPosTo3DPos(PHD_3DPOS* pos, PHD_3DPOS* dest, long speed, short rotatio
 	return pos->x_pos == dest->x_pos && pos->y_pos == dest->y_pos && pos->z_pos == dest->z_pos && pos->x_rot == dest->x_rot && pos->y_rot == dest->y_rot && pos->z_rot == dest->z_rot;
 }
 
+long MoveLaraPosition(PHD_VECTOR* v, ITEM_INFO* item, ITEM_INFO* l)
+{
+	PHD_3DPOS pos;
+	long height;
+	short room_number;
+
+	pos.x_rot = item->pos.x_rot;
+	pos.y_rot = item->pos.y_rot;
+	pos.z_rot = item->pos.z_rot;
+	phd_PushUnitMatrix();
+	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+	pos.x_pos = item->pos.x_pos + ((v->x * phd_mxptr[M00] + v->y * phd_mxptr[M01] + v->z * phd_mxptr[M02]) >> W2V_SHIFT);
+	pos.y_pos = item->pos.y_pos + ((v->x * phd_mxptr[M10] + v->y * phd_mxptr[M11] + v->z * phd_mxptr[M12]) >> W2V_SHIFT);
+	pos.z_pos = item->pos.z_pos + ((v->x * phd_mxptr[M20] + v->y * phd_mxptr[M21] + v->z * phd_mxptr[M22]) >> W2V_SHIFT);
+	phd_PopMatrix();
+
+	if (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM || item->object_number == CLOCKWORK_BEETLE)
+	{
+		room_number = l->room_number;
+		height = GetHeight(GetFloor(pos.x_pos, pos.y_pos, pos.z_pos, &room_number), pos.x_pos, pos.y_pos, pos.z_pos);
+
+		if (ABS(height - l->pos.y_pos) > 512)
+		{
+			if (lara.IsMoving)
+			{
+				lara.IsMoving = 0;
+				lara.gun_status = LG_NO_ARMS;
+			}
+
+			return 0;
+		}
+
+		if (phd_sqrt(SQUARE(pos.x_pos - l->pos.x_pos) + SQUARE(pos.y_pos - l->pos.y_pos) + SQUARE(pos.z_pos - l->pos.z_pos)) < 128)
+			return 1;
+	}
+
+	return Move3DPosTo3DPos(&l->pos, &pos, 12, 364);
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -1072,4 +1111,5 @@ void inject_collide(bool replace)
 	INJECT(0x00447F30, TestLaraPosition, replace);
 	INJECT(0x00448070, AlignLaraPosition, replace);
 	INJECT(0x00448140, Move3DPosTo3DPos, replace);
+	INJECT(0x004483E0, MoveLaraPosition, replace);
 }
