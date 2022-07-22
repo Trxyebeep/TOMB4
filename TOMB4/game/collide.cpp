@@ -797,6 +797,27 @@ long ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, lon
 	return 1;
 }
 
+long TestBoundsCollide(ITEM_INFO* item, ITEM_INFO* l, long rad)
+{
+	short* bounds;
+	short* lbounds;
+	long s, c, dx, dz, x, z;
+
+	bounds = GetBestFrame(item);
+	lbounds = GetBestFrame(l);
+
+	if (item->pos.y_pos + bounds[3] <= l->pos.y_pos + lbounds[2] || item->pos.y_pos + bounds[2] >= l->pos.y_pos + lbounds[3])
+		return 0;
+
+	s = phd_sin(item->pos.y_rot);
+	c = phd_cos(item->pos.y_rot);
+	dx = l->pos.x_pos - item->pos.x_pos;
+	dz = l->pos.z_pos - item->pos.z_pos;
+	x = (dx * c - dz * s) >> W2V_SHIFT;
+	z = (dx * s + dz * c) >> W2V_SHIFT;
+	return x >= bounds[0] - rad && x <= rad + bounds[1] && z >= bounds[4] - rad && z <= rad + bounds[5];
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -813,4 +834,5 @@ void inject_collide(bool replace)
 	INJECT(0x00447660, ObjectCollisionNoBigPush, replace);
 	INJECT(0x004476D0, TrapCollision, replace);
 	INJECT(0x00447750, ItemPushLara, replace);
+	INJECT(0x00447B00, TestBoundsCollide, replace);
 }
