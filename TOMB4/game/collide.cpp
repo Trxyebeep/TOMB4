@@ -906,6 +906,34 @@ long ItemPushLaraStatic(ITEM_INFO* l, short* bounds, PHD_3DPOS* pos, COLL_INFO* 
 	return 1;
 }
 
+long TestLaraPosition(short* bounds, ITEM_INFO* item, ITEM_INFO* l)
+{
+	PHD_VECTOR pos;
+	long x, y, z;
+	short xrot, yrot, zrot;
+
+	xrot = l->pos.x_rot - item->pos.x_rot;
+	yrot = l->pos.y_rot - item->pos.y_rot;
+	zrot = l->pos.z_rot - item->pos.z_rot;
+
+	if (xrot < bounds[6] || xrot > bounds[7] ||
+		yrot < bounds[8] || yrot > bounds[9] ||
+		zrot < bounds[10] || zrot > bounds[11])
+		return 0;
+
+	phd_PushUnitMatrix();
+	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+	pos.x = l->pos.x_pos - item->pos.x_pos;
+	pos.y = l->pos.y_pos - item->pos.y_pos;
+	pos.z = l->pos.z_pos - item->pos.z_pos;
+	x = (pos.x * phd_mxptr[M00] + pos.y * phd_mxptr[M10] + pos.z * phd_mxptr[M20]) >> W2V_SHIFT;
+	y = (pos.x * phd_mxptr[M01] + pos.y * phd_mxptr[M11] + pos.z * phd_mxptr[M21]) >> W2V_SHIFT;
+	z = (pos.x * phd_mxptr[M02] + pos.y * phd_mxptr[M12] + pos.z * phd_mxptr[M22]) >> W2V_SHIFT;
+	phd_PopMatrix();
+
+	return x >= bounds[0] && x <= bounds[1] && y >= bounds[2] && y <= bounds[3] && z >= bounds[4] && z <= bounds[5];
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -925,4 +953,5 @@ void inject_collide(bool replace)
 	INJECT(0x00447B00, TestBoundsCollide, replace);
 	INJECT(0x00447BE0, TestBoundsCollideStatic, replace);
 	INJECT(0x00447CE0, ItemPushLaraStatic, replace);
+	INJECT(0x00447F30, TestLaraPosition, replace);
 }
