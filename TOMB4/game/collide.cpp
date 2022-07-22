@@ -9,6 +9,7 @@
 #include "../specific/3dmath.h"
 #include "items.h"
 #include "sound.h"
+#include "lara_states.h"
 
 void ShiftItem(ITEM_INFO* item, COLL_INFO* coll)
 {
@@ -954,6 +955,101 @@ void AlignLaraPosition(PHD_VECTOR* pos, ITEM_INFO* item, ITEM_INFO* l)
 	l->pos.z_pos = z;
 }
 
+long Move3DPosTo3DPos(PHD_3DPOS* pos, PHD_3DPOS* dest, long speed, short rotation)
+{
+	long dx, dy, dz, distance;
+	short adiff;
+
+	dx = dest->x_pos - pos->x_pos;
+	dy = dest->y_pos - pos->y_pos;
+	dz = dest->z_pos - pos->z_pos;
+	distance = phd_sqrt(SQUARE(dx) + SQUARE(dy) + SQUARE(dz));
+
+	if (speed < distance)
+	{
+		pos->x_pos += speed * dx / distance;
+		pos->y_pos += speed * dy / distance;
+		pos->z_pos += speed * dz / distance;
+	}
+	else
+	{
+		pos->x_pos = dest->x_pos;
+		pos->y_pos = dest->y_pos;
+		pos->z_pos = dest->z_pos;
+	}
+
+	if (!lara.IsMoving)
+	{
+		if (lara.water_status != LW_UNDERWATER)
+		{
+			switch (((ulong(mGetAngle(dest->x_pos, dest->z_pos, pos->x_pos, pos->z_pos) + 8192) >> 14) - (ushort(dest->y_rot + 8192) >> 14)) & 3)
+			{
+			case 0:
+				lara_item->anim_number = 65;
+				lara_item->frame_number = anims[lara_item->anim_number].frame_base;
+				lara_item->current_anim_state = AS_STEPLEFT;
+				lara_item->goal_anim_state = AS_STEPLEFT;
+				break;
+
+			case 1:
+				lara_item->anim_number = 1;
+				lara_item->frame_number = anims[lara_item->anim_number].frame_base;
+				lara_item->current_anim_state = AS_WALK;
+				lara_item->goal_anim_state = AS_WALK;
+				break;
+
+			case 2:
+				lara_item->anim_number = 67;
+				lara_item->frame_number = anims[lara_item->anim_number].frame_base;
+				lara_item->current_anim_state = AS_STEPRIGHT;
+				lara_item->goal_anim_state = AS_STEPRIGHT;
+				break;
+
+			default:
+				lara_item->anim_number = 40;
+				lara_item->frame_number = anims[lara_item->anim_number].frame_base;
+				lara_item->current_anim_state = AS_BACK;
+				lara_item->goal_anim_state = AS_BACK;
+				break;
+			}
+
+			lara.gun_status = LG_HANDS_BUSY;
+		}
+
+		lara.IsMoving = 1;
+		lara.MoveCount = 0;
+	}
+
+	adiff = dest->x_rot - pos->x_rot;
+
+	if (adiff > rotation)
+		pos->x_rot += rotation;
+	else if (adiff < -rotation)
+		pos->x_rot -= rotation;
+	else
+		pos->x_rot = dest->x_rot;
+
+	adiff = dest->y_rot - pos->y_rot;
+
+	if (adiff > rotation)
+		pos->y_rot += rotation;
+	else if (adiff < -rotation)
+		pos->y_rot -= rotation;
+	else
+		pos->y_rot = dest->y_rot;
+
+	adiff = dest->z_rot - pos->z_rot;
+
+	if (adiff > rotation)
+		pos->z_rot += rotation;
+	else if (adiff < -rotation)
+		pos->z_rot -= rotation;
+	else
+		pos->z_rot = dest->z_rot;
+
+	return pos->x_pos == dest->x_pos && pos->y_pos == dest->y_pos && pos->z_pos == dest->z_pos && pos->x_rot == dest->x_rot && pos->y_rot == dest->y_rot && pos->z_rot == dest->z_rot;
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -975,4 +1071,5 @@ void inject_collide(bool replace)
 	INJECT(0x00447CE0, ItemPushLaraStatic, replace);
 	INJECT(0x00447F30, TestLaraPosition, replace);
 	INJECT(0x00448070, AlignLaraPosition, replace);
+	INJECT(0x00448140, Move3DPosTo3DPos, replace);
 }
