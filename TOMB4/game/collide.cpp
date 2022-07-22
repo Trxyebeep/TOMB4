@@ -7,6 +7,7 @@
 #include "effects.h"
 #include "sphere.h"
 #include "../specific/3dmath.h"
+#include "items.h"
 
 void ShiftItem(ITEM_INFO* item, COLL_INFO* coll)
 {
@@ -532,6 +533,32 @@ long CollideStaticObjects(COLL_INFO* coll, long x, long y, long z, short room_nu
 	return 0;
 }
 
+void UpdateLaraRoom(ITEM_INFO* item, long height)
+{
+	FLOOR_INFO* floor;
+	long x, y, z;
+	short room_number;
+
+	x = item->pos.x_pos;
+	y = item->pos.y_pos + height;
+	z = item->pos.z_pos;
+	room_number = item->room_number;
+	floor = GetFloor(x, y, z, &room_number);
+	item->floor = GetHeight(floor, x, y, z);
+
+	if (item->room_number != room_number)
+		ItemNewRoom(lara.item_number, room_number);
+
+	for (int i = 0; i < 255; i++)
+	{
+		if (Map[i].room_number == lara_item->room_number)
+		{
+			Map[i].visited = 1;
+			break;
+		}
+	}
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -542,4 +569,5 @@ void inject_collide(bool replace)
 	INJECT(0x00446CF0, FindGridShift, replace);
 	INJECT(0x00447010, GetTiltType, replace);
 	INJECT(0x00446D20, CollideStaticObjects, replace);
+	INJECT(0x00446FB0, UpdateLaraRoom, replace);
 }

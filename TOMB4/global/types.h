@@ -2189,6 +2189,13 @@ struct SCARAB_STRUCT
 	uchar flags;
 };
 
+struct MAP_STRUCT
+{
+	char unk[3592];
+	short visited;
+	short room_number;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

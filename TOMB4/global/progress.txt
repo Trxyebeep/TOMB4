@@ -120,7 +120,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00446CF0	+	FindGridShift
 0x00446D20	+	CollideStaticObjects
 0x00446F70	+	ShiftItem
-0x00446FB0		UpdateLaraRoom
+0x00446FB0	+	UpdateLaraRoom
 0x00447010	+	GetTiltType
 0x004471B0		LaraBaddieCollision
 0x00447470	+	CreatureCollision

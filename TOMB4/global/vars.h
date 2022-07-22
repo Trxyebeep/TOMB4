@@ -634,6 +634,7 @@
 #define los_rooms	ARRAY_(0x007FE260, short, [20])
 #define	weapons	ARRAY_(0x004AD848, WEAPON_INFO, [9])
 #define Scarabs	ARRAY_(0x0080ED00, SCARAB_STRUCT, [128])
+#define Map	ARRAY_(0x006734A8, MAP_STRUCT, [255])
 
 
 /*Fog stuff*/
