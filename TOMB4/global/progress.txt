@@ -117,7 +117,7 @@ x for functions decompiled but not injected, for one reason or another.
 		game/collide.cpp
 
 0x00446170		GetCollisionInfo
-0x00446CF0		FindGridShift
+0x00446CF0	+	FindGridShift
 0x00446D20		CollideStaticObjects
 0x00446F70	+	ShiftItem
 0x00446FB0		UpdateLaraRoom

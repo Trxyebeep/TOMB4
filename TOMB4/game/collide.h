@@ -8,6 +8,7 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 void GenericDeadlyBoundingBoxCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void GenericSphereBoxCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void CreatureCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
+long FindGridShift(long src, long dst);
 
 #define LaraBaddieCollision	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004471B0 )
 #define UpdateLaraRoom	( (void(__cdecl*)(ITEM_INFO*, long)) 0x00446FB0 )

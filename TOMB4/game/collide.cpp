@@ -348,6 +348,24 @@ void CreatureCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+long FindGridShift(long src, long dst)
+{
+	long srcw, dstw;
+
+	srcw = src >> 10;
+	dstw = dst >> 10;
+
+	if (srcw == dstw)
+		return 0;
+
+	src &= 1023;
+
+	if (dstw > srcw)
+		return 1025 - src;
+	else
+		return -1 - src;
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -355,4 +373,5 @@ void inject_collide(bool replace)
 	INJECT(0x00448840, GenericDeadlyBoundingBoxCollision, replace);
 	INJECT(0x004485A0, GenericSphereBoxCollision, replace);
 	INJECT(0x00447470, CreatureCollision, replace);
+	INJECT(0x00446CF0, FindGridShift, replace);
 }
