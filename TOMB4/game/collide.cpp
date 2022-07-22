@@ -840,6 +840,72 @@ long TestBoundsCollideStatic(short* bounds, PHD_3DPOS* pos, long rad)
 	return x >= bounds[0] - rad && x <= rad + bounds[1] && z >= bounds[4] - rad && z <= rad + bounds[5];
 }
 
+long ItemPushLaraStatic(ITEM_INFO* l, short* bounds, PHD_3DPOS* pos, COLL_INFO* coll)
+{
+	long dx, dz, s, c, x, z;
+	long xmin, xmax, zmin, zmax, left, top, right, bottom;
+	short facing;
+
+	dx = l->pos.x_pos - pos->x_pos;
+	dz = l->pos.z_pos - pos->z_pos;
+	s = phd_sin(pos->y_rot);
+	c = phd_cos(pos->y_rot);
+	x = (dx * c - dz * s) >> W2V_SHIFT;
+	z = (dx * s + dz * c) >> W2V_SHIFT;
+	xmin = bounds[0] - coll->radius;
+	xmax = bounds[1] + coll->radius;
+	zmin = bounds[4] - coll->radius;
+	zmax = bounds[5] + coll->radius;
+
+	if (ABS(dx) > 4608 || ABS(dz) > 4608 || x <= xmin || x >= xmax || z <= zmin || z >= zmax)
+		return 0;
+
+	left = x - xmin;
+	top = zmax - z;
+	right = xmax - x;
+	bottom = z - zmin;
+
+	if (left <= right && left <= top && left <= bottom)
+		x -= left;
+	else if (right <= left && right <= top && right <= bottom)
+		x += right;
+	else if (top <= left && top <= right && top <= bottom)
+		z += top;
+	else
+		z -= bottom;
+
+	l->pos.x_pos = pos->x_pos + ((c * x + s * z) >> W2V_SHIFT);
+	l->pos.z_pos = pos->z_pos + ((c * z - s * x) >> W2V_SHIFT);
+	coll->bad_pos = -NO_HEIGHT;
+	coll->bad_neg = -384;
+	coll->bad_ceiling = 0;
+	facing = coll->facing;
+	coll->facing = (short)phd_atan(l->pos.z_pos - coll->old.z, l->pos.x_pos - coll->old.x);
+	GetCollisionInfo(coll, l->pos.x_pos, l->pos.y_pos, l->pos.z_pos, l->room_number, 762);
+	coll->facing = facing;
+
+	if (coll->coll_type == CT_NONE)
+	{
+		coll->old.x = l->pos.x_pos;
+		coll->old.y = l->pos.y_pos;
+		coll->old.z = l->pos.z_pos;
+		UpdateLaraRoom(l, -10);
+	}
+	else
+	{
+		l->pos.x_pos = coll->old.x;
+		l->pos.z_pos = coll->old.z;
+	}
+
+	if (l == lara_item && lara.IsMoving && lara.MoveCount > 15)
+	{
+		lara.IsMoving = 0;
+		lara.gun_status = LG_NO_ARMS;
+	}
+
+	return 1;
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -858,4 +924,5 @@ void inject_collide(bool replace)
 	INJECT(0x00447750, ItemPushLara, replace);
 	INJECT(0x00447B00, TestBoundsCollide, replace);
 	INJECT(0x00447BE0, TestBoundsCollideStatic, replace);
+	INJECT(0x00447CE0, ItemPushLaraStatic, replace);
 }
