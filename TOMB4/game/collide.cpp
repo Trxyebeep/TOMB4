@@ -11,6 +11,14 @@
 #include "sound.h"
 #include "lara_states.h"
 
+static short StarGateBounds[24] =
+{
+	-512, 512, -1024, -896, -96, 96,
+	-512, 512, -128, 0, -96, 96,
+	-512, -384, -1024, 0, -96, 96,
+	384, 512, -1024, 0, -96, 96
+};
+
 void ShiftItem(ITEM_INFO* item, COLL_INFO* coll)
 {
 	item->pos.x_pos += coll->shift.x;
@@ -1109,6 +1117,87 @@ long TestBoundsCollide2(ITEM_INFO* item, ITEM_INFO* l, long rad)
 	return x >= GlobalCollisionBounds[0] - rad && x <= rad + GlobalCollisionBounds[1] && z >= GlobalCollisionBounds[4] - rad && z <= rad + GlobalCollisionBounds[5];
 }
 
+void StargateCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	SPHERE* sphere;
+	short* bounds;
+	long touchedBits, hurtfulBits, x, y, z;
+
+	item = &items[item_number];
+
+	if (item->status == ITEM_INVISIBLE)
+		return;
+
+	if (!TestBoundsCollide(item, l, coll->radius))
+		return;
+
+	bounds = StarGateBounds;
+
+	for (int i = 0; i < 4; i++)
+	{
+		GlobalCollisionBounds[0] = bounds[0];
+		GlobalCollisionBounds[1] = bounds[1];
+		GlobalCollisionBounds[2] = bounds[2];
+		GlobalCollisionBounds[3] = bounds[3];
+		GlobalCollisionBounds[4] = bounds[4];
+		GlobalCollisionBounds[5] = bounds[5];
+
+		if (TestBoundsCollide2(item, l, coll->radius))
+			ItemPushLara(item, l, coll, 0, 2);
+
+		bounds += 6;
+	}
+
+	touchedBits = TestCollision(item, l);
+
+	if (!touchedBits)
+		return;
+
+	hurtfulBits = *(long*)&item->item_flags[0] & touchedBits;
+	touchedBits = *(long*)&item->item_flags[0];
+
+	if (!hurtfulBits)
+		return;
+
+	sphere = Slist;
+
+	while (hurtfulBits)
+	{
+		if (hurtfulBits & 1)
+		{
+			GlobalCollisionBounds[0] = short(sphere->x - sphere->r - item->pos.x_pos);
+			GlobalCollisionBounds[1] = short(sphere->x + sphere->r - item->pos.x_pos);
+			GlobalCollisionBounds[2] = short(sphere->y - sphere->r - item->pos.y_pos);
+			GlobalCollisionBounds[3] = short(sphere->y + sphere->r - item->pos.y_pos);
+			GlobalCollisionBounds[4] = short(sphere->z - sphere->r - item->pos.z_pos);
+			GlobalCollisionBounds[5] = short(sphere->z + sphere->r - item->pos.z_pos);
+			x = lara_item->pos.x_pos;
+			y = lara_item->pos.y_pos;
+			z = lara_item->pos.z_pos;
+
+			if (ItemPushLara(item, l, coll, touchedBits & 1, 2))
+			{
+				if (touchedBits & 1 && (x != lara_item->pos.x_pos || y != lara_item->pos.y_pos || z != lara_item->pos.z_pos))
+				{
+					if (TriggerActive(item))
+					{
+						x = l->pos.x_pos + (GetRandomControl() & 0x3F) - 32;
+						y = (GetRandomControl() & 0x1F) + sphere->y - 16;
+						z = l->pos.z_pos + (GetRandomControl() & 0x3F) - 32;
+						DoBloodSplat(x, y, z, (GetRandomControl() & 3) + 2, short(GetRandomControl() << 1), l->room_number);
+						lara_item->hit_points -= 100;
+					}
+				}
+			}
+		}
+
+		hurtfulBits >>= 1;
+		touchedBits >>= 1;
+		sphere++;
+	}
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -1133,4 +1222,5 @@ void inject_collide(bool replace)
 	INJECT(0x00448140, Move3DPosTo3DPos, replace);
 	INJECT(0x004483E0, MoveLaraPosition, replace);
 	INJECT(0x004489A0, TestBoundsCollide2, replace);
+	INJECT(0x00448A80, StargateCollision, replace);
 }

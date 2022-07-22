@@ -559,7 +559,7 @@ void TrapObjects()
 	
 	obj = &objects[STARGATE];
 	obj->control = ControlStargate;
-//	obj->collision = StargateCollision;
+	obj->collision = StargateCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 

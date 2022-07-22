@@ -138,7 +138,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004485A0	+	GenericSphereBoxCollision
 0x00448840	+	GenericDeadlyBoundingBoxCollision
 0x004489A0	+	TestBoundsCollide2
-0x00448A80		StargateCollision
+0x00448A80	+	StargateCollision
 0x00448CC0		CogCollision
 0x00448DA0	+	GetCollidedObjects
 
