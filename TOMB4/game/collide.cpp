@@ -8,6 +8,7 @@
 #include "sphere.h"
 #include "../specific/3dmath.h"
 #include "items.h"
+#include "sound.h"
 
 void ShiftItem(ITEM_INFO* item, COLL_INFO* coll)
 {
@@ -697,6 +698,105 @@ void TrapCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	ObjectCollision(item_number, l, coll);
 }
 
+long ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, long BigPush)
+{
+	short* bounds;
+	long dx, dz, s, c, x, z;
+	long xmin, xmax, zmin, zmax, left, top, right, bottom;
+	short facing;
+
+	dx = l->pos.x_pos - item->pos.x_pos;
+	dz = l->pos.z_pos - item->pos.z_pos;
+	s = phd_sin(item->pos.y_rot);
+	c = phd_cos(item->pos.y_rot);
+	x = (dx * c - dz * s) >> W2V_SHIFT;
+	z = (dx * s + dz * c) >> W2V_SHIFT;
+
+	if (BigPush & 2)
+		bounds = GlobalCollisionBounds;
+	else
+		bounds = GetBestFrame(item);
+
+	xmin = bounds[0];
+	xmax = bounds[1];
+	zmin = bounds[4];
+	zmax = bounds[5];
+
+	if (BigPush & 1)
+	{
+		xmin -= coll->radius;
+		xmax += coll->radius;
+		zmin -= coll->radius;
+		zmax += coll->radius;
+	}
+
+	if (ABS(dx) > 4608 || ABS(dz) > 4608 || x <= xmin || x >= xmax || z <= zmin || z >= zmax)
+		return 0;
+
+	left = x - xmin;
+	top = zmax - z;
+	right = xmax - x;
+	bottom = z - zmin;
+
+	if (left <= right && left <= top && left <= bottom)
+		x -= left;
+	else if (right <= left && right <= top && right <= bottom)
+		x += right;
+	else if (top <= left && top <= right && top <= bottom)
+		z += top;
+	else
+		z -= bottom;
+
+	l->pos.x_pos = item->pos.x_pos + ((c * x + s * z) >> W2V_SHIFT);
+	l->pos.z_pos = item->pos.z_pos + ((c * z - s * x) >> W2V_SHIFT);
+
+	if (spaz && bounds[3] - bounds[2] > 256 && item->object_number != VON_CROY && item->object_number != GUIDE && item->object_number != ENEMY_JEEP)
+	{
+		x = (bounds[0] + bounds[1]) / 2;
+		z = (bounds[4] + bounds[5]) / 2;
+		dx -= (c * x + s * z) >> W2V_SHIFT;
+		dz -= (c * z - s * x) >> W2V_SHIFT;
+		lara.hit_direction = ushort(l->pos.y_rot - phd_atan(dz, dx) - 24576) >> W2V_SHIFT;	//hmmmmm
+
+		if (!lara.hit_frame)
+			SoundEffect(SFX_LARA_INJURY, &l->pos, SFX_DEFAULT);
+
+		lara.hit_frame++;
+
+		if (lara.hit_frame > 34)
+			lara.hit_frame = 34;
+	}
+
+	coll->bad_pos = -NO_HEIGHT;
+	coll->bad_neg = -384;
+	coll->bad_ceiling = 0;
+	facing = coll->facing;
+	coll->facing = (short)phd_atan(l->pos.z_pos - coll->old.z, l->pos.x_pos - coll->old.x);
+	GetCollisionInfo(coll, l->pos.x_pos, l->pos.y_pos, l->pos.z_pos, l->room_number, 762);
+	coll->facing = facing;
+
+	if (coll->coll_type == CT_NONE)
+	{
+		coll->old.x = l->pos.x_pos;
+		coll->old.y = l->pos.y_pos;
+		coll->old.z = l->pos.z_pos;
+		UpdateLaraRoom(l, -10);
+	}
+	else
+	{
+		l->pos.x_pos = coll->old.x;
+		l->pos.z_pos = coll->old.z;
+	}
+
+	if (lara.IsMoving && lara.MoveCount > 15)
+	{
+		lara.IsMoving = 0;
+		lara.gun_status = LG_NO_ARMS;
+	}
+
+	return 1;
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -712,4 +812,5 @@ void inject_collide(bool replace)
 	INJECT(0x004475F0, ObjectCollision, replace);
 	INJECT(0x00447660, ObjectCollisionNoBigPush, replace);
 	INJECT(0x004476D0, TrapCollision, replace);
+	INJECT(0x00447750, ItemPushLara, replace);
 }
