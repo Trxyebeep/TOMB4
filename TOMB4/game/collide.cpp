@@ -934,6 +934,26 @@ long TestLaraPosition(short* bounds, ITEM_INFO* item, ITEM_INFO* l)
 	return x >= bounds[0] && x <= bounds[1] && y >= bounds[2] && y <= bounds[3] && z >= bounds[4] && z <= bounds[5];
 }
 
+void AlignLaraPosition(PHD_VECTOR* pos, ITEM_INFO* item, ITEM_INFO* l)
+{
+	long x, y, z;
+
+	l->pos.x_rot = item->pos.x_rot;
+	l->pos.y_rot = item->pos.y_rot;
+	l->pos.z_rot = item->pos.z_rot;
+
+	phd_PushUnitMatrix();
+	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+	x = item->pos.x_pos + ((pos->x * phd_mxptr[M00] + pos->y * phd_mxptr[M10] + pos->z * phd_mxptr[M20]) >> W2V_SHIFT);
+	y = item->pos.y_pos + ((pos->x * phd_mxptr[M01] + pos->y * phd_mxptr[M11] + pos->z * phd_mxptr[M21]) >> W2V_SHIFT);
+	z = item->pos.z_pos + ((pos->x * phd_mxptr[M02] + pos->y * phd_mxptr[M12] + pos->z * phd_mxptr[M22]) >> W2V_SHIFT);
+	phd_PopMatrix();
+
+	l->pos.x_pos = x;
+	l->pos.y_pos = y;
+	l->pos.z_pos = z;
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -954,4 +974,5 @@ void inject_collide(bool replace)
 	INJECT(0x00447BE0, TestBoundsCollideStatic, replace);
 	INJECT(0x00447CE0, ItemPushLaraStatic, replace);
 	INJECT(0x00447F30, TestLaraPosition, replace);
+	INJECT(0x00448070, AlignLaraPosition, replace);
 }
