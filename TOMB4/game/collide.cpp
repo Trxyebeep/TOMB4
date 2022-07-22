@@ -1089,6 +1089,26 @@ long MoveLaraPosition(PHD_VECTOR* v, ITEM_INFO* item, ITEM_INFO* l)
 	return Move3DPosTo3DPos(&l->pos, &pos, 12, 364);
 }
 
+long TestBoundsCollide2(ITEM_INFO* item, ITEM_INFO* l, long rad)
+{
+	short* bounds;
+	long s, c, dx, dz, x, z;
+
+	bounds = GetBestFrame(l);
+
+	if (item->pos.y_pos + GlobalCollisionBounds[3] <= l->pos.y_pos + bounds[2] ||
+		item->pos.y_pos + GlobalCollisionBounds[2] >= l->pos.y_pos + bounds[3])
+		return 0;
+
+	s = phd_sin(item->pos.y_rot);
+	c = phd_cos(item->pos.y_rot);
+	dx = l->pos.x_pos - item->pos.x_pos;
+	dz = l->pos.z_pos - item->pos.z_pos;
+	x = (c * dx - s * dz) >> W2V_SHIFT;
+	z = (c * dz + s * dx) >> W2V_SHIFT;
+	return x >= GlobalCollisionBounds[0] - rad && x <= rad + GlobalCollisionBounds[1] && z >= GlobalCollisionBounds[4] - rad && z <= rad + GlobalCollisionBounds[5];
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -1112,4 +1132,5 @@ void inject_collide(bool replace)
 	INJECT(0x00448070, AlignLaraPosition, replace);
 	INJECT(0x00448140, Move3DPosTo3DPos, replace);
 	INJECT(0x004483E0, MoveLaraPosition, replace);
+	INJECT(0x004489A0, TestBoundsCollide2, replace);
 }
