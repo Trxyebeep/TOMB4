@@ -578,7 +578,7 @@ void TrapObjects()
 
 	obj = &objects[COG];
 	obj->control = ControlAnimatingSlots;
-//	obj->collision = CogCollision;
+	obj->collision = CogCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 

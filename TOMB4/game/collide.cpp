@@ -1198,6 +1198,31 @@ void StargateCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void CogCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	long x, y, z;
+
+	item = &items[item_number];
+
+	if (item->status == ITEM_INVISIBLE)
+		return;
+
+	if (!TestBoundsCollide(item, l, coll->radius))
+		return;
+
+	if (TriggerActive(item))
+	{
+		x = l->pos.x_pos + (GetRandomControl() & 0x3F) - 32;
+		y = item->pos.y_pos + (GetRandomControl() & 0x1F) - 16;
+		z = l->pos.z_pos + (GetRandomControl() & 0x3F) - 32;
+		DoBloodSplat(x, y, z, (GetRandomControl() & 3) + 2, short(GetRandomControl() << 1), l->room_number);
+		lara_item->hit_points -= 10;
+	}
+	else if (coll->enable_baddie_push)
+		ItemPushLara(item, l, coll, 0, 0);
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -1223,4 +1248,5 @@ void inject_collide(bool replace)
 	INJECT(0x004483E0, MoveLaraPosition, replace);
 	INJECT(0x004489A0, TestBoundsCollide2, replace);
 	INJECT(0x00448A80, StargateCollision, replace);
+	INJECT(0x00448CC0, CogCollision, replace);
 }
