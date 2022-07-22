@@ -15,6 +15,7 @@ void UpdateLaraRoom(ITEM_INFO* item, long height);
 void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll);
 void ObjectCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void ObjectCollisionNoBigPush(short item_number, ITEM_INFO* l, COLL_INFO* coll);
+void TrapCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 
 #define GetCollisionInfo	( (void(__cdecl*)(COLL_INFO*, long, long, long, short, long)) 0x00446170 )
 #define	TestBoundsCollide	( (long(__cdecl*)(ITEM_INFO*, ITEM_INFO*, long)) 0x00447B00 )

@@ -680,6 +680,23 @@ void ObjectCollisionNoBigPush(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		ItemPushLara(item, l, coll, 0, 0);
 }
 
+void TrapCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (item->status == ITEM_ACTIVE)
+	{
+		if (!TestBoundsCollide(item, l, coll->radius))
+			return;
+	}
+	else if (item->status == ITEM_INVISIBLE)
+		return;
+
+	ObjectCollision(item_number, l, coll);
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -694,4 +711,5 @@ void inject_collide(bool replace)
 	INJECT(0x004471B0, LaraBaddieCollision, replace);
 	INJECT(0x004475F0, ObjectCollision, replace);
 	INJECT(0x00447660, ObjectCollisionNoBigPush, replace);
+	INJECT(0x004476D0, TrapCollision, replace);
 }

@@ -669,7 +669,7 @@ void TrapObjects()
 
 	obj = &objects[FALLING_CEILING];
 //	obj->control = FallingCeiling;
-//	obj->collision = TrapCollision;
+	obj->collision = TrapCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
