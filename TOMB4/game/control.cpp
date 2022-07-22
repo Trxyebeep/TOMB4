@@ -2652,6 +2652,179 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 	return hit;
 }
 
+void AnimateItem(ITEM_INFO* item)
+{
+	ANIM_STRUCT* anim;
+	short* cmd;
+	long speed, speed2;
+	short type, num;
+
+	anim = &anims[item->anim_number];
+	item->touch_bits = 0;
+	item->hit_status = 0;
+	item->frame_number++;
+
+	if (anim->number_changes > 0)
+	{
+		if (GetChange(item, anim))
+		{
+			anim = &anims[item->anim_number];
+			item->current_anim_state = anim->current_anim_state;
+
+			if (item->required_anim_state == item->current_anim_state)
+				item->required_anim_state = 0;
+		}
+	}
+
+	if (item->frame_number > anim->frame_end)
+	{
+		if (anim->number_commands > 0)
+		{
+			cmd = &commands[anim->command_index];
+
+			for (int i = anim->number_commands; i > 0; i--)
+			{
+				switch (*cmd++)
+				{
+				case ACMD_SETPOS:
+					TranslateItem(item, cmd[0], cmd[1], cmd[2]);
+					cmd += 3;
+					break;
+
+				case ACMD_JUMPVEL:
+					item->fallspeed = cmd[0];
+					item->speed = cmd[1];
+					item->gravity_status = 1;
+					cmd += 2;
+					break;
+
+				case ACMD_KILL:
+
+					if (objects[item->object_number].intelligent)
+						item->after_death = 1;
+
+					item->status = ITEM_DEACTIVATED;
+					break;
+
+				case ACMD_PLAYSFX:
+				case ACMD_FLIPEFFECT:
+					cmd += 2;
+					break;
+				}
+			}
+		}
+
+		item->anim_number = anim->jump_anim_num;
+		item->frame_number = anim->jump_frame_num;
+		anim = &anims[item->anim_number];
+
+		if (item->current_anim_state != anim->current_anim_state)
+		{
+			item->current_anim_state = anim->current_anim_state;
+			item->goal_anim_state = anim->current_anim_state;
+		}
+
+		if (item->required_anim_state == item->current_anim_state)
+			item->required_anim_state = 0;
+	}
+
+	if (anim->number_commands > 0)
+	{
+		cmd = &commands[anim->command_index];
+
+		for (int i = anim->number_commands; i > 0; i--)
+		{
+			switch (*cmd++)
+			{
+			case ACMD_SETPOS:
+				cmd += 3;
+				break;
+
+			case ACMD_JUMPVEL:
+				cmd += 2;
+				break;
+
+			case ACMD_PLAYSFX:
+
+				if (item->frame_number == *cmd)
+				{
+					num = cmd[1] & 0x3FFF;
+					type = cmd[1] & 0xC000;
+
+					if (objects[item->object_number].water_creature)
+					{
+						if (room[item->room_number].flags & ROOM_UNDERWATER)
+							SoundEffect(num, &item->pos, SFX_WATER);
+						else
+							SoundEffect(num, &item->pos, SFX_DEFAULT);
+					}
+					else if (item->room_number == 255)
+					{
+						item->pos.x_pos = lara_item->pos.x_pos;
+						item->pos.y_pos = lara_item->pos.y_pos - 762;
+						item->pos.z_pos = lara_item->pos.z_pos;
+						SoundEffect(num, &item->pos, SFX_DEFAULT);
+					}
+					else if (room[item->room_number].flags & ROOM_UNDERWATER)
+					{
+						if (type == SFX_LANDANDWATER || type == SFX_WATERONLY)
+							SoundEffect(num, &item->pos, SFX_DEFAULT);
+					}
+					else if (type == SFX_LANDANDWATER || type == SFX_LANDONLY)
+						SoundEffect(num, &item->pos, SFX_DEFAULT);
+				}
+
+				cmd += 2;
+				break;
+
+			case ACMD_FLIPEFFECT:
+
+				if (item->frame_number == *cmd)
+				{
+					FXType = cmd[1] & 0xC000;
+					effect_routines[cmd[1] & 0x3FFF](item);
+				}
+
+				cmd += 2;
+				break;
+			}
+		}
+	}
+
+	speed2 = 0;
+
+	if (item->gravity_status)
+	{
+		if (item->fallspeed < 128)
+			item->fallspeed += 6;
+		else
+			item->fallspeed++;
+
+		item->pos.y_pos += item->fallspeed;
+	}
+	else
+	{
+		speed = anim->velocity;
+
+		if (anim->acceleration)
+			speed += anim->acceleration * (item->frame_number - anim->frame_base);
+
+		item->speed = speed >> 16;
+
+		speed2 = anim->Xvelocity;
+
+		if (anim->Xacceleration)
+			speed2 += anim->Xacceleration * (item->frame_number - anim->frame_base);
+
+		speed2 >>= 16;
+	}
+
+	item->pos.x_pos += (item->speed * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
+	item->pos.z_pos += (item->speed * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
+	item->pos.x_pos += (speed2 * phd_sin(item->pos.y_rot + 0x4000)) >> W2V_SHIFT;
+	item->pos.z_pos += (speed2 * phd_cos(item->pos.y_rot + 0x4000)) >> W2V_SHIFT;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -2685,4 +2858,5 @@ void inject_control(bool replace)
 	INJECT(0x0044C9C0, IsRoomOutside, replace);
 	INJECT(0x0044CBE0, ObjectOnLOS2, replace);
 	INJECT(0x0044D890, GetTargetOnLOS, replace);
+	INJECT(0x00449B90, AnimateItem, replace);
 }

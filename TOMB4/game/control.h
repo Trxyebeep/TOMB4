@@ -34,8 +34,8 @@ long ExplodeItemNode(ITEM_INFO* item, long Node, long NoXZVel, long bits);
 long IsRoomOutside(long x, long y, long z);
 long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, MESH_INFO** StaticMesh);
 long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long firing);
+void AnimateItem(ITEM_INFO* item);
 
-#define AnimateItem	( (void(__cdecl*)(ITEM_INFO*)) 0x00449B90 )
 #define DoRayBox	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*, short*, PHD_3DPOS*, PHD_VECTOR*, short)) 0x0044CDF0 )
 
 #ifdef GENERAL_FIXES

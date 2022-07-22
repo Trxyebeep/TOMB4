@@ -39,3 +39,5 @@ void WaterFall(short item_number);
 #define DoBloodSplat	( (short(__cdecl*)(long, long, long, short, short, short)) 0x00437180 )
 #define ItemNearLara	( (long(__cdecl*)(PHD_3DPOS*, long)) 0x00437050 )
 #define DoLotsOfBlood	( (void(__cdecl*)(long, long, long, short, short, short, long)) 0x004371F0 )
+
+extern void(*effect_routines[])(ITEM_INFO* item);

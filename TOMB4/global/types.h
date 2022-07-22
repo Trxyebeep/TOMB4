@@ -83,6 +83,17 @@ do \
 #define DSNGUID					IID_IDirectSoundNotify
 	/**********************************/
 
+enum anim_commands
+{
+	ACMD_NULL,
+	ACMD_SETPOS,
+	ACMD_JUMPVEL,
+	ACMD_FREEHANDS,
+	ACMD_KILL,
+	ACMD_PLAYSFX,
+	ACMD_FLIPEFFECT
+};
+
 enum ai_bits
 {
 	GUARD = 1 << 0,
