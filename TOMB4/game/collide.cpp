@@ -818,6 +818,28 @@ long TestBoundsCollide(ITEM_INFO* item, ITEM_INFO* l, long rad)
 	return x >= bounds[0] - rad && x <= rad + bounds[1] && z >= bounds[4] - rad && z <= rad + bounds[5];
 }
 
+long TestBoundsCollideStatic(short* bounds, PHD_3DPOS* pos, long rad)
+{
+	short* lbounds;
+	long s, c, dx, dz, x, z;
+
+	if (!(bounds[0] | bounds[1] | bounds[2] | bounds[3] | bounds[4] | bounds[5]))
+		return 0;
+
+	lbounds = GetBestFrame(lara_item);
+
+	if (pos->y_pos + bounds[3] <= lara_item->pos.y_pos + lbounds[2] || pos->y_pos + bounds[2] >= lara_item->pos.y_pos + lbounds[3])
+		return 0;
+
+	s = phd_sin(pos->y_rot);
+	c = phd_cos(pos->y_rot);
+	dx = lara_item->pos.x_pos - pos->x_pos;
+	dz = lara_item->pos.z_pos - pos->z_pos;
+	x = (dx * c - dz * s) >> W2V_SHIFT;
+	z = (dx * s + dz * c) >> W2V_SHIFT;
+	return x >= bounds[0] - rad && x <= rad + bounds[1] && z >= bounds[4] - rad && z <= rad + bounds[5];
+}
+
 void inject_collide(bool replace)
 {
 	INJECT(0x00446F70, ShiftItem, replace);
@@ -835,4 +857,5 @@ void inject_collide(bool replace)
 	INJECT(0x004476D0, TrapCollision, replace);
 	INJECT(0x00447750, ItemPushLara, replace);
 	INJECT(0x00447B00, TestBoundsCollide, replace);
+	INJECT(0x00447BE0, TestBoundsCollideStatic, replace);
 }

@@ -18,9 +18,9 @@ void ObjectCollisionNoBigPush(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void TrapCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 long ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, long BigPush);
 long TestBoundsCollide(ITEM_INFO* item, ITEM_INFO* l, long rad);
+long TestBoundsCollideStatic(short* bounds, PHD_3DPOS* pos, long rad);
 
 #define GetCollisionInfo	( (void(__cdecl*)(COLL_INFO*, long, long, long, short, long)) 0x00446170 )
-#define	TestBoundsCollideStatic	( (long(__cdecl*)(short*, PHD_3DPOS*, long)) 0x00447BE0 )
 #define TestLaraPosition	( (long(__cdecl*)(short*, ITEM_INFO*, ITEM_INFO*)) 0x00447F30 )
 #define MoveLaraPosition	( (long(__cdecl*)(PHD_VECTOR*, ITEM_INFO*, ITEM_INFO*)) 0x004483E0 )
 #define AlignLaraPosition	( (void(__cdecl*)(PHD_VECTOR*, ITEM_INFO*, ITEM_INFO*)) 0x00448070 )
