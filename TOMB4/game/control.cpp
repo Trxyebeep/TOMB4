@@ -2533,7 +2533,7 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 		target.z = v.z - ((v.z - src->z) >> 5);
 
 #ifdef GENERAL_FIXES
-		if (item_no >= 0)
+		if (item_no >= 0 && DrawTarget)
 			lara.target = &items[item_no];
 #endif
 
