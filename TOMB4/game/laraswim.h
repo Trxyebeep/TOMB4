@@ -16,6 +16,7 @@ void lara_as_dive(ITEM_INFO* item, COLL_INFO* coll);
 void lara_as_uwdeath(ITEM_INFO* item, COLL_INFO* coll);
 void lara_as_waterroll(ITEM_INFO* item, COLL_INFO* coll);
 void lara_col_uwdeath(ITEM_INFO* item, COLL_INFO* coll);
+long GetWaterDepth(long x, long y, long z, short room_number);
 
 #define SwimTurn	( (void(__cdecl*)(ITEM_INFO*)) 0x00432690 )
 #define LaraWaterCurrent	( (void(__cdecl*)(COLL_INFO*)) 0x00432DA0 )
