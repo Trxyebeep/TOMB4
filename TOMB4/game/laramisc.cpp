@@ -3,10 +3,15 @@
 #include "objects.h"
 #include "laraswim.h"
 #include "lara_states.h"
+#include "control.h"
+#include "collide.h"
 #ifdef GENERAL_FIXES
 #include "newinv.h"
 #include "../tomb4/tomb4.h"
 #endif
+#include "sound.h"
+#include "effects.h"
+#include "rope.h"
 
 void LaraCheatGetStuff()
 {
@@ -218,6 +223,150 @@ void LaraInitialiseMeshes()
 	lara.left_arm.lock = 0;
 }
 
+void AnimateLara(ITEM_INFO* item)
+{
+	ANIM_STRUCT* anim;
+	short* cmd;
+	long speed;
+	short type, num;
+
+	item->frame_number++;
+	anim = &anims[item->anim_number];
+
+	if (anim->number_changes > 0)
+	{
+		if (GetChange(item, anim))
+		{
+			anim = &anims[item->anim_number];
+			item->current_anim_state = anim->current_anim_state;
+		}
+	}
+
+	if (item->frame_number > anim->frame_end)
+	{
+		if (anim->number_commands > 0)
+		{
+			cmd = &commands[anim->command_index];
+
+			for (int i = anim->number_commands; i > 0; i--)
+			{
+				switch (*cmd++)
+				{
+				case ACMD_SETPOS:
+					TranslateItem(item, *cmd, cmd[1], cmd[2]);
+					UpdateLaraRoom(item, -381);
+					cmd += 3;
+					break;
+
+				case ACMD_JUMPVEL:
+					item->fallspeed = cmd[0];
+					item->speed = cmd[1];
+					item->gravity_status = 1;
+
+					if (lara.calc_fallspeed)
+					{
+						item->fallspeed = lara.calc_fallspeed;
+						lara.calc_fallspeed = 0;
+					}
+
+					cmd += 2;
+					break;
+
+				case ACMD_FREEHANDS:
+
+					if (lara.gun_status != LG_FLARE)
+						lara.gun_status = LG_NO_ARMS;
+
+					break;
+
+				case ACMD_PLAYSFX:
+				case ACMD_FLIPEFFECT:
+					cmd += 2;
+					break;
+				}
+			}
+		}
+
+		item->anim_number = anim->jump_anim_num;
+		item->frame_number = anim->jump_frame_num;
+		anim = &anims[item->anim_number];
+		item->current_anim_state = anim->current_anim_state;
+	}
+
+	if (anim->number_commands > 0)
+	{
+		cmd = &commands[anim->command_index];
+
+		for (int i = anim->number_commands; i > 0; i--)
+		{
+			switch (*cmd++)
+			{
+			case ACMD_SETPOS:
+				cmd += 3;
+				break;
+
+			case ACMD_JUMPVEL:
+				cmd += 2;
+				break;
+
+			case ACMD_PLAYSFX:
+				num = cmd[1] & 0x3FFF;
+				type = cmd[1] & 0xC000;
+
+				if (item->frame_number == cmd[0])
+				{
+					if (type == SFX_LANDANDWATER ||
+						(type == SFX_LANDONLY && (lara.water_surface_dist >= 0 || lara.water_surface_dist == NO_HEIGHT)) ||
+						(type == SFX_WATERONLY && lara.water_surface_dist < 0 && lara.water_surface_dist != NO_HEIGHT))
+						SoundEffect(num, &item->pos, SFX_ALWAYS);
+				}
+
+				cmd += 2;
+				break;
+
+			case ACMD_FLIPEFFECT:
+
+				if (item->frame_number == *cmd)
+				{
+					FXType = cmd[1] & 0xC000;
+					effect_routines[cmd[1] & 0x3FFF](item);
+				}
+
+				cmd += 2;
+				break;
+			}
+		}
+	}
+
+	if (item->gravity_status)
+	{
+		speed = anim->velocity + anim->acceleration * (item->frame_number - anim->frame_base - 1);
+		item->speed -= speed >> 16;
+		speed += anim->acceleration;
+		item->speed += speed >> 16;
+		item->fallspeed += item->fallspeed < 128 ? 6 : 1;
+		item->pos.y_pos += item->fallspeed;
+	}
+	else
+	{
+		speed = anim->velocity;
+
+		if (anim->acceleration)
+			speed += anim->acceleration * (item->frame_number - anim->frame_base);
+
+		item->speed = speed >> 16;
+	}
+
+	if (lara.RopePtr != -1)
+		AlignLaraToRope(item);
+
+	if (!lara.IsMoving)
+	{
+		item->pos.x_pos += (item->speed * phd_sin(lara.move_angle)) >> W2V_SHIFT;
+		item->pos.z_pos += (item->speed * phd_cos(lara.move_angle)) >> W2V_SHIFT;
+	}
+}
+
 void inject_laramisc(bool replace)
 {
 	INJECT(0x004301F0, LaraCheatGetStuff, replace);
@@ -226,4 +375,5 @@ void inject_laramisc(bool replace)
 	INJECT(0x00430EB0, InitialiseLaraLoad, replace);
 	INJECT(0x00430EE0, InitialiseLaraAnims, replace);
 	INJECT(0x00430140, LaraInitialiseMeshes, replace);
+	INJECT(0x00430B60, AnimateLara, replace);
 }

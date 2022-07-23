@@ -882,7 +882,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00430250		LaraControl
 0x004309B0	+	LaraCheat
 0x00430A50	+	LaraCheatyBits
-0x00430B60		AnimateLara
+0x00430B60	+	AnimateLara
 0x00430EB0	+	InitialiseLaraLoad
 0x00430EE0	+	InitialiseLaraAnims
 

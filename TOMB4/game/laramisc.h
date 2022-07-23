@@ -8,6 +8,6 @@ void LaraCheatyBits();
 void InitialiseLaraLoad(short item_number);
 void InitialiseLaraAnims(ITEM_INFO* item);
 void LaraInitialiseMeshes();
+void AnimateLara(ITEM_INFO* item);
 
 #define LaraControl	( (void(__cdecl*)(short)) 0x00430250 )
-#define AnimateLara	( (void(__cdecl*)(ITEM_INFO*)) 0x00430B60 )
