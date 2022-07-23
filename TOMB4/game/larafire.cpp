@@ -5,6 +5,10 @@
 #include "lara2gun.h"
 #include "lara1gun.h"
 #include "laraflar.h"
+#include "delstuff.h"
+#include "draw.h"
+#include "../specific/3dmath.h"
+#include "control.h"
 
 static short HoldStates[] =
 {
@@ -104,8 +108,94 @@ void InitialiseNewWeapon()
 	}
 }
 
+static void find_target_point(ITEM_INFO* item, GAME_VECTOR* target)
+{
+	long x, y, z, c, s;
+	short* bounds;
+
+	bounds = GetBestFrame(item);
+	x = (bounds[0] + bounds[1]) >> 1;
+	y = (bounds[2] + (bounds[3] - bounds[2]) / 3);
+	z = (bounds[4] + bounds[5]) >> 1;
+	s = phd_sin(item->pos.y_rot);
+	c = phd_cos(item->pos.y_rot);
+	target->x = item->pos.x_pos + ((x * c + z * s) >> W2V_SHIFT);
+	target->y = item->pos.y_pos + y;
+	target->z = item->pos.z_pos + ((z * c - x * s) >> W2V_SHIFT);
+	target->room_number = item->room_number;
+}
+
+void LaraTargetInfo(WEAPON_INFO* winfo)
+{
+	GAME_VECTOR src, target;
+	short ang[2];
+
+	if (!lara.target)
+	{
+		lara.right_arm.lock = 0;
+		lara.left_arm.lock = 0;
+		lara.target_angles[1] = 0;
+		lara.target_angles[0] = 0;
+		return;
+	}
+
+	src.x = 0;
+	src.y = 0;
+	src.z = 0;
+	GetLaraJointPos((PHD_VECTOR*)&src, 11);
+	src.x = lara_item->pos.x_pos;
+	src.z = lara_item->pos.z_pos;
+	src.room_number = lara_item->room_number;
+	find_target_point(lara.target, &target);
+	phd_GetVectorAngles(target.x - src.x, target.y - src.y, target.z - src.z, ang);
+	ang[0] -= lara_item->pos.y_rot;
+	ang[1] -= lara_item->pos.x_rot;
+
+	if (LOS(&src, &target))
+	{
+		if (ang[0] >= winfo->lock_angles[0] && ang[0] <= winfo->lock_angles[1] &&
+			ang[1] >= winfo->lock_angles[2] && ang[1] <= winfo->lock_angles[3])
+		{
+			lara.left_arm.lock = 1;
+			lara.right_arm.lock = 1;
+			lara.target_angles[0] = ang[0];
+			lara.target_angles[1] = ang[1];
+			return;
+		}
+
+		if (lara.left_arm.lock)
+		{
+			if (ang[0] < winfo->left_angles[0] || ang[0] > winfo->left_angles[1] ||
+				ang[1] < winfo->left_angles[2] || ang[1] > winfo->left_angles[3])
+				lara.left_arm.lock = 0;
+		}
+
+		if (lara.right_arm.lock)
+		{
+			if (ang[0] < winfo->right_angles[0] || ang[0] > winfo->right_angles[1] ||
+				ang[1] < winfo->left_angles[2] || ang[1] > winfo->left_angles[3])
+			{
+				lara.right_arm.lock = 0;
+				lara.target_angles[0] = ang[0];
+				lara.target_angles[1] = ang[1];
+				return;
+			}
+		}
+	}
+	else
+	{
+		lara.right_arm.lock = 0;
+		lara.left_arm.lock = 0;
+	}
+
+	lara.target_angles[0] = ang[0];
+	lara.target_angles[1] = ang[1];
+}
+
 void inject_larafire(bool replace)
 {
 	INJECT(0x0042DDC0, CheckForHoldingState, replace);
 	INJECT(0x0042DDF0, InitialiseNewWeapon, replace);
+	INJECT(0x0042E4A0, find_target_point, replace);
+	INJECT(0x0042DF30, LaraTargetInfo, replace);
 }
