@@ -330,7 +330,7 @@ long GetWaterDepth(long x, long y, long z, short room_number)
 {
 	ROOM_INFO* r;
 	FLOOR_INFO* floor;
-	long x_floor, y_floor;
+	long x_floor, y_floor, h;
 	short door;
 
 	r = &room[room_number];
@@ -382,8 +382,9 @@ long GetWaterDepth(long x, long y, long z, short room_number)
 
 			if (!(r->flags & ROOM_UNDERWATER))
 			{
+				h = floor->ceiling << 8;
 				floor = GetFloor(x, y, z, &room_number);
-				return (GetHeight(floor, x, y, z) - (floor->ceiling << 8));
+				return GetHeight(floor, x, y, z) - h;
 			}
 
 			floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
@@ -399,8 +400,9 @@ long GetWaterDepth(long x, long y, long z, short room_number)
 
 			if (r->flags & ROOM_UNDERWATER)
 			{
+				h = floor->floor << 8;
 				floor = GetFloor(x, y, z, &room_number);
-				return (GetHeight(floor, x, y, z) - (floor->floor << 8));
+				return GetHeight(floor, x, y, z) - h;
 			}
 
 			floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
