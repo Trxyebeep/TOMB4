@@ -9,5 +9,4 @@ void InitialiseLaraLoad(short item_number);
 void InitialiseLaraAnims(ITEM_INFO* item);
 void LaraInitialiseMeshes();
 void AnimateLara(ITEM_INFO* item);
-
-#define LaraControl	( (void(__cdecl*)(short)) 0x00430250 )
+void LaraControl(short item_number);
