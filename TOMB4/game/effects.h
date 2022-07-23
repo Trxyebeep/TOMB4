@@ -34,6 +34,7 @@ void MeshSwapToPour(ITEM_INFO* item);
 void MeshSwapFromPour(ITEM_INFO* item);
 void void_effect(ITEM_INFO* item);
 void WaterFall(short item_number);
+void WadeSplash(ITEM_INFO* item, long water, long depth);
 
 #define SoundEffects	( (void(__cdecl*)()) 0x004370E0 )
 #define DoBloodSplat	( (short(__cdecl*)(long, long, long, short, short, short)) 0x00437180 )

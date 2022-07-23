@@ -12,6 +12,10 @@
 #include "tomb4fx.h"
 #include "footprnt.h"
 #include "effect2.h"
+#include "control.h"
+#include "draw.h"
+#include "lara_states.h"
+#include "../specific/function_stubs.h"
 
 void(*effect_routines[47])(ITEM_INFO* item) =
 {
@@ -390,6 +394,50 @@ void WaterFall(short item_number)
 	}
 }
 
+void WadeSplash(ITEM_INFO* item, long water, long depth)
+{
+	short* bounds;
+	short room_number;
+
+	room_number = item->room_number;
+	GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+
+	if (!(room[room_number].flags & ROOM_UNDERWATER))
+		return;
+
+	bounds = GetBestFrame(item);
+
+	if (item->pos.y_pos + bounds[2] > water || item->pos.y_pos + bounds[3] < water)
+		return;
+
+	if (item->fallspeed > 0 && depth < 474 && !SplashCount)
+	{
+		splash_setup.x = item->pos.x_pos;
+		splash_setup.y = water;
+		splash_setup.z = item->pos.z_pos;
+		splash_setup.InnerRad = 16;
+		splash_setup.InnerSize = 12;
+		splash_setup.InnerRadVel = 160;
+		splash_setup.InnerYVel = -72 * item->fallspeed;
+		splash_setup.pad1 = 24;
+		splash_setup.MiddleRad = 24;
+		splash_setup.MiddleSize = 224;
+		splash_setup.MiddleRadVel = -36 * item->fallspeed;
+		splash_setup.MiddleYVel = 32;
+		splash_setup.pad2 = 32;
+		splash_setup.OuterRad = 272;
+		SetupSplash(&splash_setup);
+		SplashCount = 16;
+	}
+	else if (!(wibble & 0xF) && (!(GetRandomControl() & 0xF) || item->current_anim_state != AS_STOP))
+	{
+		if (item->current_anim_state == AS_STOP)
+			SetupRipple(item->pos.x_pos, water, item->pos.z_pos, (GetRandomControl() & 0xF) + 112, 16);
+		else
+			SetupRipple(item->pos.x_pos, water, item->pos.z_pos, (GetRandomControl() & 0xF) + 112, 18);
+	}
+}
+
 void inject_effects(bool replace)
 {
 	INJECT(0x00437AB0, SetFog, replace);
@@ -422,4 +470,5 @@ void inject_effects(bool replace)
 	INJECT(0x00437D00, MeshSwapToPour, replace);
 	INJECT(0x00437D30, MeshSwapFromPour, replace);
 	INJECT(0x00437530, WaterFall, replace);
+	INJECT(0x00437390, WadeSplash, replace);
 }

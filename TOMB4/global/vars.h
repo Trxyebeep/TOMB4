@@ -511,6 +511,7 @@
 #define ClosestItem VAR_U_(0x007FE2E0, long)
 #define TorchItem	VAR_U_(0x004BF338, ITEM_INFO*)
 #define next_scarab	VAR_U_(0x004BF2F8, long)
+#define splash_setup	VAR_U_(0x00804F40, SPLASH_SETUP)
 
 
 
