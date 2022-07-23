@@ -847,7 +847,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x0042D840		LaraGun
 0x0042DDC0	+	CheckForHoldingState
-0x0042DDF0		InitialiseNewWeapon
+0x0042DDF0	+	InitialiseNewWeapon
 0x0042DF30		LaraTargetInfo
 0x0042E0D0		LaraGetNewTarget
 0x0042E4A0		find_target_point
@@ -869,8 +869,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x0042FB00		set_flare_arm
 0x0042FB50		draw_flare
 0x0042FC60		undraw_flare
-0x0042FF10		draw_flare_meshes
-0x0042FF30		undraw_flare_meshes
+0x0042FF10	+	draw_flare_meshes
+0x0042FF30	+	undraw_flare_meshes
 0x0042FF50		ready_flare
 0x0042FF90		FlareControl
 

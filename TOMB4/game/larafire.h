@@ -3,6 +3,8 @@
 
 void inject_larafire(bool replace);
 
+void InitialiseNewWeapon();
+
 #define WeaponObject	( (long(__cdecl*)(long)) 0x0042EA70 )
 #define WeaponObjectMesh	( (long(__cdecl*)(long)) 0x0042EAC0 )
 #define LaraGun	( (void(__cdecl*)()) 0x0042D840 )
