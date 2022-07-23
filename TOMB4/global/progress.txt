@@ -897,7 +897,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/larasurf.cpp
 
-0x00431AA0		LaraSurface
+0x00431AA0	+	LaraSurface
 0x00431C10	+	lara_as_surfswim
 0x00431C80	+	lara_as_surfback
 0x00431CE0	+	lara_as_surfleft
