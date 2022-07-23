@@ -421,7 +421,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00437140		Richochet
 0x00437180		DoBloodSplat
 0x004371F0		DoLotsOfBlood
-0x004372A0		Splash
+0x004372A0	+	Splash
 0x00437390	+	WadeSplash
 0x00437530	+	WaterFall
 0x00437650	+	finish_level_effect

@@ -438,6 +438,33 @@ void WadeSplash(ITEM_INFO* item, long water, long depth)
 	}
 }
 
+void Splash(ITEM_INFO* item)
+{
+	short room_number;
+
+	room_number = item->room_number;
+	GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+
+	if (room[room_number].flags & ROOM_UNDERWATER)
+	{
+		splash_setup.x = item->pos.x_pos;
+		splash_setup.y = GetWaterHeight(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, room_number);
+		splash_setup.z = item->pos.z_pos;
+		splash_setup.InnerRad = 32;
+		splash_setup.InnerSize = 8;
+		splash_setup.InnerRadVel = 320;
+		splash_setup.InnerYVel = -40 * item->fallspeed;
+		splash_setup.pad1 = 48;
+		splash_setup.MiddleRad = 32;
+		splash_setup.MiddleSize = 480;
+		splash_setup.MiddleRadVel = -20 * item->fallspeed;
+		splash_setup.MiddleYVel = 32;
+		splash_setup.pad2 = 128;
+		splash_setup.OuterRad = 544;
+		SetupSplash(&splash_setup);
+	}
+}
+
 void inject_effects(bool replace)
 {
 	INJECT(0x00437AB0, SetFog, replace);
@@ -471,4 +498,5 @@ void inject_effects(bool replace)
 	INJECT(0x00437D30, MeshSwapFromPour, replace);
 	INJECT(0x00437530, WaterFall, replace);
 	INJECT(0x00437390, WadeSplash, replace);
+	INJECT(0x004372A0, Splash, replace);
 }
