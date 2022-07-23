@@ -27,5 +27,4 @@ long MoveLaraPosition(PHD_VECTOR* v, ITEM_INFO* item, ITEM_INFO* l);
 long TestBoundsCollide2(ITEM_INFO* item, ITEM_INFO* l, long rad);
 void StargateCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void CogCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
-
-#define GetCollisionInfo	( (void(__cdecl*)(COLL_INFO*, long, long, long, short, long)) 0x00446170 )
+void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number, long hite);
