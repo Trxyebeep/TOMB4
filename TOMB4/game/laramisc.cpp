@@ -228,7 +228,7 @@ void AnimateLara(ITEM_INFO* item)
 	ANIM_STRUCT* anim;
 	short* cmd;
 	long speed;
-	short type, num;
+	ushort type;
 
 	item->frame_number++;
 	anim = &anims[item->anim_number];
@@ -310,15 +310,15 @@ void AnimateLara(ITEM_INFO* item)
 				break;
 
 			case ACMD_PLAYSFX:
-				num = cmd[1] & 0x3FFF;
-				type = cmd[1] & 0xC000;
 
 				if (item->frame_number == cmd[0])
 				{
+					type = cmd[1] & 0xC000;
+
 					if (type == SFX_LANDANDWATER ||
 						(type == SFX_LANDONLY && (lara.water_surface_dist >= 0 || lara.water_surface_dist == NO_HEIGHT)) ||
 						(type == SFX_WATERONLY && lara.water_surface_dist < 0 && lara.water_surface_dist != NO_HEIGHT))
-						SoundEffect(num, &item->pos, SFX_ALWAYS);
+						SoundEffect(cmd[1] & 0x3FFF, &item->pos, SFX_ALWAYS);
 				}
 
 				cmd += 2;

@@ -2657,7 +2657,7 @@ void AnimateItem(ITEM_INFO* item)
 	ANIM_STRUCT* anim;
 	short* cmd;
 	long speed, speed2;
-	short type, num;
+	ushort type, num;
 
 	anim = &anims[item->anim_number];
 	item->touch_bits = 0;
