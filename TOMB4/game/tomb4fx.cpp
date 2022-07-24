@@ -586,9 +586,9 @@ void UpdateFireSparks()
 		if (sptr->sLife - sptr->Life < sptr->ColFadeSpeed)
 		{
 			fade = ((sptr->sLife - sptr->Life) << 16) / sptr->ColFadeSpeed;
-			sptr->R = sptr->sR + uchar((fade * (sptr->dR - sptr->sR)) >> 16);
-			sptr->G = sptr->sG + uchar((fade * (sptr->dG - sptr->sG)) >> 16);
-			sptr->B = sptr->sB + uchar((fade * (sptr->dB - sptr->sB)) >> 16);
+			sptr->R = uchar(sptr->sR + ((fade * (sptr->dR - sptr->sR)) >> 16));
+			sptr->G = uchar(sptr->sG + ((fade * (sptr->dG - sptr->sG)) >> 16));
+			sptr->B = uchar(sptr->sB + ((fade * (sptr->dB - sptr->sB)) >> 16));
 		}
 		else if (sptr->Life < sptr->FadeToBlack)
 		{
@@ -638,7 +638,7 @@ void UpdateFireSparks()
 		sptr->x += sptr->Xvel >> 5;
 		sptr->y += sptr->Yvel >> 5;
 		sptr->z += sptr->Zvel >> 5;
-		sptr->Size = sptr->sSize + uchar((fade * (sptr->dSize - sptr->sSize)) >> 16);
+		sptr->Size = uchar(sptr->sSize + ((fade * (sptr->dSize - sptr->sSize)) >> 16));
 	}
 }
 
@@ -796,7 +796,7 @@ void UpdateSmokeSparks()
 		if (sptr->sLife - sptr->Life < sptr->ColFadeSpeed)
 		{
 			fade = ((sptr->sLife - sptr->Life) << 16) / sptr->ColFadeSpeed;
-			sptr->Shade = sptr->sShade + uchar(((sptr->dShade - sptr->sShade) * fade) >> 16);
+			sptr->Shade = uchar(sptr->sShade + (((sptr->dShade - sptr->sShade) * fade) >> 16));
 		}
 		else if (sptr->Life < sptr->FadeToBlack)
 		{
@@ -850,7 +850,7 @@ void UpdateSmokeSparks()
 			sptr->z += SmokeWindZ >> 1;
 		}
 
-		sptr->Size = sptr->sSize + uchar((fade * (sptr->dSize - sptr->sSize)) >> 16);
+		sptr->Size = uchar(sptr->sSize + ((fade * (sptr->dSize - sptr->sSize)) >> 16));
 	}
 }
 
@@ -1377,14 +1377,14 @@ void UpdateBlood()
 		if (bptr->sLife - bptr->Life < bptr->ColFadeSpeed)
 		{
 			fade = ((bptr->sLife - bptr->Life) << 16) / bptr->ColFadeSpeed;
-			bptr->Shade = bptr->sShade + (((bptr->dShade - bptr->sShade) * (uchar)fade) >> 16);
+			bptr->Shade = uchar(bptr->sShade + ((fade * (bptr->dShade - bptr->sShade)) >> 16));
 		}
 		else
 		{
 			if (bptr->Life < bptr->FadeToBlack)
 			{
 				fade = ((bptr->Life - bptr->FadeToBlack) << 16) / bptr->FadeToBlack + 0x10000;
-				bptr->Shade = (bptr->dShade * (uchar)fade) >> 16;
+				bptr->Shade = uchar((bptr->dShade * fade) >> 16);
 
 				if (bptr->Shade < 8)
 				{
@@ -1409,7 +1409,7 @@ void UpdateBlood()
 		bptr->x += bptr->Xvel >> 5;
 		bptr->y += bptr->Yvel >> 5;
 		bptr->z += bptr->Zvel >> 5;
-		bptr->Size = bptr->sSize + (((uchar)fade * (bptr->dSize - bptr->sSize)) >> 16);
+		bptr->Size = uchar(bptr->sSize + ((fade * (bptr->dSize - bptr->sSize)) >> 16));
 	}
 }
 

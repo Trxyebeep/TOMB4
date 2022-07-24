@@ -2217,6 +2217,17 @@ struct SPLASH_SETUP
 	short pad3;
 };
 
+struct SP_DYNAMIC
+{
+	uchar On;
+	uchar Falloff;
+	uchar R;
+	uchar G;
+	uchar B;
+	uchar Flags;
+	uchar Pad[2];
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

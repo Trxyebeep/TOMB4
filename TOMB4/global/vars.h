@@ -637,6 +637,8 @@
 #define	weapons	ARRAY_(0x004AD848, WEAPON_INFO, [9])
 #define Scarabs	ARRAY_(0x0080ED00, SCARAB_STRUCT, [128])
 #define Map	ARRAY_(0x006734A8, MAP_STRUCT, [255])
+#define DeadlyBounds	ARRAY_(0x00804840, long, [6])
+#define spark_dynamics	ARRAY_(0x00804800, SP_DYNAMIC, [8])
 
 
 /*Fog stuff*/

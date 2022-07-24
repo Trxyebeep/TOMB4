@@ -13,6 +13,7 @@
 #include "demigod.h"
 #include "harpy.h"
 #include "croc.h"
+#include "draw.h"
 
 void ControlSmokeEmitter(short item_number)
 {
@@ -1085,6 +1086,195 @@ long GetFreeSpark()
 	return free;
 }
 
+void UpdateSparks()
+{
+	SPARKS* sptr;
+	SP_DYNAMIC* dynamic;
+	short* bounds;
+	long fade, uw, rad, rnd, x, y, z, r, g, b, falloff;
+
+	bounds = GetBoundsAccurate(lara_item);
+	DeadlyBounds[0] = lara_item->pos.x_pos + bounds[0];
+	DeadlyBounds[1] = lara_item->pos.x_pos + bounds[1];
+	DeadlyBounds[2] = lara_item->pos.y_pos + bounds[2];
+	DeadlyBounds[3] = lara_item->pos.y_pos + bounds[3];
+	DeadlyBounds[4] = lara_item->pos.z_pos + bounds[4];
+	DeadlyBounds[5] = lara_item->pos.z_pos + bounds[5];
+
+	for (int i = 0; i < 256; i++)
+	{
+		sptr = &spark[i];
+
+		if (!sptr->On)
+			continue;
+
+		sptr->Life--;
+
+		if (!sptr->Life)
+		{
+			if (sptr->Dynamic != -1)
+				spark_dynamics[sptr->Dynamic].On = 0;
+
+			sptr->On = 0;
+			continue;
+		}
+
+		if (sptr->sLife - sptr->Life < sptr->ColFadeSpeed)
+		{
+			fade = ((sptr->sLife - sptr->Life) << 16) / sptr->ColFadeSpeed;
+			sptr->R = uchar(sptr->sR + ((fade * (sptr->dR - sptr->sR)) >> 16));
+			sptr->G = uchar(sptr->sG + ((fade * (sptr->dG - sptr->sG)) >> 16));
+			sptr->B = uchar(sptr->sB + ((fade * (sptr->dB - sptr->sB)) >> 16));
+		}
+		else if (sptr->Life < sptr->FadeToBlack)
+		{
+			fade = ((sptr->Life - sptr->FadeToBlack) << 16) / sptr->FadeToBlack + 0x10000;
+			sptr->R = uchar((sptr->dR * fade) >> 16);
+			sptr->G = uchar((sptr->dG * fade) >> 16);
+			sptr->B = uchar((sptr->dB * fade) >> 16);
+
+			if (sptr->R < 8 && sptr->G < 8 && sptr->B < 8)
+			{
+				sptr->On = 0;
+				continue;
+			}
+		}
+		else
+		{
+			sptr->R = sptr->dR;
+			sptr->G = sptr->dG;
+			sptr->B = sptr->dB;
+		}
+
+		if (sptr->Life == sptr->FadeToBlack && sptr->Flags & 0x800)
+			sptr->dSize >>= 2;
+
+		if (sptr->Flags & 0x10)
+			sptr->RotAng = (sptr->RotAng + sptr->RotAdd) & 0xFFF;
+
+		if (sptr->sLife - sptr->Life == sptr->extras >> 3 && sptr->extras & 7)
+		{
+			if (sptr->Flags & 0x800)
+				uw = 1;
+			else if (sptr->Flags & 0x2000)
+				uw = 2;
+			else
+				uw = 0;
+
+			for (int j = 0; j < (sptr->extras & 7); j++)
+			{
+				TriggerExplosionSparks(sptr->x, sptr->y, sptr->z, (sptr->extras & 7) - 1, sptr->Dynamic, uw, sptr->RoomNumber);
+				sptr->Dynamic = -1;
+			}
+
+			if (sptr->Flags & 0x800)
+				TriggerExplosionBubble(sptr->x, sptr->y, sptr->z, sptr->RoomNumber);
+
+			sptr->extras = 0;
+		}
+
+		fade = ((sptr->sLife - sptr->Life) << 16) / sptr->sLife;
+		sptr->Yvel += sptr->Gravity;
+
+		if (sptr->MaxYvel)
+		{
+			if (sptr->Yvel < 0 && sptr->Yvel < sptr->MaxYvel << 5 || sptr->Yvel > 0 && sptr->Yvel > sptr->MaxYvel << 5)
+				sptr->Yvel = sptr->MaxYvel << 5;
+		}
+
+		if (sptr->Friction & 0xF)
+		{
+			sptr->Xvel -= sptr->Xvel >> (sptr->Friction & 0xF);
+			sptr->Zvel -= sptr->Zvel >> (sptr->Friction & 0xF);
+		}
+
+		if (sptr->Friction & 0xF0)
+			sptr->Yvel -= sptr->Yvel >> (sptr->Friction >> 4);
+
+		sptr->x += sptr->Xvel >> 5;
+		sptr->y += sptr->Yvel >> 5;
+		sptr->z += sptr->Zvel >> 5;
+
+		if (sptr->Flags & 0x100)
+		{
+			sptr->x += SmokeWindX >> 1;
+			sptr->z += SmokeWindZ >> 1;
+		}
+
+		sptr->Size = uchar(sptr->sSize + ((fade * (sptr->dSize - sptr->sSize)) >> 16));
+
+		if (sptr->Flags & 1 && !lara.burn || sptr->Flags & 0x400)
+		{
+			rad = sptr->Size << sptr->Scalar >> 1;
+
+			if (sptr->x + rad > DeadlyBounds[0] && sptr->x - rad < DeadlyBounds[1] &&
+				sptr->y + rad > DeadlyBounds[2] && sptr->y - rad < DeadlyBounds[3] &&
+				sptr->z + rad > DeadlyBounds[4] && sptr->z - rad < DeadlyBounds[5])
+			{
+				if (sptr->Flags & 1)
+					LaraBurn();
+				else
+					lara_item->hit_points -= 2;
+			}
+		}
+	}
+
+	for (int i = 0; i < 256; i++)
+	{
+		sptr = &spark[i];
+
+		if (!sptr->On || sptr->Dynamic == -1)
+			continue;
+
+		dynamic = &spark_dynamics[sptr->Dynamic];
+
+		if (dynamic->Flags & 3)
+		{
+			rnd = GetRandomControl();
+			x = sptr->x + 16 * (rnd & 0xF);
+			y = sptr->y + (rnd & 0xF0);
+			z = sptr->z + ((rnd >> 4) & 0xF0);
+			falloff = sptr->sLife - sptr->Life - 1;
+
+			if (falloff < 2)
+			{
+				if (dynamic->Falloff < 28)
+					dynamic->Falloff += 6;
+
+				r = 255 - (falloff << 3) - (rnd & 0x1F);
+				g = 255 - (falloff << 4) - (rnd & 0x1F);
+				b = 255 - (falloff << 6) - (rnd & 0x1F);
+			}
+			else if (falloff < 4)
+			{
+				if (dynamic->Falloff < 28)
+					dynamic->Falloff += 6;
+
+				r = 255 - (falloff << 3) - (rnd & 0x1F);
+				g = 128 - (falloff << 3);
+				b = 128 - (falloff << 5);
+
+				if (b < 0)
+					b = 0;
+			}
+			else
+			{
+				if (dynamic->Falloff > 0)
+					dynamic->Falloff--;
+
+				r = 224 + (rnd & 0x1F);
+				g = 128 + ((rnd >> 4) & 0x1F);
+				b = (rnd >> 8) & 0x3F;
+			}
+
+			if (sptr->Flags & 0x2000)
+				TriggerDynamic(x, y, z, dynamic->Falloff > 31 ? 31 : dynamic->Falloff, b, r, g);
+			else
+				TriggerDynamic(x, y, z, dynamic->Falloff > 31 ? 31 : dynamic->Falloff, r, g, b);
+		}
+	}
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -1105,4 +1295,5 @@ void inject_effect2(bool replace)
 	INJECT(0x00436900, ControlColouredLights, replace);
 	INJECT(0x00433C70, DetatchSpark, replace);
 	INJECT(0x00433D30, GetFreeSpark, replace);
+	INJECT(0x00433E10, UpdateSparks, replace);
 }

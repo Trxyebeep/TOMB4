@@ -21,8 +21,8 @@ void TriggerExplosionBubble(long x, long y, long z, short room_number);
 void ControlColouredLights(short item_number);
 void DetatchSpark(long num, long type);
 long GetFreeSpark();
+void UpdateSparks();
 
-#define UpdateSparks	( (void(__cdecl*)()) 0x00433E10 )
 #define UpdateSplashes	( (void(__cdecl*)()) 0x004359E0 )
 #define TriggerExplosionSparks	( (void(__cdecl*)(long, long, long, long, long, long, short)) 0x004349F0 )
 #define TriggerFireFlame	( (void(__cdecl*)(long, long, long, long, long)) 0x00435130 )
