@@ -27,6 +27,6 @@ void TriggerExplosionSparks(long x, long y, long z, long extras, long dynamic, l
 void TriggerFireFlame(long x, long y, long z, long body_part, long type);
 void TriggerSuperJetFlame(ITEM_INFO* item, long yvel, long deadly);
 void TriggerRocketSmoke(long x, long y, long z, long col);
+void SetupSplash(SPLASH_SETUP* setup);
 
 #define UpdateSplashes	( (void(__cdecl*)()) 0x004359E0 )
-#define SetupSplash	( (void(__cdecl*)(SPLASH_SETUP*)) 0x00435920 )

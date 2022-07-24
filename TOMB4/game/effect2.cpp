@@ -14,6 +14,7 @@
 #include "harpy.h"
 #include "croc.h"
 #include "draw.h"
+#include "sound.h"
 
 void ControlSmokeEmitter(short item_number)
 {
@@ -1873,6 +1874,47 @@ void TriggerRocketSmoke(long x, long y, long z, long col)
 	sptr->Size = sptr->dSize >> 2;
 }
 
+void SetupSplash(SPLASH_SETUP* setup)
+{
+	SPLASH_STRUCT* splash;
+	long n;
+
+	splash = splashes;
+	n = 0;
+
+	while (splash->flags & 1)
+	{
+		splash++;
+		n++;
+
+		if (n >= 4)
+		{
+			SoundEffect(SFX_LARA_SPLASH, (PHD_3DPOS*)setup, SFX_DEFAULT);
+			return;
+		}
+	}
+
+	splash->flags = 1;
+	splash->x = setup->x;
+	splash->y = setup->y;
+	splash->z = setup->z;
+	splash->life = 62;
+	splash->InnerRad = setup->InnerRad;
+	splash->InnerSize = setup->InnerSize;
+	splash->InnerRadVel = setup->InnerRadVel;
+	splash->InnerYVel = setup->InnerYVel;
+	splash->InnerY = setup->InnerYVel >> 2;
+	splash->MiddleRad = setup->pad1;
+	splash->MiddleSize = setup->MiddleRad;
+	splash->MiddleRadVel = setup->MiddleSize;
+	splash->MiddleYVel = setup->MiddleRadVel;
+	splash->MiddleY = setup->MiddleRadVel >> 2;
+	splash->OuterRad = setup->MiddleYVel;
+	splash->OuterSize = setup->pad2;
+	splash->OuterRadVel = setup->OuterRad;
+	SoundEffect(SFX_LARA_SPLASH, (PHD_3DPOS*)setup, SFX_DEFAULT);
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -1899,4 +1941,5 @@ void inject_effect2(bool replace)
 	INJECT(0x00435130, TriggerFireFlame, replace);
 	INJECT(0x00435570, TriggerSuperJetFlame, replace);
 	INJECT(0x004357C0, TriggerRocketSmoke, replace);
+	INJECT(0x00435920, SetupSplash, replace);
 }
