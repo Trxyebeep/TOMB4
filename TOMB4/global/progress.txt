@@ -403,8 +403,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00435BF0	+	TriggerUnderwaterBlood
 0x00435C60	+	TriggerWaterfallMist
 0x00435E30	+	TriggerDartSmoke
-0x00436040		KillAllCurrentItems
-0x00436050		KillEverything
+0x00436040	+	KillAllCurrentItems
+0x00436050	+	KillEverything
 0x00436060		TriggerExplosionBubble
 0x004361A0	+	TriggerDynamic
 0x00436250	+	TriggerDynamic_MIRROR

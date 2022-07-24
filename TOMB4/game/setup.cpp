@@ -640,7 +640,7 @@ void TrapObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[KILL_ALL_TRIGGERS];
-//	obj->control = KillAllCurrentItems;
+	obj->control = KillAllCurrentItems;
 	obj->draw_routine = 0;
 	obj->hit_points = 0;
 	obj->using_drawanimating_item = 0;

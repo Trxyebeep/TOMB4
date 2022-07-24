@@ -915,6 +915,16 @@ void TriggerDartSmoke(long x, long y, long z, long xv, long zv, long hit)
 	}
 }
 
+void KillAllCurrentItems(short item_number)
+{
+	KillEverythingFlag = 1;
+}
+
+void KillEverything()
+{
+	KillEverythingFlag = 0;
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -929,4 +939,6 @@ void inject_effect2(bool replace)
 	INJECT(0x00435BF0, TriggerUnderwaterBlood, replace);
 	INJECT(0x00435C60, TriggerWaterfallMist, replace);
 	INJECT(0x00435E30, TriggerDartSmoke, replace);
+	INJECT(0x00436040, KillAllCurrentItems, replace);
+	INJECT(0x00436050, KillEverything, replace);
 }
