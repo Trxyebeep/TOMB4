@@ -327,12 +327,12 @@ void LaraBubbles(ITEM_INFO* item)
 
 	for (int i = (GetRandomControl() & 1) + 2; i > 0; i--)
 	{
-		CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7, 0, 0, 0, 0);
+		CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7);
 
 		if (gfLevelFlags & GF_MIRROR  && item->room_number == gfMirrorRoom)
 		{
 			pos.z = 2 * gfMirrorZPlane - pos.z;
-			CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7, 0, 0, 0, 0);
+			CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7);
 			pos.z = 2 * gfMirrorZPlane - pos.z;
 		}
 	}

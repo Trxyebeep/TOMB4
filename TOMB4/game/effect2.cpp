@@ -38,9 +38,9 @@ void ControlSmokeEmitter(short item_number)
 				pos.z_pos = (GetRandomControl() & 0x3F) + item->pos.z_pos - 32;
 
 				if (item->trigger_flags == 1)
-					CreateBubble(&pos, item->room_number, 15, 15, 0, 0, 0, 0);
+					CreateBubble(&pos, item->room_number, 15, 15);
 				else
-					CreateBubble(&pos, item->room_number, 8, 7, 0, 0, 0, 0);
+					CreateBubble(&pos, item->room_number, 8, 7);
 
 				if (item->item_flags[0])
 				{
@@ -925,6 +925,58 @@ void KillEverything()
 	KillEverythingFlag = 0;
 }
 
+void TriggerExplosionBubble(long x, long y, long z, short room_number)
+{
+	SPARKS* sptr;
+	PHD_3DPOS pos;
+	long dx, dz;
+	uchar size;
+
+	dx = lara_item->pos.x_pos - x;
+	dz = lara_item->pos.z_pos - z;
+
+	if (dx < -0x4000 || dx > 0x4000 || dz < -0x4000 || dz > 0x4000)
+		return;
+
+	sptr = &spark[GetFreeSpark()];
+	sptr->On = 1;
+	sptr->sR = 128;
+	sptr->sG = 64;
+	sptr->sB = 0;
+	sptr->dR = 128;
+	sptr->dG = 128;
+	sptr->dB = 128;
+	sptr->ColFadeSpeed = 8;
+	sptr->FadeToBlack = 12;
+	sptr->Life = 24;
+	sptr->sLife = 24;
+	sptr->TransType = 2;
+	sptr->x = x;
+	sptr->y = y;
+	sptr->z = z;
+	sptr->Xvel = 0;
+	sptr->Yvel = 0;
+	sptr->Zvel = 0;
+	sptr->Friction = 0;
+	sptr->Flags = 2058;
+	sptr->Scalar = 3;
+	sptr->Def = objects[DEFAULT_SPRITES].mesh_index + 13;
+	sptr->Gravity = 0;
+	sptr->MaxYvel = 0;
+	size = (GetRandomControl() & 7) + 63;
+	sptr->Size = size >> 1;
+	sptr->sSize = size >> 1;
+	sptr->dSize = size << 1;
+
+	for (int i = 0; i < 7; i++)
+	{
+		pos.x_pos = (GetRandomControl() & 0x1FF) + x - 256;
+		pos.y_pos = (GetRandomControl() & 0x7F) + y - 64;
+		pos.z_pos = (GetRandomControl() & 0x1FF) + z - 256;
+		CreateBubble(&pos, room_number, 6, 15);
+	}
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -941,4 +993,5 @@ void inject_effect2(bool replace)
 	INJECT(0x00435E30, TriggerDartSmoke, replace);
 	INJECT(0x00436040, KillAllCurrentItems, replace);
 	INJECT(0x00436050, KillEverything, replace);
+	INJECT(0x00436060, TriggerExplosionBubble, replace);
 }

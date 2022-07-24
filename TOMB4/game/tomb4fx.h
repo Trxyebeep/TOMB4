@@ -40,7 +40,7 @@ void DrawGunflashes();
 #define	SetFadeClip	( (void(__cdecl*)(short, short)) 0x00439D40 )
 #define	SetScreenFadeOut	( (void(__cdecl*)(long, long)) 0x00439DB0 )
 #define	SetScreenFadeIn	( (void(__cdecl*)(long)) 0x00439E00 )
-#define	CreateBubble	( (void(__cdecl*)(PHD_3DPOS*, short, long, long, long, long, long , long)) 0x004397F0 )
+#define	CreateBubble	( (void(__cdecl*)(PHD_3DPOS*, short, long, long)) 0x004397F0 )
 #define GetFreeDrip	( (long(__cdecl*)()) 0x00439F10 )
 #define TriggerBlood	( (void(__cdecl*)(long, long, long, long, long)) 0x00438F00 )
 #define TriggerShockwave	( (void(__cdecl*)(PHD_VECTOR*, long, long, long, long)) 0x0043AA90 )
