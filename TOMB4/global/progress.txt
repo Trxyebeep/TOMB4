@@ -416,7 +416,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/effects.cpp
 
-0x00437050		ItemNearLara
+0x00437050	+	ItemNearLara
 0x004370E0	+	SoundEffects
 0x00437140	+	Richochet
 0x00437180	+	DoBloodSplat
