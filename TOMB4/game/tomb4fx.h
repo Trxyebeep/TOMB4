@@ -31,6 +31,7 @@ void SetGunFlash(short weapon);
 void DrawGunflashes();
 long GetFreeBlood();
 void UpdateBlood();
+void TriggerBlood(long x, long y, long z, long angle, long num);
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )
@@ -43,7 +44,6 @@ void UpdateBlood();
 #define	SetScreenFadeIn	( (void(__cdecl*)(long)) 0x00439E00 )
 #define	CreateBubble	( (void(__cdecl*)(PHD_3DPOS*, short, long, long)) 0x004397F0 )
 #define GetFreeDrip	( (long(__cdecl*)()) 0x00439F10 )
-#define TriggerBlood	( (void(__cdecl*)(long, long, long, long, long)) 0x00438F00 )
 #define TriggerShockwave	( (void(__cdecl*)(PHD_VECTOR*, long, long, long, long)) 0x0043AA90 )
 #define TriggerFlashSmoke	( (void(__cdecl*)(long, long, long, long)) 0x0043B420 )
 #define Fade	( (void(__cdecl*)()) 0x00439E40 )

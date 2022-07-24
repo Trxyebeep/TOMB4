@@ -1413,6 +1413,52 @@ void UpdateBlood()
 	}
 }
 
+void TriggerBlood(long x, long y, long z, long angle, long num)
+{
+	BLOOD_STRUCT* bptr;
+	short ang, speed;
+	uchar size;
+
+	for (int i = 0; i < num; i++)
+	{
+		bptr = &blood[GetFreeBlood()];
+		bptr->On = 1;
+		bptr->sShade = 0;
+		bptr->ColFadeSpeed = 4;
+		bptr->FadeToBlack = 8;
+		bptr->dShade = (GetRandomControl() & 0x3F) + 48;
+		bptr->Life = (GetRandomControl() & 7) + 24;
+		bptr->sLife = bptr->Life;
+		bptr->x = (GetRandomControl() & 0x1F) + x - 16;
+		bptr->y = (GetRandomControl() & 0x1F) + y - 16;
+		bptr->z = (GetRandomControl() & 0x1F) + z - 16;
+
+		if (angle == -1)
+			ang = (short)GetRandomControl();
+		else
+			ang = short((GetRandomControl() & 0x1F) + angle - 16);
+
+		ang &= 0xFFF;
+		speed = GetRandomControl() & 0xF;
+		bptr->Xvel = -(speed * rcossin_tbl[ang << 1]) >> 7;
+		bptr->Zvel = speed * rcossin_tbl[(ang << 1) + 1] >> 7;
+		bptr->Friction = 4;
+		bptr->Yvel = -128 - (GetRandomControl() & 0xFF);
+		bptr->RotAng = GetRandomControl() & 0xFFF;
+
+		if (GetRandomControl() & 1)
+			bptr->RotAdd = -64 - (GetRandomControl() & 0x3F);
+		else
+			bptr->RotAdd = (GetRandomControl() & 0x3F) + 64;
+
+		bptr->Gravity = (GetRandomControl() & 0x1F) + 31;
+		size = (GetRandomControl() & 7) + 8;
+		bptr->sSize = size;
+		bptr->Size = size;
+		bptr->dSize = size >> 2;
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1443,4 +1489,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00439C00, DrawGunflashes, replace);
 	INJECT(0x00438D20, GetFreeBlood, replace);
 	INJECT(0x00438D90, UpdateBlood, replace);
+	INJECT(0x00438F00, TriggerBlood, replace);
 }
