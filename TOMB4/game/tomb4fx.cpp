@@ -1354,6 +1354,65 @@ long GetFreeBlood()
 	return min_life_num;
 }
 
+void UpdateBlood()
+{
+	BLOOD_STRUCT* bptr;
+	long fade;
+
+	for (int i = 0; i < 32; i++)
+	{
+		bptr = &blood[i];
+
+		if (!bptr->On)
+			continue;
+
+		bptr->Life--;
+
+		if (bptr->Life <= 0)
+		{
+			bptr->On = 0;
+			continue;
+		}
+
+		if (bptr->sLife - bptr->Life < bptr->ColFadeSpeed)
+		{
+			fade = ((bptr->sLife - bptr->Life) << 16) / bptr->ColFadeSpeed;
+			bptr->Shade = bptr->sShade + (((bptr->dShade - bptr->sShade) * (uchar)fade) >> 16);
+		}
+		else
+		{
+			if (bptr->Life < bptr->FadeToBlack)
+			{
+				fade = ((bptr->Life - bptr->FadeToBlack) << 16) / bptr->FadeToBlack + 0x10000;
+				bptr->Shade = (bptr->dShade * (uchar)fade) >> 16;
+
+				if (bptr->Shade < 8)
+				{
+					bptr->On = 0;
+					continue;
+				}
+			}
+			else
+				bptr->Shade = bptr->dShade;
+		}
+
+		bptr->RotAng = (bptr->RotAng + bptr->RotAdd) & 0xFFF;
+		bptr->Yvel += bptr->Gravity;
+		fade = ((bptr->sLife - bptr->Life) << 16) / bptr->sLife;
+
+		if (bptr->Friction & 0xF)
+		{
+			bptr->Xvel -= bptr->Xvel >> (bptr->Friction & 0xF);
+			bptr->Zvel -= bptr->Zvel >> (bptr->Friction & 0xF);
+		}
+
+		bptr->x += bptr->Xvel >> 5;
+		bptr->y += bptr->Yvel >> 5;
+		bptr->z += bptr->Zvel >> 5;
+		bptr->Size = bptr->sSize + (((uchar)fade * (bptr->dSize - bptr->sSize)) >> 16);
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1383,4 +1442,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00439B80, SetGunFlash, replace);
 	INJECT(0x00439C00, DrawGunflashes, replace);
 	INJECT(0x00438D20, GetFreeBlood, replace);
+	INJECT(0x00438D90, UpdateBlood, replace);
 }
