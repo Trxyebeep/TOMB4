@@ -498,6 +498,7 @@
 #define CurrentPendulum	VAR_U_(0x007FD1A0, PENDULUM)
 #define next_fire_spark	VAR_U_(0x004ADF5C, long)
 #define next_smoke_spark	VAR_U_(0x004BF390, long)
+#define next_spark	VAR_U_(0x004BF368, long)
 #define next_gunshell	VAR_U_(0x004BF398, long)
 #define next_bubble	VAR_U_(0x004BF39C, long)
 #define next_drip	VAR_U_(0x004BF3A0, long)
@@ -511,6 +512,7 @@
 #define ClosestItem VAR_U_(0x007FE2E0, long)
 #define TorchItem	VAR_U_(0x004BF338, ITEM_INFO*)
 #define next_scarab	VAR_U_(0x004BF2F8, long)
+#define splash_setup	VAR_U_(0x00804F40, SPLASH_SETUP)
 
 
 
@@ -634,6 +636,9 @@
 #define los_rooms	ARRAY_(0x007FE260, short, [20])
 #define	weapons	ARRAY_(0x004AD848, WEAPON_INFO, [9])
 #define Scarabs	ARRAY_(0x0080ED00, SCARAB_STRUCT, [128])
+#define Map	ARRAY_(0x006734A8, MAP_STRUCT, [255])
+#define DeadlyBounds	ARRAY_(0x00804840, long, [6])
+#define spark_dynamics	ARRAY_(0x00804800, SP_DYNAMIC, [8])
 
 
 /*Fog stuff*/

@@ -38,7 +38,19 @@ void DrawFlareInAir(ITEM_INFO* item)
 	}
 }
 
+void draw_flare_meshes()
+{
+	lara.mesh_ptrs[LM_LHAND] = meshes[objects[FLARE_ANIM].mesh_index + LM_LHAND * 2];
+}
+
+void undraw_flare_meshes()
+{
+	lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA].mesh_index + LM_LHAND * 2];
+}
+
 void inject_laraflar(bool replace)
 {
 	INJECT(0x0042F7B0, DrawFlareInAir, replace);
+	INJECT(0x0042FF10, draw_flare_meshes, replace);
+	INJECT(0x0042FF30, undraw_flare_meshes, replace);
 }

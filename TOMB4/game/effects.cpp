@@ -12,6 +12,12 @@
 #include "tomb4fx.h"
 #include "footprnt.h"
 #include "effect2.h"
+#include "control.h"
+#include "draw.h"
+#include "lara_states.h"
+#include "../specific/function_stubs.h"
+#include "../specific/3dmath.h"
+#include "../specific/dxsound.h"
 
 void(*effect_routines[47])(ITEM_INFO* item) =
 {
@@ -390,6 +396,184 @@ void WaterFall(short item_number)
 	}
 }
 
+void WadeSplash(ITEM_INFO* item, long water, long depth)
+{
+	short* bounds;
+	short room_number;
+
+	room_number = item->room_number;
+	GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+
+	if (!(room[room_number].flags & ROOM_UNDERWATER))
+		return;
+
+	bounds = GetBestFrame(item);
+
+	if (item->pos.y_pos + bounds[2] > water || item->pos.y_pos + bounds[3] < water)
+		return;
+
+	if (item->fallspeed > 0 && depth < 474 && !SplashCount)
+	{
+		splash_setup.x = item->pos.x_pos;
+		splash_setup.y = water;
+		splash_setup.z = item->pos.z_pos;
+		splash_setup.InnerRad = 16;
+		splash_setup.InnerSize = 12;
+		splash_setup.InnerRadVel = 160;
+		splash_setup.InnerYVel = -72 * item->fallspeed;
+		splash_setup.pad1 = 24;
+		splash_setup.MiddleRad = 24;
+		splash_setup.MiddleSize = 224;
+		splash_setup.MiddleRadVel = -36 * item->fallspeed;
+		splash_setup.MiddleYVel = 32;
+		splash_setup.pad2 = 32;
+		splash_setup.OuterRad = 272;
+		SetupSplash(&splash_setup);
+		SplashCount = 16;
+	}
+	else if (!(wibble & 0xF) && (!(GetRandomControl() & 0xF) || item->current_anim_state != AS_STOP))
+	{
+		if (item->current_anim_state == AS_STOP)
+			SetupRipple(item->pos.x_pos, water, item->pos.z_pos, (GetRandomControl() & 0xF) + 112, 16);
+		else
+			SetupRipple(item->pos.x_pos, water, item->pos.z_pos, (GetRandomControl() & 0xF) + 112, 18);
+	}
+}
+
+void Splash(ITEM_INFO* item)
+{
+	short room_number;
+
+	room_number = item->room_number;
+	GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+
+	if (room[room_number].flags & ROOM_UNDERWATER)
+	{
+		splash_setup.x = item->pos.x_pos;
+		splash_setup.y = GetWaterHeight(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, room_number);
+		splash_setup.z = item->pos.z_pos;
+		splash_setup.InnerRad = 32;
+		splash_setup.InnerSize = 8;
+		splash_setup.InnerRadVel = 320;
+		splash_setup.InnerYVel = -40 * item->fallspeed;
+		splash_setup.pad1 = 48;
+		splash_setup.MiddleRad = 32;
+		splash_setup.MiddleSize = 480;
+		splash_setup.MiddleRadVel = -20 * item->fallspeed;
+		splash_setup.MiddleYVel = 32;
+		splash_setup.pad2 = 128;
+		splash_setup.OuterRad = 544;
+		SetupSplash(&splash_setup);
+	}
+}
+
+short DoBloodSplat(long x, long y, long z, short speed, short ang, short room_number)
+{
+	if (room[room_number].flags & ROOM_UNDERWATER)
+		TriggerUnderwaterBlood(x, y, z, speed);
+	else
+		TriggerBlood(x, y, z, ang >> 4, speed);
+
+	return -1;
+}
+
+void DoLotsOfBlood(long x, long y, long z, short speed, short ang, short room_number, long num)
+{
+	long bx, by, bz;
+
+	for (; num > 0; num--)
+	{
+		bx = x - (GetRandomControl() << 9) / 0x8000 + 256;
+		by = y - (GetRandomControl() << 9) / 0x8000 + 256;
+		bz = z - (GetRandomControl() << 9) / 0x8000 + 256;
+		DoBloodSplat(bx, by, bz, speed, ang, room_number);
+	}
+}
+
+void Richochet(GAME_VECTOR* pos)
+{
+	TriggerRicochetSpark(pos, mGetAngle(pos->z, pos->x, lara_item->pos.z_pos, lara_item->pos.x_pos) >> 4, 3, 0);
+	SoundEffect(SFX_LARA_RICOCHET, (PHD_3DPOS*)pos, SFX_DEFAULT);
+}
+
+void SoundEffects()
+{
+	OBJECT_VECTOR* sfx;
+	SoundSlot* slot;
+
+	for (int i = 0; i < number_sound_effects; i++)
+	{
+		sfx = &sound_effects[i];
+
+		if (flip_status)
+		{
+			if (sfx->flags & 0x40)
+				SoundEffect(sfx->data, (PHD_3DPOS*)sfx, 0);
+		}
+		else if (sfx->flags & 0x80)
+			SoundEffect(sfx->data, (PHD_3DPOS*)sfx, 0);
+	}
+
+	if (flipeffect != -1)
+		effect_routines[flipeffect](0);
+
+	if (!sound_active)
+		return;
+
+	for (int i = 0; i < 32; i++)
+	{
+		slot = &LaSlot[i];
+
+		if (slot->nSampleInfo < 0)
+			continue;
+
+		if ((sample_infos[slot->nSampleInfo].flags & 3) != 3)
+		{
+			if (!S_SoundSampleIsPlaying(i))
+				slot->nSampleInfo = -1;
+			else
+			{
+				GetPanVolume(slot);
+				S_SoundSetPanAndVolume(i, (short)slot->nPan, (ushort)slot->nVolume);
+			}
+		}
+		else
+		{
+			if (!slot->nVolume)
+			{
+				S_SoundStopSample(i);
+				slot->nSampleInfo = -1;
+			}
+			else
+			{
+				S_SoundSetPanAndVolume(i, (short)slot->nPan, (ushort)slot->nVolume);
+				S_SoundSetPitch(i, slot->nPitch);
+				slot->nVolume = 0;
+			}
+		}
+	}
+}
+
+long ItemNearLara(PHD_3DPOS* pos, long rad)
+{
+	short* bounds;
+	long dx, dy, dz;
+
+	dx = pos->x_pos - lara_item->pos.x_pos;
+	dy = pos->y_pos - lara_item->pos.y_pos;
+	dz = pos->z_pos - lara_item->pos.z_pos;
+
+	if (dx >= -rad && dx <= rad && dz >= -rad && dz <= rad && dy >= -3072 && dy <= 3072 && SQUARE(dx) + SQUARE(dz) <= SQUARE(rad))
+	{
+		bounds = GetBoundsAccurate(lara_item);
+
+		if (dy >= bounds[2] && dy <= bounds[3] + 100)
+			return 1;
+	}
+
+	return 0;
+}
+
 void inject_effects(bool replace)
 {
 	INJECT(0x00437AB0, SetFog, replace);
@@ -422,4 +606,11 @@ void inject_effects(bool replace)
 	INJECT(0x00437D00, MeshSwapToPour, replace);
 	INJECT(0x00437D30, MeshSwapFromPour, replace);
 	INJECT(0x00437530, WaterFall, replace);
+	INJECT(0x00437390, WadeSplash, replace);
+	INJECT(0x004372A0, Splash, replace);
+	INJECT(0x00437180, DoBloodSplat, replace);
+	INJECT(0x004371F0, DoLotsOfBlood, replace);
+	INJECT(0x00437140, Richochet, replace);
+	INJECT(0x004370E0, SoundEffects, replace);
+	INJECT(0x00437050, ItemNearLara, replace);
 }

@@ -10,3 +10,4 @@ void ClearScarabs();
 void TriggerScarab(short item_number);
 void UpdateScarabs();
 void DrawScarabs();
+void InitialiseScarabGenerator(short item_number);

@@ -83,6 +83,17 @@ do \
 #define DSNGUID					IID_IDirectSoundNotify
 	/**********************************/
 
+enum anim_commands
+{
+	ACMD_NULL,
+	ACMD_SETPOS,
+	ACMD_JUMPVEL,
+	ACMD_FREEHANDS,
+	ACMD_KILL,
+	ACMD_PLAYSFX,
+	ACMD_FLIPEFFECT
+};
+
 enum ai_bits
 {
 	GUARD = 1 << 0,
@@ -2176,6 +2187,45 @@ struct SCARAB_STRUCT
 	short fallspeed;
 	uchar On;
 	uchar flags;
+};
+
+struct MAP_STRUCT
+{
+	char unk[3592];
+	short visited;
+	short room_number;
+};
+
+struct SPLASH_SETUP
+{
+	long x;
+	long y;
+	long z;
+	short InnerRad;
+	short InnerSize;
+	short InnerRadVel;
+	short InnerYVel;
+	short pad1;
+	short MiddleRad;
+	short MiddleSize;
+	short MiddleRadVel;
+	short MiddleYVel;
+	short pad2;
+	short OuterRad;
+	short OuterSize;
+	short OuterRadVel;
+	short pad3;
+};
+
+struct SP_DYNAMIC
+{
+	uchar On;
+	uchar Falloff;
+	uchar R;
+	uchar G;
+	uchar B;
+	uchar Flags;
+	uchar Pad[2];
 };
 
 #ifdef IMPROVED_BARS

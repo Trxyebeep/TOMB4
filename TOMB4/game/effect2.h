@@ -12,15 +12,20 @@ void TriggerDynamic_MIRROR(long x, long y, long z, long falloff, long r, long g,
 void ClearDynamics();
 void ControlEnemyMissile(short fx_number);
 void SetupRipple(long x, long y, long z, long size, long flags);
-
-#define KillEverything	( (void(__cdecl*)()) 0x00436050 )
-#define UpdateSparks	( (void(__cdecl*)()) 0x00433E10 )
-#define UpdateSplashes	( (void(__cdecl*)()) 0x004359E0 )
-#define GetFreeSpark	( (long(__cdecl*)()) 0x00433D30 )
-#define TriggerExplosionSparks	( (void(__cdecl*)(long, long, long, long, long, long, short)) 0x004349F0 )
-#define TriggerFireFlame	( (void(__cdecl*)(long, long, long, long, long)) 0x00435130 )
-#define TriggerSuperJetFlame	( (void(__cdecl*)(ITEM_INFO*, long, long)) 0x00435570 )
-#define TriggerWaterfallMist	( (void(__cdecl*)(long, long, long, long)) 0x00435C60 )
-#define Richochet	( (void(__cdecl*)(GAME_VECTOR*)) 0x00437140 )
-#define TriggerRicochetSpark	( (void(__cdecl*)(GAME_VECTOR*, long, long, long)) 0x00434440 )
-#define DetatchSpark	( (void(__cdecl*)(long, long)) 0x00433C70 )
+void TriggerUnderwaterBlood(long x, long y, long z, long size);
+void TriggerWaterfallMist(long x, long y, long z, long ang);
+void TriggerDartSmoke(long x, long y, long z, long xv, long zv, long hit);
+void KillAllCurrentItems(short item_number);
+void KillEverything();
+void TriggerExplosionBubble(long x, long y, long z, short room_number);
+void ControlColouredLights(short item_number);
+void DetatchSpark(long num, long type);
+long GetFreeSpark();
+void UpdateSparks();
+void TriggerRicochetSpark(GAME_VECTOR* pos, long ang, long num, long smoke_only);
+void TriggerExplosionSparks(long x, long y, long z, long extras, long dynamic, long uw, short room_number);
+void TriggerFireFlame(long x, long y, long z, long body_part, long type);
+void TriggerSuperJetFlame(ITEM_INFO* item, long yvel, long deadly);
+void TriggerRocketSmoke(long x, long y, long z, long col);
+void SetupSplash(SPLASH_SETUP* setup);
+void UpdateSplashes();

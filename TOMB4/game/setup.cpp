@@ -462,7 +462,7 @@ void ObjectObjects()
 	for (int i = RED_LIGHT; i <= BLUE_LIGHT; i++)
 	{
 		obj = &objects[i];
-	//	obj->control = ControlColouredLights;
+		obj->control = ControlColouredLights;
 		obj->draw_routine = 0;
 		obj->using_drawanimating_item = 0;
 		obj->save_flags = 1;
@@ -559,7 +559,7 @@ void TrapObjects()
 	
 	obj = &objects[STARGATE];
 	obj->control = ControlStargate;
-//	obj->collision = StargateCollision;
+	obj->collision = StargateCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
@@ -578,7 +578,7 @@ void TrapObjects()
 
 	obj = &objects[COG];
 	obj->control = ControlAnimatingSlots;
-//	obj->collision = CogCollision;
+	obj->collision = CogCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
@@ -640,7 +640,7 @@ void TrapObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[KILL_ALL_TRIGGERS];
-//	obj->control = KillAllCurrentItems;
+	obj->control = KillAllCurrentItems;
 	obj->draw_routine = 0;
 	obj->hit_points = 0;
 	obj->using_drawanimating_item = 0;
@@ -669,7 +669,7 @@ void TrapObjects()
 
 	obj = &objects[FALLING_CEILING];
 //	obj->control = FallingCeiling;
-//	obj->collision = TrapCollision;
+	obj->collision = TrapCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
@@ -1608,7 +1608,7 @@ void BaddyObjects()
 	if (obj->loaded)
 	{
 //		obj->initialise = InitialiseHorse;
-//		obj->collision = ObjectCollision;
+		obj->collision = ObjectCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -1621,7 +1621,7 @@ void BaddyObjects()
 		{
 			obj->initialise = InitialiseInjuredSas;
 			obj->control = InjuredSasControl;
-//			obj->collision = ObjectCollision;
+			obj->collision = ObjectCollision;
 			obj->save_flags = 1;
 			obj->save_anim = 1;
 			obj->save_position = 1;
@@ -1634,7 +1634,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseJeanYves;
 		obj->control = JeanYvesControl;
-//		obj->collision = ObjectCollision;
+		obj->collision = ObjectCollision;
 		obj->object_mip = 10240;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
@@ -1649,7 +1649,7 @@ void BaddyObjects()
 		{
 			obj->initialise = InitialiseSenet;
 			obj->control = SenetControl;
-//			obj->collision = ObjectCollision;
+			obj->collision = ObjectCollision;
 			obj->save_flags = 1;
 			obj->save_hitpoints = 1;
 			obj->save_position = 1;
@@ -1660,7 +1660,7 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->collision = ObjectCollision;
+		obj->collision = ObjectCollision;
 		obj->save_flags = 1;
 		obj->save_position = 1;
 	}
@@ -1701,7 +1701,7 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseScarabGenerator;
+		obj->initialise = InitialiseScarabGenerator;
 		obj->control = TriggerScarab;
 		obj->draw_routine = 0;
 		obj->using_drawanimating_item = 0;

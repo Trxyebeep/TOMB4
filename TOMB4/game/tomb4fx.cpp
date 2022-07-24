@@ -327,12 +327,12 @@ void LaraBubbles(ITEM_INFO* item)
 
 	for (int i = (GetRandomControl() & 1) + 2; i > 0; i--)
 	{
-		CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7, 0, 0, 0, 0);
+		CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7);
 
 		if (gfLevelFlags & GF_MIRROR  && item->room_number == gfMirrorRoom)
 		{
 			pos.z = 2 * gfMirrorZPlane - pos.z;
-			CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7, 0, 0, 0, 0);
+			CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7);
 			pos.z = 2 * gfMirrorZPlane - pos.z;
 		}
 	}
@@ -586,9 +586,9 @@ void UpdateFireSparks()
 		if (sptr->sLife - sptr->Life < sptr->ColFadeSpeed)
 		{
 			fade = ((sptr->sLife - sptr->Life) << 16) / sptr->ColFadeSpeed;
-			sptr->R = sptr->sR + uchar((fade * (sptr->dR - sptr->sR)) >> 16);
-			sptr->G = sptr->sG + uchar((fade * (sptr->dG - sptr->sG)) >> 16);
-			sptr->B = sptr->sB + uchar((fade * (sptr->dB - sptr->sB)) >> 16);
+			sptr->R = uchar(sptr->sR + ((fade * (sptr->dR - sptr->sR)) >> 16));
+			sptr->G = uchar(sptr->sG + ((fade * (sptr->dG - sptr->sG)) >> 16));
+			sptr->B = uchar(sptr->sB + ((fade * (sptr->dB - sptr->sB)) >> 16));
 		}
 		else if (sptr->Life < sptr->FadeToBlack)
 		{
@@ -638,7 +638,7 @@ void UpdateFireSparks()
 		sptr->x += sptr->Xvel >> 5;
 		sptr->y += sptr->Yvel >> 5;
 		sptr->z += sptr->Zvel >> 5;
-		sptr->Size = sptr->sSize + uchar((fade * (sptr->dSize - sptr->sSize)) >> 16);
+		sptr->Size = uchar(sptr->sSize + ((fade * (sptr->dSize - sptr->sSize)) >> 16));
 	}
 }
 
@@ -796,7 +796,7 @@ void UpdateSmokeSparks()
 		if (sptr->sLife - sptr->Life < sptr->ColFadeSpeed)
 		{
 			fade = ((sptr->sLife - sptr->Life) << 16) / sptr->ColFadeSpeed;
-			sptr->Shade = sptr->sShade + uchar(((sptr->dShade - sptr->sShade) * fade) >> 16);
+			sptr->Shade = uchar(sptr->sShade + (((sptr->dShade - sptr->sShade) * fade) >> 16));
 		}
 		else if (sptr->Life < sptr->FadeToBlack)
 		{
@@ -850,7 +850,7 @@ void UpdateSmokeSparks()
 			sptr->z += SmokeWindZ >> 1;
 		}
 
-		sptr->Size = sptr->sSize + uchar((fade * (sptr->dSize - sptr->sSize)) >> 16);
+		sptr->Size = uchar(sptr->sSize + ((fade * (sptr->dSize - sptr->sSize)) >> 16));
 	}
 }
 
@@ -1312,6 +1312,153 @@ void DrawGunflashes()
 	phd_PopMatrix();
 }
 
+long GetFreeBlood()
+{
+	BLOOD_STRUCT* bptr;
+	long min_life, min_life_num, free;
+
+	free = next_blood;
+	bptr = &blood[next_blood];
+	min_life = 4095;
+	min_life_num = 0;
+
+	for (int i = 0; i < 32; i++)
+	{
+		if (bptr->On)
+		{
+			if (bptr->Life < min_life)
+			{
+				min_life_num = free;
+				min_life = bptr->Life;
+			}
+
+			if (free == 31)
+			{
+				bptr = &blood[0];
+				free = 0;
+			}
+			else
+			{
+				free++;
+				bptr++;
+			}
+		}
+		else
+		{
+			next_blood = (free + 1) & 0x1F;
+			return free;
+		}
+	}
+
+	next_blood = (min_life_num + 1) & 0x1F;
+	return min_life_num;
+}
+
+void UpdateBlood()
+{
+	BLOOD_STRUCT* bptr;
+	long fade;
+
+	for (int i = 0; i < 32; i++)
+	{
+		bptr = &blood[i];
+
+		if (!bptr->On)
+			continue;
+
+		bptr->Life--;
+
+		if (bptr->Life <= 0)
+		{
+			bptr->On = 0;
+			continue;
+		}
+
+		if (bptr->sLife - bptr->Life < bptr->ColFadeSpeed)
+		{
+			fade = ((bptr->sLife - bptr->Life) << 16) / bptr->ColFadeSpeed;
+			bptr->Shade = uchar(bptr->sShade + ((fade * (bptr->dShade - bptr->sShade)) >> 16));
+		}
+		else
+		{
+			if (bptr->Life < bptr->FadeToBlack)
+			{
+				fade = ((bptr->Life - bptr->FadeToBlack) << 16) / bptr->FadeToBlack + 0x10000;
+				bptr->Shade = uchar((bptr->dShade * fade) >> 16);
+
+				if (bptr->Shade < 8)
+				{
+					bptr->On = 0;
+					continue;
+				}
+			}
+			else
+				bptr->Shade = bptr->dShade;
+		}
+
+		bptr->RotAng = (bptr->RotAng + bptr->RotAdd) & 0xFFF;
+		bptr->Yvel += bptr->Gravity;
+		fade = ((bptr->sLife - bptr->Life) << 16) / bptr->sLife;
+
+		if (bptr->Friction & 0xF)
+		{
+			bptr->Xvel -= bptr->Xvel >> (bptr->Friction & 0xF);
+			bptr->Zvel -= bptr->Zvel >> (bptr->Friction & 0xF);
+		}
+
+		bptr->x += bptr->Xvel >> 5;
+		bptr->y += bptr->Yvel >> 5;
+		bptr->z += bptr->Zvel >> 5;
+		bptr->Size = uchar(bptr->sSize + ((fade * (bptr->dSize - bptr->sSize)) >> 16));
+	}
+}
+
+void TriggerBlood(long x, long y, long z, long angle, long num)
+{
+	BLOOD_STRUCT* bptr;
+	short ang, speed;
+	uchar size;
+
+	for (int i = 0; i < num; i++)
+	{
+		bptr = &blood[GetFreeBlood()];
+		bptr->On = 1;
+		bptr->sShade = 0;
+		bptr->ColFadeSpeed = 4;
+		bptr->FadeToBlack = 8;
+		bptr->dShade = (GetRandomControl() & 0x3F) + 48;
+		bptr->Life = (GetRandomControl() & 7) + 24;
+		bptr->sLife = bptr->Life;
+		bptr->x = (GetRandomControl() & 0x1F) + x - 16;
+		bptr->y = (GetRandomControl() & 0x1F) + y - 16;
+		bptr->z = (GetRandomControl() & 0x1F) + z - 16;
+
+		if (angle == -1)
+			ang = (short)GetRandomControl();
+		else
+			ang = short((GetRandomControl() & 0x1F) + angle - 16);
+
+		ang &= 0xFFF;
+		speed = GetRandomControl() & 0xF;
+		bptr->Xvel = -(speed * rcossin_tbl[ang << 1]) >> 7;
+		bptr->Zvel = speed * rcossin_tbl[(ang << 1) + 1] >> 7;
+		bptr->Friction = 4;
+		bptr->Yvel = -128 - (GetRandomControl() & 0xFF);
+		bptr->RotAng = GetRandomControl() & 0xFFF;
+
+		if (GetRandomControl() & 1)
+			bptr->RotAdd = -64 - (GetRandomControl() & 0x3F);
+		else
+			bptr->RotAdd = (GetRandomControl() & 0x3F) + 64;
+
+		bptr->Gravity = (GetRandomControl() & 0x1F) + 31;
+		size = (GetRandomControl() & 7) + 8;
+		bptr->sSize = size;
+		bptr->Size = size;
+		bptr->dSize = size >> 2;
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1340,4 +1487,7 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00439AE0, TriggerGunflash, replace);
 	INJECT(0x00439B80, SetGunFlash, replace);
 	INJECT(0x00439C00, DrawGunflashes, replace);
+	INJECT(0x00438D20, GetFreeBlood, replace);
+	INJECT(0x00438D90, UpdateBlood, replace);
+	INJECT(0x00438F00, TriggerBlood, replace);
 }

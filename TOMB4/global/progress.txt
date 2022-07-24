@@ -116,30 +116,30 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/collide.cpp
 
-0x00446170		GetCollisionInfo
-0x00446CF0		FindGridShift
-0x00446D20		CollideStaticObjects
+0x00446170	+	GetCollisionInfo
+0x00446CF0	+	FindGridShift
+0x00446D20	+	CollideStaticObjects
 0x00446F70	+	ShiftItem
-0x00446FB0		UpdateLaraRoom
-0x00447010		GetTiltType
-0x004471B0		LaraBaddieCollision
+0x00446FB0	+	UpdateLaraRoom
+0x00447010	+	GetTiltType
+0x004471B0	+	LaraBaddieCollision
 0x00447470	+	CreatureCollision
-0x004475F0		ObjectCollision
-0x00447660		ObjectCollisionNoBigPush
-0x004476D0		TrapCollision
-0x00447750		ItemPushLara
-0x00447B00		TestBoundsCollide
-0x00447BE0		TestBoundsCollideStatic
-0x00447CE0		ItemPushLaraStatic
-0x00447F30		TestLaraPosition
-0x00448070		AlignLaraPosition
-0x00448140		Move3DPosTo3DPos
-0x004483E0		MoveLaraPosition
+0x004475F0	+	ObjectCollision
+0x00447660	+	ObjectCollisionNoBigPush
+0x004476D0	+	TrapCollision
+0x00447750	+	ItemPushLara
+0x00447B00	+	TestBoundsCollide
+0x00447BE0	+	TestBoundsCollideStatic
+0x00447CE0	+	ItemPushLaraStatic
+0x00447F30	+	TestLaraPosition
+0x00448070	+	AlignLaraPosition
+0x00448140	+	Move3DPosTo3DPos
+0x004483E0	+	MoveLaraPosition
 0x004485A0	+	GenericSphereBoxCollision
 0x00448840	+	GenericDeadlyBoundingBoxCollision
-0x004489A0		TestBoundsCollide2
-0x00448A80		StargateCollision
-0x00448CC0		CogCollision
+0x004489A0	+	TestBoundsCollide2
+0x00448A80	+	StargateCollision
+0x00448CC0	+	CogCollision
 0x00448DA0	+	GetCollidedObjects
 
 
@@ -149,7 +149,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00449330	+	KillMoveEffects
 0x00449390	+	UpdateSky
 0x00449410	+	ControlPhase
-0x00449B90		AnimateItem
+0x00449B90	+	AnimateItem
 0x00449FC0	+	GetChange
 0x0044A060	+	TranslateItem
 0x0044A0D0	+	AlterFloorHeight
@@ -386,43 +386,43 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/effect2.cpp
 
-0x00433C70		DetatchSpark
-0x00433D30		GetFreeSpark
-0x00433E10		UpdateSparks
-0x00434440		TriggerRicochetSpark
+0x00433C70	+	DetatchSpark
+0x00433D30	+	GetFreeSpark
+0x00433E10	+	UpdateSparks
+0x00434440	+	TriggerRicochetSpark
 0x00434770	+	TriggerFlareSparks
-0x004349F0		TriggerExplosionSparks
+0x004349F0	+	TriggerExplosionSparks
 0x00434DC0	+	TriggerExplosionSmokeEnd
 0x00434FA0	+	TriggerExplosionSmoke
-0x00435130		TriggerFireFlame
-0x00435570		TriggerSuperJetFlame
-0x004357C0		TriggerRocketSmoke
-0x00435920		SetupSplash
-0x004359E0		UpdateSplashes
+0x00435130	+	TriggerFireFlame
+0x00435570	+	TriggerSuperJetFlame
+0x004357C0	+	TriggerRocketSmoke
+0x00435920	+	SetupSplash
+0x004359E0	+	UpdateSplashes
 0x00435B70	+	SetupRipple
-0x00435BF0		TriggerUnderwaterBlood
-0x00435C60		TriggerWaterfallMist
-0x00435E30		TriggerDartSmoke
-0x00436040		KillAllCurrentItems
-0x00436050		KillEverything
-0x00436060		TriggerExplosionBubble
+0x00435BF0	+	TriggerUnderwaterBlood
+0x00435C60	+	TriggerWaterfallMist
+0x00435E30	+	TriggerDartSmoke
+0x00436040	+	KillAllCurrentItems
+0x00436050	+	KillEverything
+0x00436060	+	TriggerExplosionBubble
 0x004361A0	+	TriggerDynamic
 0x00436250	+	TriggerDynamic_MIRROR
 0x00436320	+	ClearDynamics
 0x00436340	+	ControlSmokeEmitter
-0x00436900		ControlColouredLights
+0x00436900	+	ControlColouredLights
 0x004369B0	+	ControlEnemyMissile
 
 
 		game/effects.cpp
 
-0x00437050		ItemNearLara
-0x004370E0		SoundEffects
-0x00437140		Richochet
-0x00437180		DoBloodSplat
-0x004371F0		DoLotsOfBlood
-0x004372A0		Splash
-0x00437390		WadeSplash
+0x00437050	+	ItemNearLara
+0x004370E0	+	SoundEffects
+0x00437140	+	Richochet
+0x00437180	+	DoBloodSplat
+0x004371F0	+	DoLotsOfBlood
+0x004372A0	+	Splash
+0x00437390	+	WadeSplash
 0x00437530	+	WaterFall
 0x00437650	+	finish_level_effect
 0x00437660	+	turn180_effect
@@ -846,11 +846,11 @@ x for functions decompiled but not injected, for one reason or another.
 		game/larafire.cpp
 
 0x0042D840		LaraGun
-0x0042DDC0		CheckForHoldingState
-0x0042DDF0		InitialiseNewWeapon
-0x0042DF30		LaraTargetInfo
+0x0042DDC0	+	CheckForHoldingState
+0x0042DDF0	+	InitialiseNewWeapon
+0x0042DF30	+	LaraTargetInfo
 0x0042E0D0		LaraGetNewTarget
-0x0042E4A0		find_target_point
+0x0042E4A0	+	find_target_point
 0x0042E560		AimWeapon
 0x0042E630		FireWeapon
 0x0042E920		HitTarget
@@ -869,8 +869,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x0042FB00		set_flare_arm
 0x0042FB50		draw_flare
 0x0042FC60		undraw_flare
-0x0042FF10		draw_flare_meshes
-0x0042FF30		undraw_flare_meshes
+0x0042FF10	+	draw_flare_meshes
+0x0042FF30	+	undraw_flare_meshes
 0x0042FF50		ready_flare
 0x0042FF90		FlareControl
 
@@ -879,10 +879,10 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x00430140	+	LaraInitialiseMeshes
 0x004301F0	+	LaraCheatGetStuff
-0x00430250		LaraControl
+0x00430250	+	LaraControl
 0x004309B0	+	LaraCheat
 0x00430A50	+	LaraCheatyBits
-0x00430B60		AnimateLara
+0x00430B60	+	AnimateLara
 0x00430EB0	+	InitialiseLaraLoad
 0x00430EE0	+	InitialiseLaraAnims
 
@@ -897,7 +897,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/larasurf.cpp
 
-0x00431AA0		LaraSurface
+0x00431AA0	+	LaraSurface
 0x00431C10	+	lara_as_surfswim
 0x00431C80	+	lara_as_surfback
 0x00431CE0	+	lara_as_surfleft
@@ -931,7 +931,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00432B50	+	lara_col_dive
 0x00432B70	+	lara_col_uwdeath
 0x00432BD0	+	lara_col_waterroll
-0x00432BF0		GetWaterDepth
+0x00432BF0	+	GetWaterDepth
 0x00432DA0		LaraWaterCurrent
 
 
@@ -1161,7 +1161,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0040E2D0	+	TriggerScarab
 0x0040E3C0	+	UpdateScarabs
 0x0040E630	+	DrawScarabs
-0x0040E6B0		InitialiseScarabGenerator
+0x0040E6B0	+	InitialiseScarabGenerator
 
 
 		game/scorpion.cpp
@@ -1312,9 +1312,9 @@ x for functions decompiled but not injected, for one reason or another.
 0x00438700	+	UpdateSmokeSparks
 0x00438940	+	TriggerGunSmoke
 0x00438BA0	+	TriggerShatterSmoke
-0x00438D20		GetFreeBlood
-0x00438D90		UpdateBlood
-0x00438F00		TriggerBlood
+0x00438D20	+	GetFreeBlood
+0x00438D90	+	UpdateBlood
+0x00438F00	+	TriggerBlood
 0x00439060	+	GetFreeGunshell
 0x004390F0	+	TriggerGunShell
 0x00439340	+	UpdateGunShells
