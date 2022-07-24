@@ -498,6 +498,7 @@
 #define CurrentPendulum	VAR_U_(0x007FD1A0, PENDULUM)
 #define next_fire_spark	VAR_U_(0x004ADF5C, long)
 #define next_smoke_spark	VAR_U_(0x004BF390, long)
+#define next_spark	VAR_U_(0x004BF368, long)
 #define next_gunshell	VAR_U_(0x004BF398, long)
 #define next_bubble	VAR_U_(0x004BF39C, long)
 #define next_drip	VAR_U_(0x004BF3A0, long)

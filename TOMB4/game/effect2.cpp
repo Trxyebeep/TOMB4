@@ -1031,6 +1031,60 @@ void DetatchSpark(long num, long type)
 	}
 }
 
+long GetFreeSpark()
+{
+	SPARKS* sptr;
+	long free, min_life;
+
+	free = next_spark;
+	sptr = &spark[next_spark];
+
+	for (int i = 0; i < 256; i++)
+	{
+		if (sptr->On)
+		{
+			if (free == 255)
+			{
+				sptr = &spark[0];
+				free = 0;
+			}
+			else
+			{
+				free++;
+				sptr++;
+			}
+		}
+		else
+		{
+			next_spark = (free + 1) & 0xFF;
+			spark[free].extras = 0;
+			spark[free].Dynamic = -1;
+			spark[free].Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
+			return free;
+		}
+	}
+
+	free = 0;
+	min_life = 4095;
+
+	for (int i = 0; i < 256; i++)
+	{
+		sptr = &spark[i];
+
+		if (sptr->Life < min_life && sptr->Dynamic == -1 && !(sptr->Flags & 0x20))
+		{
+			free = i;
+			min_life = sptr->Life;
+		}
+	}
+
+	next_spark = (free + 1) & 0xFF;
+	spark[free].extras = 0;
+	spark[free].Dynamic = -1;
+	spark[free].Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
+	return free;
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -1050,4 +1104,5 @@ void inject_effect2(bool replace)
 	INJECT(0x00436060, TriggerExplosionBubble, replace);
 	INJECT(0x00436900, ControlColouredLights, replace);
 	INJECT(0x00433C70, DetatchSpark, replace);
+	INJECT(0x00433D30, GetFreeSpark, replace);
 }

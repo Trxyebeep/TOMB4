@@ -20,10 +20,10 @@ void KillEverything();
 void TriggerExplosionBubble(long x, long y, long z, short room_number);
 void ControlColouredLights(short item_number);
 void DetatchSpark(long num, long type);
+long GetFreeSpark();
 
 #define UpdateSparks	( (void(__cdecl*)()) 0x00433E10 )
 #define UpdateSplashes	( (void(__cdecl*)()) 0x004359E0 )
-#define GetFreeSpark	( (long(__cdecl*)()) 0x00433D30 )
 #define TriggerExplosionSparks	( (void(__cdecl*)(long, long, long, long, long, long, short)) 0x004349F0 )
 #define TriggerFireFlame	( (void(__cdecl*)(long, long, long, long, long)) 0x00435130 )
 #define TriggerSuperJetFlame	( (void(__cdecl*)(ITEM_INFO*, long, long)) 0x00435570 )
