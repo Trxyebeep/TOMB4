@@ -462,7 +462,7 @@ void ObjectObjects()
 	for (int i = RED_LIGHT; i <= BLUE_LIGHT; i++)
 	{
 		obj = &objects[i];
-	//	obj->control = ControlColouredLights;
+		obj->control = ControlColouredLights;
 		obj->draw_routine = 0;
 		obj->using_drawanimating_item = 0;
 		obj->save_flags = 1;

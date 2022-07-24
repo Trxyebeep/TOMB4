@@ -18,6 +18,7 @@ void TriggerDartSmoke(long x, long y, long z, long xv, long zv, long hit);
 void KillAllCurrentItems(short item_number);
 void KillEverything();
 void TriggerExplosionBubble(long x, long y, long z, short room_number);
+void ControlColouredLights(short item_number);
 
 #define UpdateSparks	( (void(__cdecl*)()) 0x00433E10 )
 #define UpdateSplashes	( (void(__cdecl*)()) 0x004359E0 )

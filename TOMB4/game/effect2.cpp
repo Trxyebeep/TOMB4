@@ -977,6 +977,28 @@ void TriggerExplosionBubble(long x, long y, long z, short room_number)
 	}
 }
 
+void ControlColouredLights(short item_number)
+{
+	ITEM_INFO* item;
+	long objnum;
+	uchar colours[5][3] =
+	{
+		{ 255, 0, 0 },		//RED_LIGHT
+		{ 0, 255, 0 },		//GREEN_LIGHT
+		{ 0, 0, 255 },		//BLUE_LIGHT
+		{ 255, 192, 0 },	//unused 
+		{ 224, 224, 255 }	//unused
+	};
+
+	item = &items[item_number];
+
+	if (TriggerActive(item))
+	{
+		objnum = item->object_number - RED_LIGHT;
+		TriggerDynamic(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 24, colours[objnum][0], colours[objnum][1], colours[objnum][2]);
+	}
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -994,4 +1016,5 @@ void inject_effect2(bool replace)
 	INJECT(0x00436040, KillAllCurrentItems, replace);
 	INJECT(0x00436050, KillEverything, replace);
 	INJECT(0x00436060, TriggerExplosionBubble, replace);
+	INJECT(0x00436900, ControlColouredLights, replace);
 }
