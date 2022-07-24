@@ -16,6 +16,7 @@
 #include "draw.h"
 #include "lara_states.h"
 #include "../specific/function_stubs.h"
+#include "../specific/3dmath.h"
 
 void(*effect_routines[47])(ITEM_INFO* item) =
 {
@@ -488,6 +489,12 @@ void DoLotsOfBlood(long x, long y, long z, short speed, short ang, short room_nu
 	}
 }
 
+void Richochet(GAME_VECTOR* pos)
+{
+	TriggerRicochetSpark(pos, mGetAngle(pos->z, pos->x, lara_item->pos.z_pos, lara_item->pos.x_pos) >> 4, 3, 0);
+	SoundEffect(SFX_LARA_RICOCHET, (PHD_3DPOS*)pos, SFX_DEFAULT);
+}
+
 void inject_effects(bool replace)
 {
 	INJECT(0x00437AB0, SetFog, replace);
@@ -524,4 +531,5 @@ void inject_effects(bool replace)
 	INJECT(0x004372A0, Splash, replace);
 	INJECT(0x00437180, DoBloodSplat, replace);
 	INJECT(0x004371F0, DoLotsOfBlood, replace);
+	INJECT(0x00437140, Richochet, replace);
 }

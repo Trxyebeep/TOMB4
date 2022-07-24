@@ -38,6 +38,7 @@ void WadeSplash(ITEM_INFO* item, long water, long depth);
 void Splash(ITEM_INFO* item);
 short DoBloodSplat(long x, long y, long z, short speed, short ang, short room_number);
 void DoLotsOfBlood(long x, long y, long z, short speed, short ang, short room_number, long num);
+void Richochet(GAME_VECTOR* pos);
 
 #define SoundEffects	( (void(__cdecl*)()) 0x004370E0 )
 #define ItemNearLara	( (long(__cdecl*)(PHD_3DPOS*, long)) 0x00437050 )

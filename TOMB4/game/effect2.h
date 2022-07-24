@@ -26,7 +26,6 @@ void ControlColouredLights(short item_number);
 #define TriggerExplosionSparks	( (void(__cdecl*)(long, long, long, long, long, long, short)) 0x004349F0 )
 #define TriggerFireFlame	( (void(__cdecl*)(long, long, long, long, long)) 0x00435130 )
 #define TriggerSuperJetFlame	( (void(__cdecl*)(ITEM_INFO*, long, long)) 0x00435570 )
-#define Richochet	( (void(__cdecl*)(GAME_VECTOR*)) 0x00437140 )
 #define TriggerRicochetSpark	( (void(__cdecl*)(GAME_VECTOR*, long, long, long)) 0x00434440 )
 #define DetatchSpark	( (void(__cdecl*)(long, long)) 0x00433C70 )
 #define SetupSplash	( (void(__cdecl*)(SPLASH_SETUP*)) 0x00435920 )
