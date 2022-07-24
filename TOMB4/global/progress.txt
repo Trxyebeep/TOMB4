@@ -395,7 +395,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00434DC0	+	TriggerExplosionSmokeEnd
 0x00434FA0	+	TriggerExplosionSmoke
 0x00435130	+	TriggerFireFlame
-0x00435570		TriggerSuperJetFlame
+0x00435570	+	TriggerSuperJetFlame
 0x004357C0		TriggerRocketSmoke
 0x00435920		SetupSplash
 0x004359E0		UpdateSplashes

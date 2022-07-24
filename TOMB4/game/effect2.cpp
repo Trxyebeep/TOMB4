@@ -1755,6 +1755,78 @@ void TriggerFireFlame(long x, long y, long z, long body_part, long type)
 	}
 }
 
+void TriggerSuperJetFlame(ITEM_INFO* item, long yvel, long deadly)
+{
+	SPARKS* sptr;
+	long dx, dy, dz;
+
+	dx = lara_item->pos.x_pos - item->pos.x_pos;
+	dz = lara_item->pos.z_pos - item->pos.z_pos;
+
+	if (dx < -0x4000 || dx > 0x4000 || dz < -0x4000 || dz > 0x4000)
+		return;
+
+	dy = (GetRandomControl() & 0x1FF) - yvel;
+
+	if (dy < 512)
+		dy = 512;
+
+	sptr = &spark[GetFreeSpark()];
+	sptr->On = 1;
+	sptr->sR = (GetRandomControl() & 0x1F) + 48;
+	sptr->sG = sptr->sR;
+	sptr->sB = (GetRandomControl() & 0x3F) + 192;
+	sptr->dR = (GetRandomControl() & 0x3F) + 192;
+	sptr->dG = (GetRandomControl() & 0x3F) + 128;
+	sptr->dB = 32;
+	sptr->ColFadeSpeed = 8;
+	sptr->FadeToBlack = 8;
+	sptr->TransType = 2;
+	sptr->Life = uchar((dy >> 9) + (GetRandomControl() & 7) + 16);
+	sptr->sLife = sptr->Life;
+	sptr->x = (GetRandomControl() & 0x1F) + item->pos.x_pos - 16;
+	sptr->y = (GetRandomControl() & 0x1F) + item->pos.y_pos - 16;
+	sptr->z = (GetRandomControl() & 0x1F) + item->pos.z_pos - 16;
+	sptr->Friction = 51;
+	sptr->MaxYvel = 0;
+
+	if (deadly)
+		sptr->Flags = 539;
+	else
+		sptr->Flags = 538;
+
+	sptr->Scalar = 2;
+	sptr->dSize = uchar((GetRandomControl() & 0xF) + (dy >> 6) + 16);
+	sptr->sSize = sptr->dSize >> 1;
+	sptr->Size = sptr->dSize >> 1;
+
+	if ((-item->trigger_flags & 7) == 1)
+	{
+		sptr->Gravity = -16 - (GetRandomControl() & 0x1F);
+		sptr->Xvel = (GetRandomControl() & 0xFF) - 128;
+		sptr->Yvel = (short)-dy;
+		sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
+		sptr->dSize += sptr->dSize >> 2;
+		return;
+	}
+
+	sptr->y -= 64;
+	sptr->Gravity = short(-((dy >> 9) + GetRandomControl() % (dy >> 8)));
+	sptr->Xvel = (GetRandomControl() & 0xFF) - 128;
+	sptr->Yvel = (GetRandomControl() & 0xFF) - 128;
+	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
+	dy -= dy >> 2;
+
+	if (!item->pos.y_rot)
+		sptr->Zvel = (short)-dy;
+	else if (item->pos.y_rot == 0x4000)
+		sptr->Xvel = (short)-dy;
+	else if (item->pos.y_rot == -0x8000)
+		sptr->Zvel = (short)dy;
+	else
+		sptr->Xvel = (short)dy;
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -1779,4 +1851,5 @@ void inject_effect2(bool replace)
 	INJECT(0x00434440, TriggerRicochetSpark, replace);
 	INJECT(0x004349F0, TriggerExplosionSparks, replace);
 	INJECT(0x00435130, TriggerFireFlame, replace);
+	INJECT(0x00435570, TriggerSuperJetFlame, replace);
 }
