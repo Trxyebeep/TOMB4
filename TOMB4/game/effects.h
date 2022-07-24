@@ -37,9 +37,9 @@ void WaterFall(short item_number);
 void WadeSplash(ITEM_INFO* item, long water, long depth);
 void Splash(ITEM_INFO* item);
 short DoBloodSplat(long x, long y, long z, short speed, short ang, short room_number);
+void DoLotsOfBlood(long x, long y, long z, short speed, short ang, short room_number, long num);
 
 #define SoundEffects	( (void(__cdecl*)()) 0x004370E0 )
 #define ItemNearLara	( (long(__cdecl*)(PHD_3DPOS*, long)) 0x00437050 )
-#define DoLotsOfBlood	( (void(__cdecl*)(long, long, long, short, short, short, long)) 0x004371F0 )
 
 extern void(*effect_routines[])(ITEM_INFO* item);

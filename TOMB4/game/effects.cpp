@@ -475,6 +475,19 @@ short DoBloodSplat(long x, long y, long z, short speed, short ang, short room_nu
 	return -1;
 }
 
+void DoLotsOfBlood(long x, long y, long z, short speed, short ang, short room_number, long num)
+{
+	long bx, by, bz;
+
+	for (; num > 0; num--)
+	{
+		bx = x - (GetRandomControl() << 9) / 0x8000 + 256;
+		by = y - (GetRandomControl() << 9) / 0x8000 + 256;
+		bz = z - (GetRandomControl() << 9) / 0x8000 + 256;
+		DoBloodSplat(bx, by, bz, speed, ang, room_number);
+	}
+}
+
 void inject_effects(bool replace)
 {
 	INJECT(0x00437AB0, SetFog, replace);
@@ -510,4 +523,5 @@ void inject_effects(bool replace)
 	INJECT(0x00437390, WadeSplash, replace);
 	INJECT(0x004372A0, Splash, replace);
 	INJECT(0x00437180, DoBloodSplat, replace);
+	INJECT(0x004371F0, DoLotsOfBlood, replace);
 }
