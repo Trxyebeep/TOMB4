@@ -999,6 +999,38 @@ void ControlColouredLights(short item_number)
 	}
 }
 
+void DetatchSpark(long num, long type)
+{
+	SPARKS* sptr;
+	FX_INFO* fx;
+	ITEM_INFO* item;
+
+	for (int i = 0; i < 256; i++)
+	{
+		sptr = &spark[i];
+
+		if (sptr->On && (sptr->Flags & type) && sptr->FxObj == num)
+		{
+			if (type == 64)
+			{
+				fx = &effects[num];
+				sptr->x += fx->pos.x_pos;
+				sptr->y += fx->pos.y_pos;
+				sptr->z += fx->pos.z_pos;
+				sptr->Flags &= ~64;
+			}
+			else if (type == 128)
+			{
+				item = &items[num];
+				sptr->x += item->pos.x_pos;
+				sptr->y += item->pos.y_pos;
+				sptr->z += item->pos.z_pos;
+				sptr->Flags &= ~128;
+			}
+		}
+	}
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -1017,4 +1049,5 @@ void inject_effect2(bool replace)
 	INJECT(0x00436050, KillEverything, replace);
 	INJECT(0x00436060, TriggerExplosionBubble, replace);
 	INJECT(0x00436900, ControlColouredLights, replace);
+	INJECT(0x00433C70, DetatchSpark, replace);
 }
