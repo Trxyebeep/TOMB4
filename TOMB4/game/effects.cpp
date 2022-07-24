@@ -17,6 +17,7 @@
 #include "lara_states.h"
 #include "../specific/function_stubs.h"
 #include "../specific/3dmath.h"
+#include "../specific/dxsound.h"
 
 void(*effect_routines[47])(ITEM_INFO* item) =
 {
@@ -495,6 +496,64 @@ void Richochet(GAME_VECTOR* pos)
 	SoundEffect(SFX_LARA_RICOCHET, (PHD_3DPOS*)pos, SFX_DEFAULT);
 }
 
+void SoundEffects()
+{
+	OBJECT_VECTOR* sfx;
+	SoundSlot* slot;
+
+	for (int i = 0; i < number_sound_effects; i++)
+	{
+		sfx = &sound_effects[i];
+
+		if (flip_status)
+		{
+			if (sfx->flags & 0x40)
+				SoundEffect(sfx->data, (PHD_3DPOS*)sfx, 0);
+		}
+		else if (sfx->flags & 0x80)
+			SoundEffect(sfx->data, (PHD_3DPOS*)sfx, 0);
+	}
+
+	if (flipeffect != -1)
+		effect_routines[flipeffect](0);
+
+	if (!sound_active)
+		return;
+
+	for (int i = 0; i < 32; i++)
+	{
+		slot = &LaSlot[i];
+
+		if (slot->nSampleInfo < 0)
+			continue;
+
+		if ((sample_infos[slot->nSampleInfo].flags & 3) != 3)
+		{
+			if (!S_SoundSampleIsPlaying(i))
+				slot->nSampleInfo = -1;
+			else
+			{
+				GetPanVolume(slot);
+				S_SoundSetPanAndVolume(i, (short)slot->nPan, (ushort)slot->nVolume);
+			}
+		}
+		else
+		{
+			if (!slot->nVolume)
+			{
+				S_SoundStopSample(i);
+				slot->nSampleInfo = -1;
+			}
+			else
+			{
+				S_SoundSetPanAndVolume(i, (short)slot->nPan, (ushort)slot->nVolume);
+				S_SoundSetPitch(i, slot->nPitch);
+				slot->nVolume = 0;
+			}
+		}
+	}
+}
+
 void inject_effects(bool replace)
 {
 	INJECT(0x00437AB0, SetFog, replace);
@@ -532,4 +591,5 @@ void inject_effects(bool replace)
 	INJECT(0x00437180, DoBloodSplat, replace);
 	INJECT(0x004371F0, DoLotsOfBlood, replace);
 	INJECT(0x00437140, Richochet, replace);
+	INJECT(0x004370E0, SoundEffects, replace);
 }

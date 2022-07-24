@@ -39,8 +39,8 @@ void Splash(ITEM_INFO* item);
 short DoBloodSplat(long x, long y, long z, short speed, short ang, short room_number);
 void DoLotsOfBlood(long x, long y, long z, short speed, short ang, short room_number, long num);
 void Richochet(GAME_VECTOR* pos);
+void SoundEffects();
 
-#define SoundEffects	( (void(__cdecl*)()) 0x004370E0 )
 #define ItemNearLara	( (long(__cdecl*)(PHD_3DPOS*, long)) 0x00437050 )
 
 extern void(*effect_routines[])(ITEM_INFO* item);
