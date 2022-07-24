@@ -1572,6 +1572,189 @@ void TriggerExplosionSparks(long x, long y, long z, long extras, long dynamic, l
 	while (mirror >= 0);
 }
 
+void TriggerFireFlame(long x, long y, long z, long body_part, long type)
+{
+	SPARKS* sptr;
+	long dx, dz, size;
+
+	dx = lara_item->pos.x_pos - x;
+	dz = lara_item->pos.z_pos - z;
+
+	if (dx < -0x4000 || dx > 0x4000 || dz < -0x4000 || dz > 0x4000)
+		return;
+
+	sptr = &spark[GetFreeSpark()];
+	sptr->On = 1;
+
+	if (type == 2)
+	{
+		sptr->sR = (GetRandomControl() & 0x1F) + 48;
+		sptr->sG = sptr->sR;
+		sptr->sB = (GetRandomControl() & 0x3F) + 192;
+	}
+	else if (type == 254)
+	{
+		sptr->sR = 48;
+		sptr->sG = 255;
+		sptr->sB = (GetRandomControl() & 0x1F) + 48;
+		sptr->dR = 32;
+		sptr->dG = (GetRandomControl() & 0x3F) + 192;
+		sptr->dB = (GetRandomControl() & 0x3F) + 128;
+	}
+	else
+	{
+		sptr->sR = 255;
+		sptr->sG = (GetRandomControl() & 0x1F) + 48;
+		sptr->sB = 48;
+	}
+
+	if (type != 254)
+	{
+		sptr->dR = (GetRandomControl() & 0x3F) + 192;
+		sptr->dG = (GetRandomControl() & 0x3F) + 128;
+		sptr->dB = 32;
+	}
+
+	if (body_part == -1)
+	{
+		sptr->FadeToBlack = 16;
+		sptr->ColFadeSpeed = (GetRandomControl() & 3) + 8;
+		sptr->Life = (GetRandomControl() & 3) + 28;
+	}
+	else if (type == 2 || type == 255 || type == 254)
+	{
+		sptr->FadeToBlack = 6;
+		sptr->ColFadeSpeed = (GetRandomControl() & 3) + 5;
+		sptr->Life = (type < 254 ? 0 : 8) + (GetRandomControl() & 3) + 16;
+	}
+	else
+	{
+		sptr->FadeToBlack = 8;
+		sptr->ColFadeSpeed = (GetRandomControl() & 3) + 20;
+		sptr->Life = (GetRandomControl() & 7) + 40;
+	}
+
+	sptr->sLife = sptr->Life;
+	sptr->TransType = 2;
+
+	if (body_part != -1)
+	{
+		sptr->x = (GetRandomControl() & 0x1F) - 16;
+		sptr->y = 0;
+		sptr->z = (GetRandomControl() & 0x1F) - 16;
+	}
+	else if (!type || type == 1)
+	{
+		sptr->x = (GetRandomControl() & 0x1F) + x - 16;
+		sptr->y = y;
+		sptr->z = (GetRandomControl() & 0x1F) + z - 16;
+	}
+	else if (type < 254)
+	{
+		sptr->x = (GetRandomControl() & 0xF) + x - 8;
+		sptr->y = y;
+		sptr->z = (GetRandomControl() & 0xF) + z - 8;
+	}
+	else
+	{
+		sptr->x = (GetRandomControl() & 0x3F) + x - 32;
+		sptr->y = y;
+		sptr->z = (GetRandomControl() & 0x3F) + z - 32;
+	}
+
+	if (type == 2)
+	{
+		sptr->Xvel = (GetRandomControl() & 0x1F) - 16;
+		sptr->Yvel = -1024 - (GetRandomControl() & 0x1FF);
+		sptr->Zvel = (GetRandomControl() & 0x1F) - 16;
+		sptr->Friction = 68;
+	}
+	else
+	{
+		sptr->Xvel = (GetRandomControl() & 0xFF) - 128;
+		sptr->Yvel = -16 - (GetRandomControl() & 0xF);
+		sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
+
+		if (type == 1)
+			sptr->Friction = 51;
+		else
+			sptr->Friction = 5;
+	}
+
+	if (GetRandomControl() & 1)
+	{
+		if (body_part == -1)
+		{
+			sptr->Gravity = -16 - (GetRandomControl() & 0x1F);
+			sptr->Flags = 538;
+			sptr->MaxYvel = -16 - (GetRandomControl() & 7);
+		}
+		else
+		{
+			sptr->Flags = 602;
+			sptr->FxObj = (uchar)body_part;
+			sptr->Gravity = -32 - (GetRandomControl() & 0x3F);
+			sptr->MaxYvel = -24 - (GetRandomControl() & 7);
+		}
+
+		sptr->RotAng = GetRandomControl() & 0xFFF;
+
+		if (GetRandomControl() & 1)
+			sptr->RotAdd = -16 - (GetRandomControl() & 0xF);
+		else
+			sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
+	}
+	else
+	{
+		if (body_part == -1)
+		{
+			sptr->Flags = 522;
+			sptr->Gravity = -16 - (GetRandomControl() & 0x1F);
+			sptr->MaxYvel = -16 - (GetRandomControl() & 7);
+		}
+		else
+		{
+			sptr->Flags = 586;
+			sptr->FxObj = (uchar)body_part;
+			sptr->Gravity = -32 - (GetRandomControl() & 0x3F);
+			sptr->MaxYvel = -24 - (GetRandomControl() & 7);
+		}
+	}
+
+	sptr->Scalar = 2;
+
+	if (!type)
+		size = (GetRandomControl() & 0x1F) + 128;
+	else if (type == 1)
+		size = (GetRandomControl() & 0x1F) + 64;
+	else if (type < 254)
+	{
+		sptr->MaxYvel = 0;
+		sptr->Gravity = 0;
+		size = (GetRandomControl() & 0x1F) + 32;
+	}
+	else
+		size = (GetRandomControl() & 0xF) + 48;
+
+	sptr->Size = (uchar)size;
+	sptr->sSize = sptr->Size;
+
+	if (type == 2)
+		sptr->dSize = sptr->Size >> 2;
+	else
+	{
+		sptr->dSize = sptr->Size >> 4;
+
+		if (type == 7)
+		{
+			sptr->ColFadeSpeed >>= 2;
+			sptr->FadeToBlack >>= 2;
+			sptr->Life >>= 2;
+			sptr->sLife >>= 2;
+		}
+	}
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -1595,4 +1778,5 @@ void inject_effect2(bool replace)
 	INJECT(0x00433E10, UpdateSparks, replace);
 	INJECT(0x00434440, TriggerRicochetSpark, replace);
 	INJECT(0x004349F0, TriggerExplosionSparks, replace);
+	INJECT(0x00435130, TriggerFireFlame, replace);
 }
