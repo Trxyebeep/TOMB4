@@ -768,6 +768,68 @@ void TriggerUnderwaterBlood(long x, long y, long z, long size)
 	ripple->z = z + (GetRandomControl() & 0x3F) - 32;
 }
 
+void TriggerWaterfallMist(long x, long y, long z, long ang)
+{
+	SPARKS* sptr;
+	long offsets[4];
+	long ang2, ps, pc, rad;
+	short vs, vc;
+
+	offsets[0] = 576;
+	offsets[1] = 203;
+	offsets[2] = -203;
+	offsets[3] = -576;
+	ang2 = (ang + 1024) & 0xFFF;
+	ps = rcossin_tbl[ang2 << 2];
+	pc = rcossin_tbl[(ang2 << 2) + 1];
+	vs = rcossin_tbl[ang << 2];
+	vc = rcossin_tbl[(ang << 2) + 1];
+
+	for (int i = 0; i < 4; i++)
+	{
+		sptr = &spark[GetFreeSpark()];
+		sptr->On = 1;
+		sptr->sR = 128;
+		sptr->sG = 128;
+		sptr->sB = 128;
+		sptr->dR = 192;
+		sptr->dG = 192;
+		sptr->dB = 192;
+		sptr->ColFadeSpeed = 2;
+		sptr->FadeToBlack = 4;
+		sptr->TransType = 2;
+		sptr->Life = (GetRandomControl() & 3) + 6;
+		sptr->sLife = sptr->Life;
+		rad = (GetRandomControl() & 0x1F) + offsets[i] - 16;
+		sptr->x = ((rad * ps) >> 12) + x + (GetRandomControl() & 0xF) - 8;
+		sptr->y = (GetRandomControl() & 0xF) + y - 8;
+		sptr->z = ((rad * pc) >> 12) + z + (GetRandomControl() & 0xF) - 8;
+		sptr->Xvel = vs >> 12;
+		sptr->Yvel = 0;
+		sptr->Zvel = vc >> 12;
+		sptr->Friction = 3;
+		if (GetRandomControl() & 1)
+		{
+			sptr->Flags = 538;
+			sptr->RotAng = GetRandomControl() & 0xFFF;
+
+			if (GetRandomControl() & 1)
+				sptr->RotAdd = -16 - (GetRandomControl() & 0xF);
+			else
+				sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
+		}
+		else
+			sptr->Flags = 522;
+
+		sptr->Scalar = 6;
+		sptr->Gravity = 0;
+		sptr->MaxYvel = 0;
+		sptr->dSize = (GetRandomControl() & 7) + 12;
+		sptr->sSize = sptr->dSize >> 1;
+		sptr->Size = sptr->dSize >> 1;
+	}
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -780,4 +842,5 @@ void inject_effect2(bool replace)
 	INJECT(0x004369B0, ControlEnemyMissile, replace);
 	INJECT(0x00435B70, SetupRipple, replace);
 	INJECT(0x00435BF0, TriggerUnderwaterBlood, replace);
+	INJECT(0x00435C60, TriggerWaterfallMist, replace);
 }
