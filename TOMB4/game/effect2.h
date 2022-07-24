@@ -14,6 +14,7 @@ void ControlEnemyMissile(short fx_number);
 void SetupRipple(long x, long y, long z, long size, long flags);
 void TriggerUnderwaterBlood(long x, long y, long z, long size);
 void TriggerWaterfallMist(long x, long y, long z, long ang);
+void TriggerDartSmoke(long x, long y, long z, long xv, long zv, long hit);
 
 #define KillEverything	( (void(__cdecl*)()) 0x00436050 )
 #define UpdateSparks	( (void(__cdecl*)()) 0x00433E10 )

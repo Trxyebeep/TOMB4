@@ -830,6 +830,91 @@ void TriggerWaterfallMist(long x, long y, long z, long ang)
 	}
 }
 
+void TriggerDartSmoke(long x, long y, long z, long xv, long zv, long hit)
+{
+	SPARKS* sptr;
+	long dx, dz, rand;
+
+	dx = lara_item->pos.x_pos - x;
+	dz = lara_item->pos.z_pos - z;
+
+	if (dx < -0x4000 || dx > 0x4000 || dz < -0x4000 || dz > 0x4000)
+		return;
+
+	sptr = &spark[GetFreeSpark()];
+	sptr->On = 1;
+	sptr->sR = 16;
+	sptr->sG = 8;
+	sptr->sB = 4;
+	sptr->dR = 64;
+	sptr->dG = 48;
+	sptr->dB = 32;
+	sptr->ColFadeSpeed = 8;
+	sptr->FadeToBlack = 4;
+	sptr->Life = (GetRandomControl() & 3) + 32;
+	sptr->sLife = sptr->Life;
+	sptr->TransType = 2;
+	sptr->x = (GetRandomControl() & 0x1F) + x - 16;
+	sptr->y = (GetRandomControl() & 0x1F) + y - 16;
+	sptr->z = (GetRandomControl() & 0x1F) + z - 16;
+
+	if (hit)
+	{
+		sptr->Xvel = short((GetRandomControl() & 0xFF) - xv - 128);
+		sptr->Yvel = -4 - (GetRandomControl() & 3);
+		sptr->Zvel = short((GetRandomControl() & 0xFF) - zv - 128);
+	}
+	else
+	{
+		if (xv)
+			sptr->Xvel = (short)-xv;
+		else
+			sptr->Xvel = (GetRandomControl() & 0xFF) - 128;
+
+		sptr->Yvel = -4 - (GetRandomControl() & 3);
+
+		if (zv)
+			sptr->Zvel = (short)-zv;
+		else
+			sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
+	}
+
+	sptr->Friction = 3;
+
+	if (GetRandomControl() & 1)
+	{
+		sptr->Flags = 538;
+		sptr->RotAng = GetRandomControl() & 0xFFF;
+
+		if (GetRandomControl() & 1)
+			sptr->RotAdd = -16 - (GetRandomControl() & 0xF);
+		else
+			sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
+	}
+	else
+		sptr->Flags = 522;
+
+	sptr->Scalar = 1;
+	rand = (GetRandomControl() & 0x3F) + 72;
+
+	if (hit)
+	{
+		sptr->MaxYvel = 0;
+		sptr->Gravity = 0;
+		sptr->Size = uchar(rand >> 3);
+		sptr->sSize = sptr->Size;
+		sptr->dSize = uchar(rand >> 1);
+	}
+	else
+	{
+		sptr->MaxYvel = -4 - (GetRandomControl() & 3);
+		sptr->Gravity = -4 - (GetRandomControl() & 3);
+		sptr->Size = uchar(rand >> 4);
+		sptr->sSize = sptr->Size;
+		sptr->dSize = (uchar)rand;
+	}
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -843,4 +928,5 @@ void inject_effect2(bool replace)
 	INJECT(0x00435B70, SetupRipple, replace);
 	INJECT(0x00435BF0, TriggerUnderwaterBlood, replace);
 	INJECT(0x00435C60, TriggerWaterfallMist, replace);
+	INJECT(0x00435E30, TriggerDartSmoke, replace);
 }
