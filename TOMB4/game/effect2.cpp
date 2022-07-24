@@ -742,6 +742,32 @@ void SetupRipple(long x, long y, long z, long size, long flags)
 	}
 }
 
+void TriggerUnderwaterBlood(long x, long y, long z, long size)
+{
+	RIPPLE_STRUCT* ripple;
+	long n;
+
+	ripple = ripples;
+	n = 0;
+
+	while (ripple->flags & 1)
+	{
+		ripple++;
+		n++;
+
+		if (n >= 16)
+			return;
+	}
+
+	ripple->flags = 49;
+	ripple->init = 1;
+	ripple->life = (GetRandomControl() & 7) - 16;
+	ripple->size = (uchar)size;
+	ripple->x = x + (GetRandomControl() & 0x3F) - 32;
+	ripple->y = y;
+	ripple->z = z + (GetRandomControl() & 0x3F) - 32;
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -753,4 +779,5 @@ void inject_effect2(bool replace)
 	INJECT(0x00436320, ClearDynamics, replace);
 	INJECT(0x004369B0, ControlEnemyMissile, replace);
 	INJECT(0x00435B70, SetupRipple, replace);
+	INJECT(0x00435BF0, TriggerUnderwaterBlood, replace);
 }

@@ -12,6 +12,7 @@ void TriggerDynamic_MIRROR(long x, long y, long z, long falloff, long r, long g,
 void ClearDynamics();
 void ControlEnemyMissile(short fx_number);
 void SetupRipple(long x, long y, long z, long size, long flags);
+void TriggerUnderwaterBlood(long x, long y, long z, long size);
 
 #define KillEverything	( (void(__cdecl*)()) 0x00436050 )
 #define UpdateSparks	( (void(__cdecl*)()) 0x00433E10 )
