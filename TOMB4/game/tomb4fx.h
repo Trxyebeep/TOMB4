@@ -29,6 +29,7 @@ void TriggerSmallSplash(long x, long y, long z, long num);
 void TriggerGunflash(SVECTOR* pos);
 void SetGunFlash(short weapon);
 void DrawGunflashes();
+long GetFreeBlood();
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )

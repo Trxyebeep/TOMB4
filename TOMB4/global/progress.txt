@@ -1312,7 +1312,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00438700	+	UpdateSmokeSparks
 0x00438940	+	TriggerGunSmoke
 0x00438BA0	+	TriggerShatterSmoke
-0x00438D20		GetFreeBlood
+0x00438D20	+	GetFreeBlood
 0x00438D90		UpdateBlood
 0x00438F00		TriggerBlood
 0x00439060	+	GetFreeGunshell

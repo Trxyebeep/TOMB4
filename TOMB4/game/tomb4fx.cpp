@@ -1312,6 +1312,48 @@ void DrawGunflashes()
 	phd_PopMatrix();
 }
 
+long GetFreeBlood()
+{
+	BLOOD_STRUCT* bptr;
+	long min_life, min_life_num, free;
+
+	free = next_blood;
+	bptr = &blood[next_blood];
+	min_life = 4095;
+	min_life_num = 0;
+
+	for (int i = 0; i < 32; i++)
+	{
+		if (bptr->On)
+		{
+			if (bptr->Life < min_life)
+			{
+				min_life_num = free;
+				min_life = bptr->Life;
+			}
+
+			if (free == 31)
+			{
+				bptr = &blood[0];
+				free = 0;
+			}
+			else
+			{
+				free++;
+				bptr++;
+			}
+		}
+		else
+		{
+			next_blood = (free + 1) & 0x1F;
+			return free;
+		}
+	}
+
+	next_blood = (min_life_num + 1) & 0x1F;
+	return min_life_num;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1340,4 +1382,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00439AE0, TriggerGunflash, replace);
 	INJECT(0x00439B80, SetGunFlash, replace);
 	INJECT(0x00439C00, DrawGunflashes, replace);
+	INJECT(0x00438D20, GetFreeBlood, replace);
 }
