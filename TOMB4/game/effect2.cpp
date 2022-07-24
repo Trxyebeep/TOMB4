@@ -1275,6 +1275,134 @@ void UpdateSparks()
 	}
 }
 
+void TriggerRicochetSpark(GAME_VECTOR* pos, long ang, long num, long smoke_only)
+{
+	SPARKS* sptr;
+	long rnd;
+
+	if (!smoke_only)
+	{
+		for (int i = 0; i < num; i++)
+		{
+			sptr = &spark[GetFreeSpark()];
+			rnd = GetRandomControl();
+			sptr->On = 1;
+			sptr->sR = 128;
+			sptr->sG = (rnd & 0xF) + 16;
+			sptr->sB = 0;
+			sptr->dR = 96;
+			sptr->dG = ((rnd >> 4) & 0x1F) + 48;
+			sptr->dB = 0;
+			sptr->ColFadeSpeed = 2;
+			sptr->FadeToBlack = 4;
+			sptr->Life = 9;
+			sptr->sLife = 9;
+			sptr->TransType = 2;
+			sptr->x = pos->x;
+			sptr->y = pos->y;
+			sptr->z = pos->z;
+			sptr->Yvel = (rnd & 0xFFF) - 2048;
+			sptr->Gravity = (rnd >> 7) & 0x1F;
+			rnd = (((rnd >> 3) & 0x7FF) + ang - 1024) & 0xFFF;
+			sptr->Zvel = rcossin_tbl[(rnd << 1) + 1] >> 2;
+			sptr->Xvel = -rcossin_tbl[rnd << 1] >> 2;
+			sptr->Friction = 34;
+			sptr->Flags = 0;
+			sptr->MaxYvel = 0;
+		}
+
+		rnd = GetRandomControl();
+		sptr = &spark[GetFreeSpark()];
+		sptr->On = 1;
+		sptr->sR = 48;
+		sptr->sG = (rnd & 0xF) + 32;
+		sptr->sB = 0;
+		sptr->dR = 0;
+		sptr->dG = 0;
+		sptr->dB = 0;
+		sptr->ColFadeSpeed = 4;
+		sptr->FadeToBlack = 0;
+		sptr->Life = 4;
+		sptr->sLife = 4;
+		sptr->TransType = 2;
+		sptr->x = pos->x;
+		sptr->y = pos->y;
+		sptr->z = pos->z;
+		sptr->Xvel = 0;
+		sptr->Yvel = 0;
+		sptr->Zvel = 0;
+		sptr->Flags = 26;
+		sptr->RotAng = (rnd >> 2) & 0xFFF;
+
+		if (rnd & 1)
+			sptr->RotAdd = -64 - ((rnd >> 1) & 0x3F);
+		else
+			sptr->RotAdd = ((rnd >> 1) & 0x3F) + 64;
+
+		sptr->Scalar = 3;
+		sptr->Def = objects[DEFAULT_SPRITES].mesh_index + 12;
+		sptr->Size = ((rnd >> 10) & 7) + 8;
+		sptr->sSize = sptr->Size;
+		sptr->dSize = 1;
+		sptr->MaxYvel = 0;
+		sptr->Gravity = 0;
+	}
+
+	for (int i = 0; i < 1 - smoke_only; i++)
+	{
+		rnd = GetRandomControl();
+		sptr = &spark[GetFreeSpark()];
+		sptr->On = 1;
+		sptr->sR = 0;
+		sptr->sG = 0;
+		sptr->sB = 0;
+		sptr->dR = 40;
+		sptr->dG = 40;
+		sptr->dB = 48;
+		sptr->ColFadeSpeed = (rnd & 3) + 4;
+		sptr->FadeToBlack = 8;
+		sptr->Life = ((rnd >> 2) & 7) + 16;
+		sptr->sLife = sptr->Life;
+		sptr->x = pos->x;
+		sptr->y = pos->y;
+		sptr->z = pos->z;
+
+		if (smoke_only)
+		{
+			sptr->ColFadeSpeed >>= 1;
+			sptr->FadeToBlack = 4;
+			sptr->Life >>= 1;
+			sptr->sLife >>= 1;
+			sptr->Xvel = (rnd & 0x1FF) - 256;
+			sptr->Yvel = ((rnd >> 2) & 0x1FF) - 256;
+			sptr->Zvel = ((rnd >> 4) & 0x1FF) - 256;
+		}
+		else
+		{
+			sptr->Yvel = 0;
+			sptr->Xvel = 0;
+			sptr->Zvel = 0;
+		}
+
+		sptr->TransType = 2;
+		sptr->Friction = 0;
+		sptr->Flags = 26;
+		sptr->RotAng = short(rnd >> 3);
+
+		if (rnd & 1)
+			sptr->RotAdd = -16 - (rnd & 0xF);
+		else
+			sptr->RotAdd = (rnd & 0xF) + 16;
+
+		sptr->Scalar = 2;
+		sptr->Gravity = -4 - ((rnd >> 9) & 3);
+		sptr->MaxYvel = -4 - ((rnd >> 6) & 3);
+		sptr->Size = ((rnd >> 5) & 7) + 4;
+		sptr->sSize = sptr->Size;
+		sptr->dSize = sptr->Size << 2;
+	}
+}
+
 void inject_effect2(bool replace)
 {
 	INJECT(0x00436340, ControlSmokeEmitter, replace);
@@ -1296,4 +1424,5 @@ void inject_effect2(bool replace)
 	INJECT(0x00433C70, DetatchSpark, replace);
 	INJECT(0x00433D30, GetFreeSpark, replace);
 	INJECT(0x00433E10, UpdateSparks, replace);
+	INJECT(0x00434440, TriggerRicochetSpark, replace);
 }
