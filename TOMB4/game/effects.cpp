@@ -465,6 +465,16 @@ void Splash(ITEM_INFO* item)
 	}
 }
 
+short DoBloodSplat(long x, long y, long z, short speed, short ang, short room_number)
+{
+	if (room[room_number].flags & ROOM_UNDERWATER)
+		TriggerUnderwaterBlood(x, y, z, speed);
+	else
+		TriggerBlood(x, y, z, ang >> 4, speed);
+
+	return -1;
+}
+
 void inject_effects(bool replace)
 {
 	INJECT(0x00437AB0, SetFog, replace);
@@ -499,4 +509,5 @@ void inject_effects(bool replace)
 	INJECT(0x00437530, WaterFall, replace);
 	INJECT(0x00437390, WadeSplash, replace);
 	INJECT(0x004372A0, Splash, replace);
+	INJECT(0x00437180, DoBloodSplat, replace);
 }
