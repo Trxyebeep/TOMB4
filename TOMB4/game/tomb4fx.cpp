@@ -1501,6 +1501,33 @@ long GetFreeBubble()
 	return free;
 }
 
+void CreateBubble(PHD_3DPOS* pos, short room_number, long size, long biggest)
+{
+	BUBBLE_STRUCT* bubble;
+	long bubble_num;
+
+	GetFloor(pos->x_pos, pos->y_pos, pos->z_pos, &room_number);
+
+	if (room[room_number].flags & ROOM_UNDERWATER)
+	{
+		bubble_num = GetFreeBubble();
+
+		if (bubble_num != -1)
+		{
+			bubble = &Bubbles[bubble_num];
+			bubble->pos.x = pos->x_pos;
+			bubble->pos.y = pos->y_pos;
+			bubble->pos.z = pos->z_pos;
+			bubble->room_number = room_number;
+			bubble->speed = (GetRandomControl() & 0xFF) + 64;
+			bubble->shade = 0;
+			bubble->size = short((size + (biggest & GetRandomControl())) << 1);
+			bubble->dsize = bubble->size << 4;
+			bubble->vel = (GetRandomControl() & 0x1F) + 32;
+		}
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1533,4 +1560,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00438D90, UpdateBlood, replace);
 	INJECT(0x00438F00, TriggerBlood, replace);
 	INJECT(0x00439780, GetFreeBubble, replace);
+	INJECT(0x004397F0, CreateBubble, replace);
 }
