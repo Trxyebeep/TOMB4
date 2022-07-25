@@ -21,7 +21,24 @@ void InitialiseLOTarray(long allocmem)
 	slots_used = 0;
 }
 
+void DisableBaddieAI(short item_number)
+{
+	ITEM_INFO* item;
+	CREATURE_INFO* creature;
+
+	item = &items[item_number];
+	creature = (CREATURE_INFO*)item->data;
+	item->data = 0;
+
+	if (creature)
+	{
+		creature->item_num = NO_ITEM;
+		slots_used--;
+	}
+}
+
 void inject_lot(bool replace)
 {
 	INJECT(0x00455200, InitialiseLOTarray, replace);
+	INJECT(0x00455270, DisableBaddieAI, replace);
 }

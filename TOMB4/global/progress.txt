@@ -938,7 +938,7 @@ x for functions decompiled but not injected, for one reason or another.
 		game/lot.cpp
 
 0x00455200	+	InitialiseLOTarray
-0x00455270		DisableBaddieAI
+0x00455270	+	DisableBaddieAI
 0x004552B0		EnableBaddieAI
 0x00455470		InitialiseSlot
 0x004556A0		CreateZone
