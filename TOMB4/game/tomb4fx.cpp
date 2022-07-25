@@ -1459,6 +1459,48 @@ void TriggerBlood(long x, long y, long z, long angle, long num)
 	}
 }
 
+long GetFreeBubble()
+{
+	BUBBLE_STRUCT* bubble;
+	long free;
+
+	free = next_bubble;
+	bubble = &Bubbles[next_bubble];
+
+	for (int i = 0; i < 40; i++)
+	{
+		if (bubble->size)
+		{
+			if (free == 39)
+			{
+				bubble = &Bubbles[0];
+				free = 0;
+			}
+			else
+			{
+				free++;
+				bubble++;
+			}
+		}
+		else
+		{
+			next_bubble = free + 1;
+
+			if (next_bubble >= 40)
+				next_bubble = 0;
+
+			return free;
+		}
+	}
+
+	next_bubble = free + 1;
+
+	if (next_bubble >= 40)
+		next_bubble = 0;
+
+	return free;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1490,4 +1532,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00438D20, GetFreeBlood, replace);
 	INJECT(0x00438D90, UpdateBlood, replace);
 	INJECT(0x00438F00, TriggerBlood, replace);
+	INJECT(0x00439780, GetFreeBubble, replace);
 }

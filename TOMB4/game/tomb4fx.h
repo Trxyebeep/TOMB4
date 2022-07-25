@@ -32,6 +32,7 @@ void DrawGunflashes();
 long GetFreeBlood();
 void UpdateBlood();
 void TriggerBlood(long x, long y, long z, long angle, long num);
+long GetFreeBubble();
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )
