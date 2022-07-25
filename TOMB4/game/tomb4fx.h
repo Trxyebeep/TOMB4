@@ -36,9 +36,9 @@ long GetFreeBubble();
 void CreateBubble(PHD_3DPOS* pos, short room_number, long size, long biggest);
 void UpdateBubbles();
 long GetFreeDrip();
+void TriggerLaraDrips();
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
-#define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )
 #define UpdateShockwaves	( (void(__cdecl*)()) 0x0043AD10 )
 #define UpdateLightning	( (void(__cdecl*)()) 0x0043AF80 )
 #define TriggerLightningGlow	( (void(__cdecl*)(long, long, long, long)) 0x0043B330 )

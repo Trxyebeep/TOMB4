@@ -1625,6 +1625,40 @@ long GetFreeDrip()
 	return min_life_num;
 }
 
+void TriggerLaraDrips()
+{
+	DRIP_STRUCT* drip;
+	PHD_VECTOR pos;
+
+	if (wibble & 0xF)
+		return;
+
+	for (int i = 14; i > 0; i--)
+	{
+		if (lara.wet[i] && !LaraNodeUnderwater[i] && (GetRandomControl() & 0x1FF) < lara.wet[i])
+		{
+			pos.x = (GetRandomControl() & 0x1F) - 16;
+			pos.y = (GetRandomControl() & 0xF) + 16;
+			pos.z = (GetRandomControl() & 0x1F) - 16;
+			GetLaraJointPos(&pos, i);
+
+			drip = &Drips[GetFreeDrip()];
+			drip->x = pos.x;
+			drip->y = pos.y;
+			drip->z = pos.z;
+			drip->On = 1;
+			drip->R = (GetRandomControl() & 7) + 16;
+			drip->G = (GetRandomControl() & 7) + 24;
+			drip->B = (GetRandomControl() & 7) + 32;
+			drip->Yvel = (GetRandomControl() & 0x1F) + 32;
+			drip->Gravity = (GetRandomControl() & 0x1F) + 32;
+			drip->Life = (GetRandomControl() & 0x1F) + 16;
+			drip->RoomNumber = lara_item->room_number;
+			lara.wet[i] -= 4;
+		}
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1660,4 +1694,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x004397F0, CreateBubble, replace);
 	INJECT(0x00439970, UpdateBubbles, replace);
 	INJECT(0x00439F10, GetFreeDrip, replace);
+	INJECT(0x0043A080, TriggerLaraDrips, replace);
 }
