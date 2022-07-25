@@ -1323,7 +1323,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00439780	+	GetFreeBubble
 0x004397F0	+	CreateBubble
 0x004398B0	+	LaraBubbles
-0x00439970		UpdateBubbles
+0x00439970	+	UpdateBubbles
 0x00439AE0	+	TriggerGunflash
 0x00439B80	+	SetGunFlash
 0x00439C00	+	DrawGunflashes

@@ -1528,6 +1528,61 @@ void CreateBubble(PHD_3DPOS* pos, short room_number, long size, long biggest)
 	}
 }
 
+void UpdateBubbles()
+{
+	BUBBLE_STRUCT* bubble;
+	FLOOR_INFO* floor;
+	long h, c;
+	short room_number;
+
+	for (int i = 0; i < 40; i++)
+	{
+		bubble = &Bubbles[i];
+
+		if (!bubble->size)
+			continue;
+
+		bubble->pad += 6;
+		bubble->speed += bubble->vel;
+		bubble->pos.x += (3 * phd_sin(bubble->pad << 8)) >> W2V_SHIFT;
+		bubble->pos.y -= bubble->speed >> 8;
+		bubble->pos.z += phd_cos(bubble->pad << 8) >> W2V_SHIFT;
+		
+		room_number = bubble->room_number;
+		floor = GetFloor(bubble->pos.x, bubble->pos.y, bubble->pos.z, &room_number);
+		h = GetHeight(floor, bubble->pos.x, bubble->pos.y, bubble->pos.z);
+
+		if (bubble->pos.y > h || !floor)
+		{
+			bubble->size = 0;
+			continue;
+		}
+
+		if (!(room[room_number].flags & ROOM_UNDERWATER))
+		{
+			SetupRipple(bubble->pos.x, room[bubble->room_number].maxceiling, bubble->pos.z, (GetRandomControl() & 0xF) + 48, 2);
+			bubble->size = 0;
+			continue;
+		}
+
+		c = GetCeiling(floor, bubble->pos.x, bubble->pos.y, bubble->pos.z);
+
+		if (c == NO_HEIGHT || bubble->pos.y <= c)
+		{
+			bubble->size = 0;
+			continue;
+		}
+
+		if (bubble->size < bubble->dsize)
+			bubble->size++;
+
+		if (bubble->shade < 144)
+			bubble->shade += 2;
+
+		bubble->room_number = room_number;
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1561,4 +1616,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00438F00, TriggerBlood, replace);
 	INJECT(0x00439780, GetFreeBubble, replace);
 	INJECT(0x004397F0, CreateBubble, replace);
+	INJECT(0x00439970, UpdateBubbles, replace);
 }
