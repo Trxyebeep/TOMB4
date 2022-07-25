@@ -941,7 +941,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00455270	+	DisableBaddieAI
 0x004552B0		EnableBaddieAI
 0x00455470		InitialiseSlot
-0x004556A0		CreateZone
+0x004556A0	+	CreateZone
 0x004557B0	+	ClearLOT
 
 
