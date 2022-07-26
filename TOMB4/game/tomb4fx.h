@@ -49,7 +49,7 @@ void TriggerFlashSmoke(long x, long y, long z, short room_number);
 void S_DrawSparks();
 void SetFadeClip(short height, short speed);
 void UpdateFadeClip();
+void SetScreenFadeOut(short speed, short back);
 
-#define	SetScreenFadeOut	( (void(__cdecl*)(long, long)) 0x00439DB0 )
 #define	SetScreenFadeIn	( (void(__cdecl*)(long)) 0x00439E00 )
 #define Fade	( (void(__cdecl*)()) 0x00439E40 )
