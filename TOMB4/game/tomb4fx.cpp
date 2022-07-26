@@ -11,6 +11,30 @@
 #include "control.h"
 #include "../specific/specificfx.h"
 #include "effect2.h"
+#include "sphere.h"
+
+static NODEOFFSET_INFO NodeOffsets[16] =
+{
+	{ -16, 40, 160, -14, 0 },
+	{ -16, -8, 160, 0, 0 },
+	{ 16, 200, 32, 17, 0 },
+	{ -16, 200, 32, 13, 0 },
+	{ 0, 128, 0, 4, 0 },
+	{ 0, 128, 0, 2, 0 },
+	{ -200, -30, 8, 7, 0 },
+
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 }
+};
+
+static PHD_VECTOR NodeVectors[16];
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments)
 {
@@ -2002,6 +2026,154 @@ void TriggerFlashSmoke(long x, long y, long z, short room_number)
 	sptr->mirror = room_number == gfMirrorRoom;
 }
 
+void S_DrawSparks()
+{
+	SPARKS* sptr;
+	FX_INFO* fx;
+	ITEM_INFO* item;
+	PHD_VECTOR pos;
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	long x, y, z, smallest_size;
+
+#ifdef GENERAL_FIXES
+	smallest_size = 0;
+#endif
+
+	for (int i = 0; i < 16; i++)
+		NodeOffsets[i].GotIt = 0;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+
+	for (int i = 0; i < 256; i++)
+	{
+		sptr = &spark[i];
+
+		if (!sptr->On)
+			continue;
+
+		if (sptr->Flags & 0x40)
+		{
+			fx = &effects[sptr->FxObj];
+			x = sptr->x + fx->pos.x_pos;
+			y = sptr->y + fx->pos.y_pos;
+			z = sptr->z + fx->pos.z_pos;
+
+			if (sptr->sLife - sptr->Life > (GetRandomDraw() & 7) + 4)
+			{
+				sptr->x = x;
+				sptr->y = y;
+				sptr->z = z;
+				sptr->Flags &= ~0x40;
+			}
+		}
+		else if (sptr->Flags & 0x80)
+		{
+			item = &items[sptr->FxObj];
+
+			if (sptr->Flags & 0x1000)
+			{
+				if (NodeOffsets[sptr->NodeNumber].GotIt)
+				{
+					pos.x = NodeVectors[sptr->NodeNumber].x;
+					pos.y = NodeVectors[sptr->NodeNumber].y;
+					pos.z = NodeVectors[sptr->NodeNumber].z;
+				}
+				else
+				{
+					pos.x = NodeOffsets[sptr->NodeNumber].x;
+					pos.y = NodeOffsets[sptr->NodeNumber].y;
+					pos.z = NodeOffsets[sptr->NodeNumber].z;
+
+					if (NodeOffsets[sptr->NodeNumber].mesh_num < 0)
+						GetLaraJointPos(&pos, -NodeOffsets[sptr->NodeNumber].mesh_num);
+					else
+						GetJointAbsPosition(item, &pos, NodeOffsets[sptr->NodeNumber].mesh_num);
+
+					NodeOffsets[sptr->NodeNumber].GotIt = 1;
+					NodeVectors[sptr->NodeNumber].x = pos.x;
+					NodeVectors[sptr->NodeNumber].y = pos.y;
+					NodeVectors[sptr->NodeNumber].z = pos.z;
+				}
+
+				x = sptr->x + pos.x;
+				y = sptr->y + pos.y;
+				z = sptr->z + pos.z;
+
+				if (sptr->sLife - sptr->Life > (GetRandomDraw() & 3) + 8)
+				{
+					sptr->x = x;
+					sptr->y = y;
+					sptr->z = z;
+					sptr->Flags &= ~0x1080;
+				}
+			}
+			else
+			{
+				x = sptr->x + item->pos.x_pos;
+				y = sptr->y + item->pos.y_pos;
+				z = sptr->z + item->pos.z_pos;
+			}
+		}
+		else
+		{
+			x = sptr->x;
+			y = sptr->y;
+			z = sptr->z;
+		}
+
+		x -= lara_item->pos.x_pos;
+		y -= lara_item->pos.y_pos;
+		z -= lara_item->pos.z_pos;
+
+		if (x < -0x5000 || x > 0x5000 || y < -0x5000 || y > 0x5000 || z < -0x5000 || z > 0x5000)
+		{
+			sptr->On = 0;
+			continue;
+		}
+
+		offsets[0] = (short)x;
+		offsets[1] = (short)y;
+		offsets[2] = (short)z;
+		pos.x = phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03];
+		pos.y = phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13];
+		pos.z = phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23];
+		perspz = f_persp / (float)pos.z;
+		XY[0] = short(float(pos.x * perspz + f_centerx));
+		XY[1] = short(float(pos.y * perspz + f_centery));
+		Z[0] = pos.z >> W2V_SHIFT;
+
+		if (sptr->Flags & 8)
+		{
+			if (sptr->Flags & 2)
+				smallest_size = 4;
+		}
+		else
+		{
+			offsets[0] = short(x - (sptr->Xvel >> 4));
+			offsets[1] = short(y - (sptr->Yvel >> 4));
+			offsets[2] = short(z - (sptr->Zvel >> 4));
+			pos.x = phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03];
+			pos.y = phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13];
+			pos.z = phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23];
+			perspz = f_persp / (float)pos.z;
+			XY[2] = short(float(pos.x * perspz + f_centerx));
+			XY[3] = short(float(pos.y * perspz + f_centery));
+			Z[1] = pos.z >> W2V_SHIFT;
+		}
+
+		S_DrawDrawSparks(sptr, smallest_size, XY, Z);
+	}
+
+	phd_PopMatrix();
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -2047,4 +2219,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x0043B0D0, CalcLightningSpline, replace);
 	INJECT(0x0043B330, TriggerLightningGlow, replace);
 	INJECT(0x0043B420, TriggerFlashSmoke, replace);
+	INJECT(0x0043A1B0, S_DrawSparks, replace);
 }

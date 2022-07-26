@@ -46,10 +46,10 @@ long LSpline(long x, long* knots, long nk);
 void CalcLightningSpline(PHD_VECTOR* pos, SVECTOR* dest, LIGHTNING_STRUCT* lptr);
 void TriggerLightningGlow(long x, long y, long z, long rgb);
 void TriggerFlashSmoke(long x, long y, long z, short room_number);
+void S_DrawSparks();
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define	SetFadeClip	( (void(__cdecl*)(short, short)) 0x00439D40 )
 #define	SetScreenFadeOut	( (void(__cdecl*)(long, long)) 0x00439DB0 )
 #define	SetScreenFadeIn	( (void(__cdecl*)(long)) 0x00439E00 )
 #define Fade	( (void(__cdecl*)()) 0x00439E40 )
-#define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )

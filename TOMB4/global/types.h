@@ -2228,6 +2228,15 @@ struct SP_DYNAMIC
 	uchar Pad[2];
 };
 
+struct NODEOFFSET_INFO
+{
+	short x;
+	short y;
+	short z;
+	char mesh_num;
+	uchar GotIt;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {
