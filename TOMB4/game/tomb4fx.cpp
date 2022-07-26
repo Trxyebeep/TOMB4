@@ -2180,6 +2180,24 @@ void SetFadeClip(short height, short speed)
 	FadeClipSpeed = speed;
 }
 
+void UpdateFadeClip()
+{
+	if (DestFadeScreenHeight < FadeScreenHeight)
+	{
+		FadeScreenHeight -= FadeClipSpeed;
+
+		if (DestFadeScreenHeight > FadeScreenHeight)
+			FadeScreenHeight = DestFadeScreenHeight;
+	}
+	else if (DestFadeScreenHeight > FadeScreenHeight)
+	{
+		FadeScreenHeight += FadeClipSpeed;
+
+		if (DestFadeScreenHeight < FadeScreenHeight)
+			FadeScreenHeight = DestFadeScreenHeight;
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -2227,4 +2245,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x0043B420, TriggerFlashSmoke, replace);
 	INJECT(0x0043A1B0, S_DrawSparks, replace);
 	INJECT(0x00439D40, SetFadeClip, replace);
+	INJECT(0x00439D60, UpdateFadeClip, replace);
 }
