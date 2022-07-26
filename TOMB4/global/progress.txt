@@ -1344,7 +1344,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0043AE50	+	TriggerLightning
 0x0043AF80	+	UpdateLightning
 0x0043AFD0	+	LSpline
-0x0043B0D0		CalcLightningSpline
+0x0043B0D0	+	CalcLightningSpline
 0x0043B330		TriggerLightningGlow
 0x0043B420		TriggerFlashSmoke
 0x0043B5F0	+	DrawLensFlares

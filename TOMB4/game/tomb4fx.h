@@ -43,6 +43,7 @@ void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long
 void UpdateShockwaves();
 void UpdateLightning();
 long LSpline(long x, long* knots, long nk);
+void CalcLightningSpline(PHD_VECTOR* pos, SVECTOR* dest, LIGHTNING_STRUCT* lptr);
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLightningGlow	( (void(__cdecl*)(long, long, long, long)) 0x0043B330 )
@@ -52,4 +53,3 @@ long LSpline(long x, long* knots, long nk);
 #define TriggerFlashSmoke	( (void(__cdecl*)(long, long, long, long)) 0x0043B420 )
 #define Fade	( (void(__cdecl*)()) 0x00439E40 )
 #define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )
-#define CalcLightningSpline	( (void(__cdecl*)(PHD_VECTOR*, SVECTOR*, LIGHTNING_STRUCT*)) 0x0043B0D0 )

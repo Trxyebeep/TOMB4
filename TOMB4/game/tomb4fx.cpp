@@ -1851,6 +1851,56 @@ long LSpline(long x, long* knots, long nk)
 	return ret + k[3];
 }
 
+void CalcLightningSpline(PHD_VECTOR* pos, SVECTOR* dest, LIGHTNING_STRUCT* lptr)
+{
+	long segments, x, y, z, xadd, yadd, zadd;
+
+	dest->x = (short)pos->x;
+	dest->y = (short)pos->y;
+	dest->z = (short)pos->z;
+	dest++;
+	segments = lptr->Segments * 3;
+
+	if (lptr->Flags & 1)
+	{
+		xadd = 0x10000 / (segments - 1);
+		x = xadd;
+
+		for (int i = 0; i < segments - 2; i++)
+		{
+			dest->x = short(LSpline(x, &pos->x, 6) + (GetRandomControl() & 0xF) - 8);
+			dest->y = short(LSpline(x, &pos->y, 6) + (GetRandomControl() & 0xF) - 8);
+			dest->z = short(LSpline(x, &pos->z, 6) + (GetRandomControl() & 0xF) - 8);
+			dest++;
+			x += xadd;
+		}
+	}
+	else
+	{
+		xadd = (pos[5].x - pos->x) / (segments - 1);
+		yadd = (pos[5].y - pos->y) / (segments - 1);
+		zadd = (pos[5].z - pos->z) / (segments - 1);
+		x = xadd + pos->x + GetRandomControl() % (lptr->Rand << 1) - lptr->Rand;
+		y = yadd + pos->y + GetRandomControl() % (lptr->Rand << 1) - lptr->Rand;
+		z = zadd + pos->z + GetRandomControl() % (lptr->Rand << 1) - lptr->Rand;
+
+		for (int i = 0; i < segments - 2; i++)
+		{
+			dest->x = (short)x;
+			dest->y = (short)y;
+			dest->z = (short)z;
+			dest++;
+			x += xadd + GetRandomControl() % (lptr->Rand << 1) - lptr->Rand;
+			y += yadd + GetRandomControl() % (lptr->Rand << 1) - lptr->Rand;
+			z += zadd + GetRandomControl() % (lptr->Rand << 1) - lptr->Rand;
+		}
+	}
+
+	dest->x = (short)pos[5].x;
+	dest->y = (short)pos[5].y;
+	dest->z = (short)pos[5].z;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1893,4 +1943,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x0043AD10, UpdateShockwaves, replace);
 	INJECT(0x0043AF80, UpdateLightning, replace);
 	INJECT(0x0043AFD0, LSpline, replace);
+	INJECT(0x0043B0D0, CalcLightningSpline, replace);
 }
