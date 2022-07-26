@@ -271,6 +271,65 @@ void sgRestoreGame()
 	RestoreLaraData(1);
 }
 
+long OpenSaveGame(uchar current_level, long saving)
+{
+	ushort* curOffset;
+	ushort* nexOffset;
+	long index, i, j;
+
+	index = 0;
+
+	while (index < 10 && savegame.HubLevels[index] != current_level)
+		index++;
+
+	if (saving == 1)
+	{
+		j = index + 1;
+		i = index;
+
+		if (index < 10)
+		{
+			while (j < 10)
+			{
+				curOffset = &savegame.HubOffsets[i];
+				nexOffset = &savegame.HubOffsets[j];
+
+				if (!savegame.HubLevels[j])
+					break;
+
+				memcpy(&savegame.buffer[curOffset[0]], &savegame.buffer[nexOffset[0]], nexOffset[10]);
+				curOffset[10] = nexOffset[10];
+				nexOffset[0] = curOffset[0] + curOffset[10];
+				savegame.HubLevels[i] = savegame.HubLevels[j];
+				i++;
+				j++;
+			}
+
+			savegame.HubLevels[i] = 0;
+		}
+
+		for (index = 0; index < 10; index++)
+		{
+			if (!savegame.HubLevels[index])
+				break;
+		}
+
+		savegame.HubLevels[index] = current_level;
+		SGcount = savegame.HubOffsets[index];
+		SGpoint = &savegame.buffer[SGcount];
+		return index;
+	}
+
+	if (index < 10)
+	{
+		SGcount = savegame.HubOffsets[index];
+		SGpoint = &savegame.buffer[SGcount];
+		return index;
+	}
+
+	return -1;
+}
+
 void inject_savegame(bool replace)
 {
 	INJECT(0x0045A0E0, CheckSumValid, replace);
@@ -285,4 +344,5 @@ void inject_savegame(bool replace)
 	INJECT(0x0045BDC0, sgSaveLevel, replace);
 	INJECT(0x0045A2E0, sgSaveGame, replace);
 	INJECT(0x0045B040, sgRestoreGame, replace);
+	INJECT(0x0045A370, OpenSaveGame, replace);
 }

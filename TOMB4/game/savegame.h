@@ -15,7 +15,7 @@ void CreateCheckSum();
 void sgSaveLevel();
 void sgSaveGame();
 void sgRestoreGame();
+long OpenSaveGame(uchar current_level, long saving);
 
-#define OpenSaveGame	( (long(__cdecl*)(uchar, long)) 0x0045A370 )
 #define RestoreLevelData	( (void(__cdecl*)(long)) 0x0045B230 )
 #define SaveLevelData	( (void(__cdecl*)(long)) 0x0045A4B0 )
