@@ -1189,7 +1189,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/sentrygun.cpp
 
-0x0043F5C0		TriggerAutogunFlamethrower
+0x0043F5C0	+	TriggerAutogunFlamethrower
 0x0043F7A0		InitialiseAutogun
 0x0043F7E0		AutogunControl
 
