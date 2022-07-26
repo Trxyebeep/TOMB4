@@ -37,6 +37,7 @@ void CreateBubble(PHD_3DPOS* pos, short room_number, long size, long biggest);
 void UpdateBubbles();
 long GetFreeDrip();
 void TriggerLaraDrips();
+long GetFreeShockwave();
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define UpdateShockwaves	( (void(__cdecl*)()) 0x0043AD10 )

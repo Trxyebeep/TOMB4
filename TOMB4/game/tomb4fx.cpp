@@ -1659,6 +1659,17 @@ void TriggerLaraDrips()
 	}
 }
 
+long GetFreeShockwave()
+{
+	for (int i = 0; i < 16; i++)
+	{
+		if (!ShockWaves[i].life)
+			return i;
+	}
+
+	return -1;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1695,4 +1706,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00439970, UpdateBubbles, replace);
 	INJECT(0x00439F10, GetFreeDrip, replace);
 	INJECT(0x0043A080, TriggerLaraDrips, replace);
+	INJECT(0x0043AA70, GetFreeShockwave, replace);
 }
