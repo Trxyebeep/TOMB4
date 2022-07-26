@@ -1829,6 +1829,28 @@ void UpdateLightning()
 	}
 }
 
+long LSpline(long x, long* knots, long nk)
+{
+	long* k;
+	long c1, c2, c3, ret, span;
+
+	x *= nk - 3;
+	span = x >> 16;
+
+	if (span >= nk - 3)
+		span = nk - 4;
+
+	x -= 65536 * span;
+	k = &knots[3 * span];
+	c1 = k[3] + (k[3] >> 1) - (k[6] >> 1) - k[6] + (k[9] >> 1) + ((-k[0] - 1) >> 1);
+	ret = (__int64)c1 * x >> 16;
+	c2 = ret + 2 * k[6] - 2 * k[3] - (k[3] >> 1) - (k[9] >> 1) + k[0];
+	ret = (__int64)c2 * x >> 16;
+	c3 = ret + (k[6] >> 1) + ((-k[0] - 1) >> 1);
+	ret = (__int64)c3 * x >> 16;
+	return ret + k[3];
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1870,4 +1892,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x0043AB00, TriggerShockwaveHitEffect, replace);
 	INJECT(0x0043AD10, UpdateShockwaves, replace);
 	INJECT(0x0043AF80, UpdateLightning, replace);
+	INJECT(0x0043AFD0, LSpline, replace);
 }

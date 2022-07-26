@@ -42,6 +42,7 @@ void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long rgb
 void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long speed);
 void UpdateShockwaves();
 void UpdateLightning();
+long LSpline(long x, long* knots, long nk);
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define TriggerLightningGlow	( (void(__cdecl*)(long, long, long, long)) 0x0043B330 )
