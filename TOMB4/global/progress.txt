@@ -924,7 +924,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00432850	+	lara_as_uwdeath
 0x004328B0	+	lara_as_waterroll
 0x004328C0	+	lara_col_swim
-0x004328E0		LaraSwimCollision
+0x004328E0	+	LaraSwimCollision
 0x00432A30	+	LaraTestWaterDepth
 0x00432B10	+	lara_col_glide
 0x00432B30	+	lara_col_tread
