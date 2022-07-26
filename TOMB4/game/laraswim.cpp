@@ -9,6 +9,7 @@
 #ifdef GENERAL_FIXES
 #include "effect2.h"
 #endif
+#include "../specific/3dmath.h"
 
 #ifdef GENERAL_FIXES
 static void lara_as_swimcheat(ITEM_INFO* item, COLL_INFO* coll)
@@ -542,6 +543,98 @@ void LaraSwimCollision(ITEM_INFO* item, COLL_INFO* coll)
 		LaraTestWaterDepth(item, coll);
 }
 
+void LaraWaterCurrent(COLL_INFO* coll)
+{
+	long angle, dx, dz, speed, sinkval, shifter, absvel;
+
+	if (lara.current_active)
+	{
+		sinkval = lara.current_active - 1;
+		speed = camera.fixed[sinkval].data;
+		angle = ((mGetAngle(camera.fixed[sinkval].x, camera.fixed[sinkval].z, lara_item->pos.x_pos, lara_item->pos.z_pos) - 0x4000) >> 4) & 0xFFF;
+		lara.current_xvel += (((speed * rcossin_tbl[2 * angle]) >> 2) - lara.current_xvel) >> 4;
+		lara.current_zvel += (((speed * rcossin_tbl[2 * angle + 1]) >> 2) - lara.current_zvel) >> 4;
+		lara_item->pos.y_pos += (camera.fixed[sinkval].y - lara_item->pos.y_pos) >> 4;
+	}
+	else
+	{
+		absvel = ABS(lara.current_xvel);
+
+		if (absvel > 16)
+			shifter = 4;
+		else if (absvel > 8)
+			shifter = 3;
+		else
+			shifter = 2;
+
+		lara.current_xvel -= lara.current_xvel >> shifter;
+
+		if (ABS(lara.current_xvel) < 4)
+			lara.current_xvel = 0;
+
+		absvel = ABS(lara.current_zvel);
+
+		if (absvel > 16)
+			shifter = 4;
+		else if (absvel > 8)
+			shifter = 3;
+		else
+			shifter = 2;
+
+		lara.current_zvel -= lara.current_zvel >> shifter;
+
+		if (ABS(lara.current_zvel) < 4)
+			lara.current_zvel = 0;
+
+		if (!lara.current_xvel && !lara.current_zvel)
+			return;
+	}
+
+	lara_item->pos.x_pos += lara.current_xvel >> 8;
+	lara_item->pos.z_pos += lara.current_zvel >> 8;
+	lara.current_active = 0;
+	coll->facing = phd_atan(lara_item->pos.z_pos - coll->old.z, lara_item->pos.x_pos - coll->old.x);
+	GetCollisionInfo(coll, lara_item->pos.x_pos, lara_item->pos.y_pos + 200, lara_item->pos.z_pos, lara_item->room_number, 400);
+
+	switch (coll->coll_type)
+	{
+	case CT_FRONT:
+
+		if (lara_item->pos.x_rot > 6370)
+			lara_item->pos.x_rot += 364;
+		else if (lara_item->pos.x_rot < -6370)
+			lara_item->pos.x_rot -= 364;
+		else
+			lara_item->fallspeed = 0;
+
+		break;
+
+	case CT_TOP:
+		lara_item->pos.x_rot -= 364;
+		break;
+
+	case CT_TOP_FRONT:
+		lara_item->fallspeed = 0;
+		break;
+
+	case CT_LEFT:
+		lara_item->pos.y_rot += 910;
+		break;
+
+	case CT_RIGHT:
+		lara_item->pos.y_rot -= 910;
+		break;
+	}
+
+	if (coll->mid_floor < 0 && coll->mid_floor != NO_HEIGHT)
+		lara_item->pos.y_pos += coll->mid_floor;
+
+	ShiftItem(lara_item, coll);
+	coll->old.x = lara_item->pos.x_pos;
+	coll->old.y = lara_item->pos.y_pos;
+	coll->old.z = lara_item->pos.z_pos;
+}
+
 void inject_laraswim(bool replace)
 {
 	INJECT(0x00432620, lara_as_swim, replace);
@@ -561,4 +654,5 @@ void inject_laraswim(bool replace)
 	INJECT(0x00432690, SwimTurn, replace);
 	INJECT(0x00432A30, LaraTestWaterDepth, replace);
 	INJECT(0x004328E0, LaraSwimCollision, replace);
+	INJECT(0x00432DA0, LaraWaterCurrent, replace);
 }

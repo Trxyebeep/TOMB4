@@ -20,5 +20,4 @@ long GetWaterDepth(long x, long y, long z, short room_number);
 void SwimTurn(ITEM_INFO* item);
 void LaraTestWaterDepth(ITEM_INFO* item, COLL_INFO* coll);
 void LaraSwimCollision(ITEM_INFO* item, COLL_INFO* coll);
-
-#define LaraWaterCurrent	( (void(__cdecl*)(COLL_INFO*)) 0x00432DA0 )
+void LaraWaterCurrent(COLL_INFO* coll);
