@@ -38,6 +38,7 @@ void UpdateBubbles();
 long GetFreeDrip();
 void TriggerLaraDrips();
 long GetFreeShockwave();
+void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long rgb, long XRotFlags);
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define UpdateShockwaves	( (void(__cdecl*)()) 0x0043AD10 )
@@ -46,7 +47,6 @@ long GetFreeShockwave();
 #define	SetFadeClip	( (void(__cdecl*)(short, short)) 0x00439D40 )
 #define	SetScreenFadeOut	( (void(__cdecl*)(long, long)) 0x00439DB0 )
 #define	SetScreenFadeIn	( (void(__cdecl*)(long)) 0x00439E00 )
-#define TriggerShockwave	( (void(__cdecl*)(PHD_VECTOR*, long, long, long, long)) 0x0043AA90 )
 #define TriggerFlashSmoke	( (void(__cdecl*)(long, long, long, long)) 0x0043B420 )
 #define Fade	( (void(__cdecl*)()) 0x00439E40 )
 #define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )

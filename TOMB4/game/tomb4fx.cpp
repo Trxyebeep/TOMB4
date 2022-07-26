@@ -1670,6 +1670,32 @@ long GetFreeShockwave()
 	return -1;
 }
 
+void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long bgrl, long XRotFlags)
+{
+	SHOCKWAVE_STRUCT* sw;
+	long swn;
+
+	swn = GetFreeShockwave();
+
+	if (swn != -1)
+	{
+		sw = &ShockWaves[swn];
+		sw->x = pos->x;
+		sw->y = pos->y;
+		sw->z = pos->z;
+		sw->InnerRad = InnerOuterRads & 0xFFFF;
+		sw->OuterRad = InnerOuterRads >> 16;
+		sw->XRot = XRotFlags & 0xFFFF;
+		sw->Flags = XRotFlags >> 16;
+		sw->Speed = (short)speed;
+		sw->r = CLRB(bgrl);
+		sw->g = CLRG(bgrl);
+		sw->b = CLRR(bgrl);
+		sw->life = CLRA(bgrl);
+		SoundEffect(SFX_DEMI_SIREN_SWAVE, (PHD_3DPOS*)pos, SFX_DEFAULT);
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1707,4 +1733,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00439F10, GetFreeDrip, replace);
 	INJECT(0x0043A080, TriggerLaraDrips, replace);
 	INJECT(0x0043AA70, GetFreeShockwave, replace);
+	INJECT(0x0043AA90, TriggerShockwave, replace);
 }

@@ -545,15 +545,15 @@ void LaraSwimCollision(ITEM_INFO* item, COLL_INFO* coll)
 
 void LaraWaterCurrent(COLL_INFO* coll)
 {
-	long angle, dx, dz, speed, sinkval, shifter, absvel;
+	long angle, speed, sinkval, shifter, absvel;
 
 	if (lara.current_active)
 	{
 		sinkval = lara.current_active - 1;
 		speed = camera.fixed[sinkval].data;
 		angle = ((mGetAngle(camera.fixed[sinkval].x, camera.fixed[sinkval].z, lara_item->pos.x_pos, lara_item->pos.z_pos) - 0x4000) >> 4) & 0xFFF;
-		lara.current_xvel += (((speed * rcossin_tbl[2 * angle]) >> 2) - lara.current_xvel) >> 4;
-		lara.current_zvel += (((speed * rcossin_tbl[2 * angle + 1]) >> 2) - lara.current_zvel) >> 4;
+		lara.current_xvel += short((((speed * rcossin_tbl[2 * angle]) >> 2) - lara.current_xvel) >> 4);
+		lara.current_zvel += short((((speed * rcossin_tbl[2 * angle + 1]) >> 2) - lara.current_zvel) >> 4);
 		lara_item->pos.y_pos += (camera.fixed[sinkval].y - lara_item->pos.y_pos) >> 4;
 	}
 	else
@@ -593,7 +593,7 @@ void LaraWaterCurrent(COLL_INFO* coll)
 	lara_item->pos.x_pos += lara.current_xvel >> 8;
 	lara_item->pos.z_pos += lara.current_zvel >> 8;
 	lara.current_active = 0;
-	coll->facing = phd_atan(lara_item->pos.z_pos - coll->old.z, lara_item->pos.x_pos - coll->old.x);
+	coll->facing = (short)phd_atan(lara_item->pos.z_pos - coll->old.z, lara_item->pos.x_pos - coll->old.x);
 	GetCollisionInfo(coll, lara_item->pos.x_pos, lara_item->pos.y_pos + 200, lara_item->pos.z_pos, lara_item->room_number, 400);
 
 	switch (coll->coll_type)
