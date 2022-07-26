@@ -274,7 +274,7 @@ void ObjectObjects()
 
 	obj = &objects[GRENADE];
 	obj->initialise = 0;
-//	obj->control = ControlCrossbow;
+//	obj->control = ControlGrenade;
 	obj->collision = 0;
 	obj->draw_routine = DrawWeaponMissile;
 	obj->using_drawanimating_item = 0;
@@ -517,8 +517,8 @@ void ObjectObjects()
 	obj->control = ControlClockworkBeetle;
 
 	obj = &objects[GOD_HEAD];
-//	obj->control = ControlGodHead;
-//	obj->draw_routine = DrawGodHead;
+	obj->control = ControlGodHead;
+	obj->draw_routine = DrawGodHead;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
 

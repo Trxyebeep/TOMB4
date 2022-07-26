@@ -1183,7 +1183,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0040FBD0	+	ShockwaveExplosion
 0x0040FC60	+	ThrowSticks
 0x0040FCF0	+	ControlGodHead
-0x0040FDD0		DrawGodHead
+0x0040FDD0	+	DrawGodHead
 0x0040FF40	+	GameStixCollision
 
 
