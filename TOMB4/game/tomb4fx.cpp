@@ -2211,6 +2211,18 @@ void SetScreenFadeOut(short speed, short back)
 	}
 }
 
+void SetScreenFadeIn(short speed)
+{
+	if (!ScreenFading)
+	{
+		ScreenFading = 1;
+		ScreenFade = 255;
+		dScreenFade = 0;
+		ScreenFadeSpeed = speed;
+		ScreenFadedOut = 0;
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -2260,4 +2272,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00439D40, SetFadeClip, replace);
 	INJECT(0x00439D60, UpdateFadeClip, replace);
 	INJECT(0x00439DB0, SetScreenFadeOut, replace);
+	INJECT(0x00439E00, SetScreenFadeIn, replace);
 }
