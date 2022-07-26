@@ -10,12 +10,8 @@
 #include "collide.h"
 #include "tomb4fx.h"
 
-short GameStixBounds[12] =
-{
-	 -256, 256, -200, 200, -256, 256, -1820, 1820, -5460, 5460, 0, 0
-};
-
-PHD_VECTOR GameStixPos = { 0, 0, -100 };
+static short GameStixBounds[12] = { -256, 256, -200, 200, -256, 256, -1820, 1820, -5460, 5460, 0, 0 };
+static PHD_VECTOR GameStixPos = { 0, 0, -100 };
 
 void InitialiseSenet(short item_number)
 {
@@ -460,6 +456,53 @@ void ShockwaveExplosion(ITEM_INFO* item, ulong col, long speed)
 	item->pos.y_pos += 384;
 }
 
+void ControlGodHead(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (TriggerActive(item))
+	{
+		switch (item->pos.y_rot)
+		{
+		case 0:
+			item->pos.z_pos &= ~1023;
+			break;
+
+		case 0x4000:
+			item->pos.x_pos &= ~1023;
+			break;
+
+		case -0x8000:
+			item->pos.z_pos |= 1023;
+			break;
+
+		case -0x4000:
+			item->pos.x_pos |= 1023;
+			break;
+		}
+
+		if (item->item_flags[0])
+		{
+			if (item->item_flags[2])
+				item->item_flags[2]--;
+			else if (item->item_flags[1] < 128)
+				KillItem(item_number);
+			else
+				item->item_flags[1] -= 128;
+		}
+		else if (item->item_flags[1] < 4096)
+			item->item_flags[1] += 128;
+		else
+		{
+			item->item_flags[0] = 1;
+			item->item_flags[1] = 4096;
+			item->item_flags[2] = 210;
+		}
+	}
+}
+
 void inject_senet(bool replace)
 {
 	INJECT(0x0040F3B0, InitialiseSenet, replace);
@@ -471,4 +514,5 @@ void inject_senet(bool replace)
 	INJECT(0x0040F630, GameStixControl, replace);
 	INJECT(0x0040FF40, GameStixCollision, replace);
 	INJECT(0x0040FBD0, ShockwaveExplosion, replace);
+	INJECT(0x0040FCF0, ControlGodHead, replace);
 }
