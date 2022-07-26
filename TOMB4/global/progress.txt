@@ -1327,7 +1327,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00439AE0	+	TriggerGunflash
 0x00439B80	+	SetGunFlash
 0x00439C00	+	DrawGunflashes
-0x00439D40		SetFadeClip
+0x00439D40	+	SetFadeClip
 0x00439D60		UpdateFadeClip
 0x00439DB0		SetScreenFadeOut
 0x00439E00		SetScreenFadeIn

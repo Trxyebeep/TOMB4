@@ -2174,6 +2174,12 @@ void S_DrawSparks()
 	phd_PopMatrix();
 }
 
+void SetFadeClip(short height, short speed)
+{
+	DestFadeScreenHeight = height;
+	FadeClipSpeed = speed;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -2220,4 +2226,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x0043B330, TriggerLightningGlow, replace);
 	INJECT(0x0043B420, TriggerFlashSmoke, replace);
 	INJECT(0x0043A1B0, S_DrawSparks, replace);
+	INJECT(0x00439D40, SetFadeClip, replace);
 }
