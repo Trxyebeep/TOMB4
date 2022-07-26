@@ -2223,6 +2223,49 @@ void SetScreenFadeIn(short speed)
 	}
 }
 
+void Fade()
+{
+	long oldfucker;
+
+	oldfucker = ScreenFade;
+
+	if (dScreenFade && dScreenFade >= ScreenFade)
+	{
+		ScreenFade += ScreenFadeSpeed;
+
+		if (ScreenFade > dScreenFade)
+		{
+			ScreenFade = dScreenFade;
+
+			if (oldfucker >= dScreenFade)
+			{
+				ScreenFadedOut = 1;
+
+				if (ScreenFadeBack)
+				{
+					dScreenFade = 0;
+					ScreenFadeBack = 0;
+				}
+				else
+					ScreenFading = 0;
+			}
+		}
+	}
+	else if (dScreenFade < ScreenFade)
+	{
+		ScreenFade -= ScreenFadeSpeed;
+
+		if (ScreenFade < dScreenFade)
+		{
+			ScreenFade = dScreenFade;
+			ScreenFading = 0;
+		}
+	}
+
+	if (ScreenFade || dScreenFade)
+		DrawPsxTile(0, phd_winwidth | (phd_winheight << 16), RGBA(ScreenFade, ScreenFade, ScreenFade, 98), 2, 0);
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -2273,4 +2316,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00439D60, UpdateFadeClip, replace);
 	INJECT(0x00439DB0, SetScreenFadeOut, replace);
 	INJECT(0x00439E00, SetScreenFadeIn, replace);
+	INJECT(0x00439E40, Fade, replace);
 }

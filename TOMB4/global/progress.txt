@@ -1331,7 +1331,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00439D60	+	UpdateFadeClip
 0x00439DB0	+	SetScreenFadeOut
 0x00439E00	+	SetScreenFadeIn
-0x00439E40		Fade
+0x00439E40	+	Fade
 0x00439F10	+	GetFreeDrip
 0x00439F80	+	UpdateDrips
 0x0043A080	+	TriggerLaraDrips
