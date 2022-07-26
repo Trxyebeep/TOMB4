@@ -3,6 +3,7 @@
 #include "effect2.h"
 #include "../specific/function_stubs.h"
 #include "sphere.h"
+#include "box.h"
 
 void TriggerAutogunFlamethrower(ITEM_INFO* item)
 {
@@ -63,7 +64,19 @@ void TriggerAutogunFlamethrower(ITEM_INFO* item)
 	}
 }
 
+void InitialiseAutogun(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	InitialiseCreature(item_number);
+	item->item_flags[0] = 0;
+	item->item_flags[1] = 768;
+	item->item_flags[2] = 0;
+}
+
 void inject_sentry(bool replace)
 {
 	INJECT(0x0043F5C0, TriggerAutogunFlamethrower, replace);
+	INJECT(0x0043F7A0, InitialiseAutogun, replace);
 }
