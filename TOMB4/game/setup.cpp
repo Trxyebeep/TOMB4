@@ -44,6 +44,7 @@
 #include "../specific/function_stubs.h"
 #include "flmtorch.h"
 #include "scarab.h"
+#include "sentrygun.h"
 
 void ObjectObjects()
 {
@@ -1582,8 +1583,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseAutogun;
-//		obj->control = AutogunControl;
+		obj->initialise = InitialiseAutogun;
+		obj->control = AutogunControl;
 		obj->collision = CreatureCollision;
 		obj->radius = 204;
 		obj->shadow_size = 128;
