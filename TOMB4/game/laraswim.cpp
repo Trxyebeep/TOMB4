@@ -412,6 +412,33 @@ long GetWaterDepth(long x, long y, long z, short room_number)
 	}
 }
 
+void SwimTurn(ITEM_INFO* item)
+{
+	if (input & IN_FORWARD)
+		item->pos.x_rot -= 364;
+	else if (input & IN_BACK)
+		item->pos.x_rot += 364;
+
+	if (input & IN_LEFT)
+	{
+		lara.turn_rate -= 409;
+
+		if (lara.turn_rate < -1092)
+			lara.turn_rate = -1092;
+
+		item->pos.z_rot -= 546;
+	}
+	else if (input & IN_RIGHT)
+	{
+		lara.turn_rate += 409;
+
+		if (lara.turn_rate > 1092)
+			lara.turn_rate = 1092;
+
+		item->pos.z_rot += 546;
+	}
+}
+
 void inject_laraswim(bool replace)
 {
 	INJECT(0x00432620, lara_as_swim, replace);
@@ -428,4 +455,5 @@ void inject_laraswim(bool replace)
 	INJECT(0x004328B0, lara_as_waterroll, replace);
 	INJECT(0x00432B70, lara_col_uwdeath, replace);
 	INJECT(0x00432BF0, GetWaterDepth, replace);
+	INJECT(0x00432690, SwimTurn, replace);
 }

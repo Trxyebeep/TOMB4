@@ -917,7 +917,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x004323A0	+	LaraUnderWater
 0x00432620	+	lara_as_swim
-0x00432690		SwimTurn
+0x00432690	+	SwimTurn
 0x00432720	+	lara_as_glide
 0x004327A0	+	lara_as_tread
 0x00432830	+	lara_as_dive
