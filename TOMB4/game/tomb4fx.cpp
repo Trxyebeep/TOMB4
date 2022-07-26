@@ -1799,6 +1799,36 @@ void UpdateShockwaves()
 	}
 }
 
+void UpdateLightning()
+{
+	LIGHTNING_STRUCT* lptr;
+	long* pPoint;
+	char* pVel;
+
+	for (int i = 0; i < 16; i++)
+	{
+		lptr = &Lightning[i];
+
+		if (!lptr->Life)
+			continue;
+
+		lptr->Life -= 2;
+
+		if (!lptr->Life)
+			continue;
+
+		pPoint = &lptr->Point[1].x;
+		pVel = &lptr->Xvel1;
+
+		for (int j = 0; j < 9; j++)
+		{
+			*pPoint++ += *pVel << 1;
+			*pVel -= *pVel >> 4;
+			pVel++;
+		}
+	}
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1839,4 +1869,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x0043AA90, TriggerShockwave, replace);
 	INJECT(0x0043AB00, TriggerShockwaveHitEffect, replace);
 	INJECT(0x0043AD10, UpdateShockwaves, replace);
+	INJECT(0x0043AF80, UpdateLightning, replace);
 }
