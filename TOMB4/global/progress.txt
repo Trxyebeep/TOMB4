@@ -1339,7 +1339,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0043A690	+	ExplodingDeath2
 0x0043AA70	+	GetFreeShockwave
 0x0043AA90	+	TriggerShockwave
-0x0043AB00		TriggerShockwaveHitEffect
+0x0043AB00	+	TriggerShockwaveHitEffect
 0x0043AD10		UpdateShockwaves
 0x0043AE50	+	TriggerLightning
 0x0043AF80		UpdateLightning

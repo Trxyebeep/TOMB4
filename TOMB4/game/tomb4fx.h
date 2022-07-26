@@ -39,6 +39,7 @@ long GetFreeDrip();
 void TriggerLaraDrips();
 long GetFreeShockwave();
 void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long rgb, long XRotFlags);
+void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long speed);
 
 #define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
 #define UpdateShockwaves	( (void(__cdecl*)()) 0x0043AD10 )
