@@ -1901,6 +1901,46 @@ void CalcLightningSpline(PHD_VECTOR* pos, SVECTOR* dest, LIGHTNING_STRUCT* lptr)
 	dest->z = (short)pos[5].z;
 }
 
+void TriggerLightningGlow(long x, long y, long z, long rgb)
+{
+	SPARKS* sptr;
+	long dx, dz;
+
+	dx = lara_item->pos.x_pos - x;
+	dz = lara_item->pos.z_pos - z;
+
+	if (dx < -0x4000 || dx > 0x4000 || dz < -0x4000 || dz > 0x4000)
+		return;
+
+	sptr = &spark[GetFreeSpark()];
+	sptr->On = 1;
+	sptr->sR = CLRR(rgb);
+	sptr->sG = CLRG(rgb);
+	sptr->sB = CLRB(rgb);
+	sptr->dR = sptr->sR;
+	sptr->dG = sptr->sG;
+	sptr->dB = sptr->sB;
+	sptr->Life = 4;
+	sptr->sLife = 4;
+	sptr->ColFadeSpeed = 2;
+	sptr->FadeToBlack = 0;
+	sptr->TransType = 2;
+	sptr->x = x;
+	sptr->y = y;
+	sptr->z = z;
+	sptr->Zvel = 0;
+	sptr->Yvel = 0;
+	sptr->Xvel = 0;
+	sptr->Flags = 10;
+	sptr->Scalar = 3;
+	sptr->MaxYvel = 0;
+	sptr->Def = objects[DEFAULT_SPRITES].mesh_index + 11;
+	sptr->Gravity = 0;
+	sptr->Size = (rgb >> 24) + (GetRandomControl() & 3);
+	sptr->dSize = sptr->Size;
+	sptr->sSize = sptr->Size;
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1944,4 +1984,5 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x0043AF80, UpdateLightning, replace);
 	INJECT(0x0043AFD0, LSpline, replace);
 	INJECT(0x0043B0D0, CalcLightningSpline, replace);
+	INJECT(0x0043B330, TriggerLightningGlow, replace);
 }
