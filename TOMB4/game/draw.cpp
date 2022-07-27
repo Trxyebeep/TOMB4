@@ -1361,6 +1361,40 @@ short* GetBestFrame(ITEM_INFO* item)
 		return frm[0];
 }
 
+void UpdateSkyLightning()
+{
+	if (LightningCount <= 0)
+	{
+		if (LightningRand < 4)
+			LightningRand = 0;
+		else
+			LightningRand -= LightningRand >> 2;
+	}
+	else
+	{
+		LightningCount--;
+
+		if (LightningCount)
+		{
+			dLightningRand = GetRandomDraw() & 0x1FF;
+			LightningRand += (dLightningRand - LightningRand) >> 1;
+		}
+		else
+		{
+			dLightningRand = 0;
+			LightningRand = (GetRandomDraw() & 0x7F) + 400;
+		}
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		LightningRGB[i] = LightningRGBs[i] + ((LightningRGBs[i] * LightningRand) >> 8);
+
+		if (LightningRGB[i] > 255)
+			LightningRGB[i] = 255;
+	}
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -1391,4 +1425,5 @@ void inject_draw(bool replace)
 	INJECT(0x00450DC0, GetFrames, replace);
 	INJECT(0x00450E60, GetBoundsAccurate, replace);
 	INJECT(0x00450EE0, GetBestFrame, replace);
+	INJECT(0x00451180, UpdateSkyLightning, replace);
 }

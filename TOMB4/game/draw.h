@@ -31,6 +31,6 @@ void PrintObjects(short room_number);
 long GetFrames(ITEM_INFO* item, short* frm[], long* rate);
 short* GetBoundsAccurate(ITEM_INFO* item);
 short* GetBestFrame(ITEM_INFO* item);
+void UpdateSkyLightning();
 
 #define calc_animating_item_clip_window	( (void(__cdecl*)(ITEM_INFO*, short*)) 0x0044FC00 )
-#define UpdateSkyLightning	( (void(__cdecl*)()) 0x00451180 )
