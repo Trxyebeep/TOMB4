@@ -163,10 +163,10 @@ void FallFromRope(ITEM_INFO* item);
 short GetDirOctant(long rot);
 short TestMonkeyLeft(ITEM_INFO* item, COLL_INFO* coll);
 short TestMonkeyRight(ITEM_INFO* item, COLL_INFO* coll);
+long LaraTestEdgeCatch(ITEM_INFO* item, COLL_INFO* coll, long* edge);
 
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
 #define LaraTestClimbStance	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422810 )
-#define LaraTestEdgeCatch	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*, long*)) 0x00421DE0 )
 #define TestHangSwingIn	( (long(__cdecl*)(ITEM_INFO*, short)) 0x00421FF0 )
 #define TestLaraVault	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422480 )
 #define LaraDeflectEdge	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x00422400 )

@@ -5278,6 +5278,35 @@ short TestMonkeyRight(ITEM_INFO* item, COLL_INFO* coll)
 	return 1;
 }
 
+long LaraTestEdgeCatch(ITEM_INFO* item, COLL_INFO* coll, long* edge)
+{
+	short* bounds;
+	long hdif;
+
+	bounds = GetBoundsAccurate(item);
+	hdif = coll->front_floor - bounds[2];
+
+	if ((hdif >= 0 || item->fallspeed + hdif >= 0) && (hdif <= 0 || item->fallspeed + hdif <= 0))
+	{
+		if (ABS(coll->left_floor2 - coll->right_floor2) >= 60)
+			return 0;
+
+		return 1;
+	}
+
+	hdif = item->pos.y_pos + bounds[2];
+
+	if (hdif >> 8 == (hdif + item->fallspeed) >> 8)
+		return 0;
+
+	if (item->fallspeed > 0)
+		*edge = (hdif + item->fallspeed) & ~255;
+	else
+		*edge = hdif & ~255;
+
+	return -1;
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -5437,4 +5466,5 @@ void inject_lara(bool replace)
 	INJECT(0x00423780, GetDirOctant, replace);
 	INJECT(0x004236B0, TestMonkeyLeft, replace);
 	INJECT(0x004237B0, TestMonkeyRight, replace);
+	INJECT(0x00421DE0, LaraTestEdgeCatch, replace);
 }
