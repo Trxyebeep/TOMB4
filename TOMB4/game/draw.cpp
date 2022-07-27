@@ -1395,6 +1395,91 @@ void UpdateSkyLightning()
 	}
 }
 
+void mRotBoundingBoxNoPersp(short* bounds, short* rotatedBounds)
+{
+	PHD_VECTOR pos[8];
+	long x, y, z;
+	short xMin, xMax, yMin, yMax, zMin, zMax;
+
+	xMin = bounds[0];
+	xMax = bounds[1];
+	yMin = bounds[2];
+	yMax = bounds[3];
+	zMin = bounds[4];
+	zMax = bounds[5];
+
+	pos[0].x = xMin;
+	pos[0].y = yMin;
+	pos[0].z = zMin;
+
+	pos[1].x = xMax;
+	pos[1].y = yMin;
+	pos[1].z = zMin;
+
+	pos[2].x = xMin;
+	pos[2].y = yMax;
+	pos[2].z = zMin;
+
+	pos[3].x = xMax;
+	pos[3].y = yMax;
+	pos[3].z = zMin;
+
+	pos[4].x = xMin;
+	pos[4].y = yMin;
+	pos[4].z = zMax;
+
+	pos[5].x = xMax;
+	pos[5].y = yMin;
+	pos[5].z = zMax;
+
+	pos[6].x = xMin;
+	pos[6].y = yMax;
+	pos[6].z = zMax;
+
+	pos[7].x = xMax;
+	pos[7].y = yMax;
+	pos[7].z = zMax;
+
+	xMin = 0x7FFF;
+	yMin = 0x7FFF;
+	zMin = 0x7FFF;
+	xMax = -0x7FFF;
+	yMax = -0x7FFF;
+	zMax = -0x7FFF;
+
+	for (int i = 0; i < 8; i++)
+	{
+		x = pos[i].x * phd_mxptr[M00] + pos[i].y * phd_mxptr[M01] + pos[i].z * phd_mxptr[M02] + phd_mxptr[M03];
+		y = pos[i].x * phd_mxptr[M10] + pos[i].y * phd_mxptr[M11] + pos[i].z * phd_mxptr[M12] + phd_mxptr[M13];
+		z = pos[i].x * phd_mxptr[M20] + pos[i].y * phd_mxptr[M21] + pos[i].z * phd_mxptr[M22] + phd_mxptr[M23];
+
+		if (x < xMin)
+			xMin = (short)x;
+
+		if (x > xMax)
+			xMax = (short)x;
+
+		if (y < yMin)
+			yMin = (short)y;
+
+		if (y > yMax)
+			yMax = (short)y;
+
+		if (z < zMin)
+			zMin = (short)z;
+
+		if (z > zMax)
+			zMax = (short)z;
+	}
+
+	rotatedBounds[0] = xMin;
+	rotatedBounds[1] = xMax;
+	rotatedBounds[2] = yMin;
+	rotatedBounds[3] = yMax;
+	rotatedBounds[4] = zMin;
+	rotatedBounds[5] = zMax;
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -1426,4 +1511,5 @@ void inject_draw(bool replace)
 	INJECT(0x00450E60, GetBoundsAccurate, replace);
 	INJECT(0x00450EE0, GetBestFrame, replace);
 	INJECT(0x00451180, UpdateSkyLightning, replace);
+	INJECT(0x00450F10, mRotBoundingBoxNoPersp, replace);
 }

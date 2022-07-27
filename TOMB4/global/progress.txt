@@ -379,7 +379,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00450DC0	+	GetFrames
 0x00450E60	+	GetBoundsAccurate
 0x00450EE0	+	GetBestFrame
-0x00450F10		mRotBoundingBoxNoPersp
+0x00450F10	+	mRotBoundingBoxNoPersp
 0x00451180	+	UpdateSkyLightning
 0x00451240	+	RenderIt
 
