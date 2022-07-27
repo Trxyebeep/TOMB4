@@ -9,6 +9,9 @@
 #ifdef GENERAL_FIXES
 #include "draw.h"
 #endif
+#include "items.h"
+#include "control.h"
+#include "collide.h"
 
 void DrawFlareInAir(ITEM_INFO* item)
 {
@@ -142,6 +145,90 @@ void DoFlareInHand(long flare_age)
 		lara.gun_status = LG_UNDRAW_GUNS;
 }
 
+void CreateFlare(short object, long thrown)
+{
+	ITEM_INFO** itemlist;
+	MESH_INFO** meshlist;
+	ITEM_INFO* flare;
+	FLOOR_INFO* floor;
+	PHD_VECTOR pos;
+	long collided;
+	short flare_item, room_number;
+
+	flare_item = CreateItem();
+
+	if (flare_item != NO_ITEM)
+	{
+		collided = 0;
+		flare = &items[flare_item];
+		flare->object_number = object;
+		flare->room_number = lara_item->room_number;
+
+		pos.x = -16;
+		pos.y = 32;
+		pos.z = 42;
+		GetLaraJointPos(&pos, 14);
+		flare->pos.x_pos = pos.x;
+		flare->pos.y_pos = pos.y;
+		flare->pos.z_pos = pos.z;
+
+		room_number = lara_item->room_number;
+		floor = GetFloor(pos.x, pos.y, pos.z, &room_number);
+		itemlist = (ITEM_INFO**)&tsv_buffer[0];
+		meshlist = (MESH_INFO**)&tsv_buffer[1024];
+
+		if (GetCollidedObjects(flare, 0, 1, itemlist, meshlist, 0) || pos.y > GetHeight(floor, pos.x, pos.y, pos.z))
+		{
+			collided = 1;
+			flare->pos.y_rot = lara_item->pos.y_rot - 0x8000;
+			flare->pos.x_pos = lara_item->pos.x_pos + (80 * phd_sin(flare->pos.y_rot) >> W2V_SHIFT);
+			flare->pos.z_pos = lara_item->pos.z_pos + (80 * phd_cos(flare->pos.y_rot) >> W2V_SHIFT);
+			flare->room_number = lara_item->room_number;
+		}
+		else
+		{
+			if (thrown)
+				flare->pos.y_rot = lara_item->pos.y_rot;
+			else
+				flare->pos.y_rot = lara_item->pos.y_rot - 0x2000;
+
+			flare->room_number = room_number;
+		}
+
+		InitialiseItem(flare_item);
+		flare->pos.x_rot = 0;
+		flare->pos.z_rot = 0;
+		flare->shade = -1;
+
+		if (thrown)
+		{
+			flare->speed = lara_item->speed + 50;
+			flare->fallspeed = lara_item->fallspeed - 50;
+		}
+		else
+		{
+			flare->speed = lara_item->speed + 10;
+			flare->fallspeed = lara_item->fallspeed + 50;
+		}
+
+		if (collided)
+			flare->speed >>= 1;
+
+		if (object == FLARE_ITEM)
+		{
+			if (DoFlareLight((PHD_VECTOR*)&flare->pos, lara.flare_age))
+				flare->data = (void*)(lara.flare_age | 0x8000);
+			else
+				flare->data = (void*)(lara.flare_age & 0x7FFF);
+		}
+		else
+			flare->item_flags[3] = lara.LitTorch;
+
+		AddActiveItem(flare_item);
+		flare->status = ITEM_ACTIVE;
+	}
+}
+
 void inject_laraflar(bool replace)
 {
 	INJECT(0x0042F7B0, DrawFlareInAir, replace);
@@ -149,4 +236,5 @@ void inject_laraflar(bool replace)
 	INJECT(0x0042FF30, undraw_flare_meshes, replace);
 	INJECT(0x0042F510, DoFlareLight, replace);
 	INJECT(0x0042F6F0, DoFlareInHand, replace);
+	INJECT(0x0042F880, CreateFlare, replace);
 }
