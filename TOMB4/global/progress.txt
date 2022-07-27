@@ -868,7 +868,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0042F880	+	CreateFlare
 0x0042FB00	+	set_flare_arm
 0x0042FB50	+	draw_flare
-0x0042FC60		undraw_flare
+0x0042FC60	+	undraw_flare
 0x0042FF10	+	draw_flare_meshes
 0x0042FF30	+	undraw_flare_meshes
 0x0042FF50	+	ready_flare
