@@ -862,7 +862,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/laraflar.cpp
 
-0x0042F510		DoFlareLight
+0x0042F510	+	DoFlareLight
 0x0042F6F0		DoFlareInHand
 0x0042F7B0	+	DrawFlareInAir
 0x0042F880		CreateFlare
