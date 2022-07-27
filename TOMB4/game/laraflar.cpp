@@ -131,7 +131,7 @@ void DoFlareInHand(long flare_age)
 	pos.y = 32;
 	pos.z = 41;
 	GetLaraJointPos(&pos, 14);
-	lara.left_arm.flash_gun = DoFlareLight(&pos, flare_age);
+	lara.left_arm.flash_gun = (short)DoFlareLight(&pos, flare_age);
 
 	if (gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom)
 	{
@@ -229,6 +229,28 @@ void CreateFlare(short object, long thrown)
 	}
 }
 
+void set_flare_arm(long frame)
+{
+	short anim_base;
+
+	anim_base = objects[FLARE_ANIM].anim_index;
+
+	if (frame >= 1)
+	{
+		if (frame < 33)
+			anim_base += 1;
+		else if (frame < 72)
+			anim_base += 2;
+		else if (frame < 95)
+			anim_base += 3;
+		else
+			anim_base += 4;
+	}
+
+	lara.left_arm.anim_number = anim_base;
+	lara.left_arm.frame_base = anims[anim_base].frame_ptr;
+}
+
 void inject_laraflar(bool replace)
 {
 	INJECT(0x0042F7B0, DrawFlareInAir, replace);
@@ -237,4 +259,5 @@ void inject_laraflar(bool replace)
 	INJECT(0x0042F510, DoFlareLight, replace);
 	INJECT(0x0042F6F0, DoFlareInHand, replace);
 	INJECT(0x0042F880, CreateFlare, replace);
+	INJECT(0x0042FB00, set_flare_arm, replace);
 }
