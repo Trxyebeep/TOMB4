@@ -5492,6 +5492,37 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 	return 1;
 }
 
+long LaraTestClimbStance(ITEM_INFO* item, COLL_INFO* coll)
+{
+	long shift_r, shift_l;
+
+	if (LaraTestClimbPos(item, coll->radius, coll->radius + 120, -700, 512, &shift_r) != 1)
+		return 0;
+
+	if (LaraTestClimbPos(item, coll->radius, -120 - coll->radius, -700, 512, &shift_l) != 1)
+		return 0;
+
+	if (shift_r)
+	{
+		if (shift_l)
+		{
+			if (shift_r < 0 != shift_l < 0)
+				return 0;
+
+			if (shift_r < 0 && shift_l < shift_r)
+				shift_r = shift_l;
+			else if (shift_r > 0 && shift_l > shift_r)
+				shift_r = shift_l;
+		}
+
+		item->pos.y_pos += shift_r;
+	}
+	else if (shift_l)
+		item->pos.y_pos += shift_l;
+
+	return 1;
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -5655,4 +5686,5 @@ void inject_lara(bool replace)
 	INJECT(0x00421FF0, TestHangSwingIn, replace);
 	INJECT(0x00422400, LaraDeflectEdge, replace);
 	INJECT(0x00422480, TestLaraVault, replace);
+	INJECT(0x00422810, LaraTestClimbStance, replace);
 }
