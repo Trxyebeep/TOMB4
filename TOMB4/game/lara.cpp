@@ -5368,6 +5368,130 @@ long LaraDeflectEdge(ITEM_INFO* item, COLL_INFO* coll)
 	return 0;
 }
 
+long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
+{
+	long hdif, slope;
+	short angle;
+
+	if (!(input & IN_ACTION) || lara.gun_status != LG_NO_ARMS || coll->coll_type != CT_FRONT)
+		return 0;
+
+	angle = item->pos.y_rot;
+
+	if (angle >= -5460 && angle <= 5460)
+		angle = 0;
+	else if (angle >= 10924 && angle <= 21844)
+		angle = 0x4000;
+	else if (angle >= 27307 || angle <= -27307)
+		angle = -0x8000;
+	else if (angle >= -21844 && angle <= -10924)
+		angle = -0x4000;
+
+	if (angle & 0x3FFF)
+		return 0;
+
+	hdif = coll->front_floor;
+	slope = ABS(coll->left_floor2 - coll->right_floor2) >= 60;
+
+	if (hdif >= -640 && hdif <= -384)
+	{
+		if (!slope && hdif - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 && coll->right_floor2 - coll->right_ceiling2 >= 0)
+		{
+			item->anim_number = ANIM_VAULT2;
+			item->frame_number = anims[ANIM_VAULT2].frame_base;
+			item->current_anim_state = AS_NULL;
+			item->goal_anim_state = AS_STOP;
+			item->pos.y_pos += hdif + 512;
+			lara.gun_status = LG_HANDS_BUSY;
+		}
+		else
+			return 0;
+	}
+	else if (hdif >= -896 && hdif <= -640)
+	{
+		if (!slope && hdif - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 && coll->right_floor2 - coll->right_ceiling2 >= 0)
+		{
+			item->anim_number = ANIM_VAULT3;
+			item->frame_number = anims[ANIM_VAULT3].frame_base;
+			item->current_anim_state = AS_NULL;
+			item->goal_anim_state = AS_STOP;
+			item->pos.y_pos += hdif + 768;
+			lara.gun_status = LG_HANDS_BUSY;
+		}
+		else
+			return 0;
+	}
+	else if (!slope && hdif >= -1920 && hdif <= -896)
+	{
+		item->anim_number = ANIM_STOP;
+		item->frame_number = anims[ANIM_STOP].frame_base;
+		item->current_anim_state = AS_STOP;
+		item->goal_anim_state = AS_UPJUMP;
+		lara.calc_fallspeed = short(-3 - phd_sqrt(-9600 - 12 * hdif));
+		AnimateLara(item);
+	}
+	else
+	{
+		if (!lara.climb_status)
+			return 0;
+
+		if (hdif <= -1920 && lara.water_status != LW_WADE && coll->left_floor2 <= -1920 && coll->right_floor2 <= -2048 && coll->mid_ceiling <= -1158)
+		{
+			item->anim_number = ANIM_STOP;
+			item->frame_number = anims[ANIM_STOP].frame_base;
+			item->goal_anim_state = AS_UPJUMP;
+			item->current_anim_state = AS_STOP;
+			lara.calc_fallspeed = -116;
+			AnimateLara(item);
+		}
+		else if ((hdif < -1024 || coll->front_ceiling >= 506) && coll->mid_ceiling <= -518)
+		{
+			ShiftItem(item, coll);
+
+			if (LaraTestClimbStance(item, coll))
+			{
+				item->anim_number = ANIM_STOP;
+				item->frame_number = anims[ANIM_STOP].frame_base;
+				item->current_anim_state = AS_STOP;
+				item->goal_anim_state = AS_CLIMBSTNC;
+				AnimateLara(item);
+				item->pos.y_rot = angle;
+				lara.gun_status = LG_HANDS_BUSY;
+				return 1;
+			}
+
+			return 0;
+		}
+		else
+			return 0;
+	}
+
+	item->pos.y_rot = angle;
+	ShiftItem(item, coll);
+	angle = ushort(item->pos.y_rot + 0x2000) / 0x4000;
+
+	switch (angle)
+	{
+	case NORTH:
+		item->pos.z_pos = (item->pos.z_pos | 0x3FF) - 100;
+		break;
+
+	case EAST:
+		item->pos.x_pos = (item->pos.x_pos | 0x3FF) - 100;
+		break;
+
+	case SOUTH:
+		item->pos.z_pos = (item->pos.z_pos & ~0x3FF) + 100;
+		break;
+
+	case WEST:
+		item->pos.x_pos = (item->pos.x_pos & ~0x3FF) + 100;
+		break;
+	}
+
+	return 1;
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -5530,4 +5654,5 @@ void inject_lara(bool replace)
 	INJECT(0x00421DE0, LaraTestEdgeCatch, replace);
 	INJECT(0x00421FF0, TestHangSwingIn, replace);
 	INJECT(0x00422400, LaraDeflectEdge, replace);
+	INJECT(0x00422480, TestLaraVault, replace);
 }
