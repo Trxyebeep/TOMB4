@@ -1111,8 +1111,8 @@ struct SAVEGAME_INFO
 	LARA_INFO Lara;
 	long cutscene_triggered;
 	uchar HubLevels[10];	//saved level indices. highest one that isn't 0 is the one we are currently in
-	ushort HubOffsets[10];	//hub offsets (at what SGcount they end(?))
-	ushort HubSizes[10];	//HubSizes[x] = SGCount - HubOffsets[x];
+	ushort HubOffsets[10];	//offset of each level's data inside the savegame buffer
+	ushort HubSizes[10];	//size of each level's data inside the savegame buffer
 	char CurrentLevel;
 	char Checksum;
 	STATS Game;
