@@ -871,7 +871,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0042FC60		undraw_flare
 0x0042FF10	+	draw_flare_meshes
 0x0042FF30	+	undraw_flare_meshes
-0x0042FF50		ready_flare
+0x0042FF50	+	ready_flare
 0x0042FF90		FlareControl
 
 

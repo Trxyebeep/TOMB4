@@ -6,12 +6,12 @@
 #include "../specific/function_stubs.h"
 #include "effect2.h"
 #include "delstuff.h"
-#ifdef GENERAL_FIXES
-#include "draw.h"
-#endif
 #include "items.h"
 #include "control.h"
 #include "collide.h"
+#ifdef GENERAL_FIXES
+#include "draw.h"
+#endif
 
 void DrawFlareInAir(ITEM_INFO* item)
 {
@@ -251,6 +251,20 @@ void set_flare_arm(long frame)
 	lara.left_arm.frame_base = anims[anim_base].frame_ptr;
 }
 
+void ready_flare()
+{
+	lara.gun_status = LG_NO_ARMS;
+	lara.left_arm.x_rot = 0;
+	lara.left_arm.y_rot = 0;
+	lara.left_arm.z_rot = 0;
+	lara.right_arm.x_rot = 0;
+	lara.right_arm.y_rot = 0;
+	lara.right_arm.z_rot = 0;
+	lara.right_arm.lock = 0;
+	lara.left_arm.lock = 0;
+	lara.target = 0;
+}
+
 void inject_laraflar(bool replace)
 {
 	INJECT(0x0042F7B0, DrawFlareInAir, replace);
@@ -260,4 +274,5 @@ void inject_laraflar(bool replace)
 	INJECT(0x0042F6F0, DoFlareInHand, replace);
 	INJECT(0x0042F880, CreateFlare, replace);
 	INJECT(0x0042FB00, set_flare_arm, replace);
+	INJECT(0x0042FF50, ready_flare, replace);
 }
