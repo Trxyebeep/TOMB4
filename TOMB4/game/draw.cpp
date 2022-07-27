@@ -1348,6 +1348,19 @@ short* GetBoundsAccurate(ITEM_INFO* item)
 	return interpolated_bounds;
 }
 
+short* GetBestFrame(ITEM_INFO* item)
+{
+	short* frm[2];
+	long rate, frac;
+
+	frac = GetFrames(item, frm, &rate);
+
+	if (frac > rate >> 1)
+		return frm[1];
+	else
+		return frm[0];
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -1377,4 +1390,5 @@ void inject_draw(bool replace)
 	INJECT(0x0044F330, PrintObjects, replace);
 	INJECT(0x00450DC0, GetFrames, replace);
 	INJECT(0x00450E60, GetBoundsAccurate, replace);
+	INJECT(0x00450EE0, GetBestFrame, replace);
 }
