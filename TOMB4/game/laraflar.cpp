@@ -3,11 +3,12 @@
 #include "../specific/3dmath.h"
 #include "objects.h"
 #include "../specific/output.h"
+#include "../specific/function_stubs.h"
+#include "effect2.h"
+#include "delstuff.h"
 #ifdef GENERAL_FIXES
 #include "draw.h"
 #endif
-#include "../specific/function_stubs.h"
-#include "effect2.h"
 
 void DrawFlareInAir(ITEM_INFO* item)
 {
@@ -119,10 +120,33 @@ long DoFlareLight(PHD_VECTOR* pos, long flare_age)
 	return ret;
 }
 
+void DoFlareInHand(long flare_age)
+{
+	PHD_VECTOR pos;
+
+	pos.x = 11;
+	pos.y = 32;
+	pos.z = 41;
+	GetLaraJointPos(&pos, 14);
+	lara.left_arm.flash_gun = DoFlareLight(&pos, flare_age);
+
+	if (gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom)
+	{
+		pos.z = 2 * gfMirrorZPlane - pos.z;
+		DoFlareLight(&pos, flare_age);
+	}
+
+	if (lara.flare_age < 900)
+		lara.flare_age++;
+	else if (lara.gun_status == LG_NO_ARMS)
+		lara.gun_status = LG_UNDRAW_GUNS;
+}
+
 void inject_laraflar(bool replace)
 {
 	INJECT(0x0042F7B0, DrawFlareInAir, replace);
 	INJECT(0x0042FF10, draw_flare_meshes, replace);
 	INJECT(0x0042FF30, undraw_flare_meshes, replace);
 	INJECT(0x0042F510, DoFlareLight, replace);
+	INJECT(0x0042F6F0, DoFlareInHand, replace);
 }
