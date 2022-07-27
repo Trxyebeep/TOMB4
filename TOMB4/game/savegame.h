@@ -17,5 +17,4 @@ void sgSaveGame();
 void sgRestoreGame();
 long OpenSaveGame(uchar current_level, long saving);
 void SaveLevelData(long FullSave);
-
-#define RestoreLevelData	( (void(__cdecl*)(long)) 0x0045B230 )
+void RestoreLevelData(long FullSave);
