@@ -170,5 +170,6 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll);
 long LaraTestClimbStance(ITEM_INFO* item, COLL_INFO* coll);
 long TestWall(ITEM_INFO* item, long front, long right, long down);
 void LaraCollideStop(ITEM_INFO* item, COLL_INFO* coll);
+void SnapLaraToEdgeOfBlock(ITEM_INFO* item, COLL_INFO* coll, short angle);
 
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
