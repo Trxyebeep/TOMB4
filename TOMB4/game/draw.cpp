@@ -1324,6 +1324,30 @@ long GetFrames(ITEM_INFO* item, short* frm[], long* rate)
 	return frac;
 }
 
+short* GetBoundsAccurate(ITEM_INFO* item)
+{
+	short* bptr;
+	short* frmptr[2];
+	long rate, frac;
+	static short interpolated_bounds[6];
+
+	frac = GetFrames(item, frmptr, &rate);
+
+	if (!frac)
+		return frmptr[0];
+
+	bptr = interpolated_bounds;
+
+	for (int i = 0; i < 6; i++)
+	{
+		bptr[i] = short(*frmptr[0] + (*frmptr[1] - *frmptr[0]) * frac / rate);
+		frmptr[0]++;
+		frmptr[1]++;
+	}
+
+	return interpolated_bounds;
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -1352,4 +1376,5 @@ void inject_draw(bool replace)
 	INJECT(0x0044FB10, DrawEffect, replace);
 	INJECT(0x0044F330, PrintObjects, replace);
 	INJECT(0x00450DC0, GetFrames, replace);
+	INJECT(0x00450E60, GetBoundsAccurate, replace);
 }
