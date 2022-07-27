@@ -904,7 +904,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00431D40	+	lara_as_surfright
 0x00431DA0	+	lara_as_surftread
 0x00431E60	+	lara_col_surfswim
-0x00431E90		LaraTestWaterClimbOut
+0x00431E90	+	LaraTestWaterClimbOut
 0x004320B0		LaraSurfaceCollision
 0x004321B0		LaraTestWaterStepOut
 0x004322B0	+	lara_col_surfback
