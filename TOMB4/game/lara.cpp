@@ -5307,6 +5307,42 @@ long LaraTestEdgeCatch(ITEM_INFO* item, COLL_INFO* coll, long* edge)
 	return -1;
 }
 
+long TestHangSwingIn(ITEM_INFO* item, short angle)
+{
+	FLOOR_INFO* floor;
+	long x, y, z, h, c;
+	short room_number;
+
+	x = item->pos.x_pos;
+	y = item->pos.y_pos;
+	z = item->pos.z_pos;
+	room_number = item->room_number;
+
+	switch (angle)
+	{
+	case 0:
+		z += 256;
+		break;
+
+	case 0x4000:
+		x += 256;
+		break;
+
+	case -0x4000:
+		x -= 256;
+		break;
+
+	case -0x8000:
+		z -= 256;
+		break;
+	}
+
+	floor = GetFloor(x, y, z, &room_number);
+	h = GetHeight(floor, x, y, z);
+	c = GetCeiling(floor, x, y, z);
+	return h != NO_HEIGHT && h - y > 0 && c - y < -400 && y - c - 819 > -72;
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -5467,4 +5503,5 @@ void inject_lara(bool replace)
 	INJECT(0x004236B0, TestMonkeyLeft, replace);
 	INJECT(0x004237B0, TestMonkeyRight, replace);
 	INJECT(0x00421DE0, LaraTestEdgeCatch, replace);
+	INJECT(0x00421FF0, TestHangSwingIn, replace);
 }

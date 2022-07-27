@@ -637,7 +637,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00421BF0	+	lara_col_crawl2hang
 0x00421DE0	+	LaraTestEdgeCatch
 0x00421E90	+	LaraTestHangOnClimbWall
-0x00421FF0		TestHangSwingIn
+0x00421FF0	+	TestHangSwingIn
 0x004220B0	+	lara_as_dash
 0x00422200	+	lara_col_dash
 0x00422350	+	GetLaraCollisionInfo
