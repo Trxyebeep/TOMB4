@@ -5343,6 +5343,31 @@ long TestHangSwingIn(ITEM_INFO* item, short angle)
 	return h != NO_HEIGHT && h - y > 0 && c - y < -400 && y - c - 819 > -72;
 }
 
+long LaraDeflectEdge(ITEM_INFO* item, COLL_INFO* coll)
+{
+	if (coll->coll_type == CT_FRONT || coll->coll_type == CT_TOP_FRONT)
+	{
+		ShiftItem(item, coll);
+		item->goal_anim_state = AS_STOP;
+		item->speed = 0;
+		item->gravity_status = 0;
+		return 1;
+	}
+	else if (coll->coll_type == CT_LEFT)
+	{
+		ShiftItem(item, coll);
+		item->pos.y_rot += 910;
+		return 0;
+	}
+	else if (coll->coll_type == CT_RIGHT)
+	{
+		ShiftItem(item, coll);
+		item->pos.y_rot -= 910;
+	}
+
+	return 0;
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -5504,4 +5529,5 @@ void inject_lara(bool replace)
 	INJECT(0x004237B0, TestMonkeyRight, replace);
 	INJECT(0x00421DE0, LaraTestEdgeCatch, replace);
 	INJECT(0x00421FF0, TestHangSwingIn, replace);
+	INJECT(0x00422400, LaraDeflectEdge, replace);
 }
