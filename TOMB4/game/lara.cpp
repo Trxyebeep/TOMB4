@@ -5523,6 +5523,71 @@ long LaraTestClimbStance(ITEM_INFO* item, COLL_INFO* coll)
 	return 1;
 }
 
+long TestWall(ITEM_INFO* item, long front, long right, long down)
+{
+	FLOOR_INFO* floor;
+	long x, y, z, h, c;
+	short angle, room_num;
+
+	room_num = item->room_number;
+	x = item->pos.x_pos;
+	y = down + item->pos.y_pos;
+	z = item->pos.z_pos;
+	angle = (ushort)(item->pos.y_rot + 0x2000) / 0x4000;
+
+	switch (angle)
+	{
+	case NORTH:
+		x -= right;
+		break;
+
+	case EAST:
+		z -= right;
+		break;
+
+	case SOUTH:
+		x += right;
+		break;
+
+	case WEST:
+		z += right;
+		break;
+	}
+
+	GetFloor(x, y, z, &room_num);
+
+	switch (angle)
+	{
+	case NORTH:
+		z += front;
+		break;
+
+	case EAST:
+		x += front;
+		break;
+
+	case SOUTH:
+		z -= front;
+		break;
+
+	case WEST:
+		x -= front;
+		break;
+	}
+
+	floor = GetFloor(x, y, z, &room_num);
+	h = GetHeight(floor, x, y, z);
+	c = GetCeiling(floor, x, y, z);
+
+	if (h == NO_HEIGHT)
+		return 1;
+
+	if (h - y <= 0 || c - y >= 0)
+		return 2;
+
+	return 0;
+}
+
 void inject_lara(bool replace)
 {
 	INJECT(0x00420B10, LaraAboveWater, replace);
@@ -5687,4 +5752,5 @@ void inject_lara(bool replace)
 	INJECT(0x00422400, LaraDeflectEdge, replace);
 	INJECT(0x00422480, TestLaraVault, replace);
 	INJECT(0x00422810, LaraTestClimbStance, replace);
+	INJECT(0x004228D0, TestWall, replace);
 }

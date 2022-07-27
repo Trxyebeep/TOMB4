@@ -168,7 +168,7 @@ long TestHangSwingIn(ITEM_INFO* item, short angle);
 long LaraDeflectEdge(ITEM_INFO* item, COLL_INFO* coll);
 long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll);
 long LaraTestClimbStance(ITEM_INFO* item, COLL_INFO* coll);
+long TestWall(ITEM_INFO* item, long front, long right, long down);
 
 #define LaraHangTest	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004230E0 )
-#define TestWall	( (long(__cdecl*)(ITEM_INFO*, long, long, long)) 0x004228D0 )
 #define LaraCollideStop	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004229D0 )
