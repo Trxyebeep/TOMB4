@@ -11,3 +11,4 @@ void DoFlareInHand(long flare_age);
 void CreateFlare(short object, long thrown);
 void set_flare_arm(long frame);
 void ready_flare();
+void draw_flare();

@@ -12,6 +12,8 @@
 #ifdef GENERAL_FIXES
 #include "draw.h"
 #endif
+#include "lara_states.h"
+#include "sound.h"
 
 void DrawFlareInAir(ITEM_INFO* item)
 {
@@ -265,6 +267,51 @@ void ready_flare()
 	lara.target = 0;
 }
 
+void draw_flare()
+{
+	short ani;
+
+	if (lara_item->current_anim_state == AS_FLAREPICKUP || lara_item->current_anim_state == AS_PICKUP)
+	{
+		DoFlareInHand(lara.flare_age);
+		lara.flare_control_left = 0;
+		ani = 93;
+	}
+	else
+	{
+		lara.flare_control_left = 1;
+		ani = lara.left_arm.frame_number + 1;
+
+		if (ani < 33 || ani > 94)
+			ani = 33;
+		else if (ani == 46)
+			draw_flare_meshes();
+		else if (ani >= 72 && ani <= 93)
+		{
+			if (ani == 72)
+			{
+				if (room[lara_item->room_number].flags & ROOM_UNDERWATER)
+					SoundEffect(SFX_OBJ_GEM_SMASH, &lara_item->pos, SFX_WATER);
+				else
+					SoundEffect(SFX_OBJ_GEM_SMASH, &lara_item->pos, SFX_DEFAULT);
+
+				lara.flare_age = 1;
+			}
+
+			DoFlareInHand(lara.flare_age);
+		}
+		else if (ani == 94)
+		{
+			ready_flare();
+			ani = 0;
+			DoFlareInHand(lara.flare_age);
+		}
+	}
+
+	lara.left_arm.frame_number = ani;
+	set_flare_arm(ani);
+}
+
 void inject_laraflar(bool replace)
 {
 	INJECT(0x0042F7B0, DrawFlareInAir, replace);
@@ -275,4 +322,5 @@ void inject_laraflar(bool replace)
 	INJECT(0x0042F880, CreateFlare, replace);
 	INJECT(0x0042FB00, set_flare_arm, replace);
 	INJECT(0x0042FF50, ready_flare, replace);
+	INJECT(0x0042FB50, draw_flare, replace);
 }
