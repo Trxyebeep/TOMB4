@@ -355,6 +355,39 @@ long LaraTestWaterStepOut(ITEM_INFO* item, COLL_INFO* coll)
 	return 1;
 }
 
+void LaraSurfaceCollision(ITEM_INFO* item, COLL_INFO* coll)
+{
+	coll->facing = lara.move_angle;
+	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos + 700, item->pos.z_pos, item->room_number, 800);
+	ShiftItem(item, coll);
+
+	if (coll->coll_type & (CT_FRONT | CT_TOP | CT_TOP_FRONT | CT_CLAMP)
+		|| coll->mid_floor < 0 && (coll->mid_type == BIG_SLOPE || coll->mid_type == DIAGONAL))
+	{
+		item->fallspeed = 0;
+		item->pos.x_pos = coll->old.x;
+		item->pos.y_pos = coll->old.y;
+		item->pos.z_pos = coll->old.z;
+	}
+	else if (coll->coll_type == CT_LEFT)
+		item->pos.y_rot += 910;
+	else if (coll->coll_type == CT_RIGHT)
+		item->pos.y_rot -= 910;
+
+	if (GetWaterHeight(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number) - item->pos.y_pos > -100)
+		LaraTestWaterStepOut(item, coll);
+	else
+	{
+		item->anim_number = ANIM_SURFDIVE;
+		item->frame_number = anims[ANIM_SURFDIVE].frame_base;
+		item->current_anim_state = AS_DIVE;
+		item->goal_anim_state = AS_SWIM;
+		item->pos.x_rot = -8190;
+		item->fallspeed = 80;
+		lara.water_status = LW_UNDERWATER;
+	}
+}
+
 void inject_larasurf(bool replace)
 {
 	INJECT(0x00431C10, lara_as_surfswim, replace);
@@ -370,4 +403,5 @@ void inject_larasurf(bool replace)
 	INJECT(0x00431AA0, LaraSurface, replace);
 	INJECT(0x00431E90, LaraTestWaterClimbOut, replace);
 	INJECT(0x004321B0, LaraTestWaterStepOut, replace);
+	INJECT(0x004320B0, LaraSurfaceCollision, replace);
 }

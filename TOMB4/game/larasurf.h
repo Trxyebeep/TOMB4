@@ -16,5 +16,4 @@ void lara_col_surftread(ITEM_INFO* item, COLL_INFO* coll);
 void LaraSurface(ITEM_INFO* item, COLL_INFO* coll);
 long LaraTestWaterClimbOut(ITEM_INFO* item, COLL_INFO* coll);
 long LaraTestWaterStepOut(ITEM_INFO* item, COLL_INFO* coll);
-
-#define LaraSurfaceCollision	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004320B0 )
+void LaraSurfaceCollision(ITEM_INFO* item, COLL_INFO* coll);
