@@ -413,6 +413,71 @@ void undraw_flare()
 	set_flare_arm(lara.left_arm.frame_number);
 }
 
+void FlareControl(short item_number)
+{
+	ITEM_INFO* flare;
+	long x, y, z, xv, yv, zv, flare_age;
+
+	flare = &items[item_number];
+
+	if (flare->fallspeed)
+	{
+		flare->pos.x_rot += 546;
+		flare->pos.z_rot += 910;
+	}
+	else
+	{
+		flare->pos.x_rot = 0;
+		flare->pos.z_rot = 0;
+	}
+
+	x = flare->pos.x_pos;
+	y = flare->pos.y_pos;
+	z = flare->pos.z_pos;
+	xv = flare->speed * phd_sin(flare->pos.y_rot) >> W2V_SHIFT;
+	zv = flare->speed * phd_cos(flare->pos.y_rot) >> W2V_SHIFT;
+	flare->pos.x_pos += xv;
+	flare->pos.z_pos += zv;
+
+	if (room[flare->room_number].flags & ROOM_UNDERWATER)
+	{
+		flare->fallspeed += (5 - flare->fallspeed) >> 1;
+		flare->speed += (5 - flare->speed) >> 1;
+	}
+	else
+		flare->fallspeed += 6;
+
+	yv = flare->fallspeed;
+	flare->pos.y_pos += yv;
+	DoProperDetection(item_number, x, y, z, xv, yv, zv);
+	flare_age = (long)flare->data & 0x7FFF;
+
+	if (flare_age >= 900)
+	{
+		if (!flare->fallspeed && !flare->speed)
+		{
+			KillItem(item_number);
+			return;
+		}
+	}
+	else
+		flare_age++;
+
+	if (DoFlareLight((PHD_VECTOR*)&flare->pos, flare_age))
+	{
+		if (gfLevelFlags & GF_MIRROR && flare->room_number == gfMirrorRoom)
+		{
+			flare->pos.z_pos = 2 * gfMirrorZPlane - flare->pos.z_pos;
+			DoFlareLight((PHD_VECTOR*)&flare->pos, flare_age);
+			flare->pos.z_pos = 2 * gfMirrorZPlane - flare->pos.z_pos;
+		}
+
+		flare_age |= 0x8000;
+	}
+
+	flare->data = (void*)flare_age;
+}
+
 void inject_laraflar(bool replace)
 {
 	INJECT(0x0042F7B0, DrawFlareInAir, replace);
@@ -425,4 +490,5 @@ void inject_laraflar(bool replace)
 	INJECT(0x0042FF50, ready_flare, replace);
 	INJECT(0x0042FB50, draw_flare, replace);
 	INJECT(0x0042FC60, undraw_flare, replace);
+	INJECT(0x0042FF90, FlareControl, replace);
 }

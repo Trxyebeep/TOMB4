@@ -13,3 +13,4 @@ void set_flare_arm(long frame);
 void ready_flare();
 void draw_flare();
 void undraw_flare();
+void FlareControl(short item_number);
