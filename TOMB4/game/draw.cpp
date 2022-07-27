@@ -1298,6 +1298,32 @@ void PrintObjects(short room_number)
 	r->bottom = 0;
 }
 
+long GetFrames(ITEM_INFO* item, short* frm[], long* rate)
+{
+	ANIM_STRUCT* anim;
+	long frame, size, frac, num;
+
+	anim = &anims[item->anim_number];
+	frm[0] = anim->frame_ptr;
+	frm[1] = anim->frame_ptr;
+	*rate = anim->interpolation & 0xFF;
+	frame = item->frame_number - anim->frame_base;
+	size = anim->interpolation >> 8;
+	frm[0] += size * (frame / *rate);
+	frm[1] = frm[0] + size;
+	frac = frame % *rate;
+
+	if (!frac)
+		return 0;
+
+	num = *rate * (frame / *rate + 1);
+
+	if (num > anim->frame_end)
+		*rate = *rate + anim->frame_end - num;
+
+	return frac;
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -1325,4 +1351,5 @@ void inject_draw(bool replace)
 	INJECT(0x0044F790, SetRoomBounds, replace);
 	INJECT(0x0044FB10, DrawEffect, replace);
 	INJECT(0x0044F330, PrintObjects, replace);
+	INJECT(0x00450DC0, GetFrames, replace);
 }
