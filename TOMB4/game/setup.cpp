@@ -709,7 +709,7 @@ void TrapObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[DARTS];
-//	obj->control = DartsControl;
+	obj->control = DartsControl;
 	obj->collision = ObjectCollision;
 	obj->draw_routine = S_DrawDarts;
 	obj->using_drawanimating_item = 0;

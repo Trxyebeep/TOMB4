@@ -41,5 +41,6 @@ void LavaBurn(ITEM_INFO* item);
 long TestBoundsCollideTeethSpikes(ITEM_INFO* item);
 void ControlRollingBall(short item_number);
 void RollingBallCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
+void DartsControl(short item_number);
 
 #define CloseTrapDoor	( (void(__cdecl*)(ITEM_INFO*)) 0x004135A0 )

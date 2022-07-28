@@ -1374,7 +1374,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00413DC0		ControlSmashableBikeWall
 0x00413E80		FallingCeiling
 0x00413F90		DartEmitterControl
-0x00414150		DartsControl
+0x00414150	+	DartsControl
 0x004142F0	+	FlameEmitterControl
 0x00414670	+	FlameEmitter2Control
 0x004148B0	+	FlameEmitter3Control
