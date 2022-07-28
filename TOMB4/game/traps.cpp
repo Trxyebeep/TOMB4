@@ -2184,6 +2184,20 @@ void ControlFallingBlock2(short item_number)
 	}
 }
 
+void FallingBlockCeiling(ITEM_INFO* item, long x, long y, long z, long* height)
+{
+	long tx, tz;
+
+	tx = x ^ item->pos.x_pos;
+	tz = z ^ item->pos.z_pos;
+
+	if (tx & ~1023 || tz & ~1023)
+		return;
+
+	if (y > item->pos.y_pos)
+		*height = item->pos.y_pos + 256;
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -2227,4 +2241,5 @@ void inject_traps(bool replace)
 	INJECT(0x00413E80, FallingCeiling, replace);
 	INJECT(0x00413DC0, ControlSmashableBikeWall, replace);
 	INJECT(0x00413D30, ControlFallingBlock2, replace);
+	INJECT(0x00413CF0, FallingBlockCeiling, replace);
 }

@@ -46,5 +46,6 @@ void DartEmitterControl(short item_number);
 void FallingCeiling(short item_number);
 void ControlSmashableBikeWall(short item_number);
 void ControlFallingBlock2(short item_number);
+void FallingBlockCeiling(ITEM_INFO* item, long x, long y, long z, long* height);
 
 #define CloseTrapDoor	( (void(__cdecl*)(ITEM_INFO*)) 0x004135A0 )

@@ -662,7 +662,7 @@ void TrapObjects()
 	//	obj->control = FallingBlock;
 	//	obj->collision = FallingBlockCollision;
 	//	obj->floor = FallingBlockFloor;
-	//	obj->ceiling = FallingBlockCeiling;
+		obj->ceiling = FallingBlockCeiling;
 		obj->save_position = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
