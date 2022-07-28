@@ -1752,6 +1752,217 @@ long TestBoundsCollideTeethSpikes(ITEM_INFO* item)
 	return xMin <= x + rad && xMax >= x - rad && zMin <= z + rad && zMax >= z - rad;
 }
 
+void ControlRollingBall(short item_number)
+{
+	ITEM_INFO* item;
+	ushort tyrot, destyrot;
+	short room_number, velnotadjusted;
+	long h, fx, fz, fh, fhf, bz, bh, bhf, rx, rh, rhf, lx, lh, lhf;
+
+	item = &items[item_number];
+
+	if (!TriggerActive(item))
+		return;
+
+	item->fallspeed += 6;
+	item->pos.x_pos += item->item_flags[0] >> 5;
+	item->pos.y_pos += item->fallspeed;
+	item->pos.z_pos += item->item_flags[1] >> 5;
+	room_number = item->room_number;
+	h = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos) - 512;
+
+	if (item->pos.y_pos > h)
+	{
+		if (ABS(item->fallspeed) > 16)
+		{
+			fz = phd_sqrt(SQUARE(camera.pos.x - item->pos.x_pos) + SQUARE(camera.pos.y - item->pos.y_pos) + SQUARE(camera.pos.z - item->pos.z_pos));
+
+			if (fz < 0x4000)
+				camera.bounce = -(((0x4000 - fz) * ABS(item->fallspeed)) >> W2V_SHIFT);
+
+			SoundEffect(SFX_BOULDER_FALL, &item->pos, SFX_DEFAULT);
+		}
+
+		if (item->pos.y_pos - h < 512)
+			item->pos.y_pos = h;
+
+		if (item->fallspeed > 64)
+			item->fallspeed = -(item->fallspeed >> 2);
+		else
+		{
+			if (ABS(item->speed) <= 512 || GetRandomControl() & 0x1F)
+				item->fallspeed = 0;
+			else
+				item->fallspeed = -(GetRandomControl() % (item->speed >> 3));
+		}
+	}
+
+	fx = item->pos.x_pos;
+	fz = item->pos.z_pos + 128;
+	bz = item->pos.z_pos - 128;
+	rx = item->pos.x_pos + 128;
+	lx = item->pos.x_pos - 128;
+	fh = GetHeight(GetFloor(fx, item->pos.y_pos, fz, &room_number), fx, item->pos.y_pos, fz) - 512;
+	bh = GetHeight(GetFloor(fx, item->pos.y_pos, bz, &room_number), fx, item->pos.y_pos, bz) - 512;
+	rh = GetHeight(GetFloor(rx, item->pos.y_pos, bz + 128, &room_number), rx, item->pos.y_pos, bz + 128) - 512;
+	lh = GetHeight(GetFloor(lx, item->pos.y_pos, bz + 128, &room_number), lx, item->pos.y_pos, bz + 128) - 512;
+	fx = item->pos.x_pos;
+	fz = item->pos.z_pos + 512;
+	bz = item->pos.z_pos - 512;
+	rx = item->pos.x_pos + 512;
+	lx = item->pos.x_pos - 512;
+	fhf = GetHeight(GetFloor(fx, item->pos.y_pos, fz, &room_number), fx, item->pos.y_pos, fz) - 512;
+	bhf = GetHeight(GetFloor(fx, item->pos.y_pos, bz, &room_number), fx, item->pos.y_pos, bz) - 512;
+	rhf = GetHeight(GetFloor(rx, item->pos.y_pos, bz + 512, &room_number), rx, item->pos.y_pos, bz + 512) - 512;
+	lhf = GetHeight(GetFloor(lx, item->pos.y_pos, bz + 512, &room_number), lx, item->pos.y_pos, bz + 512) - 512;
+
+	if (item->pos.y_pos - h > -256 || item->pos.y_pos - fhf >= 512 || item->pos.y_pos - rhf >= 512 ||
+		item->pos.y_pos - bhf >= 512 || item->pos.y_pos - lhf >= 512)
+	{
+		velnotadjusted = 0;
+
+		if (fh - h <= 256)
+		{
+			if (fhf - h < -1024 || fh - h < -256)
+			{
+				if (item->item_flags[1] <= 0)
+				{
+					if (!item->item_flags[1] && item->item_flags[0])
+						item->pos.z_pos = (item->pos.z_pos & -512) | 512;
+				}
+				else
+				{
+					item->item_flags[1] = -item->item_flags[1] >> 1;
+					item->pos.z_pos = (item->pos.z_pos & -512) | 512;
+				}
+			}
+			else if (fh == h)
+				velnotadjusted++;
+			else
+				item->item_flags[1] += short((fh - h) >> 1);
+		}
+
+		if (bh - h > 256)
+			velnotadjusted++;
+		else if (bhf - h < -1024 || bh - h < -256)
+		{
+			if (item->item_flags[1] >= 0)
+			{
+				if (!item->item_flags[1] && item->item_flags[0])
+					item->pos.z_pos = (item->pos.z_pos & -512) | 512;
+			}
+			else
+			{
+				item->item_flags[1] = -item->item_flags[1] >> 1;
+				item->pos.z_pos = (item->pos.z_pos & -512) | 512;
+			}
+		}
+		else if (bh == h)
+			velnotadjusted++;
+		else
+			item->item_flags[1] -= (short)((bh - h) >> 1);
+
+		if (velnotadjusted == 2)
+		{
+			if (ABS(item->item_flags[1]) <= 64)
+				item->item_flags[1] = 0;
+			else
+				item->item_flags[1] -= item->item_flags[1] >> 6;
+		}
+
+		velnotadjusted = 0;
+
+		if (lh - h <= 256)
+		{
+			if (lhf - h < -1024 || lh - h < -256)
+			{
+				if (item->item_flags[0] >= 0)
+				{
+					if (!item->item_flags[0] && item->item_flags[1])
+						item->pos.x_pos = (item->pos.x_pos & -512) | 512;
+				}
+				else
+				{
+					item->item_flags[0] = -item->item_flags[0] >> 1;
+					item->pos.x_pos = (item->pos.x_pos & -512) | 512;
+				}
+			}
+			else if (lh == h)
+				velnotadjusted++;
+			else
+				item->item_flags[0] -= (short)((lh - h) >> 1);
+		}
+
+		if (rh - h <= 256)
+		{
+			if (rhf - h < -1024 || rh - h < -256)
+			{
+				if (item->item_flags[0] <= 0)
+				{
+					if (!item->item_flags[0] && item->item_flags[1])
+						item->pos.x_pos = (item->pos.x_pos & -512) | 512;
+				}
+				else
+				{
+					item->item_flags[0] = -item->item_flags[0] >> 1;
+					item->pos.x_pos = (item->pos.x_pos & -512) | 512;
+				}
+			}
+			else if (rh == h)
+				velnotadjusted++;
+			else
+				item->item_flags[0] += (short)((rh - h) >> 1);
+		}
+
+		if (velnotadjusted == 2)
+		{
+			if (ABS(item->item_flags[0]) <= 64)
+				item->item_flags[0] = 0;
+			else
+				item->item_flags[0] -= item->item_flags[0] >> 6;
+		}
+	}
+
+	GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+
+	if (item->room_number != room_number)
+		ItemNewRoom(item_number, room_number);
+
+	if (item->item_flags[0] > 3072)
+		item->item_flags[0] = 3072;
+	else if (item->item_flags[0] < -3072)
+		item->item_flags[0] = -3072;
+
+	if (item->item_flags[1] > 3072)
+		item->item_flags[1] = 3072;
+	else if (item->item_flags[1] < -3072)
+		item->item_flags[1] = -3072;
+
+	tyrot = item->pos.y_rot;
+
+	if (item->item_flags[1] || item->item_flags[0])
+		destyrot = ushort(phd_atan(item->item_flags[0], item->item_flags[0]));
+	else
+		destyrot = item->pos.y_rot;
+
+	if (tyrot != destyrot)
+	{
+		if (((destyrot - tyrot) & 0x7FFF) >= 512)
+		{
+			if (destyrot <= tyrot || destyrot - tyrot >= 32768)
+				item->pos.y_rot = tyrot - 512;
+			else
+				item->pos.y_rot = tyrot + 512;
+		}
+		else
+			item->pos.y_rot = destyrot;
+	}
+
+	item->pos.x_rot -= (ABS(item->item_flags[0]) + ABS(item->item_flags[1])) >> 1;
+	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	TestTriggers(trigger_index, 1, 0);
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -1788,4 +1999,5 @@ void inject_traps(bool replace)
 	INJECT(0x00414EE0, LaraBurn, replace);
 	INJECT(0x00414F30, LavaBurn, replace);
 	INJECT(0x00415EC0, TestBoundsCollideTeethSpikes, replace);
+	INJECT(0x00414FA0, ControlRollingBall, replace);
 }
