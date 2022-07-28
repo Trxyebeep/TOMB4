@@ -52,5 +52,6 @@ void FallingBlock(short item_number);
 void FallingBlockCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void CeilingTrapDoorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void FloorTrapDoorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
+void OpenTrapDoor(ITEM_INFO* item);
 
 #define CloseTrapDoor	( (void(__cdecl*)(ITEM_INFO*)) 0x004135A0 )

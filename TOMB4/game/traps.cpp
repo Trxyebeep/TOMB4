@@ -2340,6 +2340,34 @@ void FloorTrapDoorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		UseForcedFixedCamera = 0;
 }
 
+void OpenTrapDoor(ITEM_INFO* item)
+{
+	ROOM_INFO* r;
+	FLOOR_INFO* floor;
+	ushort pitsky;
+
+	pitsky = item->item_flags[3];
+	r = &room[item->room_number];
+	floor = &r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)];
+
+	if (item->pos.y_pos == r->minfloor)
+	{
+		floor->pit_room = pitsky & 0xFF;
+		r = &room[floor->pit_room];
+		floor = &r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)];
+		floor->sky_room = pitsky >> 8;
+	}
+	else
+	{
+		floor->sky_room = pitsky >> 8;
+		r = &room[floor->sky_room];
+		floor = &r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)];
+		floor->pit_room = pitsky & 0xFF;
+	}
+
+	item->item_flags[2] = 0;
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -2389,4 +2417,5 @@ void inject_traps(bool replace)
 	INJECT(0x00413B80, FallingBlockCollision, replace);
 	INJECT(0x004139F0, CeilingTrapDoorCollision, replace);
 	INJECT(0x00413840, FloorTrapDoorCollision, replace);
+	INJECT(0x00413750, OpenTrapDoor, replace);
 }
