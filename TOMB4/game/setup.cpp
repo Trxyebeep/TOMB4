@@ -716,13 +716,13 @@ void TrapObjects()
 	obj->shadow_size = 128;
 
 	obj = &objects[DART_EMITTER];
-//	obj->control = DartEmitterControl;
+	obj->control = DartEmitterControl;
 	obj->draw_routine = 0;
 	obj->save_flags = 1;
 	obj->using_drawanimating_item = 0;
 
 	obj = &objects[HOMING_DART_EMITTER];
-//	obj->control = DartEmitterControl;
+	obj->control = DartEmitterControl;
 	obj->draw_routine = 0;
 	obj->save_flags = 1;
 	obj->using_drawanimating_item = 0;

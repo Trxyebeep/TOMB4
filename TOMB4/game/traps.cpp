@@ -2027,6 +2027,83 @@ void DartsControl(short item_number)
 	}
 }
 
+void DartEmitterControl(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* dart;
+	long x, z, xLimit, zLimit, xv, zv, rand;
+	short num;
+
+	item = &items[item_number];
+
+	if (item->active)
+	{
+		if (item->timer > 0)
+		{
+			item->timer--;
+			return;
+		}
+
+		item->timer = 24;
+	}
+
+	num = CreateItem();
+
+	if (num != NO_ITEM)
+	{
+		x = 0;
+		z = 0;
+		dart = &items[num];
+		dart->object_number = DARTS;
+		dart->room_number = item->room_number;
+
+		if (!item->pos.y_rot)
+			z = 512;
+		else if (item->pos.y_rot == 0x4000)
+			x = 512;
+		else if (item->pos.y_rot == -0x4000)
+			x = -512;
+		else if (item->pos.y_rot == -0x8000)
+			z = -512;
+
+		dart->pos.x_pos = x + item->pos.x_pos;
+		dart->pos.y_pos = item->pos.y_pos - 512;
+		dart->pos.z_pos = z + item->pos.z_pos;
+		InitialiseItem(num);
+		dart->pos.x_rot = 0;
+		dart->pos.y_rot = item->pos.y_rot + 0x8000;
+		dart->speed = 256;
+		xLimit = 0;
+		zLimit = 0;
+
+		if (x)
+			xLimit = ABS(x << 1) - 1;
+		else
+			zLimit = ABS(z << 1) - 1;
+
+		for (int i = 0; i < 5; i++)
+		{
+			rand = -GetRandomControl();
+
+			if (z >= 0)
+				zv = zLimit & rand;
+			else
+				zv = -(zLimit & rand);
+
+			if (x >= 0)
+				xv = xLimit & rand;
+			else
+				xv = -(xLimit & rand);
+
+			TriggerDartSmoke(dart->pos.x_pos, dart->pos.y_pos, dart->pos.z_pos, xv, zv, 0);
+		}
+
+		AddActiveItem(num);
+		dart->status = ITEM_ACTIVE;
+		SoundEffect(SFX_DART_SPITT, &dart->pos, SFX_DEFAULT);
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -2066,4 +2143,5 @@ void inject_traps(bool replace)
 	INJECT(0x00414FA0, ControlRollingBall, replace);
 	INJECT(0x00415680, RollingBallCollision, replace);
 	INJECT(0x00414150, DartsControl, replace);
+	INJECT(0x00413F90, DartEmitterControl, replace);
 }
