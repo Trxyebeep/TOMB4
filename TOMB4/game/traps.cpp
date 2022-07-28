@@ -2368,6 +2368,45 @@ void OpenTrapDoor(ITEM_INFO* item)
 	item->item_flags[2] = 0;
 }
 
+void CloseTrapDoor(ITEM_INFO* item)
+{
+	ROOM_INFO* r;
+	FLOOR_INFO* floor;
+	ushort pitsky;
+
+	r = &room[item->room_number];
+	floor = &r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)];
+
+	if (item->pos.y_pos == r->minfloor)
+	{
+		pitsky = floor->pit_room;
+		floor->pit_room = 255;
+		r = &room[pitsky];
+		floor = &r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)];
+		pitsky |= floor->sky_room << 8;
+		floor->sky_room = 255;
+		item->item_flags[2] = 1;
+		item->item_flags[3] = pitsky;
+	}
+	else if (item->pos.y_pos == r->maxceiling)
+	{
+		pitsky = floor->sky_room;
+		floor->sky_room = 255;
+		r = &room[pitsky];
+		floor = &r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)];
+		pitsky <<= 8;
+		pitsky |= floor->pit_room;
+		floor->pit_room = 255;
+		item->item_flags[2] = 1;
+		item->item_flags[3] = pitsky;
+	}
+	else
+	{
+		item->item_flags[2] = 1;
+		item->item_flags[3] = 0;
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -2418,4 +2457,5 @@ void inject_traps(bool replace)
 	INJECT(0x004139F0, CeilingTrapDoorCollision, replace);
 	INJECT(0x00413840, FloorTrapDoorCollision, replace);
 	INJECT(0x00413750, OpenTrapDoor, replace);
+	INJECT(0x004135A0, CloseTrapDoor, replace);
 }

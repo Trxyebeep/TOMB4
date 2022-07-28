@@ -1361,7 +1361,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/traps.cpp
 
-0x004135A0		CloseTrapDoor
+0x004135A0	+	CloseTrapDoor
 0x004136C0		TrapDoorControl
 0x00413750	+	OpenTrapDoor
 0x00413840	+	FloorTrapDoorCollision
