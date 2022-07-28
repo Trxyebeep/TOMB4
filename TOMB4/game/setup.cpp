@@ -201,7 +201,7 @@ void ObjectObjects()
 		obj = &objects[i];
 		obj->initialise = InitialiseTrapDoor;
 	//	obj->control = TrapDoorControl;
-	//	obj->collision = FloorTrapDoorCollision;
+		obj->collision = FloorTrapDoorCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}

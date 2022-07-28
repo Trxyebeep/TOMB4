@@ -2295,6 +2295,51 @@ void CeilingTrapDoorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		UseForcedFixedCamera = 0;
 }
 
+void FloorTrapDoorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	long y;
+
+	item = &items[item_number];
+
+	if (input & IN_ACTION && item->status != ITEM_ACTIVE && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH
+		&& lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+	{
+		if (TestLaraPosition(FloorTrapDoorBounds, item, l))
+		{
+			if (MoveLaraPosition(&FloorTrapDoorPos, item, l))
+			{
+				l->anim_number = ANIM_LIFTTRAP;
+				l->frame_number = anims[ANIM_LIFTTRAP].frame_base;
+				l->current_anim_state = AS_LIFTTRAP;
+				lara.IsMoving = 0;
+				lara.head_x_rot = 0;
+				lara.head_y_rot = 0;
+				lara.torso_x_rot = 0;
+				lara.torso_y_rot = 0;
+				lara.gun_status = LG_HANDS_BUSY;
+				AddActiveItem(item_number);
+				item->goal_anim_state = 1;
+				item->status = ITEM_ACTIVE;
+				UseForcedFixedCamera = 1;
+				ForcedFixedCamera.x = item->pos.x_pos - ((2048 * phd_sin(item->pos.y_rot) >> W2V_SHIFT));
+				ForcedFixedCamera.z = item->pos.z_pos - ((2048 * phd_cos(item->pos.y_rot) >> W2V_SHIFT));
+				y = item->pos.y_pos - 2048;
+
+				if (y < room[item->room_number].maxceiling)
+					y = room[item->room_number].maxceiling;
+
+				ForcedFixedCamera.y = y;
+				ForcedFixedCamera.room_number = item->room_number;
+			}
+			else
+				lara.GeneralPtr = (void*)item_number;
+		}
+	}
+	else if (item->current_anim_state == 1)
+		UseForcedFixedCamera = 0;
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -2343,4 +2388,5 @@ void inject_traps(bool replace)
 	INJECT(0x00413C20, FallingBlock, replace);
 	INJECT(0x00413B80, FallingBlockCollision, replace);
 	INJECT(0x004139F0, CeilingTrapDoorCollision, replace);
+	INJECT(0x00413840, FloorTrapDoorCollision, replace);
 }

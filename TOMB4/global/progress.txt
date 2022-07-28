@@ -1364,7 +1364,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004135A0		CloseTrapDoor
 0x004136C0		TrapDoorControl
 0x00413750		OpenTrapDoor
-0x00413840		FloorTrapDoorCollision
+0x00413840	+	FloorTrapDoorCollision
 0x004139F0	+	CeilingTrapDoorCollision
 0x00413B80	+	FallingBlockCollision
 0x00413C20	+	FallingBlock
