@@ -2236,6 +2236,27 @@ void FallingBlock(short item_number)
 	}
 }
 
+void FallingBlockCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	long x, z, tx, tz;
+
+	item = &items[item_number];
+	x = l->pos.x_pos;
+	z = l->pos.z_pos;
+	tx = item->pos.x_pos;
+	tz = item->pos.z_pos;
+
+	if (!item->item_flags[0] && !item->trigger_flags && item->pos.y_pos == l->pos.y_pos && !((tx ^ x) & ~1023) && !((z ^ tz) & ~1023))
+	{
+		SoundEffect(SFX_ROCK_FALL_CRUMBLE, &item->pos, SFX_DEFAULT);
+		AddActiveItem(item_number);
+		item->item_flags[0] = 60;
+		item->status = ITEM_ACTIVE;
+		item->flags |= IFL_CODEBITS;
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -2282,4 +2303,5 @@ void inject_traps(bool replace)
 	INJECT(0x00413CF0, FallingBlockCeiling, replace);
 	INJECT(0x00413CA0, FallingBlockFloor, replace);
 	INJECT(0x00413C20, FallingBlock, replace);
+	INJECT(0x00413B80, FallingBlockCollision, replace);
 }
