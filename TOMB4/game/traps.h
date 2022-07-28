@@ -38,6 +38,6 @@ void FlameControl(short fx_number);
 void FlameEmitter2Control(short item_number);
 void LaraBurn();
 void LavaBurn(ITEM_INFO* item);
+long TestBoundsCollideTeethSpikes(ITEM_INFO* item);
 
 #define CloseTrapDoor	( (void(__cdecl*)(ITEM_INFO*)) 0x004135A0 )
-#define TestBoundsCollideTeethSpikes	( (long(__cdecl*)(ITEM_INFO*)) 0x00415EC0 )
