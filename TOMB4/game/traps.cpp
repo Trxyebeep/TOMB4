@@ -1683,6 +1683,22 @@ void FlameEmitter2Control(short item_number)
 	SoundEffect(SFX_LOOP_FOR_SMALL_FIRES, &item->pos, SFX_DEFAULT);
 }
 
+void LaraBurn()
+{
+	short fx_number;
+
+	if (!lara.burn && !lara.BurnGreen)
+	{
+		fx_number = CreateEffect(lara_item->room_number);
+
+		if (fx_number != NO_ITEM)
+		{
+			effects[fx_number].object_number = FLAME;
+			lara.burn = 1;
+		}
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -1716,4 +1732,5 @@ void inject_traps(bool replace)
 	INJECT(0x004148B0, FlameEmitter3Control, replace);
 	INJECT(0x00414D80, FlameControl, replace);
 	INJECT(0x00414670, FlameEmitter2Control, replace);
+	INJECT(0x00414EE0, LaraBurn, replace);
 }

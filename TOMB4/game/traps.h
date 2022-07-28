@@ -36,8 +36,8 @@ void ControlScaledSpike(short item_number);
 void FlameEmitter3Control(short item_number);
 void FlameControl(short fx_number);
 void FlameEmitter2Control(short item_number);
+void LaraBurn();
 
-#define LaraBurn	( (void(__cdecl*)()) 0x00414EE0 )
 #define CloseTrapDoor	( (void(__cdecl*)(ITEM_INFO*)) 0x004135A0 )
 #define TestBoundsCollideTeethSpikes	( (long(__cdecl*)(ITEM_INFO*)) 0x00415EC0 )
 #define LavaBurn	( (void(__cdecl*)(ITEM_INFO*)) 0x00414F30 )
