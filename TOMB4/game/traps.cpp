@@ -14,6 +14,7 @@
 #include "sphere.h"
 #include "lara_states.h"
 #include "collide.h"
+#include "delstuff.h"
 
 short SPxzoffs[8] = { 0, 0, 0x200, 0, 0, 0, -0x200, 0 };
 short SPyoffs[8] = { -0x400, 0, -0x200, 0, 0, 0, -0x200, 0 };
@@ -1548,6 +1549,56 @@ void FlameEmitter3Control(short item_number)
 	}
 }
 
+void FlameControl(short fx_number)
+{
+	FX_INFO* fx;
+	long r, g, b, wh;
+
+	fx = &effects[fx_number];
+
+	for (int i = 14; i > 0; i--)
+	{
+		if (!(wibble & 0xC))
+		{
+			fx->pos.x_pos = 0;
+			fx->pos.y_pos = 0;
+			fx->pos.z_pos = 0;
+			GetLaraJointPos((PHD_VECTOR*)&fx->pos, i);
+			TriggerFireFlame(fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos, -1, 255 - lara.BurnGreen);
+		}
+	}
+
+	if (lara.BurnGreen)
+	{
+		r = GetRandomControl() & 0x3F;
+		g = (GetRandomControl() & 0x3F) + 192;
+		b = (GetRandomControl() & 0x1F) + 96;
+		TriggerDynamic(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos, 13, r, g, b);
+	}
+	else
+	{
+		r = (GetRandomControl() & 0x3F) + 192;
+		g = (GetRandomControl() & 0x1F) + 96;
+		TriggerDynamic(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos, 13, r, g, 0);
+	}
+
+	if (lara_item->room_number != fx->room_number)
+		EffectNewRoom(fx_number, lara_item->room_number);
+
+	wh = GetWaterHeight(fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos, fx->room_number);
+
+	if (wh != NO_HEIGHT && fx->pos.y_pos > wh)
+	{
+		KillEffect(fx_number);
+		lara.burn = 0;
+		return;
+	}
+
+	SoundEffect(SFX_LOOP_FOR_SMALL_FIRES, &fx->pos, SFX_DEFAULT);
+	lara_item->hit_points -= 7;
+	lara_item->hit_status = 1;
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -1579,4 +1630,5 @@ void inject_traps(bool replace)
 	INJECT(0x00416390, ControlRaisingBlock, replace);
 	INJECT(0x00415FD0, ControlScaledSpike, replace);
 	INJECT(0x004148B0, FlameEmitter3Control, replace);
+	INJECT(0x00414D80, FlameControl, replace);
 }

@@ -1378,7 +1378,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004142F0	+	FlameEmitterControl
 0x00414670		FlameEmitter2Control
 0x004148B0	+	FlameEmitter3Control
-0x00414D80		FlameControl
+0x00414D80	+	FlameControl
 0x00414EE0		LaraBurn
 0x00414F30		LavaBurn
 0x00414FA0		ControlRollingBall

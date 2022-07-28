@@ -728,7 +728,7 @@ void TrapObjects()
 	obj->using_drawanimating_item = 0;
 
 	obj = &objects[FLAME];
-//	obj->control = FlameControl;
+	obj->control = FlameControl;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 
