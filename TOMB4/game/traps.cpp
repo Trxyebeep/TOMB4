@@ -1699,6 +1699,25 @@ void LaraBurn()
 	}
 }
 
+void LavaBurn(ITEM_INFO* item)
+{
+	FLOOR_INFO* floor;
+	short room_number;
+
+	if (item->hit_points >= 0 && lara.water_status != LW_FLYCHEAT)
+	{
+		room_number = item->room_number;
+		floor = GetFloor(item->pos.x_pos, 32000, item->pos.z_pos, &room_number);
+
+		if (item->floor == GetHeight(floor, item->pos.x_pos, 32000, item->pos.z_pos))
+		{
+			item->hit_status = 1;
+			item->hit_points = -1;
+			LaraBurn();
+		}
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -1733,4 +1752,5 @@ void inject_traps(bool replace)
 	INJECT(0x00414D80, FlameControl, replace);
 	INJECT(0x00414670, FlameEmitter2Control, replace);
 	INJECT(0x00414EE0, LaraBurn, replace);
+	INJECT(0x00414F30, LavaBurn, replace);
 }
