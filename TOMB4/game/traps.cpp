@@ -1608,6 +1608,81 @@ void FlameControl(short fx_number)
 	lara_item->hit_status = 1;
 }
 
+void FlameEmitter2Control(short item_number)
+{
+	ITEM_INFO* item;
+	FLOOR_INFO* floor;
+	long r, g;
+	short room_number;
+
+	item = &items[item_number];
+
+	if (!TriggerActive(item))
+		return;
+
+	if (item->trigger_flags < 0)
+	{
+		if (!item->item_flags[0])
+		{
+			FlipMap(-item->trigger_flags);
+			flipmap[-item->trigger_flags] ^= IFL_CODEBITS;
+			item->item_flags[0] = 1;
+		}
+
+		return;
+	}
+
+	if (item->trigger_flags != 2)
+	{
+		if (item->trigger_flags == 123)
+			AddFire(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 1, item->room_number, item->item_flags[3]);
+		else
+			AddFire(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 1 - item->trigger_flags, item->room_number, item->item_flags[3]);
+	}
+
+	if (!item->trigger_flags || item->trigger_flags == 2)
+	{
+		r = (GetRandomControl() & 0x3F) + 192;
+		g = (GetRandomControl() & 0x1F) + 96;
+
+		if (item->item_flags[3])
+		{
+			r = (r * item->item_flags[3]) >> 8;
+			g = (g * item->item_flags[3]) >> 8;
+		}
+
+		TriggerDynamic(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 10, r, g, 0);
+	}
+
+	if (item->trigger_flags == 2)
+	{
+		item->pos.x_pos += phd_sin(item->pos.y_rot + 0x8000) >> 11;
+		item->pos.z_pos += phd_cos(item->pos.y_rot + 0x8000) >> 11;
+		room_number = item->room_number;
+		floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+
+		if (room[room_number].flags & ROOM_UNDERWATER)
+		{
+			FlashFadeR = 255;
+			FlashFadeG = 128;
+			FlashFadeB = 0;
+			FlashFader = 32;
+			KillItem(item_number);
+			return;
+		}
+
+		if (item->room_number != room_number)
+			ItemNewRoom(item_number, room_number);
+
+		item->pos.y_pos = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+
+		if (wibble & 7)
+			TriggerFireFlame(item->pos.x_pos, item->pos.y_pos - 32, item->pos.z_pos, -1, 1);
+	}
+
+	SoundEffect(SFX_LOOP_FOR_SMALL_FIRES, &item->pos, SFX_DEFAULT);
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -1640,4 +1715,5 @@ void inject_traps(bool replace)
 	INJECT(0x00415FD0, ControlScaledSpike, replace);
 	INJECT(0x004148B0, FlameEmitter3Control, replace);
 	INJECT(0x00414D80, FlameControl, replace);
+	INJECT(0x00414670, FlameEmitter2Control, replace);
 }

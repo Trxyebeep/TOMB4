@@ -742,7 +742,7 @@ void TrapObjects()
 
 	obj = &objects[FLAME_EMITTER2];
 	obj->initialise = InitialiseFlameEmitter2;
-//	obj->control = FlameEmitter2Control;
+	obj->control = FlameEmitter2Control;
 	obj->collision = FireCollision;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
