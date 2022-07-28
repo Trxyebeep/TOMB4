@@ -1382,7 +1382,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00414EE0	+	LaraBurn
 0x00414F30	+	LavaBurn
 0x00414FA0	+	ControlRollingBall
-0x00415680		RollingBallCollision
+0x00415680	+	RollingBallCollision
 0x00415750	+	ControlJobySpike
 0x004158E0	+	DrawScaledSpike
 0x00415AD0	+	TwoBlockPlatformFloor

@@ -1963,6 +1963,27 @@ void ControlRollingBall(short item_number)
 	TestTriggers(trigger_index, 1, 0);
 }
 
+void RollingBallCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (!TestBoundsCollide(item, l, coll->radius) || !TestCollision(item, l))
+		return;
+
+	if (TriggerActive(item) && (item->item_flags[0] || item->fallspeed))
+	{
+		lara_item->anim_number = ANIM_RBALL_DEATH;
+		lara_item->frame_number = anims[ANIM_RBALL_DEATH].frame_base;
+		lara_item->current_anim_state = AS_DEATH;
+		lara_item->goal_anim_state = AS_DEATH;
+		lara_item->gravity_status = 0;
+	}
+	else
+		ObjectCollision(item_number, l, coll);
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -2000,4 +2021,5 @@ void inject_traps(bool replace)
 	INJECT(0x00414F30, LavaBurn, replace);
 	INJECT(0x00415EC0, TestBoundsCollideTeethSpikes, replace);
 	INJECT(0x00414FA0, ControlRollingBall, replace);
+	INJECT(0x00415680, RollingBallCollision, replace);
 }

@@ -542,7 +542,7 @@ void TrapObjects()
 
 	obj = &objects[ROLLINGBALL];
 	obj->control = ControlRollingBall;
-//	obj->collision = RollingBallCollision;
+	obj->collision = RollingBallCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
