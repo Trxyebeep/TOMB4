@@ -683,7 +683,7 @@ void TrapObjects()
 
 	obj = &objects[SMASHABLE_BIKE_FLOOR];
 	obj->initialise = InitialiseFallingBlock2;
-//	obj->control = ControlFallingBlock2;
+	obj->control = ControlFallingBlock2;
 	obj->collision = ObjectCollision;
 	obj->floor = TwoBlockPlatformFloor;
 	obj->ceiling = TwoBlockPlatformCeiling;

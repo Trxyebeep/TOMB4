@@ -2166,6 +2166,24 @@ void ControlSmashableBikeWall(short item_number)
 	}
 }
 
+void ControlFallingBlock2(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (!TriggerActive(item))
+		return;
+
+	if (item->pos.y_pos == lara_item->pos.y_pos && OnTwoBlockPlatform(item, lara_item->pos.x_pos, lara_item->pos.z_pos) && lara.vehicle != NO_ITEM)
+	{
+		SoundEffect(SFX_BIKE_HIT_OBJECTS, &item->pos, SFX_DEFAULT);
+		item->mesh_bits = -2;
+		ExplodingDeath2(item_number, -1, 417);
+		KillItem(item_number);
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -2208,4 +2226,5 @@ void inject_traps(bool replace)
 	INJECT(0x00413F90, DartEmitterControl, replace);
 	INJECT(0x00413E80, FallingCeiling, replace);
 	INJECT(0x00413DC0, ControlSmashableBikeWall, replace);
+	INJECT(0x00413D30, ControlFallingBlock2, replace);
 }

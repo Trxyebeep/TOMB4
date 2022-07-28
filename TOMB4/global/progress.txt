@@ -1370,7 +1370,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00413C20		FallingBlock
 0x00413CA0		FallingBlockFloor
 0x00413CF0		FallingBlockCeiling
-0x00413D30		ControlFallingBlock2
+0x00413D30	+	ControlFallingBlock2
 0x00413DC0	+	ControlSmashableBikeWall
 0x00413E80	+	FallingCeiling
 0x00413F90	+	DartEmitterControl
