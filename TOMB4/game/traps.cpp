@@ -2216,6 +2216,26 @@ void FallingBlockFloor(ITEM_INFO* item, long x, long y, long z, long* height)
 	}
 }
 
+void FallingBlock(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (item->item_flags[0] <= 1)
+	{
+		item->mesh_bits = -2;
+		ExplodingDeath2(item_number, -1, 2465);
+		KillItem(item_number);
+	}
+	else
+	{
+		item->pos.x_rot = (GetRandomControl() & 0x3FF) - 512;
+		item->pos.z_rot = (GetRandomControl() & 0x3FF) - 512;
+		item->item_flags[0]--;
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -2261,4 +2281,5 @@ void inject_traps(bool replace)
 	INJECT(0x00413D30, ControlFallingBlock2, replace);
 	INJECT(0x00413CF0, FallingBlockCeiling, replace);
 	INJECT(0x00413CA0, FallingBlockFloor, replace);
+	INJECT(0x00413C20, FallingBlock, replace);
 }

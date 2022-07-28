@@ -659,7 +659,7 @@ void TrapObjects()
 	{
 		obj = &objects[i];
 		obj->initialise = InitialiseFallingBlock2;
-	//	obj->control = FallingBlock;
+		obj->control = FallingBlock;
 	//	obj->collision = FallingBlockCollision;
 		obj->floor = FallingBlockFloor;
 		obj->ceiling = FallingBlockCeiling;
