@@ -324,7 +324,7 @@ void CalculateSpotCams()
 		current_spline_position += cspeed;
 
 #ifdef GENERAL_FIXES
-	if (tomb4.cutseq_skipper && keymap[DIK_ESCAPE])
+	if (tomb4.cutseq_skipper && keymap[DIK_ESCAPE] && gfCurrentLevel)
 		current_spline_position = 0x10000;
 #endif
 
