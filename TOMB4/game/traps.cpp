@@ -2407,6 +2407,28 @@ void CloseTrapDoor(ITEM_INFO* item)
 	}
 }
 
+void TrapDoorControl(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (TriggerActive(item))
+	{
+		if (!item->current_anim_state && item->trigger_flags >= 0)
+			item->goal_anim_state = 1;
+	}
+	else if (item->current_anim_state == 1)
+		item->goal_anim_state = 0;
+
+	AnimateItem(item);
+
+	if (item->current_anim_state == 1 && item->item_flags[2])
+		OpenTrapDoor(item);
+	else if (!item->current_anim_state && !item->item_flags[2])
+		CloseTrapDoor(item);
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -2458,4 +2480,5 @@ void inject_traps(bool replace)
 	INJECT(0x00413840, FloorTrapDoorCollision, replace);
 	INJECT(0x00413750, OpenTrapDoor, replace);
 	INJECT(0x004135A0, CloseTrapDoor, replace);
+	INJECT(0x004136C0, TrapDoorControl, replace);
 }
