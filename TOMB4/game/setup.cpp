@@ -669,7 +669,7 @@ void TrapObjects()
 	}
 
 	obj = &objects[FALLING_CEILING];
-//	obj->control = FallingCeiling;
+	obj->control = FallingCeiling;
 	obj->collision = TrapCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
@@ -677,7 +677,7 @@ void TrapObjects()
 
 	obj = &objects[SMASHABLE_BIKE_WALL];
 	obj->initialise = InitialiseFallingBlock2;
-//	obj->control = ControlSmashableBikeWall;
+	obj->control = ControlSmashableBikeWall;
 	obj->collision = ObjectCollision;
 	obj->save_flags = 1;
 

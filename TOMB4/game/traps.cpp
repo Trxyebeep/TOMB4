@@ -15,6 +15,7 @@
 #include "lara_states.h"
 #include "collide.h"
 #include "delstuff.h"
+#include "switch.h"
 
 short SPxzoffs[8] = { 0, 0, 0x200, 0, 0, 0, -0x200, 0 };
 short SPyoffs[8] = { -0x400, 0, -0x200, 0, 0, 0, -0x200, 0 };
@@ -2104,6 +2105,67 @@ void DartEmitterControl(short item_number)
 	}
 }
 
+void FallingCeiling(short item_number)
+{
+	ITEM_INFO* item;
+	short room_number;
+
+	item = &items[item_number];
+
+	if (!item->current_anim_state)
+	{
+		item->gravity_status = 1;
+		item->goal_anim_state = 1;
+	}
+	else if (item->current_anim_state == 1 && item->touch_bits)
+	{
+		lara_item->hit_points -= 300;
+		lara_item->hit_status = 1;
+	}
+
+	AnimateItem(item);
+
+	if (item->status == ITEM_DEACTIVATED)
+		RemoveActiveItem(item_number);
+	else
+	{
+		room_number = item->room_number;
+		item->floor = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number),
+			item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+
+		if (room_number != item->room_number)
+			ItemNewRoom(item_number, room_number);
+
+		if (item->current_anim_state == 1 && item->pos.y_pos >= item->floor)
+		{
+			item->pos.y_pos = item->floor;
+			item->goal_anim_state = 2;
+			item->gravity_status = 0;
+			item->fallspeed = 0;
+		}
+	}
+}
+
+void ControlSmashableBikeWall(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (!TriggerActive(item) || lara.vehicle == NO_ITEM)
+		return;
+
+	if (TestBoundsCollide(item, &items[lara.vehicle], 1024))
+	{
+		SoundEffect(SFX_BIKE_HIT_OBJECTS, &item->pos, SFX_DEFAULT);
+		item->mesh_bits = -2;
+		ExplodingDeath2(item_number, -1, 2305);
+		item->mesh_bits = 0;
+		TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 1, 0);
+		KillItem(item_number);
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -2144,4 +2206,6 @@ void inject_traps(bool replace)
 	INJECT(0x00415680, RollingBallCollision, replace);
 	INJECT(0x00414150, DartsControl, replace);
 	INJECT(0x00413F90, DartEmitterControl, replace);
+	INJECT(0x00413E80, FallingCeiling, replace);
+	INJECT(0x00413DC0, ControlSmashableBikeWall, replace);
 }
