@@ -166,6 +166,13 @@ enum sfx_types
 	SFX_WATERONLY = 0x8000
 };
 
+enum target_type
+{
+	NO_TARGET,
+	PRIME_TARGET,
+	SECONDARY_TARGET
+};
+
 enum mood_type
 {
 	BORED_MOOD,

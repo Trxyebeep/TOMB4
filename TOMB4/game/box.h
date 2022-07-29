@@ -13,6 +13,7 @@ void TargetBox(LOT_INFO* LOT, short box_number);
 long EscapeBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number);
 long ValidBox(ITEM_INFO* item, short zone_number, short box_number);
 long StalkBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number);
+target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT);
 
 #define AlertNearbyGuards	( (void(__cdecl*)(ITEM_INFO*)) 0x004425D0 )
 #define CreatureTurn	( (short(__cdecl*)(ITEM_INFO*, short)) 0x00441C60 )

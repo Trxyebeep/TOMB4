@@ -69,7 +69,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004403E0		GetCreatureMood
 0x00440620		CreatureMood
 0x00440940	+	StalkBox
-0x00440A40		CalculateTarget
+0x00440A40	+	CalculateTarget
 0x00440E90		CreatureCreature
 0x00440FD0		BadFloor
 0x00441080	+	CreatureDie
