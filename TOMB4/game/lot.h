@@ -1,7 +1,11 @@
 #pragma once
 #include "../global/vars.h"
 
-#define DisableBaddieAI	( (void(__cdecl*)(short)) 0x00455270 )
-#define InitialiseLOTarray	( (void(__cdecl*)(long)) 0x00455200 )
+void inject_lot(bool replace);
+
+void InitialiseLOTarray(long allocmem);
+void DisableBaddieAI(short item_number);
+void ClearLOT(LOT_INFO* lot);
+void CreateZone(ITEM_INFO* item);
+
 #define EnableBaddieAI	( (long(__cdecl*)(short, long)) 0x004552B0 )
-#define CreateZone	( (void(__cdecl*)(ITEM_INFO*)) 0x004556A0 )

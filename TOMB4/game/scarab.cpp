@@ -218,7 +218,7 @@ void TriggerScarab(short item_number)
 	{
 		item->trigger_flags--;
 
-		if (item->item_flags[2] && GetRandomControl() & 0x1)
+		if (item->item_flags[2] && GetRandomControl() & 1)
 			item->item_flags[2]--;
 
 		fx_num = (short)GetFreeScarab();
@@ -357,6 +357,33 @@ void DrawScarabs()
 	}
 }
 
+void InitialiseScarabGenerator(short item_number)
+{
+	ITEM_INFO* item;
+	short flag;
+
+	item = &items[item_number];
+	flag = item->trigger_flags / 1000;
+	item->pos.x_rot = 0x2000;
+	item->item_flags[0] = flag & 1;
+	item->item_flags[1] = flag & 2;
+	item->item_flags[2] = flag & 4;
+	item->trigger_flags %= 1000;
+
+	if (!item->item_flags[0])
+	{
+		if (item->pos.y_rot > 4096 && item->pos.y_rot < 28672)
+			item->pos.x_pos -= 512;
+		else if (item->pos.y_rot < -4096 && item->pos.y_rot > -28672)
+			item->pos.x_pos += 512;
+
+		if (item->pos.y_rot > -8192 && item->pos.y_rot < 8192)
+			item->pos.z_pos -= 512;
+		else if (item->pos.y_rot < -20480 || item->pos.y_rot > 20480)
+			item->pos.z_pos += 512;
+	}
+}
+
 void inject_scarab(bool replace)
 {
 	INJECT(0x0040DE90, InitialiseScarab, replace);
@@ -366,4 +393,5 @@ void inject_scarab(bool replace)
 	INJECT(0x0040E2D0, TriggerScarab, replace);
 	INJECT(0x0040E3C0, UpdateScarabs, replace);
 	INJECT(0x0040E630, DrawScarabs, replace);
+	INJECT(0x0040E6B0, InitialiseScarabGenerator, replace);
 }

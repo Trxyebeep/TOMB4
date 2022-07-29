@@ -7,7 +7,6 @@
 #include "draw.h"
 #include "control.h"
 #include "objects.h"
-#include "effect2.h"
 #include "box.h"
 
 short GunShot(long x, long y, long z, short speed, short yrot, short room_number)

@@ -368,9 +368,25 @@ static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long c
 	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//white border
 }
 
+static void S_DrawEnemyBar2(long pos)
+{
+	if (tomb4.bar_mode == 3)
+		S_DrawGouraudBar(245, font_height + 32, 150, 12, pos, &enemyBarColourSet);
+	else if (tomb4.bar_mode == 2)
+		S_DoTR5Bar(245, font_height + 32, 150, 12, pos, 0xA00000, 0xA0A000);
+	else
+		DoBar(245, (font_height << 1) + 48, 150, 12, pos, 0xFF000000, 0xFFFFA000);
+}
+
 void S_DrawEnemyBar(long pos)
 {
 	long x, y;
+
+	if (BinocularRange)
+	{
+		S_DrawEnemyBar2(pos);
+		return;
+	}
 
 	if (tomb4.bars_pos == 1)//original
 	{

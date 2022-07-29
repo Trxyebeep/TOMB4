@@ -83,6 +83,17 @@ do \
 #define DSNGUID					IID_IDirectSoundNotify
 	/**********************************/
 
+enum anim_commands
+{
+	ACMD_NULL,
+	ACMD_SETPOS,
+	ACMD_JUMPVEL,
+	ACMD_FREEHANDS,
+	ACMD_KILL,
+	ACMD_PLAYSFX,
+	ACMD_FLIPEFFECT
+};
+
 enum ai_bits
 {
 	GUARD = 1 << 0,
@@ -153,6 +164,13 @@ enum sfx_types
 	SFX_LANDANDWATER = 0,
 	SFX_LANDONLY = 0x4000,
 	SFX_WATERONLY = 0x8000
+};
+
+enum target_type
+{
+	NO_TARGET,
+	PRIME_TARGET,
+	SECONDARY_TARGET
 };
 
 enum mood_type
@@ -568,7 +586,7 @@ struct ITEM_INFO
 	short TOSSPAD;
 };
 
-struct box_node
+struct BOX_NODE
 {
 	short exit_box;
 	ushort search_number;
@@ -578,7 +596,7 @@ struct box_node
 
 struct LOT_INFO
 {
-	box_node* node;
+	BOX_NODE* node;
 	short head;
 	short tail;
 	ushort search_number;
@@ -1100,8 +1118,8 @@ struct SAVEGAME_INFO
 	LARA_INFO Lara;
 	long cutscene_triggered;
 	uchar HubLevels[10];	//saved level indices. highest one that isn't 0 is the one we are currently in
-	ushort HubOffsets[10];	//hub offsets (at what SGcount they end(?))
-	ushort HubSizes[10];	//HubSizes[x] = SGCount - HubOffsets[x];
+	ushort HubOffsets[10];	//offset of each level's data inside the savegame buffer
+	ushort HubSizes[10];	//size of each level's data inside the savegame buffer
 	char CurrentLevel;
 	char Checksum;
 	STATS Game;
@@ -2176,6 +2194,54 @@ struct SCARAB_STRUCT
 	short fallspeed;
 	uchar On;
 	uchar flags;
+};
+
+struct MAP_STRUCT
+{
+	char unk[3592];
+	short visited;
+	short room_number;
+};
+
+struct SPLASH_SETUP
+{
+	long x;
+	long y;
+	long z;
+	short InnerRad;
+	short InnerSize;
+	short InnerRadVel;
+	short InnerYVel;
+	short pad1;
+	short MiddleRad;
+	short MiddleSize;
+	short MiddleRadVel;
+	short MiddleYVel;
+	short pad2;
+	short OuterRad;
+	short OuterSize;
+	short OuterRadVel;
+	short pad3;
+};
+
+struct SP_DYNAMIC
+{
+	uchar On;
+	uchar Falloff;
+	uchar R;
+	uchar G;
+	uchar B;
+	uchar Flags;
+	uchar Pad[2];
+};
+
+struct NODEOFFSET_INFO
+{
+	short x;
+	short y;
+	short z;
+	char mesh_num;
+	uchar GotIt;
 };
 
 #ifdef IMPROVED_BARS

@@ -16,7 +16,8 @@ void lara_as_dive(ITEM_INFO* item, COLL_INFO* coll);
 void lara_as_uwdeath(ITEM_INFO* item, COLL_INFO* coll);
 void lara_as_waterroll(ITEM_INFO* item, COLL_INFO* coll);
 void lara_col_uwdeath(ITEM_INFO* item, COLL_INFO* coll);
-
-#define SwimTurn	( (void(__cdecl*)(ITEM_INFO*)) 0x00432690 )
-#define LaraWaterCurrent	( (void(__cdecl*)(COLL_INFO*)) 0x00432DA0 )
-#define LaraSwimCollision	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x004328E0 )
+long GetWaterDepth(long x, long y, long z, short room_number);
+void SwimTurn(ITEM_INFO* item);
+void LaraTestWaterDepth(ITEM_INFO* item, COLL_INFO* coll);
+void LaraSwimCollision(ITEM_INFO* item, COLL_INFO* coll);
+void LaraWaterCurrent(COLL_INFO* coll);

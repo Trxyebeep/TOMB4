@@ -4,6 +4,13 @@
 void inject_laraflar(bool replace);
 
 void DrawFlareInAir(ITEM_INFO* item);
-
-#define CreateFlare	( (void(__cdecl*)(short, long)) 0x0042F880 )
-#define undraw_flare_meshes	( (void(__cdecl*)()) 0x0042FF30 )
+void draw_flare_meshes();
+void undraw_flare_meshes();
+long DoFlareLight(PHD_VECTOR* pos, long flare_age);
+void DoFlareInHand(long flare_age);
+void CreateFlare(short object, long thrown);
+void set_flare_arm(long frame);
+void ready_flare();
+void draw_flare();
+void undraw_flare();
+void FlareControl(short item_number);

@@ -11,6 +11,30 @@
 #include "control.h"
 #include "../specific/specificfx.h"
 #include "effect2.h"
+#include "sphere.h"
+
+static NODEOFFSET_INFO NodeOffsets[16] =
+{
+	{ -16, 40, 160, -14, 0 },
+	{ -16, -8, 160, 0, 0 },
+	{ 16, 200, 32, 17, 0 },
+	{ -16, 200, 32, 13, 0 },
+	{ 0, 128, 0, 4, 0 },
+	{ 0, 128, 0, 2, 0 },
+	{ -200, -30, 8, 7, 0 },
+
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 },
+	{ 0, 0, 0, 0, 0 }
+};
+
+static PHD_VECTOR NodeVectors[16];
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments)
 {
@@ -327,12 +351,12 @@ void LaraBubbles(ITEM_INFO* item)
 
 	for (int i = (GetRandomControl() & 1) + 2; i > 0; i--)
 	{
-		CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7, 0, 0, 0, 0);
+		CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7);
 
 		if (gfLevelFlags & GF_MIRROR  && item->room_number == gfMirrorRoom)
 		{
 			pos.z = 2 * gfMirrorZPlane - pos.z;
-			CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7, 0, 0, 0, 0);
+			CreateBubble((PHD_3DPOS*)&pos, item->room_number, 8, 7);
 			pos.z = 2 * gfMirrorZPlane - pos.z;
 		}
 	}
@@ -586,9 +610,9 @@ void UpdateFireSparks()
 		if (sptr->sLife - sptr->Life < sptr->ColFadeSpeed)
 		{
 			fade = ((sptr->sLife - sptr->Life) << 16) / sptr->ColFadeSpeed;
-			sptr->R = sptr->sR + uchar((fade * (sptr->dR - sptr->sR)) >> 16);
-			sptr->G = sptr->sG + uchar((fade * (sptr->dG - sptr->sG)) >> 16);
-			sptr->B = sptr->sB + uchar((fade * (sptr->dB - sptr->sB)) >> 16);
+			sptr->R = uchar(sptr->sR + ((fade * (sptr->dR - sptr->sR)) >> 16));
+			sptr->G = uchar(sptr->sG + ((fade * (sptr->dG - sptr->sG)) >> 16));
+			sptr->B = uchar(sptr->sB + ((fade * (sptr->dB - sptr->sB)) >> 16));
 		}
 		else if (sptr->Life < sptr->FadeToBlack)
 		{
@@ -638,7 +662,7 @@ void UpdateFireSparks()
 		sptr->x += sptr->Xvel >> 5;
 		sptr->y += sptr->Yvel >> 5;
 		sptr->z += sptr->Zvel >> 5;
-		sptr->Size = sptr->sSize + uchar((fade * (sptr->dSize - sptr->sSize)) >> 16);
+		sptr->Size = uchar(sptr->sSize + ((fade * (sptr->dSize - sptr->sSize)) >> 16));
 	}
 }
 
@@ -796,7 +820,7 @@ void UpdateSmokeSparks()
 		if (sptr->sLife - sptr->Life < sptr->ColFadeSpeed)
 		{
 			fade = ((sptr->sLife - sptr->Life) << 16) / sptr->ColFadeSpeed;
-			sptr->Shade = sptr->sShade + uchar(((sptr->dShade - sptr->sShade) * fade) >> 16);
+			sptr->Shade = uchar(sptr->sShade + (((sptr->dShade - sptr->sShade) * fade) >> 16));
 		}
 		else if (sptr->Life < sptr->FadeToBlack)
 		{
@@ -850,7 +874,7 @@ void UpdateSmokeSparks()
 			sptr->z += SmokeWindZ >> 1;
 		}
 
-		sptr->Size = sptr->sSize + uchar((fade * (sptr->dSize - sptr->sSize)) >> 16);
+		sptr->Size = uchar(sptr->sSize + ((fade * (sptr->dSize - sptr->sSize)) >> 16));
 	}
 }
 
@@ -1312,6 +1336,936 @@ void DrawGunflashes()
 	phd_PopMatrix();
 }
 
+long GetFreeBlood()
+{
+	BLOOD_STRUCT* bptr;
+	long min_life, min_life_num, free;
+
+	free = next_blood;
+	bptr = &blood[next_blood];
+	min_life = 4095;
+	min_life_num = 0;
+
+	for (int i = 0; i < 32; i++)
+	{
+		if (bptr->On)
+		{
+			if (bptr->Life < min_life)
+			{
+				min_life_num = free;
+				min_life = bptr->Life;
+			}
+
+			if (free == 31)
+			{
+				bptr = &blood[0];
+				free = 0;
+			}
+			else
+			{
+				free++;
+				bptr++;
+			}
+		}
+		else
+		{
+			next_blood = (free + 1) & 0x1F;
+			return free;
+		}
+	}
+
+	next_blood = (min_life_num + 1) & 0x1F;
+	return min_life_num;
+}
+
+void UpdateBlood()
+{
+	BLOOD_STRUCT* bptr;
+	long fade;
+
+	for (int i = 0; i < 32; i++)
+	{
+		bptr = &blood[i];
+
+		if (!bptr->On)
+			continue;
+
+		bptr->Life--;
+
+		if (bptr->Life <= 0)
+		{
+			bptr->On = 0;
+			continue;
+		}
+
+		if (bptr->sLife - bptr->Life < bptr->ColFadeSpeed)
+		{
+			fade = ((bptr->sLife - bptr->Life) << 16) / bptr->ColFadeSpeed;
+			bptr->Shade = uchar(bptr->sShade + ((fade * (bptr->dShade - bptr->sShade)) >> 16));
+		}
+		else
+		{
+			if (bptr->Life < bptr->FadeToBlack)
+			{
+				fade = ((bptr->Life - bptr->FadeToBlack) << 16) / bptr->FadeToBlack + 0x10000;
+				bptr->Shade = uchar((bptr->dShade * fade) >> 16);
+
+				if (bptr->Shade < 8)
+				{
+					bptr->On = 0;
+					continue;
+				}
+			}
+			else
+				bptr->Shade = bptr->dShade;
+		}
+
+		bptr->RotAng = (bptr->RotAng + bptr->RotAdd) & 0xFFF;
+		bptr->Yvel += bptr->Gravity;
+		fade = ((bptr->sLife - bptr->Life) << 16) / bptr->sLife;
+
+		if (bptr->Friction & 0xF)
+		{
+			bptr->Xvel -= bptr->Xvel >> (bptr->Friction & 0xF);
+			bptr->Zvel -= bptr->Zvel >> (bptr->Friction & 0xF);
+		}
+
+		bptr->x += bptr->Xvel >> 5;
+		bptr->y += bptr->Yvel >> 5;
+		bptr->z += bptr->Zvel >> 5;
+		bptr->Size = uchar(bptr->sSize + ((fade * (bptr->dSize - bptr->sSize)) >> 16));
+	}
+}
+
+void TriggerBlood(long x, long y, long z, long angle, long num)
+{
+	BLOOD_STRUCT* bptr;
+	short ang, speed;
+	uchar size;
+
+	for (int i = 0; i < num; i++)
+	{
+		bptr = &blood[GetFreeBlood()];
+		bptr->On = 1;
+		bptr->sShade = 0;
+		bptr->ColFadeSpeed = 4;
+		bptr->FadeToBlack = 8;
+		bptr->dShade = (GetRandomControl() & 0x3F) + 48;
+		bptr->Life = (GetRandomControl() & 7) + 24;
+		bptr->sLife = bptr->Life;
+		bptr->x = (GetRandomControl() & 0x1F) + x - 16;
+		bptr->y = (GetRandomControl() & 0x1F) + y - 16;
+		bptr->z = (GetRandomControl() & 0x1F) + z - 16;
+
+		if (angle == -1)
+			ang = (short)GetRandomControl();
+		else
+			ang = short((GetRandomControl() & 0x1F) + angle - 16);
+
+		ang &= 0xFFF;
+		speed = GetRandomControl() & 0xF;
+		bptr->Xvel = -(speed * rcossin_tbl[ang << 1]) >> 7;
+		bptr->Zvel = speed * rcossin_tbl[(ang << 1) + 1] >> 7;
+		bptr->Friction = 4;
+		bptr->Yvel = -128 - (GetRandomControl() & 0xFF);
+		bptr->RotAng = GetRandomControl() & 0xFFF;
+
+		if (GetRandomControl() & 1)
+			bptr->RotAdd = -64 - (GetRandomControl() & 0x3F);
+		else
+			bptr->RotAdd = (GetRandomControl() & 0x3F) + 64;
+
+		bptr->Gravity = (GetRandomControl() & 0x1F) + 31;
+		size = (GetRandomControl() & 7) + 8;
+		bptr->sSize = size;
+		bptr->Size = size;
+		bptr->dSize = size >> 2;
+	}
+}
+
+long GetFreeBubble()
+{
+	BUBBLE_STRUCT* bubble;
+	long free;
+
+	free = next_bubble;
+	bubble = &Bubbles[next_bubble];
+
+	for (int i = 0; i < 40; i++)
+	{
+		if (bubble->size)
+		{
+			if (free == 39)
+			{
+				bubble = &Bubbles[0];
+				free = 0;
+			}
+			else
+			{
+				free++;
+				bubble++;
+			}
+		}
+		else
+		{
+			next_bubble = free + 1;
+
+			if (next_bubble >= 40)
+				next_bubble = 0;
+
+			return free;
+		}
+	}
+
+	next_bubble = free + 1;
+
+	if (next_bubble >= 40)
+		next_bubble = 0;
+
+	return free;
+}
+
+void CreateBubble(PHD_3DPOS* pos, short room_number, long size, long biggest)
+{
+	BUBBLE_STRUCT* bubble;
+	long bubble_num;
+
+	GetFloor(pos->x_pos, pos->y_pos, pos->z_pos, &room_number);
+
+	if (room[room_number].flags & ROOM_UNDERWATER)
+	{
+		bubble_num = GetFreeBubble();
+
+		if (bubble_num != -1)
+		{
+			bubble = &Bubbles[bubble_num];
+			bubble->pos.x = pos->x_pos;
+			bubble->pos.y = pos->y_pos;
+			bubble->pos.z = pos->z_pos;
+			bubble->room_number = room_number;
+			bubble->speed = (GetRandomControl() & 0xFF) + 64;
+			bubble->shade = 0;
+			bubble->size = short((size + (biggest & GetRandomControl())) << 1);
+			bubble->dsize = bubble->size << 4;
+			bubble->vel = (GetRandomControl() & 0x1F) + 32;
+		}
+	}
+}
+
+void UpdateBubbles()
+{
+	BUBBLE_STRUCT* bubble;
+	FLOOR_INFO* floor;
+	long h, c;
+	short room_number;
+
+	for (int i = 0; i < 40; i++)
+	{
+		bubble = &Bubbles[i];
+
+		if (!bubble->size)
+			continue;
+
+		bubble->pad += 6;
+		bubble->speed += bubble->vel;
+		bubble->pos.x += (3 * phd_sin(bubble->pad << 8)) >> W2V_SHIFT;
+		bubble->pos.y -= bubble->speed >> 8;
+		bubble->pos.z += phd_cos(bubble->pad << 8) >> W2V_SHIFT;
+		
+		room_number = bubble->room_number;
+		floor = GetFloor(bubble->pos.x, bubble->pos.y, bubble->pos.z, &room_number);
+		h = GetHeight(floor, bubble->pos.x, bubble->pos.y, bubble->pos.z);
+
+		if (bubble->pos.y > h || !floor)
+		{
+			bubble->size = 0;
+			continue;
+		}
+
+		if (!(room[room_number].flags & ROOM_UNDERWATER))
+		{
+			SetupRipple(bubble->pos.x, room[bubble->room_number].maxceiling, bubble->pos.z, (GetRandomControl() & 0xF) + 48, 2);
+			bubble->size = 0;
+			continue;
+		}
+
+		c = GetCeiling(floor, bubble->pos.x, bubble->pos.y, bubble->pos.z);
+
+		if (c == NO_HEIGHT || bubble->pos.y <= c)
+		{
+			bubble->size = 0;
+			continue;
+		}
+
+		if (bubble->size < bubble->dsize)
+			bubble->size++;
+
+		if (bubble->shade < 144)
+			bubble->shade += 2;
+
+		bubble->room_number = room_number;
+	}
+}
+
+long GetFreeDrip()
+{
+	DRIP_STRUCT* drip;
+	long min_life, min_life_num, free;
+	
+	free = next_drip;
+	drip = &Drips[next_drip];
+	min_life = 4095;
+	min_life_num = 0;
+
+	for (int i = 0; i < 32; i++)
+	{
+		if (drip->On)
+		{
+			if (drip->Life < min_life)
+			{
+				min_life_num = free;
+				min_life = drip->Life;
+			}
+
+			if (free == 31)
+			{
+				drip = &Drips[0];
+				free = 0;
+			}
+			else
+			{
+				free++;
+				drip++;
+			}
+		}
+		else
+		{
+			next_drip = (free + 1) & 0x1F;
+			return free;
+		}
+	}
+
+	next_drip = (min_life_num + 1) & 0x1F;
+	return min_life_num;
+}
+
+void TriggerLaraDrips()
+{
+	DRIP_STRUCT* drip;
+	PHD_VECTOR pos;
+
+	if (wibble & 0xF)
+		return;
+
+	for (int i = 14; i > 0; i--)
+	{
+		if (lara.wet[i] && !LaraNodeUnderwater[i] && (GetRandomControl() & 0x1FF) < lara.wet[i])
+		{
+			pos.x = (GetRandomControl() & 0x1F) - 16;
+			pos.y = (GetRandomControl() & 0xF) + 16;
+			pos.z = (GetRandomControl() & 0x1F) - 16;
+			GetLaraJointPos(&pos, i);
+
+			drip = &Drips[GetFreeDrip()];
+			drip->x = pos.x;
+			drip->y = pos.y;
+			drip->z = pos.z;
+			drip->On = 1;
+			drip->R = (GetRandomControl() & 7) + 16;
+			drip->G = (GetRandomControl() & 7) + 24;
+			drip->B = (GetRandomControl() & 7) + 32;
+			drip->Yvel = (GetRandomControl() & 0x1F) + 32;
+			drip->Gravity = (GetRandomControl() & 0x1F) + 32;
+			drip->Life = (GetRandomControl() & 0x1F) + 16;
+			drip->RoomNumber = lara_item->room_number;
+			lara.wet[i] -= 4;
+		}
+	}
+}
+
+long GetFreeShockwave()
+{
+	for (int i = 0; i < 16; i++)
+	{
+		if (!ShockWaves[i].life)
+			return i;
+	}
+
+	return -1;
+}
+
+void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long bgrl, long XRotFlags)
+{
+	SHOCKWAVE_STRUCT* sw;
+	long swn;
+
+	swn = GetFreeShockwave();
+
+	if (swn != -1)
+	{
+		sw = &ShockWaves[swn];
+		sw->x = pos->x;
+		sw->y = pos->y;
+		sw->z = pos->z;
+		sw->InnerRad = InnerOuterRads & 0xFFFF;
+		sw->OuterRad = InnerOuterRads >> 16;
+		sw->XRot = XRotFlags & 0xFFFF;
+		sw->Flags = XRotFlags >> 16;
+		sw->Speed = (short)speed;
+		sw->r = CLRB(bgrl);
+		sw->g = CLRG(bgrl);
+		sw->b = CLRR(bgrl);
+		sw->life = CLRA(bgrl);
+		SoundEffect(SFX_DEMI_SIREN_SWAVE, (PHD_3DPOS*)pos, SFX_DEFAULT);
+	}
+}
+
+void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long speed)
+{
+	SPARKS* sptr;
+	long dx, dz, xvel, zvel;
+
+	dx = lara_item->pos.x_pos - x;
+	dz = lara_item->pos.z_pos - z;
+
+	if (dx < -0x4000 || dx > 0x4000 || dz < -0x4000 || dz > 0x4000)
+		return;
+
+	sptr = &spark[GetFreeSpark()];
+	sptr->On = 1;
+	sptr->sR = 0;
+	sptr->sG = 0;
+	sptr->sB = 0;
+	sptr->dR = CLRR(rgb);
+	sptr->dG = CLRG(rgb);
+	sptr->dB = CLRB(rgb);
+	sptr->ColFadeSpeed = 4;
+	sptr->FadeToBlack = 8;
+	sptr->TransType = 2;
+	sptr->Life = (GetRandomControl() & 3) + 16;
+	sptr->sLife = sptr->Life;
+	speed += GetRandomControl() & 0xF;
+	xvel = speed * phd_sin(dir) >> (W2V_SHIFT - 4);
+	zvel = speed * phd_cos(dir) >> (W2V_SHIFT - 4);
+
+	if (GetRandomControl() & 1)
+		dir += 0x4000;
+	else
+		dir -= 0x4000;
+
+	speed = (GetRandomControl() & 0x1FF) - 256;
+	x += speed * phd_sin(dir) >> W2V_SHIFT;
+	z += speed * phd_cos(dir) >> W2V_SHIFT;
+	sptr->x = (GetRandomControl() & 0x1F) + x - 16;
+	sptr->y = (GetRandomControl() & 0x1F) + y - 16;
+	sptr->z = (GetRandomControl() & 0x1F) + z - 16;
+	sptr->Xvel = (short)xvel;
+	sptr->Yvel = -512 - (GetRandomControl() & 0x1FF);
+	sptr->Zvel = (short)zvel;
+	sptr->Friction = 3;
+	sptr->Flags = 538;
+	sptr->RotAng = GetRandomControl() & 0xFFF;
+
+	if (GetRandomControl() & 1)
+		sptr->RotAdd = -16 - (GetRandomControl() & 0xF);
+	else
+		sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
+
+	sptr->Scalar = 1;
+	sptr->Def = uchar(objects[DEFAULT_SPRITES].mesh_index + 14);
+	sptr->MaxYvel = 0;
+	sptr->Gravity = (GetRandomControl() & 0x3F) + 64;
+	sptr->Size = (GetRandomControl() & 0x1F) + 32;
+	sptr->sSize = sptr->Size;
+	sptr->dSize = sptr->Size >> 2;
+}
+
+void UpdateShockwaves()
+{
+	SHOCKWAVE_STRUCT* sw;
+	short* bounds;
+	long dx, dz, dist;
+	short dir;
+
+	for (int i = 0; i < 16; i++)
+	{
+		sw = &ShockWaves[i];
+
+		if (!sw->life)
+			continue;
+
+		sw->life--;
+
+		if (!sw->life)
+			continue;
+
+		sw->OuterRad += sw->Speed;
+		sw->InnerRad += sw->Speed >> 1;
+		sw->Speed -= sw->Speed >> 4;
+
+		if (lara_item->hit_points >= 0 && sw->Flags & 3)
+		{
+			bounds = GetBestFrame(lara_item);
+			dx = lara_item->pos.x_pos - sw->x;
+			dz = lara_item->pos.z_pos - sw->z;
+			dist = phd_sqrt(SQUARE(dx) + SQUARE(dz));
+
+			if (sw->y > lara_item->pos.y_pos + bounds[2] && sw->y < bounds[3] + lara_item->pos.y_pos + 256 &&
+				dist > sw->InnerRad && dist < sw->OuterRad)
+			{
+				dir = (short)phd_atan(dz, dx);
+				TriggerShockwaveHitEffect(lara_item->pos.x_pos, sw->y, lara_item->pos.z_pos, *(long*)&sw->r, dir, sw->Speed);
+				lara_item->hit_points -= sw->Speed >> (((sw->Flags & 2) != 0) + 2);
+			}
+			else
+				sw->Temp = 0;
+		}
+	}
+}
+
+void UpdateLightning()
+{
+	LIGHTNING_STRUCT* lptr;
+	long* pPoint;
+	char* pVel;
+
+	for (int i = 0; i < 16; i++)
+	{
+		lptr = &Lightning[i];
+
+		if (!lptr->Life)
+			continue;
+
+		lptr->Life -= 2;
+
+		if (!lptr->Life)
+			continue;
+
+		pPoint = &lptr->Point[1].x;
+		pVel = &lptr->Xvel1;
+
+		for (int j = 0; j < 9; j++)
+		{
+			*pPoint++ += *pVel << 1;
+			*pVel -= *pVel >> 4;
+			pVel++;
+		}
+	}
+}
+
+long LSpline(long x, long* knots, long nk)
+{
+	long* k;
+	long c1, c2, c3, ret, span;
+
+	x *= nk - 3;
+	span = x >> 16;
+
+	if (span >= nk - 3)
+		span = nk - 4;
+
+	x -= 65536 * span;
+	k = &knots[3 * span];
+	c1 = k[3] + (k[3] >> 1) - (k[6] >> 1) - k[6] + (k[9] >> 1) + ((-k[0] - 1) >> 1);
+	ret = (__int64)c1 * x >> 16;
+	c2 = ret + 2 * k[6] - 2 * k[3] - (k[3] >> 1) - (k[9] >> 1) + k[0];
+	ret = (__int64)c2 * x >> 16;
+	c3 = ret + (k[6] >> 1) + ((-k[0] - 1) >> 1);
+	ret = (__int64)c3 * x >> 16;
+	return ret + k[3];
+}
+
+void CalcLightningSpline(PHD_VECTOR* pos, SVECTOR* dest, LIGHTNING_STRUCT* lptr)
+{
+	long segments, x, y, z, xadd, yadd, zadd;
+
+	dest->x = (short)pos->x;
+	dest->y = (short)pos->y;
+	dest->z = (short)pos->z;
+	dest++;
+	segments = lptr->Segments * 3;
+
+	if (lptr->Flags & 1)
+	{
+		xadd = 0x10000 / (segments - 1);
+		x = xadd;
+
+		for (int i = 0; i < segments - 2; i++)
+		{
+			dest->x = short(LSpline(x, &pos->x, 6) + (GetRandomControl() & 0xF) - 8);
+			dest->y = short(LSpline(x, &pos->y, 6) + (GetRandomControl() & 0xF) - 8);
+			dest->z = short(LSpline(x, &pos->z, 6) + (GetRandomControl() & 0xF) - 8);
+			dest++;
+			x += xadd;
+		}
+	}
+	else
+	{
+		xadd = (pos[5].x - pos->x) / (segments - 1);
+		yadd = (pos[5].y - pos->y) / (segments - 1);
+		zadd = (pos[5].z - pos->z) / (segments - 1);
+		x = xadd + pos->x + GetRandomControl() % (lptr->Rand << 1) - lptr->Rand;
+		y = yadd + pos->y + GetRandomControl() % (lptr->Rand << 1) - lptr->Rand;
+		z = zadd + pos->z + GetRandomControl() % (lptr->Rand << 1) - lptr->Rand;
+
+		for (int i = 0; i < segments - 2; i++)
+		{
+			dest->x = (short)x;
+			dest->y = (short)y;
+			dest->z = (short)z;
+			dest++;
+			x += xadd + GetRandomControl() % (lptr->Rand << 1) - lptr->Rand;
+			y += yadd + GetRandomControl() % (lptr->Rand << 1) - lptr->Rand;
+			z += zadd + GetRandomControl() % (lptr->Rand << 1) - lptr->Rand;
+		}
+	}
+
+	dest->x = (short)pos[5].x;
+	dest->y = (short)pos[5].y;
+	dest->z = (short)pos[5].z;
+}
+
+void TriggerLightningGlow(long x, long y, long z, long rgb)
+{
+	SPARKS* sptr;
+	long dx, dz;
+
+	dx = lara_item->pos.x_pos - x;
+	dz = lara_item->pos.z_pos - z;
+
+	if (dx < -0x4000 || dx > 0x4000 || dz < -0x4000 || dz > 0x4000)
+		return;
+
+	sptr = &spark[GetFreeSpark()];
+	sptr->On = 1;
+	sptr->sR = CLRR(rgb);
+	sptr->sG = CLRG(rgb);
+	sptr->sB = CLRB(rgb);
+	sptr->dR = sptr->sR;
+	sptr->dG = sptr->sG;
+	sptr->dB = sptr->sB;
+	sptr->Life = 4;
+	sptr->sLife = 4;
+	sptr->ColFadeSpeed = 2;
+	sptr->FadeToBlack = 0;
+	sptr->TransType = 2;
+	sptr->x = x;
+	sptr->y = y;
+	sptr->z = z;
+	sptr->Zvel = 0;
+	sptr->Yvel = 0;
+	sptr->Xvel = 0;
+	sptr->Flags = 10;
+	sptr->Scalar = 3;
+	sptr->MaxYvel = 0;
+	sptr->Def = objects[DEFAULT_SPRITES].mesh_index + 11;
+	sptr->Gravity = 0;
+	sptr->Size = (rgb >> 24) + (GetRandomControl() & 3);
+	sptr->dSize = sptr->Size;
+	sptr->sSize = sptr->Size;
+}
+
+void TriggerFlashSmoke(long x, long y, long z, short room_number)
+{
+	SMOKE_SPARKS* sptr;
+	long uw;
+
+	if (room[room_number].flags & ROOM_UNDERWATER)
+	{
+		TriggerExplosionBubble(x, y, z, (short)room_number);
+		uw = 1;
+	}
+	else
+		uw = 0;
+
+	sptr = &smoke_spark[GetFreeSmokeSpark()];
+	sptr->On = 1;
+	sptr->sShade = 0;
+	sptr->dShade = 128;
+	sptr->ColFadeSpeed = 4;
+	sptr->FadeToBlack = 16;
+	sptr->TransType = 2;
+	sptr->Life = (GetRandomControl() & 0xF) + 64;
+	sptr->sLife = sptr->Life;
+	sptr->x = (GetRandomControl() & 0x1F) + x - 16;
+	sptr->y = (GetRandomControl() & 0x1F) + y - 16;
+	sptr->z = (GetRandomControl() & 0x1F) + z - 16;
+
+	if (uw)
+	{
+		sptr->Xvel = (GetRandomControl() & 0x3FF) - 512;
+		sptr->Yvel = (GetRandomControl() & 0x3FF) - 512;
+		sptr->Zvel = (GetRandomControl() & 0x3FF) - 512;
+		sptr->Friction = 68;
+	}
+	else
+	{
+		sptr->Xvel = 2 * (GetRandomControl() & 0x3FF) - 1024;
+		sptr->Yvel = -512 - (GetRandomControl() & 0x3FF);
+		sptr->Zvel = 2 * (GetRandomControl() & 0x3FF) - 1024;
+		sptr->Friction = 85;
+	}
+
+	if (room[room_number].flags & ROOM_NOT_INSIDE)
+		sptr->Flags = 272;
+	else
+		sptr->Flags = 16;
+
+	sptr->RotAng = GetRandomControl() & 0xFFF;
+
+	if (GetRandomControl() & 1)
+		sptr->RotAdd = -16 - (GetRandomControl() & 0xF);
+	else
+		sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
+
+	sptr->MaxYvel = 0;
+	sptr->Gravity = 0;
+	sptr->Size = (GetRandomControl() & 0x1F) + 64;
+	sptr->sSize = sptr->Size;
+	sptr->dSize = (sptr->Size + 4) << 1;
+	sptr->mirror = room_number == gfMirrorRoom;
+}
+
+void S_DrawSparks()
+{
+	SPARKS* sptr;
+	FX_INFO* fx;
+	ITEM_INFO* item;
+	PHD_VECTOR pos;
+	long* Z;
+	short* XY;
+	short* offsets;
+	float perspz;
+	long x, y, z, smallest_size;
+
+#ifdef GENERAL_FIXES
+	smallest_size = 0;
+#endif
+
+	for (int i = 0; i < 16; i++)
+		NodeOffsets[i].GotIt = 0;
+
+	phd_PushMatrix();
+	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	XY = (short*)&scratchpad[0];
+	Z = (long*)&scratchpad[256];
+	offsets = (short*)&scratchpad[512];
+
+	for (int i = 0; i < 256; i++)
+	{
+		sptr = &spark[i];
+
+		if (!sptr->On)
+			continue;
+
+		if (sptr->Flags & 0x40)
+		{
+			fx = &effects[sptr->FxObj];
+			x = sptr->x + fx->pos.x_pos;
+			y = sptr->y + fx->pos.y_pos;
+			z = sptr->z + fx->pos.z_pos;
+
+			if (sptr->sLife - sptr->Life > (GetRandomDraw() & 7) + 4)
+			{
+				sptr->x = x;
+				sptr->y = y;
+				sptr->z = z;
+				sptr->Flags &= ~0x40;
+			}
+		}
+		else if (sptr->Flags & 0x80)
+		{
+			item = &items[sptr->FxObj];
+
+			if (sptr->Flags & 0x1000)
+			{
+				if (NodeOffsets[sptr->NodeNumber].GotIt)
+				{
+					pos.x = NodeVectors[sptr->NodeNumber].x;
+					pos.y = NodeVectors[sptr->NodeNumber].y;
+					pos.z = NodeVectors[sptr->NodeNumber].z;
+				}
+				else
+				{
+					pos.x = NodeOffsets[sptr->NodeNumber].x;
+					pos.y = NodeOffsets[sptr->NodeNumber].y;
+					pos.z = NodeOffsets[sptr->NodeNumber].z;
+
+					if (NodeOffsets[sptr->NodeNumber].mesh_num < 0)
+						GetLaraJointPos(&pos, -NodeOffsets[sptr->NodeNumber].mesh_num);
+					else
+						GetJointAbsPosition(item, &pos, NodeOffsets[sptr->NodeNumber].mesh_num);
+
+					NodeOffsets[sptr->NodeNumber].GotIt = 1;
+					NodeVectors[sptr->NodeNumber].x = pos.x;
+					NodeVectors[sptr->NodeNumber].y = pos.y;
+					NodeVectors[sptr->NodeNumber].z = pos.z;
+				}
+
+				x = sptr->x + pos.x;
+				y = sptr->y + pos.y;
+				z = sptr->z + pos.z;
+
+				if (sptr->sLife - sptr->Life > (GetRandomDraw() & 3) + 8)
+				{
+					sptr->x = x;
+					sptr->y = y;
+					sptr->z = z;
+					sptr->Flags &= ~0x1080;
+				}
+			}
+			else
+			{
+				x = sptr->x + item->pos.x_pos;
+				y = sptr->y + item->pos.y_pos;
+				z = sptr->z + item->pos.z_pos;
+			}
+		}
+		else
+		{
+			x = sptr->x;
+			y = sptr->y;
+			z = sptr->z;
+		}
+
+		x -= lara_item->pos.x_pos;
+		y -= lara_item->pos.y_pos;
+		z -= lara_item->pos.z_pos;
+
+		if (x < -0x5000 || x > 0x5000 || y < -0x5000 || y > 0x5000 || z < -0x5000 || z > 0x5000)
+		{
+			sptr->On = 0;
+			continue;
+		}
+
+		offsets[0] = (short)x;
+		offsets[1] = (short)y;
+		offsets[2] = (short)z;
+		pos.x = phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03];
+		pos.y = phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13];
+		pos.z = phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23];
+		perspz = f_persp / (float)pos.z;
+		XY[0] = short(float(pos.x * perspz + f_centerx));
+		XY[1] = short(float(pos.y * perspz + f_centery));
+		Z[0] = pos.z >> W2V_SHIFT;
+
+		if (sptr->Flags & 8)
+		{
+			if (sptr->Flags & 2)
+				smallest_size = 4;
+		}
+		else
+		{
+			offsets[0] = short(x - (sptr->Xvel >> 4));
+			offsets[1] = short(y - (sptr->Yvel >> 4));
+			offsets[2] = short(z - (sptr->Zvel >> 4));
+			pos.x = phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03];
+			pos.y = phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13];
+			pos.z = phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23];
+			perspz = f_persp / (float)pos.z;
+			XY[2] = short(float(pos.x * perspz + f_centerx));
+			XY[3] = short(float(pos.y * perspz + f_centery));
+			Z[1] = pos.z >> W2V_SHIFT;
+		}
+
+		S_DrawDrawSparks(sptr, smallest_size, XY, Z);
+	}
+
+	phd_PopMatrix();
+}
+
+void SetFadeClip(short height, short speed)
+{
+	DestFadeScreenHeight = height;
+	FadeClipSpeed = speed;
+}
+
+void UpdateFadeClip()
+{
+	if (DestFadeScreenHeight < FadeScreenHeight)
+	{
+		FadeScreenHeight -= FadeClipSpeed;
+
+		if (DestFadeScreenHeight > FadeScreenHeight)
+			FadeScreenHeight = DestFadeScreenHeight;
+	}
+	else if (DestFadeScreenHeight > FadeScreenHeight)
+	{
+		FadeScreenHeight += FadeClipSpeed;
+
+		if (DestFadeScreenHeight < FadeScreenHeight)
+			FadeScreenHeight = DestFadeScreenHeight;
+	}
+}
+
+void SetScreenFadeOut(short speed, short back)
+{
+	if (!ScreenFading)
+	{
+		ScreenFading = 1;
+		ScreenFade = 0;
+		dScreenFade = 255;
+		ScreenFadeSpeed = speed;
+		ScreenFadeBack = back;
+		ScreenFadedOut = 0;
+	}
+}
+
+void SetScreenFadeIn(short speed)
+{
+	if (!ScreenFading)
+	{
+		ScreenFading = 1;
+		ScreenFade = 255;
+		dScreenFade = 0;
+		ScreenFadeSpeed = speed;
+		ScreenFadedOut = 0;
+	}
+}
+
+void Fade()
+{
+	long oldfucker;
+
+	oldfucker = ScreenFade;
+
+	if (dScreenFade && dScreenFade >= ScreenFade)
+	{
+		ScreenFade += ScreenFadeSpeed;
+
+		if (ScreenFade > dScreenFade)
+		{
+			ScreenFade = dScreenFade;
+
+			if (oldfucker >= dScreenFade)
+			{
+				ScreenFadedOut = 1;
+
+				if (ScreenFadeBack)
+				{
+					dScreenFade = 0;
+					ScreenFadeBack = 0;
+				}
+				else
+					ScreenFading = 0;
+			}
+		}
+	}
+	else if (dScreenFade < ScreenFade)
+	{
+		ScreenFade -= ScreenFadeSpeed;
+
+		if (ScreenFade < dScreenFade)
+		{
+			ScreenFade = dScreenFade;
+			ScreenFading = 0;
+		}
+	}
+
+	if (ScreenFade || dScreenFade)
+		DrawPsxTile(0, phd_winwidth | (phd_winheight << 16), RGBA(ScreenFade, ScreenFade, ScreenFade, 98), 2, 0);
+}
+
 void inject_tomb4fx(bool replace)
 {
 	INJECT(0x0043AE50, TriggerLightning, replace);
@@ -1340,4 +2294,27 @@ void inject_tomb4fx(bool replace)
 	INJECT(0x00439AE0, TriggerGunflash, replace);
 	INJECT(0x00439B80, SetGunFlash, replace);
 	INJECT(0x00439C00, DrawGunflashes, replace);
+	INJECT(0x00438D20, GetFreeBlood, replace);
+	INJECT(0x00438D90, UpdateBlood, replace);
+	INJECT(0x00438F00, TriggerBlood, replace);
+	INJECT(0x00439780, GetFreeBubble, replace);
+	INJECT(0x004397F0, CreateBubble, replace);
+	INJECT(0x00439970, UpdateBubbles, replace);
+	INJECT(0x00439F10, GetFreeDrip, replace);
+	INJECT(0x0043A080, TriggerLaraDrips, replace);
+	INJECT(0x0043AA70, GetFreeShockwave, replace);
+	INJECT(0x0043AA90, TriggerShockwave, replace);
+	INJECT(0x0043AB00, TriggerShockwaveHitEffect, replace);
+	INJECT(0x0043AD10, UpdateShockwaves, replace);
+	INJECT(0x0043AF80, UpdateLightning, replace);
+	INJECT(0x0043AFD0, LSpline, replace);
+	INJECT(0x0043B0D0, CalcLightningSpline, replace);
+	INJECT(0x0043B330, TriggerLightningGlow, replace);
+	INJECT(0x0043B420, TriggerFlashSmoke, replace);
+	INJECT(0x0043A1B0, S_DrawSparks, replace);
+	INJECT(0x00439D40, SetFadeClip, replace);
+	INJECT(0x00439D60, UpdateFadeClip, replace);
+	INJECT(0x00439DB0, SetScreenFadeOut, replace);
+	INJECT(0x00439E00, SetScreenFadeIn, replace);
+	INJECT(0x00439E40, Fade, replace);
 }

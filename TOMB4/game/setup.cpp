@@ -44,6 +44,7 @@
 #include "../specific/function_stubs.h"
 #include "flmtorch.h"
 #include "scarab.h"
+#include "sentrygun.h"
 
 void ObjectObjects()
 {
@@ -199,8 +200,8 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 		obj->initialise = InitialiseTrapDoor;
-	//	obj->control = TrapDoorControl;
-	//	obj->collision = FloorTrapDoorCollision;
+		obj->control = TrapDoorControl;
+		obj->collision = FloorTrapDoorCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -209,8 +210,8 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 		obj->initialise = InitialiseTrapDoor;
-	//	obj->control = TrapDoorControl;
-	//	obj->collision = CeilingTrapDoorCollision;
+		obj->control = TrapDoorControl;
+		obj->collision = CeilingTrapDoorCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -219,8 +220,7 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 		obj->initialise = InitialiseTrapDoor;
-	//	obj->control = TrapDoorControl;
-	//	obj->collision = TrapDoorCollision;
+		obj->control = TrapDoorControl;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -274,7 +274,7 @@ void ObjectObjects()
 
 	obj = &objects[GRENADE];
 	obj->initialise = 0;
-//	obj->control = ControlCrossbow;
+//	obj->control = ControlGrenade;
 	obj->collision = 0;
 	obj->draw_routine = DrawWeaponMissile;
 	obj->using_drawanimating_item = 0;
@@ -462,7 +462,7 @@ void ObjectObjects()
 	for (int i = RED_LIGHT; i <= BLUE_LIGHT; i++)
 	{
 		obj = &objects[i];
-	//	obj->control = ControlColouredLights;
+		obj->control = ControlColouredLights;
 		obj->draw_routine = 0;
 		obj->using_drawanimating_item = 0;
 		obj->save_flags = 1;
@@ -517,8 +517,8 @@ void ObjectObjects()
 	obj->control = ControlClockworkBeetle;
 
 	obj = &objects[GOD_HEAD];
-//	obj->control = ControlGodHead;
-//	obj->draw_routine = DrawGodHead;
+	obj->control = ControlGodHead;
+	obj->draw_routine = DrawGodHead;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
 
@@ -540,8 +540,8 @@ void TrapObjects()
 	OBJECT_INFO* obj;
 
 	obj = &objects[ROLLINGBALL];
-//	obj->control = ControlRollingBall;
-//	obj->collision = RollingBallCollision;
+	obj->control = ControlRollingBall;
+	obj->collision = RollingBallCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
@@ -559,7 +559,7 @@ void TrapObjects()
 	
 	obj = &objects[STARGATE];
 	obj->control = ControlStargate;
-//	obj->collision = StargateCollision;
+	obj->collision = StargateCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
@@ -578,7 +578,7 @@ void TrapObjects()
 
 	obj = &objects[COG];
 	obj->control = ControlAnimatingSlots;
-//	obj->collision = CogCollision;
+	obj->collision = CogCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
@@ -640,7 +640,7 @@ void TrapObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[KILL_ALL_TRIGGERS];
-//	obj->control = KillAllCurrentItems;
+	obj->control = KillAllCurrentItems;
 	obj->draw_routine = 0;
 	obj->hit_points = 0;
 	obj->using_drawanimating_item = 0;
@@ -658,31 +658,31 @@ void TrapObjects()
 	{
 		obj = &objects[i];
 		obj->initialise = InitialiseFallingBlock2;
-	//	obj->control = FallingBlock;
-	//	obj->collision = FallingBlockCollision;
-	//	obj->floor = FallingBlockFloor;
-	//	obj->ceiling = FallingBlockCeiling;
+		obj->control = FallingBlock;
+		obj->collision = FallingBlockCollision;
+		obj->floor = FallingBlockFloor;
+		obj->ceiling = FallingBlockCeiling;
 		obj->save_position = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
 
 	obj = &objects[FALLING_CEILING];
-//	obj->control = FallingCeiling;
-//	obj->collision = TrapCollision;
+	obj->control = FallingCeiling;
+	obj->collision = TrapCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[SMASHABLE_BIKE_WALL];
 	obj->initialise = InitialiseFallingBlock2;
-//	obj->control = ControlSmashableBikeWall;
+	obj->control = ControlSmashableBikeWall;
 	obj->collision = ObjectCollision;
 	obj->save_flags = 1;
 
 	obj = &objects[SMASHABLE_BIKE_FLOOR];
 	obj->initialise = InitialiseFallingBlock2;
-//	obj->control = ControlFallingBlock2;
+	obj->control = ControlFallingBlock2;
 	obj->collision = ObjectCollision;
 	obj->floor = TwoBlockPlatformFloor;
 	obj->ceiling = TwoBlockPlatformCeiling;
@@ -708,26 +708,26 @@ void TrapObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[DARTS];
-//	obj->control = DartsControl;
+	obj->control = DartsControl;
 	obj->collision = ObjectCollision;
 	obj->draw_routine = S_DrawDarts;
 	obj->using_drawanimating_item = 0;
 	obj->shadow_size = 128;
 
 	obj = &objects[DART_EMITTER];
-//	obj->control = DartEmitterControl;
+	obj->control = DartEmitterControl;
 	obj->draw_routine = 0;
 	obj->save_flags = 1;
 	obj->using_drawanimating_item = 0;
 
 	obj = &objects[HOMING_DART_EMITTER];
-//	obj->control = DartEmitterControl;
+	obj->control = DartEmitterControl;
 	obj->draw_routine = 0;
 	obj->save_flags = 1;
 	obj->using_drawanimating_item = 0;
 
 	obj = &objects[FLAME];
-//	obj->control = FlameControl;
+	obj->control = FlameControl;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 
@@ -741,14 +741,14 @@ void TrapObjects()
 
 	obj = &objects[FLAME_EMITTER2];
 	obj->initialise = InitialiseFlameEmitter2;
-//	obj->control = FlameEmitter2Control;
+	obj->control = FlameEmitter2Control;
 	obj->collision = FireCollision;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
 
 	obj = &objects[FLAME_EMITTER3];
-//	obj->control = FlameEmitter3Control;
+	obj->control = FlameEmitter3Control;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
 	obj->save_flags = 1;
@@ -1582,8 +1582,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseAutogun;
-//		obj->control = AutogunControl;
+		obj->initialise = InitialiseAutogun;
+		obj->control = AutogunControl;
 		obj->collision = CreatureCollision;
 		obj->radius = 204;
 		obj->shadow_size = 128;
@@ -1608,7 +1608,7 @@ void BaddyObjects()
 	if (obj->loaded)
 	{
 //		obj->initialise = InitialiseHorse;
-//		obj->collision = ObjectCollision;
+		obj->collision = ObjectCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -1621,7 +1621,7 @@ void BaddyObjects()
 		{
 			obj->initialise = InitialiseInjuredSas;
 			obj->control = InjuredSasControl;
-//			obj->collision = ObjectCollision;
+			obj->collision = ObjectCollision;
 			obj->save_flags = 1;
 			obj->save_anim = 1;
 			obj->save_position = 1;
@@ -1634,7 +1634,7 @@ void BaddyObjects()
 	{
 		obj->initialise = InitialiseJeanYves;
 		obj->control = JeanYvesControl;
-//		obj->collision = ObjectCollision;
+		obj->collision = ObjectCollision;
 		obj->object_mip = 10240;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
@@ -1649,7 +1649,7 @@ void BaddyObjects()
 		{
 			obj->initialise = InitialiseSenet;
 			obj->control = SenetControl;
-//			obj->collision = ObjectCollision;
+			obj->collision = ObjectCollision;
 			obj->save_flags = 1;
 			obj->save_hitpoints = 1;
 			obj->save_position = 1;
@@ -1660,7 +1660,7 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->collision = ObjectCollision;
+		obj->collision = ObjectCollision;
 		obj->save_flags = 1;
 		obj->save_position = 1;
 	}
@@ -1701,7 +1701,7 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseScarabGenerator;
+		obj->initialise = InitialiseScarabGenerator;
 		obj->control = TriggerScarab;
 		obj->draw_routine = 0;
 		obj->using_drawanimating_item = 0;
