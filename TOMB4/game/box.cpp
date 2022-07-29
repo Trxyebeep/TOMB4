@@ -613,6 +613,118 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 	return NO_TARGET;
 }
 
+void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
+{
+	CREATURE_INFO* creature;
+	ITEM_INFO* enemy;
+	LOT_INFO* LOT;
+	static target_type type;
+	short index, box_no;
+
+	creature = (CREATURE_INFO*)item->data;
+
+	if (!creature)
+		return;
+
+	enemy = creature->enemy;
+	LOT = &creature->LOT;
+
+	switch (creature->mood)
+	{
+	case BORED_MOOD:
+		box_no = LOT->node[(creature->LOT.zone_count * GetRandomControl()) >> 15].box_number;
+
+		if (ValidBox(item, info->zone_number, box_no))
+		{
+			if (StalkBox(item, enemy, box_no) && enemy->hit_points > 0 && creature->enemy)
+			{
+				TargetBox(&creature->LOT, box_no);
+				creature->mood = BORED_MOOD;
+			}
+			else if (creature->LOT.required_box == 2047)
+				TargetBox(&creature->LOT, box_no);
+		}
+
+		break;
+
+	case ATTACK_MOOD:
+		creature->LOT.target.x = enemy->pos.x_pos;
+		creature->LOT.target.y = enemy->pos.y_pos;
+		creature->LOT.target.z = enemy->pos.z_pos;
+		creature->LOT.required_box = enemy->box_number;
+
+		if (creature->LOT.fly && lara.water_status == LW_ABOVE_WATER)
+			creature->LOT.target.y += GetBestFrame(enemy)[2];
+
+		break;
+
+	case ESCAPE_MOOD:
+		box_no = LOT->node[(creature->LOT.zone_count * GetRandomControl()) >> 15].box_number;
+
+		if (ValidBox(item, info->zone_number, box_no) && creature->LOT.required_box == 2047)
+		{
+			if (EscapeBox(item, enemy, box_no))
+				TargetBox(&creature->LOT, box_no);
+			else if (info->zone_number == info->enemy_zone && StalkBox(item, enemy, box_no) && !violent)
+			{
+				TargetBox(&creature->LOT, box_no);
+				creature->mood = STALK_MOOD;
+			}
+		}
+
+		break;
+
+	case STALK_MOOD:
+
+		if (creature->LOT.required_box == 2047 || !StalkBox(item, enemy, creature->LOT.required_box))
+		{
+			box_no = LOT->node[(creature->LOT.zone_count * GetRandomControl()) >> 15].box_number;
+
+			if (ValidBox(item, info->zone_number, box_no))
+			{
+				if (StalkBox(item, enemy, box_no))
+					TargetBox(&creature->LOT, box_no);
+				else if (creature->LOT.required_box == 2047)
+				{
+					TargetBox(&creature->LOT, box_no);
+
+					if (info->zone_number != info->enemy_zone)
+						creature->mood = BORED_MOOD;
+				}
+			}
+		}
+
+		break;
+	}
+
+	if (creature->LOT.target_box == 2047)
+		TargetBox(&creature->LOT, item->box_number);
+
+	type = CalculateTarget(&creature->target, item, &creature->LOT);
+	creature->jump_ahead = 0;
+	creature->monkey_ahead = 0;
+
+	if (LOT->node[item->box_number].exit_box != 2047)
+	{
+		index = boxes[item->box_number].overlap_index & 0x3FFF;
+
+		do
+		{
+			box_no = overlap[index];
+			index++;
+		} while (box_no != 2047 && box_no >= 0 && (box_no & 0x7FF) != LOT->node[item->box_number].exit_box);
+
+		if ((box_no & 0x7FF) == LOT->node[item->box_number].exit_box)
+		{
+			if (box_no & 0x800)
+				creature->jump_ahead = 1;
+
+			if (box_no & 0x2000)
+				creature->monkey_ahead = 1;
+		}
+	}
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -626,4 +738,5 @@ void inject_box(bool replace)
 	INJECT(0x00440340, ValidBox, replace);
 	INJECT(0x00440940, StalkBox, replace);
 	INJECT(0x00440A40, CalculateTarget, replace);
+	INJECT(0x00440620, CreatureMood, replace);
 }
