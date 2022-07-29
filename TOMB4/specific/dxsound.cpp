@@ -158,6 +158,44 @@ bool FreeSampleDecompress()
 	return 1;
 }
 
+bool DXCreateSample(int num, WAVEFORMATEX* wave_format, void* wave_buffer, ulong wave_length)
+{
+	DSBUFFERDESC desc;
+
+	Log(8, "DXCreateSample");
+
+	if (!App.dx.lpDS)
+		return 0;
+
+	memset(&desc, 0, sizeof(desc));
+	desc.dwSize = sizeof(desc);
+	desc.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY | DSBCAPS_STATIC | DSBCAPS_CTRLPOSITIONNOTIFY;
+	desc.dwReserved = 0;
+	desc.dwBufferBytes = wave_length;
+	desc.lpwfxFormat = wave_format;
+
+	if (DXAttempt(App.dx.lpDS->CreateSoundBuffer(&desc, &DS_Buffers[num].buffer, NULL)) != DS_OK)
+	{
+		Log(1, "Unable To Create Sound Buffer");
+		return 0;
+	}
+
+	void* buf_ptr;
+	ulong block_length;
+
+	if (DXAttempt(DS_Buffers[num].buffer->Lock(0, wave_length, &buf_ptr, &block_length, NULL, NULL, 0)) != DS_OK)
+	{
+		Log(1, "Unable To Lock Sound Buffer");
+		return 0;
+	}
+	memcpy(buf_ptr, wave_buffer, block_length);
+	DXAttempt(DS_Buffers[num].buffer->Unlock(buf_ptr, block_length, NULL, 0));
+
+	DS_Buffers[num].frequency = wave_format->nSamplesPerSec;
+
+	return 1;
+}
+
 bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 {
 	LPWAVEFORMATEX format;

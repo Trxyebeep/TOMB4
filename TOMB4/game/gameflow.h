@@ -469,6 +469,9 @@ enum gf_strings	//auto generated from the script compiler
 	TXT_Demo_Mode_Esc_To_Exit,
 	TXT_Select_Level,
 	TXT_No_FMV,
+#ifdef LEVEL_EDITOR
+	TXT_OEM1,
+#endif
 	TXT_THE_LAST_STRING_ENTRY,
 	TXT_NUM_STRINGS
 };

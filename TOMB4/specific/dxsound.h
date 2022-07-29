@@ -11,6 +11,7 @@ bool DXSetOutputFormat();
 bool DXDSCreate();
 bool InitSampleDecompress();
 bool FreeSampleDecompress();
+bool DXCreateSample(int num, WAVEFORMATEX* wave_format, void* wave_buffer, ulong wave_length);
 bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num);
 void DXStopSample(long num);
 bool DSIsChannelPlaying(long num);
