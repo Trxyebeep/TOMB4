@@ -5618,9 +5618,9 @@ long LaraHangTest(ITEM_INFO* item, COLL_INFO* coll)
 	flag = 0;
 	angle = lara.move_angle;
 
-	if (angle == item->pos.y_rot - 0x4000)
+	if (angle == short(item->pos.y_rot - 0x4000))
 		move = -100;
-	else if (angle == item->pos.y_rot + 0x4000)
+	else if (angle == short(item->pos.y_rot + 0x4000))
 		move = 100;
 
 	wall = LaraFloorFront(item, angle, 100);
