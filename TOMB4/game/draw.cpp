@@ -1298,6 +1298,188 @@ void PrintObjects(short room_number)
 	r->bottom = 0;
 }
 
+long GetFrames(ITEM_INFO* item, short* frm[], long* rate)
+{
+	ANIM_STRUCT* anim;
+	long frame, size, frac, num;
+
+	anim = &anims[item->anim_number];
+	frm[0] = anim->frame_ptr;
+	frm[1] = anim->frame_ptr;
+	*rate = anim->interpolation & 0xFF;
+	frame = item->frame_number - anim->frame_base;
+	size = anim->interpolation >> 8;
+	frm[0] += size * (frame / *rate);
+	frm[1] = frm[0] + size;
+	frac = frame % *rate;
+
+	if (!frac)
+		return 0;
+
+	num = *rate * (frame / *rate + 1);
+
+	if (num > anim->frame_end)
+		*rate = *rate + anim->frame_end - num;
+
+	return frac;
+}
+
+short* GetBoundsAccurate(ITEM_INFO* item)
+{
+	short* bptr;
+	short* frmptr[2];
+	long rate, frac;
+	static short interpolated_bounds[6];
+
+	frac = GetFrames(item, frmptr, &rate);
+
+	if (!frac)
+		return frmptr[0];
+
+	bptr = interpolated_bounds;
+
+	for (int i = 0; i < 6; i++)
+	{
+		bptr[i] = short(*frmptr[0] + (*frmptr[1] - *frmptr[0]) * frac / rate);
+		frmptr[0]++;
+		frmptr[1]++;
+	}
+
+	return interpolated_bounds;
+}
+
+short* GetBestFrame(ITEM_INFO* item)
+{
+	short* frm[2];
+	long rate, frac;
+
+	frac = GetFrames(item, frm, &rate);
+
+	if (frac > rate >> 1)
+		return frm[1];
+	else
+		return frm[0];
+}
+
+void UpdateSkyLightning()
+{
+	if (LightningCount <= 0)
+	{
+		if (LightningRand < 4)
+			LightningRand = 0;
+		else
+			LightningRand -= LightningRand >> 2;
+	}
+	else
+	{
+		LightningCount--;
+
+		if (LightningCount)
+		{
+			dLightningRand = GetRandomDraw() & 0x1FF;
+			LightningRand += (dLightningRand - LightningRand) >> 1;
+		}
+		else
+		{
+			dLightningRand = 0;
+			LightningRand = (GetRandomDraw() & 0x7F) + 400;
+		}
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		LightningRGB[i] = LightningRGBs[i] + ((LightningRGBs[i] * LightningRand) >> 8);
+
+		if (LightningRGB[i] > 255)
+			LightningRGB[i] = 255;
+	}
+}
+
+void mRotBoundingBoxNoPersp(short* bounds, short* rotatedBounds)
+{
+	PHD_VECTOR pos[8];
+	long x, y, z;
+	short xMin, xMax, yMin, yMax, zMin, zMax;
+
+	xMin = bounds[0];
+	xMax = bounds[1];
+	yMin = bounds[2];
+	yMax = bounds[3];
+	zMin = bounds[4];
+	zMax = bounds[5];
+
+	pos[0].x = xMin;
+	pos[0].y = yMin;
+	pos[0].z = zMin;
+
+	pos[1].x = xMax;
+	pos[1].y = yMin;
+	pos[1].z = zMin;
+
+	pos[2].x = xMin;
+	pos[2].y = yMax;
+	pos[2].z = zMin;
+
+	pos[3].x = xMax;
+	pos[3].y = yMax;
+	pos[3].z = zMin;
+
+	pos[4].x = xMin;
+	pos[4].y = yMin;
+	pos[4].z = zMax;
+
+	pos[5].x = xMax;
+	pos[5].y = yMin;
+	pos[5].z = zMax;
+
+	pos[6].x = xMin;
+	pos[6].y = yMax;
+	pos[6].z = zMax;
+
+	pos[7].x = xMax;
+	pos[7].y = yMax;
+	pos[7].z = zMax;
+
+	xMin = 0x7FFF;
+	yMin = 0x7FFF;
+	zMin = 0x7FFF;
+	xMax = -0x7FFF;
+	yMax = -0x7FFF;
+	zMax = -0x7FFF;
+
+	for (int i = 0; i < 8; i++)
+	{
+		x = pos[i].x * phd_mxptr[M00] + pos[i].y * phd_mxptr[M01] + pos[i].z * phd_mxptr[M02] + phd_mxptr[M03];
+		y = pos[i].x * phd_mxptr[M10] + pos[i].y * phd_mxptr[M11] + pos[i].z * phd_mxptr[M12] + phd_mxptr[M13];
+		z = pos[i].x * phd_mxptr[M20] + pos[i].y * phd_mxptr[M21] + pos[i].z * phd_mxptr[M22] + phd_mxptr[M23];
+
+		if (x < xMin)
+			xMin = (short)x;
+
+		if (x > xMax)
+			xMax = (short)x;
+
+		if (y < yMin)
+			yMin = (short)y;
+
+		if (y > yMax)
+			yMax = (short)y;
+
+		if (z < zMin)
+			zMin = (short)z;
+
+		if (z > zMax)
+			zMax = (short)z;
+	}
+
+	rotatedBounds[0] = xMin;
+	rotatedBounds[1] = xMax;
+	rotatedBounds[2] = yMin;
+	rotatedBounds[3] = yMax;
+	rotatedBounds[4] = zMin;
+	rotatedBounds[5] = zMax;
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -1325,4 +1507,9 @@ void inject_draw(bool replace)
 	INJECT(0x0044F790, SetRoomBounds, replace);
 	INJECT(0x0044FB10, DrawEffect, replace);
 	INJECT(0x0044F330, PrintObjects, replace);
+	INJECT(0x00450DC0, GetFrames, replace);
+	INJECT(0x00450E60, GetBoundsAccurate, replace);
+	INJECT(0x00450EE0, GetBestFrame, replace);
+	INJECT(0x00451180, UpdateSkyLightning, replace);
+	INJECT(0x00450F10, mRotBoundingBoxNoPersp, replace);
 }

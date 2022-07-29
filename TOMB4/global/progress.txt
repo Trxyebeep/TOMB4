@@ -58,18 +58,18 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/box.cpp
 
-0x0043FB30		InitialiseCreature
-0x0043FB70		CreatureActive
-0x0043FBE0		CreatureAIInfo
-0x0043FF70		UpdateLOT
-0x0043FFF0		SearchLOT
-0x004401F0		TargetBox
-0x00440290		EscapeBox
-0x00440340		ValidBox
+0x0043FB30	+	InitialiseCreature
+0x0043FB70	+	CreatureActive
+0x0043FBE0	+	CreatureAIInfo
+0x0043FF70	+	UpdateLOT
+0x0043FFF0	+	SearchLOT
+0x004401F0	+	TargetBox
+0x00440290	+	EscapeBox
+0x00440340	+	ValidBox
 0x004403E0		GetCreatureMood
-0x00440620		CreatureMood
-0x00440940		StalkBox
-0x00440A40		CalculateTarget
+0x00440620	+	CreatureMood
+0x00440940	+	StalkBox
+0x00440A40	+	CalculateTarget
 0x00440E90		CreatureCreature
 0x00440FD0		BadFloor
 0x00441080	+	CreatureDie
@@ -376,11 +376,11 @@ x for functions decompiled but not injected, for one reason or another.
 0x00450AB0	+	InterpolateArmMatrix
 0x00450BB0	+	CalculateObjectLighting
 0x00450CB0	+	CalculateObjectLightingLara
-0x00450DC0		GetFrames
-0x00450E60		GetBoundsAccurate
-0x00450EE0		GetBestFrame
-0x00450F10		mRotBoundingBoxNoPersp
-0x00451180		UpdateSkyLightning
+0x00450DC0	+	GetFrames
+0x00450E60	+	GetBoundsAccurate
+0x00450EE0	+	GetBestFrame
+0x00450F10	+	mRotBoundingBoxNoPersp
+0x00451180	+	UpdateSkyLightning
 0x00451240	+	RenderIt
 
 
@@ -635,18 +635,18 @@ x for functions decompiled but not injected, for one reason or another.
 0x00421A10	+	lara_as_crawlb
 0x00421AD0	+	lara_col_crawlb
 0x00421BF0	+	lara_col_crawl2hang
-0x00421DE0		LaraTestEdgeCatch
+0x00421DE0	+	LaraTestEdgeCatch
 0x00421E90	+	LaraTestHangOnClimbWall
-0x00421FF0		TestHangSwingIn
+0x00421FF0	+	TestHangSwingIn
 0x004220B0	+	lara_as_dash
 0x00422200	+	lara_col_dash
 0x00422350	+	GetLaraCollisionInfo
 0x00422390	+	LaraHitCeiling
-0x00422400		LaraDeflectEdge
-0x00422480		TestLaraVault
-0x00422810		LaraTestClimbStance
-0x004228D0		TestWall
-0x004229D0		LaraCollideStop
+0x00422400	+	LaraDeflectEdge
+0x00422480	+	TestLaraVault
+0x00422810	+	LaraTestClimbStance
+0x004228D0	+	TestWall
+0x004229D0	+	LaraCollideStop
 0x00422A90	+	lara_as_dashdive
 0x00422AC0	+	lara_col_dashdive
 0x00422BE0	+	LaraLandedBad
@@ -654,8 +654,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00422DE0	+	lara_as_hang2
 0x00422E50	+	MonkeySwingFall
 0x00422EB0	+	lara_col_hang2
-0x004230E0		LaraHangTest
-0x004235B0		SnapLaraToEdgeOfBlock
+0x004230E0	+	LaraHangTest
+0x004235B0	+	SnapLaraToEdgeOfBlock
 0x00423660	+	MonkeySwingSnap
 0x004236B0	+	TestMonkeyLeft
 0x00423780	+	GetDirOctant
@@ -862,17 +862,17 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/laraflar.cpp
 
-0x0042F510		DoFlareLight
-0x0042F6F0		DoFlareInHand
+0x0042F510	+	DoFlareLight
+0x0042F6F0	+	DoFlareInHand
 0x0042F7B0	+	DrawFlareInAir
-0x0042F880		CreateFlare
-0x0042FB00		set_flare_arm
-0x0042FB50		draw_flare
-0x0042FC60		undraw_flare
+0x0042F880	+	CreateFlare
+0x0042FB00	+	set_flare_arm
+0x0042FB50	+	draw_flare
+0x0042FC60	+	undraw_flare
 0x0042FF10	+	draw_flare_meshes
 0x0042FF30	+	undraw_flare_meshes
-0x0042FF50		ready_flare
-0x0042FF90		FlareControl
+0x0042FF50	+	ready_flare
+0x0042FF90	+	FlareControl
 
 
 		game/laramisc.cpp
@@ -904,9 +904,9 @@ x for functions decompiled but not injected, for one reason or another.
 0x00431D40	+	lara_as_surfright
 0x00431DA0	+	lara_as_surftread
 0x00431E60	+	lara_col_surfswim
-0x00431E90		LaraTestWaterClimbOut
-0x004320B0		LaraSurfaceCollision
-0x004321B0		LaraTestWaterStepOut
+0x00431E90	+	LaraTestWaterClimbOut
+0x004320B0	+	LaraSurfaceCollision
+0x004321B0	+	LaraTestWaterStepOut
 0x004322B0	+	lara_col_surfback
 0x004322E0	+	lara_col_surfleft
 0x00432310	+	lara_col_surfright
@@ -917,32 +917,32 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x004323A0	+	LaraUnderWater
 0x00432620	+	lara_as_swim
-0x00432690		SwimTurn
+0x00432690	+	SwimTurn
 0x00432720	+	lara_as_glide
 0x004327A0	+	lara_as_tread
 0x00432830	+	lara_as_dive
 0x00432850	+	lara_as_uwdeath
 0x004328B0	+	lara_as_waterroll
 0x004328C0	+	lara_col_swim
-0x004328E0		LaraSwimCollision
-0x00432A30		LaraTestWaterDepth
+0x004328E0	+	LaraSwimCollision
+0x00432A30	+	LaraTestWaterDepth
 0x00432B10	+	lara_col_glide
 0x00432B30	+	lara_col_tread
 0x00432B50	+	lara_col_dive
 0x00432B70	+	lara_col_uwdeath
 0x00432BD0	+	lara_col_waterroll
 0x00432BF0	+	GetWaterDepth
-0x00432DA0		LaraWaterCurrent
+0x00432DA0	+	LaraWaterCurrent
 
 
 		game/lot.cpp
 
-0x00455200		InitialiseLOTarray
-0x00455270		DisableBaddieAI
+0x00455200	+	InitialiseLOTarray
+0x00455270	+	DisableBaddieAI
 0x004552B0		EnableBaddieAI
 0x00455470		InitialiseSlot
-0x004556A0		CreateZone
-0x004557B0		ClearLOT
+0x004556A0	+	CreateZone
+0x004557B0	+	ClearLOT
 
 
 		game/mirror.cpp
@@ -1140,13 +1140,13 @@ x for functions decompiled but not injected, for one reason or another.
 0x0045A1B0	+	SaveLaraData
 0x0045A2E0	+	sgSaveGame
 0x0045A340	+	CreateCheckSum
-0x0045A370		OpenSaveGame
+0x0045A370	+	OpenSaveGame
 0x0045A470	+	SaveHubData
-0x0045A4B0		SaveLevelData
+0x0045A4B0	+	SaveLevelData
 0x0045B000	+	WriteSG
 0x0045B040	+	sgRestoreGame
 0x0045B080	+	RestoreLaraData
-0x0045B230		RestoreLevelData
+0x0045B230	+	RestoreLevelData
 0x0045BD80	+	ReadSG
 0x0045BDC0	+	sgSaveLevel
 0x0045BDF0	+	sgRestoreLevel
@@ -1182,16 +1182,16 @@ x for functions decompiled but not injected, for one reason or another.
 0x0040F630	+	GameStixControl
 0x0040FBD0	+	ShockwaveExplosion
 0x0040FC60	+	ThrowSticks
-0x0040FCF0		ControlGodHead
-0x0040FDD0		DrawGodHead
+0x0040FCF0	+	ControlGodHead
+0x0040FDD0	+	DrawGodHead
 0x0040FF40	+	GameStixCollision
 
 
 		game/sentrygun.cpp
 
-0x0043F5C0		TriggerAutogunFlamethrower
-0x0043F7A0		InitialiseAutogun
-0x0043F7E0		AutogunControl
+0x0043F5C0	+	TriggerAutogunFlamethrower
+0x0043F7A0	+	InitialiseAutogun
+0x0043F7E0	+	AutogunControl
 
 
 		game/seth.cpp
@@ -1320,33 +1320,33 @@ x for functions decompiled but not injected, for one reason or another.
 0x00439340	+	UpdateGunShells
 0x004395B0	+	DrawGunshells
 0x00439660	+	TriggerSmallSplash
-0x00439780		GetFreeBubble
-0x004397F0		CreateBubble
+0x00439780	+	GetFreeBubble
+0x004397F0	+	CreateBubble
 0x004398B0	+	LaraBubbles
-0x00439970		UpdateBubbles
+0x00439970	+	UpdateBubbles
 0x00439AE0	+	TriggerGunflash
 0x00439B80	+	SetGunFlash
 0x00439C00	+	DrawGunflashes
-0x00439D40		SetFadeClip
-0x00439D60		UpdateFadeClip
-0x00439DB0		SetScreenFadeOut
-0x00439E00		SetScreenFadeIn
-0x00439E40		Fade
-0x00439F10		GetFreeDrip
+0x00439D40	+	SetFadeClip
+0x00439D60	+	UpdateFadeClip
+0x00439DB0	+	SetScreenFadeOut
+0x00439E00	+	SetScreenFadeIn
+0x00439E40	+	Fade
+0x00439F10	+	GetFreeDrip
 0x00439F80	+	UpdateDrips
-0x0043A080		TriggerLaraDrips
-0x0043A1B0		S_DrawSparks
+0x0043A080	+	TriggerLaraDrips
+0x0043A1B0	+	S_DrawSparks
 0x0043A690	+	ExplodingDeath2
-0x0043AA70		GetFreeShockwave
-0x0043AA90		TriggerShockwave
-0x0043AB00		TriggerShockwaveHitEffect
-0x0043AD10		UpdateShockwaves
+0x0043AA70	+	GetFreeShockwave
+0x0043AA90	+	TriggerShockwave
+0x0043AB00	+	TriggerShockwaveHitEffect
+0x0043AD10	+	UpdateShockwaves
 0x0043AE50	+	TriggerLightning
-0x0043AF80		UpdateLightning
-0x0043AFD0		LSpline
-0x0043B0D0		CalcLightningSpline
-0x0043B330		TriggerLightningGlow
-0x0043B420		TriggerFlashSmoke
+0x0043AF80	+	UpdateLightning
+0x0043AFD0	+	LSpline
+0x0043B0D0	+	CalcLightningSpline
+0x0043B330	+	TriggerLightningGlow
+0x0043B420	+	TriggerFlashSmoke
 0x0043B5F0	+	DrawLensFlares
 0x0043B630	+	DrawWeaponMissile
 
@@ -1361,28 +1361,28 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/traps.cpp
 
-0x004135A0		CloseTrapDoor
-0x004136C0		TrapDoorControl
-0x00413750		OpenTrapDoor
-0x00413840		FloorTrapDoorCollision
-0x004139F0		CeilingTrapDoorCollision
-0x00413B80		FallingBlockCollision
-0x00413C20		FallingBlock
-0x00413CA0		FallingBlockFloor
-0x00413CF0		FallingBlockCeiling
-0x00413D30		ControlFallingBlock2
-0x00413DC0		ControlSmashableBikeWall
-0x00413E80		FallingCeiling
-0x00413F90		DartEmitterControl
-0x00414150		DartsControl
+0x004135A0	+	CloseTrapDoor
+0x004136C0	+	TrapDoorControl
+0x00413750	+	OpenTrapDoor
+0x00413840	+	FloorTrapDoorCollision
+0x004139F0	+	CeilingTrapDoorCollision
+0x00413B80	+	FallingBlockCollision
+0x00413C20	+	FallingBlock
+0x00413CA0	+	FallingBlockFloor
+0x00413CF0	+	FallingBlockCeiling
+0x00413D30	+	ControlFallingBlock2
+0x00413DC0	+	ControlSmashableBikeWall
+0x00413E80	+	FallingCeiling
+0x00413F90	+	DartEmitterControl
+0x00414150	+	DartsControl
 0x004142F0	+	FlameEmitterControl
-0x00414670		FlameEmitter2Control
-0x004148B0		FlameEmitter3Control
-0x00414D80		FlameControl
-0x00414EE0		LaraBurn
-0x00414F30		LavaBurn
-0x00414FA0		ControlRollingBall
-0x00415680		RollingBallCollision
+0x00414670	+	FlameEmitter2Control
+0x004148B0	+	FlameEmitter3Control
+0x00414D80	+	FlameControl
+0x00414EE0	+	LaraBurn
+0x00414F30	+	LavaBurn
+0x00414FA0	+	ControlRollingBall
+0x00415680	+	RollingBallCollision
 0x00415750	+	ControlJobySpike
 0x004158E0	+	DrawScaledSpike
 0x00415AD0	+	TwoBlockPlatformFloor
@@ -1390,7 +1390,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00415B60	+	OnTwoBlockPlatform
 0x00415C30	+	ControlTwoBlockPlatform
 0x00415DB0	+	ControlSlicerDicer
-0x00415EC0		TestBoundsCollideTeethSpikes
+0x00415EC0	+	TestBoundsCollideTeethSpikes
 0x00415FD0	+	ControlScaledSpike
 0x00416390	+	ControlRaisingBlock
 0x00416550	+	ControlBurningFloor

@@ -183,7 +183,7 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 		Log(1, "Stream Convert %d", mmresult);
 
 	desc.dwSize = 20;
-	desc.dwFlags = 226;
+	desc.dwFlags = DSBCAPS_STATIC | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME;
 	desc.dwReserved = 0;
 	desc.dwBufferBytes = uncomp_size - 32;
 	desc.lpwfxFormat = &pcm_format;

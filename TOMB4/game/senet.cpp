@@ -9,13 +9,12 @@
 #include "lara_states.h"
 #include "collide.h"
 #include "tomb4fx.h"
+#include "draw.h"
+#include "../specific/3dmath.h"
+#include "../specific/output.h"
 
-short GameStixBounds[12] =
-{
-	 -256, 256, -200, 200, -256, 256, -1820, 1820, -5460, 5460, 0, 0
-};
-
-PHD_VECTOR GameStixPos = { 0, 0, -100 };
+static short GameStixBounds[12] = { -256, 256, -200, 200, -256, 256, -1820, 1820, -5460, 5460, 0, 0 };
+static PHD_VECTOR GameStixPos = { 0, 0, -100 };
 
 void InitialiseSenet(short item_number)
 {
@@ -460,6 +459,103 @@ void ShockwaveExplosion(ITEM_INFO* item, ulong col, long speed)
 	item->pos.y_pos += 384;
 }
 
+void ControlGodHead(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (TriggerActive(item))
+	{
+		switch (item->pos.y_rot)
+		{
+		case 0:
+			item->pos.z_pos &= ~1023;
+			break;
+
+		case 0x4000:
+			item->pos.x_pos &= ~1023;
+			break;
+
+		case -0x8000:
+			item->pos.z_pos |= 1023;
+			break;
+
+		case -0x4000:
+			item->pos.x_pos |= 1023;
+			break;
+		}
+
+		if (item->item_flags[0])
+		{
+			if (item->item_flags[2])
+				item->item_flags[2]--;
+			else if (item->item_flags[1] < 128)
+				KillItem(item_number);
+			else
+				item->item_flags[1] -= 128;
+		}
+		else if (item->item_flags[1] < 4096)
+			item->item_flags[1] += 128;
+		else
+		{
+			item->item_flags[0] = 1;
+			item->item_flags[1] = 4096;
+			item->item_flags[2] = 210;
+		}
+	}
+}
+
+void DrawGodHead(ITEM_INFO* item)
+{
+	ROOM_INFO* r;
+	PHD_VECTOR scalar;
+	short** meshpp;
+	short* frm[2];
+	long rate, oldAlpha, alpha;
+
+	r = &room[item->room_number];
+	phd_left = r->left;
+	phd_right = r->right;
+	phd_top = r->top;
+	phd_bottom = r->bottom;
+	GetFrames(item, frm, &rate);
+
+	phd_PushMatrix();
+	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	phd_RotX(item->pos.x_rot);
+	phd_RotZ(item->pos.z_rot);
+	phd_RotY(item->pos.y_rot);
+	rate = S_GetObjectBounds(frm[0]);
+
+	if (rate)
+	{
+		meshpp = &meshes[objects[item->object_number].mesh_index];
+		scalar.x = 0x4000;
+		scalar.y = 0x4000;
+		scalar.z = item->item_flags[1] << 2;
+		ScaleCurrentMatrix(&scalar);
+		CalculateObjectLighting(item, frm[0]);
+		oldAlpha = GlobalAlpha;
+		alpha = item->item_flags[1] >> 5;
+
+		if (alpha < 128)
+			alpha <<= 1;
+		else
+			alpha = 255;
+
+		GlobalAlpha = alpha << 24;
+		phd_PutPolygons(*meshpp, rate);
+		GlobalAlpha = oldAlpha;
+	}
+
+	phd_left = 0;
+	phd_right = phd_winwidth;
+	phd_top = 0;
+	phd_bottom = phd_winheight;
+	phd_PopMatrix();
+}
+
 void inject_senet(bool replace)
 {
 	INJECT(0x0040F3B0, InitialiseSenet, replace);
@@ -471,4 +567,6 @@ void inject_senet(bool replace)
 	INJECT(0x0040F630, GameStixControl, replace);
 	INJECT(0x0040FF40, GameStixCollision, replace);
 	INJECT(0x0040FBD0, ShockwaveExplosion, replace);
+	INJECT(0x0040FCF0, ControlGodHead, replace);
+	INJECT(0x0040FDD0, DrawGodHead, replace);
 }

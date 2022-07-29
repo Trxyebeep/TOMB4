@@ -32,20 +32,23 @@ void DrawGunflashes();
 long GetFreeBlood();
 void UpdateBlood();
 void TriggerBlood(long x, long y, long z, long angle, long num);
-
-#define UpdateFadeClip	( (void(__cdecl*)()) 0x00439D60 )
-#define TriggerLaraDrips	( (void(__cdecl*)()) 0x0043A080 )
-#define UpdateBubbles	( (void(__cdecl*)()) 0x00439970 )
-#define UpdateShockwaves	( (void(__cdecl*)()) 0x0043AD10 )
-#define UpdateLightning	( (void(__cdecl*)()) 0x0043AF80 )
-#define TriggerLightningGlow	( (void(__cdecl*)(long, long, long, long)) 0x0043B330 )
-#define	SetFadeClip	( (void(__cdecl*)(short, short)) 0x00439D40 )
-#define	SetScreenFadeOut	( (void(__cdecl*)(long, long)) 0x00439DB0 )
-#define	SetScreenFadeIn	( (void(__cdecl*)(long)) 0x00439E00 )
-#define	CreateBubble	( (void(__cdecl*)(PHD_3DPOS*, short, long, long)) 0x004397F0 )
-#define GetFreeDrip	( (long(__cdecl*)()) 0x00439F10 )
-#define TriggerShockwave	( (void(__cdecl*)(PHD_VECTOR*, long, long, long, long)) 0x0043AA90 )
-#define TriggerFlashSmoke	( (void(__cdecl*)(long, long, long, long)) 0x0043B420 )
-#define Fade	( (void(__cdecl*)()) 0x00439E40 )
-#define S_DrawSparks	( (void(__cdecl*)()) 0x0043A1B0 )
-#define CalcLightningSpline	( (void(__cdecl*)(PHD_VECTOR*, SVECTOR*, LIGHTNING_STRUCT*)) 0x0043B0D0 )
+long GetFreeBubble();
+void CreateBubble(PHD_3DPOS* pos, short room_number, long size, long biggest);
+void UpdateBubbles();
+long GetFreeDrip();
+void TriggerLaraDrips();
+long GetFreeShockwave();
+void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long rgb, long XRotFlags);
+void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long speed);
+void UpdateShockwaves();
+void UpdateLightning();
+long LSpline(long x, long* knots, long nk);
+void CalcLightningSpline(PHD_VECTOR* pos, SVECTOR* dest, LIGHTNING_STRUCT* lptr);
+void TriggerLightningGlow(long x, long y, long z, long rgb);
+void TriggerFlashSmoke(long x, long y, long z, short room_number);
+void S_DrawSparks();
+void SetFadeClip(short height, short speed);
+void UpdateFadeClip();
+void SetScreenFadeOut(short speed, short back);
+void SetScreenFadeIn(short speed);
+void Fade();

@@ -14,3 +14,4 @@ long PickupTrigger(short item_num);
 void RegeneratePickups();
 
 #define PickUpCollision	( (void(__cdecl*)(short, ITEM_INFO*, COLL_INFO*)) 0x00457720 )
+#define PuzzleHoleCollision	( (void(__cdecl*)(short, ITEM_INFO*, COLL_INFO*)) 0x004582A0 )

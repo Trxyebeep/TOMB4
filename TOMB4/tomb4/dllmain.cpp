@@ -93,6 +93,8 @@
 #include "../game/flmtorch.h"
 #include "../game/scarab.h"
 #include "../game/larafire.h"
+#include "../game/lot.h"
+#include "../game/sentrygun.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -205,6 +207,8 @@ void inject_all(bool replace)
 	inject_flmtorch(replace);
 	inject_scarab(replace);
 	inject_larafire(replace);
+	inject_lot(replace);
+	inject_sentry(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

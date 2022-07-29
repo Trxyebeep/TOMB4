@@ -384,8 +384,8 @@ void ControlFXBulb(FOGBULB_STRUCT* FogBulb)
 		}
 	}
 
-	TriggerFlashSmoke((long)FogBulb->WorldPos.x, (long)FogBulb->WorldPos.y, (long)FogBulb->WorldPos.z, FogBulb->room_number);
-	TriggerFlashSmoke((long)FogBulb->WorldPos.x, (long)FogBulb->WorldPos.y, (long)FogBulb->WorldPos.z, FogBulb->room_number);
+	TriggerFlashSmoke((long)FogBulb->WorldPos.x, (long)FogBulb->WorldPos.y, (long)FogBulb->WorldPos.z, (short)FogBulb->room_number);
+	TriggerFlashSmoke((long)FogBulb->WorldPos.x, (long)FogBulb->WorldPos.y, (long)FogBulb->WorldPos.z, (short)FogBulb->room_number);
 	FogBulb->sqrad = SQUARE(FogBulb->rad);
 	FogBulb->inv_sqrad = 1.0F / FogBulb->sqrad;
 }

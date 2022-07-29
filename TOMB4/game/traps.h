@@ -33,8 +33,25 @@ void ControlChain(short item_number);
 void ControlBurningFloor(short item_number);
 void ControlRaisingBlock(short item_number);
 void ControlScaledSpike(short item_number);
-
-#define LaraBurn	( (void(__cdecl*)()) 0x00414EE0 )
-#define CloseTrapDoor	( (void(__cdecl*)(ITEM_INFO*)) 0x004135A0 )
-#define TestBoundsCollideTeethSpikes	( (long(__cdecl*)(ITEM_INFO*)) 0x00415EC0 )
-#define LavaBurn	( (void(__cdecl*)(ITEM_INFO*)) 0x00414F30 )
+void FlameEmitter3Control(short item_number);
+void FlameControl(short fx_number);
+void FlameEmitter2Control(short item_number);
+void LaraBurn();
+void LavaBurn(ITEM_INFO* item);
+long TestBoundsCollideTeethSpikes(ITEM_INFO* item);
+void ControlRollingBall(short item_number);
+void RollingBallCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
+void DartsControl(short item_number);
+void DartEmitterControl(short item_number);
+void FallingCeiling(short item_number);
+void ControlSmashableBikeWall(short item_number);
+void ControlFallingBlock2(short item_number);
+void FallingBlockCeiling(ITEM_INFO* item, long x, long y, long z, long* height);
+void FallingBlockFloor(ITEM_INFO* item, long x, long y, long z, long* height);
+void FallingBlock(short item_number);
+void FallingBlockCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
+void CeilingTrapDoorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
+void FloorTrapDoorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
+void OpenTrapDoor(ITEM_INFO* item);
+void CloseTrapDoor(ITEM_INFO* item);
+void TrapDoorControl(short item_number);
