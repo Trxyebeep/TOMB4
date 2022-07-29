@@ -6,6 +6,7 @@ void inject_box(bool replace);
 void CreatureDie(short item_number, long explode);
 void InitialiseCreature(short item_number);
 long CreatureActive(short item_number);
+void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info);
 
 #define AlertNearbyGuards	( (void(__cdecl*)(ITEM_INFO*)) 0x004425D0 )
 #define CreatureTurn	( (short(__cdecl*)(ITEM_INFO*, short)) 0x00441C60 )
@@ -13,7 +14,6 @@ long CreatureActive(short item_number);
 #define CreatureJoint	( (void(__cdecl*)(ITEM_INFO*, short, short)) 0x00441F20 )
 #define CreatureAnimation	( (long(__cdecl*)(short, short, short)) 0x00441230 )
 #define GetAITarget	( (void(__cdecl*)(CREATURE_INFO*)) 0x00442720 )
-#define CreatureAIInfo	( (void(__cdecl*)(ITEM_INFO*, AI_INFO*)) 0x0043FBE0 )
 #define GetCreatureMood	( (void(__cdecl*)(ITEM_INFO*, AI_INFO*, long)) 0x004403E0 )
 #define CreatureMood	( (void(__cdecl*)(ITEM_INFO*, AI_INFO*, long)) 0x00440620 )
 #define AlertAllGuards	( (void(__cdecl*)(short)) 0x00442550 )
