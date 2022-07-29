@@ -5,9 +5,9 @@ void inject_box(bool replace);
 
 void CreatureDie(short item_number, long explode);
 void InitialiseCreature(short item_number);
+long CreatureActive(short item_number);
 
 #define AlertNearbyGuards	( (void(__cdecl*)(ITEM_INFO*)) 0x004425D0 )
-#define CreatureActive	( (long(__cdecl*)(short)) 0x0043FB70 )
 #define CreatureTurn	( (short(__cdecl*)(ITEM_INFO*, short)) 0x00441C60 )
 #define CreatureTilt	( (void(__cdecl*)(ITEM_INFO*, short)) 0x00441EE0 )
 #define CreatureJoint	( (void(__cdecl*)(ITEM_INFO*, short, short)) 0x00441F20 )

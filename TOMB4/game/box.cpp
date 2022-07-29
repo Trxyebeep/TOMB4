@@ -70,8 +70,29 @@ void InitialiseCreature(short item_number)
 	item->data = 0;
 }
 
+long CreatureActive(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (item->flags & IFL_CLEARBODY)
+		return 0;
+
+	if (item->status == ITEM_INVISIBLE)
+	{
+		if (EnableBaddieAI(item_number, 0))
+			item->status = ITEM_ACTIVE;
+		else
+			return 0;
+	}
+
+	return 1;
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
 	INJECT(0x0043FB30, InitialiseCreature, replace);
+	INJECT(0x0043FB70, CreatureActive, replace);
 }

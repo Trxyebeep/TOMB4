@@ -59,7 +59,7 @@ x for functions decompiled but not injected, for one reason or another.
 		game/box.cpp
 
 0x0043FB30	+	InitialiseCreature
-0x0043FB70		CreatureActive
+0x0043FB70	+	CreatureActive
 0x0043FBE0		CreatureAIInfo
 0x0043FF70		UpdateLOT
 0x0043FFF0		SearchLOT
