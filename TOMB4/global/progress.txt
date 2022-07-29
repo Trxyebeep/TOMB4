@@ -62,7 +62,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0043FB70	+	CreatureActive
 0x0043FBE0	+	CreatureAIInfo
 0x0043FF70		UpdateLOT
-0x0043FFF0		SearchLOT
+0x0043FFF0	+	SearchLOT
 0x004401F0		TargetBox
 0x00440290		EscapeBox
 0x00440340		ValidBox
