@@ -8,6 +8,7 @@ void InitialiseCreature(short item_number);
 long CreatureActive(short item_number);
 void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info);
 long SearchLOT(LOT_INFO* LOT, long expansion);
+long UpdateLOT(LOT_INFO* LOT, long expansion);
 
 #define AlertNearbyGuards	( (void(__cdecl*)(ITEM_INFO*)) 0x004425D0 )
 #define CreatureTurn	( (short(__cdecl*)(ITEM_INFO*, short)) 0x00441C60 )
