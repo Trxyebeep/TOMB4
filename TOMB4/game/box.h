@@ -9,6 +9,10 @@ long CreatureActive(short item_number);
 void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info);
 long SearchLOT(LOT_INFO* LOT, long expansion);
 long UpdateLOT(LOT_INFO* LOT, long expansion);
+void TargetBox(LOT_INFO* LOT, short box_number);
+long EscapeBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number);
+long ValidBox(ITEM_INFO* item, short zone_number, short box_number);
+long StalkBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number);
 
 #define AlertNearbyGuards	( (void(__cdecl*)(ITEM_INFO*)) 0x004425D0 )
 #define CreatureTurn	( (short(__cdecl*)(ITEM_INFO*, short)) 0x00441C60 )

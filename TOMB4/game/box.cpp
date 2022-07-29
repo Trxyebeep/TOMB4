@@ -8,6 +8,7 @@
 #include "draw.h"
 #include "../specific/3dmath.h"
 #include "lara_states.h"
+#include "../specific/function_stubs.h"
 
 void CreatureDie(short item_number, long explode)
 {
@@ -310,6 +311,85 @@ long UpdateLOT(LOT_INFO* LOT, long expansion)
 	return SearchLOT(LOT, expansion);
 }
 
+void TargetBox(LOT_INFO* LOT, short box_number)
+{
+	BOX_INFO* box;
+
+	box = &boxes[box_number & 0x7FF];
+	LOT->target.x = (((ulong)box->bottom - (ulong)box->top - 1) >> 5) * GetRandomControl() + ((ulong)box->top << 10) + 512;
+	LOT->target.z = (((ulong)box->right - (ulong)box->left - 1) >> 5) * GetRandomControl() + ((ulong)box->left << 10) + 512;
+	LOT->required_box = box_number & 0x7FF;
+
+	if (LOT->fly)
+		LOT->target.y = box->height - 384;
+	else
+		LOT->target.y = box->height;
+}
+
+long EscapeBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number)
+{
+	BOX_INFO* box;
+	long x, z;
+
+	box = &boxes[box_number];
+	x = (((ulong)box->bottom + (ulong)box->top) << 9) - enemy->pos.x_pos;
+	z = (((ulong)box->left + (ulong)box->right) << 9) - enemy->pos.z_pos;
+
+	if (x > -5120 && x < 5120 && z > -5120 && z < 5120)
+		return 0;
+
+	return z > 0 == item->pos.z_pos > enemy->pos.z_pos || x > 0 == item->pos.x_pos > enemy->pos.x_pos;
+}
+
+long ValidBox(ITEM_INFO* item, short zone_number, short box_number)
+{
+	CREATURE_INFO* creature;
+	BOX_INFO* box;
+
+	creature = (CREATURE_INFO*)item->data;
+
+	if (!creature->LOT.fly && ground_zone[creature->LOT.zone][flip_status][box_number] != zone_number)
+		return 0;
+
+	box = &boxes[box_number];
+
+	if (creature->LOT.block_mask & box->overlap_index)
+		return 0;
+
+	if (item->pos.z_pos > box->left << 10 && item->pos.z_pos < box->right << 10 &&
+		item->pos.x_pos > box->top << 10 && item->pos.x_pos < box->bottom << 10)
+		return 0;
+
+	return 1;
+}
+
+long StalkBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number)
+{
+	BOX_INFO* box;
+	long x, z, xrange, zrange, enemy_quad, box_quad, baddie_quad;
+
+	if (!enemy)
+		return 0;
+
+	box = &boxes[box_number];
+	x = (((ulong)box->bottom + (ulong)box->top) << 9) - enemy->pos.x_pos;
+	z = (((ulong)box->left + (ulong)box->right) << 9) - enemy->pos.z_pos;
+	xrange = ((ulong)box->bottom - (ulong)box->top + 3) << 10;	//3 is the # of blocks
+	zrange = ((ulong)box->right - (ulong)box->left + 3) << 10;
+
+	if (x > xrange || x < -xrange || z > zrange || z < -zrange)
+		return 0;
+
+	enemy_quad = (enemy->pos.y_rot >> 14) + 2;
+	box_quad = z <= 0 ? (x <= 0 ? 0 : 3) : (x > 0) + 1;
+
+	if (enemy_quad == box_quad)
+		return 0;
+
+	baddie_quad = item->pos.z_pos <= enemy->pos.z_pos ? (item->pos.x_pos <= enemy->pos.x_pos ? 0 : 3) : (item->pos.x_pos > enemy->pos.x_pos) + 1;
+	return enemy_quad != baddie_quad || ABS(enemy_quad - box_quad) != 2;
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -318,4 +398,8 @@ void inject_box(bool replace)
 	INJECT(0x0043FBE0, CreatureAIInfo, replace);
 	INJECT(0x0043FFF0, SearchLOT, replace);
 	INJECT(0x0043FF70, UpdateLOT, replace);
+	INJECT(0x004401F0, TargetBox, replace);
+	INJECT(0x00440290, EscapeBox, replace);
+	INJECT(0x00440340, ValidBox, replace);
+	INJECT(0x00440940, StalkBox, replace);
 }
