@@ -61,7 +61,17 @@ void CreatureDie(short item_number, long explode)
 	}
 }
 
+void InitialiseCreature(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->collidable = 1;
+	item->data = 0;
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
+	INJECT(0x0043FB30, InitialiseCreature, replace);
 }
