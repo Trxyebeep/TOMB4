@@ -868,6 +868,36 @@ long CreatureCreature(short item_number)
 	return 0;
 }
 
+long BadFloor(long x, long y, long z, long box_height, long next_height, short room_number, LOT_INFO* LOT)
+{
+	FLOOR_INFO* floor;
+	BOX_INFO* box;
+
+	floor = GetFloor(x, y, z, &room_number);
+
+	if (floor->box == 2047)
+		return 0;
+
+	if (LOT->is_jumping)
+		return 0;
+
+	box = &boxes[floor->box];
+
+	if (box->overlap_index & LOT->block_mask)
+		return 1;
+
+	if (box_height - box->height > LOT->step || box_height - box->height < LOT->drop)
+		return 1;
+
+	if (box_height - box->height < -LOT->step && box->height > next_height)
+		return 1;
+
+	if (LOT->fly && y > box->height + LOT->fly)
+		return 1;
+
+	return 0;
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -884,4 +914,5 @@ void inject_box(bool replace)
 	INJECT(0x00440620, CreatureMood, replace);
 	INJECT(0x004403E0, GetCreatureMood, replace);
 	INJECT(0x00440E90, CreatureCreature, replace);
+	INJECT(0x00440FD0, BadFloor, replace);
 }
