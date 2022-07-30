@@ -15,6 +15,7 @@ long ValidBox(ITEM_INFO* item, short zone_number, short box_number);
 long StalkBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number);
 target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT);
 void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent);
+void GetCreatureMood(ITEM_INFO* item, AI_INFO* info, long violent);
 
 #define AlertNearbyGuards	( (void(__cdecl*)(ITEM_INFO*)) 0x004425D0 )
 #define CreatureTurn	( (short(__cdecl*)(ITEM_INFO*, short)) 0x00441C60 )
@@ -22,7 +23,6 @@ void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent);
 #define CreatureJoint	( (void(__cdecl*)(ITEM_INFO*, short, short)) 0x00441F20 )
 #define CreatureAnimation	( (long(__cdecl*)(short, short, short)) 0x00441230 )
 #define GetAITarget	( (void(__cdecl*)(CREATURE_INFO*)) 0x00442720 )
-#define GetCreatureMood	( (void(__cdecl*)(ITEM_INFO*, AI_INFO*, long)) 0x004403E0 )
 #define AlertAllGuards	( (void(__cdecl*)(short)) 0x00442550 )
 #define AIGuard	( (short(__cdecl*)(CREATURE_INFO*)) 0x00442670 )
 typedef short(__cdecl* generate)(long, long, long, short, short, short);
