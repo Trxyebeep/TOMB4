@@ -73,7 +73,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00440E90	+	CreatureCreature
 0x00440FD0	+	BadFloor
 0x00441080	+	CreatureDie
-0x00441230		CreatureAnimation
+0x00441230	+	CreatureAnimation
 0x00441C60		CreatureTurn
 0x00441EE0		CreatureTilt
 0x00441F20		CreatureJoint
