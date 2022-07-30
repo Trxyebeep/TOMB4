@@ -838,6 +838,36 @@ void GetCreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 	}
 }
 
+long CreatureCreature(short item_number)
+{
+	ITEM_INFO* item;
+	long x, z, dx, dz, dist;
+	short yrot, rad, item_num;
+
+	item = &items[item_number];
+	x = item->pos.x_pos;
+	z = item->pos.z_pos;
+	yrot = item->pos.y_rot;
+	rad = objects[item->object_number].radius;
+
+	for (item_num = room[item->room_number].item_number; item_num != NO_ITEM; item_num = item->next_item)
+	{
+		item = &items[item_num];
+
+		if (item_num != item_number && item != lara_item && item->status == ITEM_ACTIVE && item->hit_points > 0)
+		{
+			dx = ABS(item->pos.x_pos - x);
+			dz = ABS(item->pos.z_pos - z);
+			dist = dx > dz ? dx + (dz >> 1) : dz + (dx >> 1);
+
+			if (dist < rad + objects[item->object_number].radius)
+				return short(phd_atan(item->pos.z_pos - z, item->pos.x_pos - x) - yrot);
+		}
+	}
+
+	return 0;
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -853,4 +883,5 @@ void inject_box(bool replace)
 	INJECT(0x00440A40, CalculateTarget, replace);
 	INJECT(0x00440620, CreatureMood, replace);
 	INJECT(0x004403E0, GetCreatureMood, replace);
+	INJECT(0x00440E90, CreatureCreature, replace);
 }
