@@ -1277,6 +1277,16 @@ short CreatureTurn(ITEM_INFO* item, short maximum_turn)
 	return angle;
 }
 
+void CreatureTilt(ITEM_INFO* item, short angle)
+{
+	angle = (angle << 2) - item->pos.z_rot;
+
+	if (angle < -546)
+		item->pos.z_rot -= 546;
+	else if (angle > 546)
+		item->pos.z_rot += 546;
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -1296,4 +1306,5 @@ void inject_box(bool replace)
 	INJECT(0x00440FD0, BadFloor, replace);
 	INJECT(0x00441230, CreatureAnimation, replace);
 	INJECT(0x00441C60, CreatureTurn, replace);
+	INJECT(0x00441EE0, CreatureTilt, replace);
 }
