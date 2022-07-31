@@ -77,7 +77,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00441C60	+	CreatureTurn
 0x00441EE0	+	CreatureTilt
 0x00441F20	+	CreatureJoint
-0x00441F80		CreatureFloat
+0x00441F80	+	CreatureFloat
 0x00442080		CreatureUnderwater
 0x00442110		CreatureEffect
 0x00442170		CreatureEffectT

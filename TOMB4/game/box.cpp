@@ -1312,6 +1312,42 @@ void CreatureJoint(ITEM_INFO* item, short joint, short required)
 		creature->joint_rotation[joint] = -0x3000;
 }
 
+void CreatureFloat(short item_number)
+{
+	ITEM_INFO* item;
+	long water_level;
+	short room_number;
+
+	item = &items[item_number];
+	item->hit_points = -16384;
+	item->pos.x_rot = 0;
+	water_level = GetWaterHeight(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number);
+
+	if (item->pos.y_pos > water_level)
+		item->pos.y_pos -= 32;
+
+	if (item->pos.y_pos < water_level)
+		item->pos.y_pos = water_level;
+
+	AnimateItem(item);
+	room_number = item->room_number;
+	item->floor = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number),
+		item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+
+	if (item->room_number != room_number)
+		ItemNewRoom(item_number, room_number);
+
+	if (item->pos.y_pos <= water_level && item->frame_number == anims[item->anim_number].frame_base)
+	{
+		item->status = ITEM_DEACTIVATED;
+		item->collidable = 0;
+		item->pos.y_pos = water_level;
+		DisableBaddieAI(item_number);
+		RemoveActiveItem(item_number);
+		item->after_death = 1;
+	}
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -1333,4 +1369,5 @@ void inject_box(bool replace)
 	INJECT(0x00441C60, CreatureTurn, replace);
 	INJECT(0x00441EE0, CreatureTilt, replace);
 	INJECT(0x00441F20, CreatureJoint, replace);
+	INJECT(0x00441F80, CreatureFloat, replace);
 }
