@@ -1645,6 +1645,100 @@ void FindAITargetObject(CREATURE_INFO* creature, short obj_num)
 	}
 }
 
+void GetAITarget(CREATURE_INFO* creature)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* enemy;
+	short enemy_object;
+	char ai_bits;
+
+	enemy = creature->enemy;
+
+	if (enemy)
+		enemy_object = enemy->object_number;
+	else
+		enemy_object = NO_ITEM;
+
+	item = &items[creature->item_num];
+	ai_bits = item->ai_bits;
+
+	if (ai_bits & GUARD)
+	{
+		if (creature->alerted)
+		{
+			item->ai_bits &= ~GUARD;
+
+			if (ai_bits & AMBUSH)
+				item->ai_bits |= MODIFY;
+		}
+	}
+	else if (ai_bits & PATROL1)
+	{
+		if (creature->alerted || creature->hurt_by_lara)
+		{
+			item->ai_bits &= ~PATROL1;
+
+			if (ai_bits & AMBUSH)
+				item->ai_bits |= MODIFY;
+		}
+		else if (!creature->patrol2)
+		{
+			if (enemy_object != AI_PATROL1)
+				FindAITargetObject(creature, AI_PATROL1);
+		}
+		else if (creature->patrol2)
+		{
+			if (enemy_object != AI_PATROL2)
+				FindAITargetObject(creature, AI_PATROL2);
+		}
+		else if (ABS(enemy->pos.x_pos - item->pos.x_pos) < 640 && ABS(enemy->pos.y_pos - item->pos.y_pos) < 640 && ABS(enemy->pos.z_pos - item->pos.z_pos) < 640)
+		{
+			GetHeight(GetFloor(enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos, &enemy->room_number),
+				enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos);
+			TestTriggers(trigger_index, 1, 0);
+			creature->patrol2 = ~creature->patrol2;
+		}
+	}
+	else if (ai_bits & AMBUSH)
+	{
+		if (enemy_object != AI_AMBUSH)
+			FindAITargetObject(creature, AI_AMBUSH);
+		else if (ABS(enemy->pos.x_pos - item->pos.x_pos) < 640 && ABS(enemy->pos.y_pos - item->pos.y_pos) < 640 && ABS(enemy->pos.z_pos - item->pos.z_pos) < 640)
+		{
+			GetHeight(GetFloor(enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos, &enemy->room_number),
+				enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos);
+			TestTriggers(trigger_index, 1, 0);
+			creature->reached_goal = 1;
+			creature->enemy = lara_item;
+			item->ai_bits &= ~AMBUSH;
+
+			if (item->ai_bits != MODIFY)
+			{
+				item->ai_bits |= GUARD;
+				creature->alerted = 0;
+			}
+		}
+	}
+	else if (ai_bits & FOLLOW)
+	{
+		if (creature->hurt_by_lara)
+		{
+			creature->enemy = lara_item;
+			creature->alerted = 1;
+			item->ai_bits &= ~FOLLOW;
+		}
+		else if (item->hit_status)
+			item->ai_bits &= ~FOLLOW;
+		else if (enemy_object != AI_FOLLOW)
+			FindAITargetObject(creature, AI_FOLLOW);
+		else if (ABS(enemy->pos.x_pos - item->pos.x_pos) < 640 && ABS(enemy->pos.y_pos - item->pos.y_pos) < 640 && ABS(enemy->pos.z_pos - item->pos.z_pos) < 640)
+		{
+			creature->reached_goal = 1;
+			item->ai_bits &= ~FOLLOW;
+		}
+	}
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -1676,4 +1770,5 @@ void inject_box(bool replace)
 	INJECT(0x004425D0, AlertNearbyGuards, replace);
 	INJECT(0x00442670, AIGuard, replace);
 	INJECT(0x00442A60, FindAITargetObject, replace);
+	INJECT(0x00442720, GetAITarget, replace);
 }
