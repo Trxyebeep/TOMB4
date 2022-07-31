@@ -35,6 +35,6 @@ short AIGuard(CREATURE_INFO* creature);
 void FindAITargetObject(CREATURE_INFO* creature, short obj_num);
 void GetAITarget(CREATURE_INFO* creature);
 short SameZone(CREATURE_INFO* creature, ITEM_INFO* target_item);
+void CreatureYRot(PHD_3DPOS* srcpos, short angle, short angadd);
 
-#define CreatureYRot	( (void(__cdecl*)(PHD_3DPOS*, short, short)) 0x00442D30 )
 #define MoveCreature3DPos	( (long(__cdecl*)(PHD_3DPOS*, PHD_3DPOS*, long, short, short)) 0x00442D70 )

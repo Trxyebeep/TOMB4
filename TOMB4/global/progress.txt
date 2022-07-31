@@ -89,7 +89,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00442720	+	GetAITarget
 0x00442A60	+	FindAITargetObject
 0x00442C40	+	SameZone
-0x00442D30		CreatureYRot
+0x00442D30	+	CreatureYRot
 0x00442D70		MoveCreature3DPos
 
 
