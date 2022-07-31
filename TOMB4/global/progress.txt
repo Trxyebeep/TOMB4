@@ -80,7 +80,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00441F80	+	CreatureFloat
 0x00442080	+	CreatureUnderwater
 0x00442110	+	CreatureEffect
-0x00442170		CreatureEffectT
+0x00442170	+	CreatureEffectT
 0x004421D0		CreatureVault
 0x00442380		CreatureKill
 0x00442550		AlertAllGuards
