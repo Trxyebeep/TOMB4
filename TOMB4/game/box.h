@@ -19,9 +19,9 @@ void GetCreatureMood(ITEM_INFO* item, AI_INFO* info, long violent);
 long CreatureCreature(short item_number);
 long BadFloor(long x, long y, long z, long box_height, long next_height, short room_number, LOT_INFO* LOT);
 long CreatureAnimation(short item_number, short angle, short tilt);
+short CreatureTurn(ITEM_INFO* item, short maximum_turn);
 
 #define AlertNearbyGuards	( (void(__cdecl*)(ITEM_INFO*)) 0x004425D0 )
-#define CreatureTurn	( (short(__cdecl*)(ITEM_INFO*, short)) 0x00441C60 )
 #define CreatureTilt	( (void(__cdecl*)(ITEM_INFO*, short)) 0x00441EE0 )
 #define CreatureJoint	( (void(__cdecl*)(ITEM_INFO*, short, short)) 0x00441F20 )
 #define GetAITarget	( (void(__cdecl*)(CREATURE_INFO*)) 0x00442720 )
