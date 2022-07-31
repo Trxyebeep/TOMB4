@@ -21,9 +21,9 @@ long BadFloor(long x, long y, long z, long box_height, long next_height, short r
 long CreatureAnimation(short item_number, short angle, short tilt);
 short CreatureTurn(ITEM_INFO* item, short maximum_turn);
 void CreatureTilt(ITEM_INFO* item, short angle);
+void CreatureJoint(ITEM_INFO* item, short joint, short required);
 
 #define AlertNearbyGuards	( (void(__cdecl*)(ITEM_INFO*)) 0x004425D0 )
-#define CreatureJoint	( (void(__cdecl*)(ITEM_INFO*, short, short)) 0x00441F20 )
 #define GetAITarget	( (void(__cdecl*)(CREATURE_INFO*)) 0x00442720 )
 #define AlertAllGuards	( (void(__cdecl*)(short)) 0x00442550 )
 #define AIGuard	( (short(__cdecl*)(CREATURE_INFO*)) 0x00442670 )
