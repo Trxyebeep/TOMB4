@@ -1767,6 +1767,39 @@ void CreatureYRot(PHD_3DPOS* srcpos, short angle, short angadd)
 		srcpos->y_rot += angle;
 }
 
+long MoveCreature3DPos(PHD_3DPOS* srcpos, struct PHD_3DPOS* destpos, long velocity, short angdif, long angadd)
+{
+	long x, y, z, dist;
+
+	x = destpos->x_pos - srcpos->x_pos;
+	y = destpos->y_pos - srcpos->y_pos;
+	z = destpos->z_pos - srcpos->z_pos;
+	dist = phd_sqrt(SQUARE(x) + SQUARE(y) + SQUARE(z));
+
+	if (velocity < dist)
+	{
+		srcpos->x_pos += velocity * x / dist;
+		srcpos->y_pos += velocity * y / dist;
+		srcpos->z_pos += velocity * z / dist;
+	}
+	else
+	{
+		srcpos->x_pos = destpos->x_pos;
+		srcpos->y_pos = destpos->y_pos;
+		srcpos->z_pos = destpos->z_pos;
+	}
+
+	if (angdif > angadd)
+		srcpos->y_rot += (short)angadd;
+	else if (angdif < -angadd)
+		srcpos->y_rot -= (short)angadd;
+	else
+		srcpos->y_rot = destpos->y_rot;
+
+	return srcpos->x_pos == destpos->x_pos && srcpos->y_pos == destpos->y_pos &&
+		srcpos->z_pos == destpos->z_pos && srcpos->y_rot == destpos->y_rot;
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -1801,4 +1834,5 @@ void inject_box(bool replace)
 	INJECT(0x00442720, GetAITarget, replace);
 	INJECT(0x00442C40, SameZone, replace);
 	INJECT(0x00442D30, CreatureYRot, replace);
+	INJECT(0x00442D70, MoveCreature3DPos, replace);
 }

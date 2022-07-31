@@ -36,5 +36,4 @@ void FindAITargetObject(CREATURE_INFO* creature, short obj_num);
 void GetAITarget(CREATURE_INFO* creature);
 short SameZone(CREATURE_INFO* creature, ITEM_INFO* target_item);
 void CreatureYRot(PHD_3DPOS* srcpos, short angle, short angadd);
-
-#define MoveCreature3DPos	( (long(__cdecl*)(PHD_3DPOS*, PHD_3DPOS*, long, short, short)) 0x00442D70 )
+long MoveCreature3DPos(PHD_3DPOS* srcpos, struct PHD_3DPOS* destpos, long velocity, short angdif, long angadd);
