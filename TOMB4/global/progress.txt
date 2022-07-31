@@ -358,7 +358,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044F5D0	+	GetRoomBounds
 0x0044F790	+	SetRoomBounds
 0x0044FB10	+	DrawEffect
-0x0044FC00		calc_animating_item_clip_window
+0x0044FC00	+	calc_animating_item_clip_window
 0x0044FF60	+	DrawAnimatingItem
 0x00450520	+	InitInterpolate
 0x00450560	+	phd_PopMatrix_I

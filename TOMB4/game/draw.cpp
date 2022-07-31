@@ -1480,6 +1480,142 @@ void mRotBoundingBoxNoPersp(short* bounds, short* rotatedBounds)
 	rotatedBounds[5] = zMax;
 }
 
+void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds)
+{
+	ROOM_INFO* r;
+	short* door;
+	long xMin, xMax, yMin, yMax, zMin, zMax;		//object bounds
+	long xMinR, xMaxR, yMinR, yMaxR, zMinR, zMaxR;	//room bounds
+	long xMinD, xMaxD, yMinD, yMaxD, zMinD, zMaxD;	//door bounds
+	short rotatedBounds[6];
+	short nDoors;
+
+	r = &room[ClipRoomNum];
+
+	if (item->object_number >= ANIMATING1 && item->object_number <= ANIMATING16 ||
+		item->object_number >= DOOR_TYPE1 && item->object_number <= DOOR_TYPE8)
+	{
+		phd_left = r->left;
+		phd_right = r->right;
+		phd_top = r->top;
+		phd_bottom = r->bottom;
+		return;
+	}
+
+	phd_PushUnitMatrix();
+	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+	phd_mxptr[M03] = 0;
+	phd_mxptr[M13] = 0;
+	phd_mxptr[M23] = 0;
+	mRotBoundingBoxNoPersp(bounds, rotatedBounds);
+	phd_PopMatrix();
+
+	xMin = item->pos.x_pos + rotatedBounds[0];
+	xMax = item->pos.x_pos + rotatedBounds[1];
+	yMin = item->pos.y_pos + rotatedBounds[2];
+	yMax = item->pos.y_pos + rotatedBounds[3];
+	zMin = item->pos.z_pos + rotatedBounds[4];
+	zMax = item->pos.z_pos + rotatedBounds[5];
+
+	xMinR = r->x + 1024;
+	xMaxR = xMinR + ((r->y_size - 2) << 10);
+	yMinR = r->maxceiling;
+	yMaxR = r->minfloor;
+	zMinR = r->z + 1024;
+	zMaxR = zMinR + ((r->x_size - 2) << 10);
+
+	if (xMin >= xMinR && xMax <= xMaxR && yMin >= yMinR && yMax <= yMaxR && zMin >= zMinR && zMax <= zMaxR)
+	{
+		phd_left = r->left;
+		phd_right = r->right;
+		phd_top = r->top;
+		phd_bottom = r->bottom;
+		return;
+	}
+
+	if (camera.pos.room_number != item->room_number && camera.pos.room_number != ClipRoomNum)
+	{
+		door = r->door;
+		nDoors = *door++;
+
+		for (; nDoors > 0; nDoors--, door += 16)
+		{
+			if (door[0] != camera.pos.room_number)
+				continue;
+
+			xMinD = door[4];	//skip door normal
+			xMaxD = door[4];
+			yMinD = door[5];
+			yMaxD = door[5];
+			zMinD = door[6];
+			zMaxD = door[6];
+
+			if (door[7] < xMinD)
+				xMinD = door[7];
+			else if (door[7] > xMaxD)
+				xMaxD = door[7];
+
+			if (door[8] < yMinD)
+				yMinD = door[8];
+			else if (door[8] > yMaxD)
+				yMaxD = door[8];
+
+			if (door[9] < zMinD)
+				zMinD = door[9];
+			else if (door[9] > zMaxD)
+				zMaxD = door[9];
+
+			if (door[10] < xMinD)
+				xMinD = door[10];
+			else if (door[10] > xMaxD)
+				xMaxD = door[10];
+
+			if (door[11] < yMinD)
+				yMinD = door[11];
+			else if (door[11] > yMaxD)
+				yMaxD = door[11];
+
+			if (door[12] < zMinD)
+				zMinD = door[12];
+			else if (door[12] > zMaxD)
+				zMaxD = door[12];
+
+			if (door[13] < xMinD)
+				xMinD = door[13];
+			else if (door[13] > xMaxD)
+				xMaxD = door[13];
+
+			if (door[14] < yMinD)
+				yMinD = door[14];
+			else if (door[14] > yMaxD)
+				yMaxD = door[14];
+
+			if (door[15] < zMinD)
+				zMinD = door[15];
+			else if (door[15] > zMaxD)
+				zMaxD = door[15];
+
+			xMinD += xMinR - 1024;
+			xMaxD += xMinR - 1024;
+			yMinD += yMinR;
+			yMaxD += yMinR;
+			zMinD += zMinR - 1024;
+			zMaxD += zMinR - 1024;
+
+			if (xMinD <= xMax && xMaxD >= xMin && yMinD <= yMax && yMaxD >= yMin && zMinD <= zMax && zMaxD >= zMin)
+				break;
+		}
+
+		if (!nDoors)
+		{
+			phd_left = r->left;
+			phd_right = r->right;
+			phd_top = r->top;
+			phd_bottom = r->bottom;
+		}
+	}
+}
+
 void inject_draw(bool replace)
 {
 	INJECT(0x00450520, InitInterpolate, replace);
@@ -1512,4 +1648,5 @@ void inject_draw(bool replace)
 	INJECT(0x00450EE0, GetBestFrame, replace);
 	INJECT(0x00451180, UpdateSkyLightning, replace);
 	INJECT(0x00450F10, mRotBoundingBoxNoPersp, replace);
+	INJECT(0x0044FC00, calc_animating_item_clip_window, replace);
 }
