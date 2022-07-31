@@ -1594,6 +1594,57 @@ short AIGuard(CREATURE_INFO* creature)
 	return 0;
 }
 
+void FindAITargetObject(CREATURE_INFO* creature, short obj_num)
+{
+	ITEM_INFO* item;
+	AIOBJECT* aiObj;
+	ROOM_INFO* r;
+	short* zone;
+	short zone_number, ai_zone;
+
+	item = &items[creature->item_num];
+
+	for (int i = 0; i < nAIObjects; i++)
+	{
+		aiObj = &AIObjects[i];
+
+		if (aiObj->object_number == obj_num && aiObj->trigger_flags == item->item_flags[3] && aiObj->room_number != 255)
+		{
+			zone = ground_zone[creature->LOT.zone][flip_status];
+
+			r = &room[item->room_number];
+			item->box_number = r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)].box;
+			zone_number = zone[item->box_number];
+
+			r = &room[aiObj->room_number];
+			aiObj->box_number = r->floor[((aiObj->z - r->z) >> 10) + r->x_size * ((aiObj->x - r->x) >> 10)].box;
+			ai_zone = zone[aiObj->box_number];
+
+			if (zone_number == ai_zone)
+			{
+				creature->enemy = &creature->ai_target;
+				creature->ai_target.object_number = aiObj->object_number;
+				creature->ai_target.room_number = aiObj->room_number;
+				creature->ai_target.pos.x_pos = aiObj->x;
+				creature->ai_target.pos.y_pos = aiObj->y;
+				creature->ai_target.pos.z_pos = aiObj->z;
+				creature->ai_target.pos.y_rot = aiObj->y_rot;
+				creature->ai_target.flags = aiObj->flags;
+				creature->ai_target.trigger_flags = aiObj->trigger_flags;
+				creature->ai_target.box_number = aiObj->box_number;
+
+				if (!(creature->ai_target.flags & 0x20))
+				{
+					creature->ai_target.pos.x_pos += 256 * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
+					creature->ai_target.pos.z_pos += 256 * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
+				}
+
+				break;
+			}
+		}
+	}
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -1624,4 +1675,5 @@ void inject_box(bool replace)
 	INJECT(0x00442550, AlertAllGuards, replace);
 	INJECT(0x004425D0, AlertNearbyGuards, replace);
 	INJECT(0x00442670, AIGuard, replace);
+	INJECT(0x00442A60, FindAITargetObject, replace);
 }
