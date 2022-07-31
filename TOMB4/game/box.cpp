@@ -1507,6 +1507,25 @@ void CreatureKill(ITEM_INFO* item, short kill_anim, short kill_state, short lara
 	UseForcedFixedCamera = 1;
 }
 
+void AlertAllGuards(short item_number)
+{
+	ITEM_INFO* item;
+	CREATURE_INFO* creature;
+
+	item = &items[item_number];
+
+	for (int i = 0; i < 5; i++)
+	{
+		creature = &baddie_slots[i];
+
+		if (creature->item_num != NO_ITEM)
+		{
+			if (items[creature->item_num].object_number == item->object_number)
+				creature->alerted = 1;
+		}
+	}
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -1534,4 +1553,5 @@ void inject_box(bool replace)
 	INJECT(0x00442170, CreatureEffectT, replace);
 	INJECT(0x004421D0, CreatureVault, replace);
 	INJECT(0x00442380, CreatureKill, replace);
+	INJECT(0x00442550, AlertAllGuards, replace);
 }
