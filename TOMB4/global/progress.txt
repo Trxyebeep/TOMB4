@@ -85,7 +85,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00442380	+	CreatureKill
 0x00442550	+	AlertAllGuards
 0x004425D0	+	AlertNearbyGuards
-0x00442670		AIGuard
+0x00442670	+	AIGuard
 0x00442720		GetAITarget
 0x00442A60		FindAITargetObject
 0x00442C40		SameZone

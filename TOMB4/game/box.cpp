@@ -1557,6 +1557,43 @@ void AlertNearbyGuards(ITEM_INFO* item)
 	}
 }
 
+short AIGuard(CREATURE_INFO* creature)
+{
+	long rnd;
+
+	if (items[creature->item_num].ai_bits & MODIFY)
+		return 0;
+
+	rnd = GetRandomControl();
+
+	if (rnd < 256)
+	{
+		creature->head_left = 1;
+		creature->head_right = 1;
+	}
+	else if (rnd < 384)
+	{
+		creature->head_left = 1;
+		creature->head_right = 0;
+	}
+	else if (rnd < 512)
+	{
+		creature->head_left = 0;
+		creature->head_right = 1;
+	}
+
+	if (creature->head_left && creature->head_right)
+		return 0;
+
+	if (creature->head_left)
+		return -0x4000;
+
+	if (creature->head_right)
+		return 0x4000;
+
+	return 0;
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -1586,4 +1623,5 @@ void inject_box(bool replace)
 	INJECT(0x00442380, CreatureKill, replace);
 	INJECT(0x00442550, AlertAllGuards, replace);
 	INJECT(0x004425D0, AlertNearbyGuards, replace);
+	INJECT(0x00442670, AIGuard, replace);
 }
