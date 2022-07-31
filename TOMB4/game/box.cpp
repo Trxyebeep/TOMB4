@@ -1396,6 +1396,82 @@ short CreatureEffectT(ITEM_INFO* item, BITE_INFO* bite, short damage, short angl
 	return generate(pos.x, pos.y, pos.z, damage, angle, item->room_number);
 }
 
+long CreatureVault(short item_number, short angle, long vault, long shift)
+{
+	ITEM_INFO* item;
+	long x, y, z, x_floor, z_floor;
+	short room_number;
+
+	item = &items[item_number];
+	x = item->pos.x_pos >> 10;
+	y = item->pos.y_pos;
+	z = item->pos.z_pos >> 10;
+	room_number = item->room_number;
+	CreatureAnimation(item_number, angle, 0);
+
+	if (item->floor > y + 1152)
+		vault = 0;
+	else if (item->floor > y + 896)
+		vault = -4;
+	else if (item->floor > y + 640 && item->object_number == VON_CROY)
+		vault = -3;
+	else if (item->floor > y + 384 && item->object_number == VON_CROY)
+		vault = -2;
+	else
+	{
+		if (item->pos.y_pos > y - 384)
+			return 0;
+
+		if (item->pos.y_pos > y - 640)
+			vault = 2;
+		else if (item->pos.y_pos > y - 896)
+			vault = 3;
+		else if (item->pos.y_pos > y - 1152)
+			vault = 4;
+	}
+
+	x_floor = item->pos.x_pos >> 10;
+	z_floor = item->pos.z_pos >> 10;
+
+	if (z == z_floor)
+	{
+		if (x == x_floor)
+			return 0;
+
+		if (x >= x_floor)
+		{
+			item->pos.y_rot = -0x4000;
+			item->pos.x_pos = shift + (x << 10);
+		}
+		else
+		{
+			item->pos.y_rot = 0x4000;
+			item->pos.x_pos = (x_floor << 10) - shift;
+		}
+	}
+	else if (x == x_floor)
+	{
+		if (z < z_floor)
+		{
+			item->pos.y_rot = 0;
+			item->pos.z_pos = (z_floor << 10) - shift;
+		}
+		else
+		{
+			item->pos.y_rot = -0x8000;
+			item->pos.z_pos = shift + (z << 10);
+		}
+	}
+
+	item->floor = y;
+	item->pos.y_pos = y;
+
+	if (vault)
+		ItemNewRoom(item_number, room_number);
+
+	return vault;
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -1421,4 +1497,5 @@ void inject_box(bool replace)
 	INJECT(0x00442080, CreatureUnderwater, replace);
 	INJECT(0x00442110, CreatureEffect, replace);
 	INJECT(0x00442170, CreatureEffectT, replace);
+	INJECT(0x004421D0, CreatureVault, replace);
 }
