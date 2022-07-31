@@ -1739,6 +1739,24 @@ void GetAITarget(CREATURE_INFO* creature)
 	}
 }
 
+short SameZone(CREATURE_INFO* creature, ITEM_INFO* target_item)
+{
+	ITEM_INFO* item;
+	ROOM_INFO* r;
+	short* zone;
+
+	zone = ground_zone[creature->LOT.zone][flip_status];
+	item = &items[creature->item_num];
+
+	r = &room[item->room_number];
+	item->box_number = r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)].box;
+
+	r = &room[target_item->room_number];
+	target_item->box_number = r->floor[((target_item->pos.z_pos - r->z) >> 10) + r->x_size * ((target_item->pos.x_pos - r->x) >> 10)].box;
+
+	return zone[item->box_number] == zone[target_item->box_number];
+}
+
 void inject_box(bool replace)
 {
 	INJECT(0x00441080, CreatureDie, replace);
@@ -1771,4 +1789,5 @@ void inject_box(bool replace)
 	INJECT(0x00442670, AIGuard, replace);
 	INJECT(0x00442A60, FindAITargetObject, replace);
 	INJECT(0x00442720, GetAITarget, replace);
+	INJECT(0x00442C40, SameZone, replace);
 }
