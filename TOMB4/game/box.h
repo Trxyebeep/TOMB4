@@ -28,6 +28,7 @@ short CreatureEffect(ITEM_INFO* item, BITE_INFO* bite, short(*generate)(long x, 
 short CreatureEffectT(ITEM_INFO* item, BITE_INFO* bite, short damage, short angle,
 	short(*generate)(long x, long y, long z, short damage, short angle, short room_number));
 long CreatureVault(short item_number, short angle, long vault, long shift);
+void CreatureKill(ITEM_INFO* item, short kill_anim, short kill_state, short lara_anim);
 
 #define AlertNearbyGuards	( (void(__cdecl*)(ITEM_INFO*)) 0x004425D0 )
 #define GetAITarget	( (void(__cdecl*)(CREATURE_INFO*)) 0x00442720 )
