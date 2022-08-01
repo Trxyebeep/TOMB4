@@ -12,6 +12,8 @@
 #include "tomb4fx.h"
 #include "lara2gun.h"
 #include "effect2.h"
+#include "sphere.h"
+#include "switch.h"
 
 void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item)
 {
@@ -506,6 +508,120 @@ void RifleHandler(long weapon_type)
 	}
 }
 
+void CrossbowHitSwitchType78(ITEM_INFO* item, ITEM_INFO* target, long MustHitLastNode)
+{
+	SPHERE* ptr1;
+	long dx, dy, dz, num1, cs, cd, speed;
+	short TriggerItems[8];
+	short NumTrigs, room_number;
+
+	if (target->flags & IFL_SWITCH_ONESHOT && target->object_number != SKELETON)
+		return;
+
+	if (!MustHitLastNode)
+	{
+		num1 = objects[target->object_number].nmeshes;
+		cs = num1 - 1;
+	}
+	else
+	{
+		num1 = GetSpheres(target, Slist, 1);
+		cs = -1;
+		cd = 0x7FFFFFFF;
+
+		if (target->object_number == SKELETON)
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				speed = item->speed * phd_cos(item->pos.x_rot) >> W2V_SHIFT;
+				item->pos.x_pos += speed * phd_sin(item->pos.y_rot) >> 17;
+				item->pos.y_pos += item->speed * phd_sin(-item->pos.x_rot) >> 17;
+				item->pos.z_pos += speed * phd_cos(item->pos.y_rot) >> 17;
+				ptr1 = Slist;
+
+				for (int j = 0; j < num1; j++)
+				{
+					dx = ptr1->x - item->pos.x_pos;
+					dy = ptr1->y - item->pos.y_pos;
+					dz = ptr1->z - item->pos.z_pos;
+					dy = SQUARE(dx) + SQUARE(dy) + SQUARE(dz);
+
+					if (dy < SQUARE(ptr1->r))
+					{
+						cs = j;
+						break;
+					}
+
+					ptr1++;
+				}
+
+				if (cs != -1)
+					break;
+			}
+		}
+		else
+		{
+			ptr1 = Slist;
+
+			for (int i = 0; i < num1; i++)
+			{
+				dx = ptr1->x - item->pos.x_pos;
+				dy = ptr1->y - item->pos.y_pos;
+				dz = ptr1->z - item->pos.z_pos;
+				dy = SQUARE(dx) + SQUARE(dy) + SQUARE(dz) - SQUARE(ptr1->r);
+
+				if (dy < cd)
+				{
+					cd = dy;
+					cs = i;
+				}
+
+				ptr1++;
+			}
+		}
+	}
+
+	if (target->object_number == SKELETON)
+	{
+		if (cs != -1 && objects[target->object_number].explodable_meshbits & 1 << cs)
+		{
+			ExplodeItemNode(target, cs, 0, 64);
+			target->mesh_bits &= ~(1 << cs);
+		}
+	}
+	else
+	{
+		if (cs == num1 - 1)
+		{
+			if (target->flags & IFL_CODEBITS && (target->flags & IFL_CODEBITS) != IFL_CODEBITS)
+			{
+				room_number = target->room_number;
+				GetHeight(GetFloor(target->pos.x_pos, target->pos.y_pos - 256, target->pos.z_pos, &room_number),
+					target->pos.x_pos, target->pos.y_pos - 256, target->pos.z_pos);
+				TestTriggers(trigger_index, 1, target->flags & IFL_CODEBITS);
+			}
+			else
+			{
+				NumTrigs = (short)GetSwitchTrigger(target, TriggerItems, 1);
+
+				for (int i = 0; i < NumTrigs; i++)
+				{
+					AddActiveItem(TriggerItems[i]);
+					items[TriggerItems[i]].status = ITEM_ACTIVE;
+					items[TriggerItems[i]].flags |= IFL_CODEBITS;
+				}
+			}
+
+			if (target->object_number == SWITCH_TYPE7)
+				ExplodeItemNode(target, objects[SWITCH_TYPE7].nmeshes - 1, 0, 64);
+
+			AddActiveItem(target - items);
+			target->flags |= IFL_CODEBITS | IFL_SWITCH_ONESHOT;
+			target->status = ITEM_ACTIVE;
+		}
+	}
+}
+
 void inject_lara1gun(bool replace)
 {
 	INJECT(0x0042B600, DoGrenadeDamageOnBaddie, replace);
@@ -517,4 +633,5 @@ void inject_lara1gun(bool replace)
 	INJECT(0x00429480, FireGrenade, replace);
 	INJECT(0x0042B100, AnimateShotgun, replace);
 	INJECT(0x00428F10, RifleHandler, replace);
+	INJECT(0x0042A490, CrossbowHitSwitchType78, replace);
 }
