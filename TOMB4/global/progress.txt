@@ -784,9 +784,9 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/lara1gun.cpp
 
-0x00428E40		draw_shotgun_meshes
-0x00428E70		undraw_shotgun_meshes
-0x00428EA0		ready_shotgun
+0x00428E40	+	draw_shotgun_meshes
+0x00428E70	+	undraw_shotgun_meshes
+0x00428EA0	+	ready_shotgun
 0x00428F10		RifleHandler
 0x00429260		FireShotgun
 0x00429480		FireGrenade

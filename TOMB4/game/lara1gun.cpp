@@ -134,8 +134,43 @@ void FireCrossbow(PHD_3DPOS* pos)
 	}
 }
 
+void draw_shotgun_meshes(long weapon_type)
+{
+	lara.back_gun = WEAPON_NONE;
+	lara.mesh_ptrs[LM_RHAND] = meshes[objects[WeaponObjectMesh(weapon_type)].mesh_index + 2 * LM_RHAND];
+}
+
+void undraw_shotgun_meshes(long weapon_type)
+{
+	lara.back_gun = (short)WeaponObject(weapon_type);
+	lara.mesh_ptrs[LM_RHAND] = meshes[objects[LARA].mesh_index + 2 * LM_RHAND];
+}
+
+void ready_shotgun(long weapon_type)
+{
+	lara.gun_status = LG_READY;
+	lara.target = 0;
+
+	lara.left_arm.x_rot = 0;
+	lara.left_arm.y_rot = 0;
+	lara.left_arm.z_rot = 0;
+	lara.left_arm.frame_number = 0;
+	lara.left_arm.lock = 0;
+	lara.left_arm.frame_base = objects[WeaponObject(weapon_type)].frame_base;
+
+	lara.right_arm.x_rot = 0;
+	lara.right_arm.y_rot = 0;
+	lara.right_arm.z_rot = 0;
+	lara.right_arm.frame_number = 0;
+	lara.right_arm.lock = 0;
+	lara.right_arm.frame_base = lara.left_arm.frame_base;
+}
+
 void inject_lara1gun(bool replace)
 {
 	INJECT(0x0042B600, DoGrenadeDamageOnBaddie, replace);
 	INJECT(0x0042A270, FireCrossbow, replace);
+	INJECT(0x00428E40, draw_shotgun_meshes, replace);
+	INJECT(0x00428E70, undraw_shotgun_meshes, replace);
+	INJECT(0x00428EA0, ready_shotgun, replace);
 }
