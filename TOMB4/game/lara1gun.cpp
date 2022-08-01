@@ -232,6 +232,91 @@ void FireShotgun()
 	}
 }
 
+void FireGrenade()
+{
+	ITEM_INFO* item;
+	PHD_VECTOR pos;
+	PHD_VECTOR pos2;
+	short* ammo;
+	long h;
+	short item_number;
+
+	ammo = get_current_ammo_pointer(WEAPON_GRENADE);
+
+	if (!*ammo)
+		return;
+
+	lara.has_fired = 1;
+	item_number = CreateItem();
+
+	if (item_number == NO_ITEM)
+		return;
+
+	item = &items[item_number];
+	item->shade = -0x3DF0;
+	item->object_number = GRENADE;
+	item->room_number = lara_item->room_number;
+
+	pos.x = 0;
+	pos.y = 276;
+	pos.z = 80;
+	GetLaraJointPos(&pos, 11);
+	item->pos.x_pos = pos.x;
+	item->pos.y_pos = pos.y;
+	item->pos.z_pos = pos.z;
+	h = GetHeight(GetFloor(pos.x, pos.y, pos.z, &item->room_number), pos.x, pos.y, pos.z);
+
+	if (h < pos.y)
+	{
+		item->pos.x_pos = lara_item->pos.x_pos;
+		item->pos.y_pos = pos.y;
+		item->pos.z_pos = lara_item->pos.z_pos;
+		item->room_number = lara_item->room_number;
+	}
+
+	pos2.x = 0;
+	pos2.y = 1204;
+	pos2.z = 80;
+	GetLaraJointPos(&pos2, 11);
+
+	SmokeCountL = 32;
+	SmokeWeapon = 5;
+
+	for (int i = 0; i < 5; i++)
+		TriggerGunSmoke(pos.x, pos.y, pos.z, pos2.x - pos.x, pos2.y - pos.y, pos2.z - pos.z, 1, SmokeWeapon, SmokeCountL);
+
+	InitialiseItem(item_number);
+	item->pos.x_rot = lara.left_arm.x_rot + lara_item->pos.x_rot;
+	item->pos.y_rot = lara.left_arm.y_rot + lara_item->pos.y_rot;
+	item->pos.z_rot = 0;
+
+	if (!lara.left_arm.lock)
+	{
+		item->pos.x_rot += lara.torso_x_rot;
+		item->pos.y_rot += lara.torso_y_rot;
+	}
+
+	item->speed = 128;
+	item->current_anim_state = item->pos.x_rot;
+	item->fallspeed = (-128 * phd_sin(item->pos.x_rot)) >> W2V_SHIFT;
+	item->goal_anim_state = item->pos.y_rot;
+	item->required_anim_state = 0;
+	item->hit_points = 120;
+	AddActiveItem(item_number);
+
+	if (*ammo != -1)
+		--*ammo;
+
+	if (lara.grenade_type_carried & 8)
+		item->item_flags[0] = 1;
+	else if (lara.grenade_type_carried & 0x10)
+		item->item_flags[0] = 2;
+	else
+		item->item_flags[0] = 3;
+
+	savegame.Game.AmmoUsed++;
+}
+
 void inject_lara1gun(bool replace)
 {
 	INJECT(0x0042B600, DoGrenadeDamageOnBaddie, replace);
@@ -240,4 +325,5 @@ void inject_lara1gun(bool replace)
 	INJECT(0x00428E70, undraw_shotgun_meshes, replace);
 	INJECT(0x00428EA0, ready_shotgun, replace);
 	INJECT(0x00429260, FireShotgun, replace);
+	INJECT(0x00429480, FireGrenade, replace);
 }
