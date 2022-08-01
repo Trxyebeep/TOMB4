@@ -6,6 +6,7 @@ void inject_larafire(bool replace);
 void InitialiseNewWeapon();
 void LaraTargetInfo(WEAPON_INFO* winfo);
 short* get_current_ammo_pointer(long weapon_type);
+long FireWeapon(long weapon_type, ITEM_INFO* target, ITEM_INFO* src, short* angles);
 
 #define WeaponObject	( (long(__cdecl*)(long)) 0x0042EA70 )
 #define WeaponObjectMesh	( (long(__cdecl*)(long)) 0x0042EAC0 )

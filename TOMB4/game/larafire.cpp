@@ -9,6 +9,8 @@
 #include "draw.h"
 #include "../specific/3dmath.h"
 #include "control.h"
+#include "../specific/function_stubs.h"
+#include "sphere.h"
 
 static short HoldStates[] =
 {
@@ -35,6 +37,10 @@ static short HoldStates[] =
 	AS_DUCKROTR,
 	-1
 };
+
+PHD_3DPOS bum_view;
+GAME_VECTOR bum_vdest;
+GAME_VECTOR bum_vsrc;
 
 static long CheckForHoldingState(long state)
 {
@@ -245,6 +251,84 @@ short* get_current_ammo_pointer(long weapon_type)
 	return ammo;
 }
 
+long FireWeapon(long weapon_type, ITEM_INFO* target, ITEM_INFO* src, short* angles)
+{
+	WEAPON_INFO* winfo;
+	SPHERE* sptr;
+	short* ammo;
+	long r, nSpheres, bestdist, best;
+	short room_number;
+
+	bum_view.x_pos = 0;
+	bum_view.y_pos = 0;
+	bum_view.z_pos = 0;
+	GetLaraJointPos((PHD_VECTOR*)&bum_view, 11);
+	ammo = get_current_ammo_pointer(weapon_type);
+
+	if (!*ammo)
+		return 0;
+	
+	if (*ammo != -1)
+		--*ammo;
+
+	winfo = &weapons[weapon_type];
+
+	bum_view.x_pos = src->pos.x_pos;
+	bum_view.z_pos = src->pos.z_pos;
+	bum_view.x_rot = short(winfo->shot_accuracy * (GetRandomControl() - 0x4000) / 0x10000 + angles[1]);
+	bum_view.y_rot = short(winfo->shot_accuracy * (GetRandomControl() - 0x4000) / 0x10000 + angles[0]);
+	bum_view.z_rot = 0;
+	phd_GenerateW2V(&bum_view);
+
+	nSpheres = GetSpheres(target, Slist, 0);
+	best = -1;
+	bestdist = 0x7FFFFFFF;
+
+	for (int i = 0; i < nSpheres; i++)
+	{
+		sptr = &Slist[i];
+		r = sptr->r;
+
+		if (ABS(sptr->x) < r && ABS(sptr->y) < r && sptr->z > r && SQUARE(sptr->x) + SQUARE(sptr->y) <= SQUARE(r))
+		{
+			if (sptr->z - r < bestdist)
+			{
+				bestdist = sptr->z - r;
+				best = i;
+			}
+		}
+	}
+
+	lara.has_fired = 1;
+	bum_vsrc.x = bum_view.x_pos;
+	bum_vsrc.y = bum_view.y_pos;
+	bum_vsrc.z = bum_view.z_pos;
+	room_number = src->room_number;
+	GetFloor(bum_view.x_pos, bum_view.y_pos, bum_view.z_pos, &room_number);
+	bum_vsrc.room_number = room_number;
+
+	if (best < 0)
+	{
+		bum_vdest.x = bum_vsrc.x + (0x5000 * phd_mxptr[M20] >> W2V_SHIFT);
+		bum_vdest.y = bum_vsrc.y + (0x5000 * phd_mxptr[M21] >> W2V_SHIFT);
+		bum_vdest.z = bum_vsrc.z + (0x5000 * phd_mxptr[M22] >> W2V_SHIFT);
+		GetTargetOnLOS(&bum_vsrc, &bum_vdest, 0, 1);
+		return -1;
+	}
+	else
+	{
+		savegame.Game.AmmoHits++;
+		bum_vdest.x = bum_vsrc.x + (bestdist * phd_mxptr[M20] >> W2V_SHIFT);
+		bum_vdest.y = bum_vsrc.y + (bestdist * phd_mxptr[M21] >> W2V_SHIFT);
+		bum_vdest.z = bum_vsrc.z + (bestdist * phd_mxptr[M22] >> W2V_SHIFT);
+
+		if (!GetTargetOnLOS(&bum_vsrc, &bum_vdest, 0, 1))
+			HitTarget(target, &bum_vdest, winfo->damage, 0);
+
+		return 1;
+	}
+}
+
 void inject_larafire(bool replace)
 {
 	INJECT(0x0042DDC0, CheckForHoldingState, replace);
@@ -252,4 +336,5 @@ void inject_larafire(bool replace)
 	INJECT(0x0042E4A0, find_target_point, replace);
 	INJECT(0x0042DF30, LaraTargetInfo, replace);
 	INJECT(0x0042F480, get_current_ammo_pointer, replace);
+	INJECT(0x0042E630, FireWeapon, replace);
 }
