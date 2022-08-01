@@ -17,3 +17,4 @@ void TriggerUnderwaterExplosion(ITEM_INFO* item, long vehicle);
 void draw_shotgun(long weapon_type);
 void undraw_shotgun(long weapon_type);
 void ControlCrossbow(short item_number);
+void ControlGrenade(short item_number);

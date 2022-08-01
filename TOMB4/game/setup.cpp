@@ -275,7 +275,7 @@ void ObjectObjects()
 
 	obj = &objects[GRENADE];
 	obj->initialise = 0;
-//	obj->control = ControlGrenade;
+	obj->control = ControlGrenade;
 	obj->collision = 0;
 	obj->draw_routine = DrawWeaponMissile;
 	obj->using_drawanimating_item = 0;
