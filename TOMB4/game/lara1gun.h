@@ -10,5 +10,6 @@ void undraw_shotgun_meshes(long weapon_type);
 void ready_shotgun(long weapon_type);
 void FireShotgun();
 void FireGrenade();
+void AnimateShotgun(long weapon_type);
 
 #define TriggerUnderwaterExplosion	( (void(__cdecl*)(ITEM_INFO*, long)) 0x0042B430 )

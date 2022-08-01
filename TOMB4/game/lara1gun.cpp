@@ -317,6 +317,130 @@ void FireGrenade()
 	savegame.Game.AmmoUsed++;
 }
 
+void AnimateShotgun(long weapon_type)
+{
+	ITEM_INFO* item;
+	PHD_VECTOR pos;
+	static long m16_firing = 0;
+	static long harpoon_fired = 0;
+
+	item = &items[lara.weapon_item];
+
+	if (SmokeCountL)
+	{
+		if (SmokeWeapon == WEAPON_GRENADE)
+		{
+			pos.x = 0;
+			pos.y = 180;
+			pos.z = 80;
+		}
+		else if (SmokeWeapon == WEAPON_SHOTGUN)
+		{
+			pos.x = -16;
+			pos.y = 228;
+			pos.z = 32;
+		}
+
+		GetLaraJointPos(&pos, 11);
+
+		if (lara_item->mesh_bits)
+			TriggerGunSmoke(pos.x, pos.y, pos.z, 0, 0, 0, 0, SmokeWeapon, SmokeCountL);
+	}
+
+	switch (item->current_anim_state)
+	{
+	case 0:
+		m16_firing = 0;
+
+		if (harpoon_fired)
+		{
+			item->goal_anim_state = 5;
+			harpoon_fired = 0;
+		}
+
+		else if (lara.water_status == LW_UNDERWATER)
+			item->goal_anim_state = 6;
+		else if (input & IN_ACTION && !lara.target || lara.left_arm.lock)
+			item->goal_anim_state = 2;
+		else
+			item->goal_anim_state = 4;
+
+		break;
+
+	case 2:
+
+		if (item->frame_number == anims[item->anim_number].frame_base)
+		{
+			item->goal_anim_state = 4;
+
+			if (lara.water_status != 1 && !harpoon_fired)
+			{
+				if (input & IN_ACTION)
+				{
+					if (!lara.target || lara.left_arm.lock)
+					{
+						if (weapon_type == WEAPON_GRENADE)
+							FireGrenade();
+						else if (weapon_type == WEAPON_CROSSBOW)
+							FireCrossbow(0);
+						else
+							FireShotgun();
+
+						item->goal_anim_state = 2;
+					}
+				}
+				else if (lara.left_arm.lock)
+					item->goal_anim_state = 0;
+			}
+
+			if (item->goal_anim_state != 2)
+			{
+				if (m16_firing)
+				{
+					SoundEffect(SFX_EXPLOSION1, &lara_item->pos, 0x5000000 | SFX_SETPITCH);
+					m16_firing = 0;
+				}
+			}
+		}
+		else if (m16_firing)
+		{
+			SoundEffect(SFX_EXPLOSION1, &lara_item->pos, 0x5000000 | SFX_SETPITCH);
+			SoundEffect(SFX_MP5_FIRE, &lara_item->pos, SFX_DEFAULT);
+		}
+		else if (weapon_type == 4 && !(input & IN_ACTION) && !lara.left_arm.lock)
+			item->goal_anim_state = 4;
+		if (item->frame_number - anims[item->anim_number].frame_base == 12 && weapon_type == WEAPON_SHOTGUN)
+			TriggerGunShell(1, SHOTGUNSHELL, 4);
+
+		break;
+
+	case 6:
+		m16_firing = 0;
+
+		if (harpoon_fired)
+		{
+			item->goal_anim_state = 5;
+			harpoon_fired = 0;
+		}
+		else if (lara.water_status != LW_UNDERWATER)
+			item->goal_anim_state = 0;
+		else if (input & IN_ACTION && !lara.target || lara.left_arm.lock)
+			item->goal_anim_state = 8;
+		else
+			item->goal_anim_state = 7;
+
+		break;
+	}
+
+	AnimateItem(item);
+	lara.right_arm.frame_base = anims[item->anim_number].frame_ptr;
+	lara.right_arm.frame_number = item->frame_number - anims[item->anim_number].frame_base;
+	lara.right_arm.anim_number = item->anim_number;
+	lara.left_arm.frame_base = lara.right_arm.frame_base;
+	lara.left_arm.frame_number = lara.right_arm.frame_number;
+	lara.left_arm.anim_number = lara.right_arm.anim_number;
+}
+
 void inject_lara1gun(bool replace)
 {
 	INJECT(0x0042B600, DoGrenadeDamageOnBaddie, replace);
@@ -326,4 +450,5 @@ void inject_lara1gun(bool replace)
 	INJECT(0x00428EA0, ready_shotgun, replace);
 	INJECT(0x00429260, FireShotgun, replace);
 	INJECT(0x00429480, FireGrenade, replace);
+	INJECT(0x0042B100, AnimateShotgun, replace);
 }
