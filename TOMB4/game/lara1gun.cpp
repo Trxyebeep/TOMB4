@@ -674,6 +674,49 @@ void TriggerUnderwaterExplosion(ITEM_INFO* item, long vehicle)
 	}
 }
 
+void draw_shotgun(long weapon_type)
+{
+	ITEM_INFO* item;
+
+	if (lara.weapon_item == NO_ITEM)
+	{
+		lara.weapon_item = CreateItem();
+		item = &items[lara.weapon_item];
+		item->object_number = (short)WeaponObject(weapon_type);
+
+		if (weapon_type == WEAPON_GRENADE)
+			item->anim_number = objects[GRENADE_GUN_ANIM].anim_index;
+		else
+			item->anim_number = objects[item->object_number].anim_index + 1;
+
+		item->frame_number = anims[item->anim_number].frame_base;
+		item->status = ITEM_ACTIVE;
+		item->current_anim_state = 1;
+		item->goal_anim_state = 1;
+		item->room_number = 255;
+		lara.left_arm.frame_base = objects[item->object_number].frame_base;
+		lara.right_arm.frame_base = objects[item->object_number].frame_base;
+	}
+	else
+		item = &items[lara.weapon_item];
+
+	AnimateItem(item);
+
+	if (!item->current_anim_state || item->current_anim_state == 6)
+		ready_shotgun(weapon_type);
+	else if (item->frame_number - anims[item->anim_number].frame_base == weapons[weapon_type].draw_frame)
+		draw_shotgun_meshes(weapon_type);
+	else if (lara.water_status == LW_UNDERWATER)
+		item->goal_anim_state = 6;
+
+	lara.left_arm.frame_base = anims[item->anim_number].frame_ptr;
+	lara.right_arm.frame_base = anims[item->anim_number].frame_ptr;
+	lara.left_arm.frame_number = item->frame_number - anims[item->anim_number].frame_base;
+	lara.right_arm.frame_number = item->frame_number - anims[item->anim_number].frame_base;
+	lara.left_arm.anim_number = item->anim_number;
+	lara.right_arm.anim_number = item->anim_number;
+}
+
 void inject_lara1gun(bool replace)
 {
 	INJECT(0x0042B600, DoGrenadeDamageOnBaddie, replace);
@@ -687,4 +730,5 @@ void inject_lara1gun(bool replace)
 	INJECT(0x00428F10, RifleHandler, replace);
 	INJECT(0x0042A490, CrossbowHitSwitchType78, replace);
 	INJECT(0x0042B430, TriggerUnderwaterExplosion, replace);
+	INJECT(0x0042AE50, draw_shotgun, replace);
 }
