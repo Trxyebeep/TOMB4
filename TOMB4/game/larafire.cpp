@@ -192,10 +192,64 @@ void LaraTargetInfo(WEAPON_INFO* winfo)
 	lara.target_angles[1] = ang[1];
 }
 
+short* get_current_ammo_pointer(long weapon_type)
+{
+	short* ammo;
+
+	switch (weapon_type)
+	{
+	case WEAPON_REVOLVER:
+		ammo = &lara.num_revolver_ammo;
+		break;
+
+	case WEAPON_UZI:
+		ammo = &lara.num_uzi_ammo;
+		break;
+
+	case WEAPON_SHOTGUN:
+
+		if (lara.shotgun_type_carried & 8)
+			ammo = &lara.num_shotgun_ammo1;
+		else
+			ammo = &lara.num_shotgun_ammo2;
+
+		break;
+
+	case WEAPON_GRENADE:
+
+		if (lara.grenade_type_carried & 8)
+			ammo = &lara.num_grenade_ammo1;
+		else if (lara.grenade_type_carried & 0x10)
+			ammo = &lara.num_grenade_ammo2;
+		else
+			ammo = &lara.num_grenade_ammo3;
+
+		break;
+
+	case WEAPON_CROSSBOW:
+
+		if (lara.crossbow_type_carried & 8)
+			ammo = &lara.num_crossbow_ammo1;
+		else if (lara.crossbow_type_carried & 0x10)
+			ammo = &lara.num_crossbow_ammo2;
+		else
+			ammo = &lara.num_crossbow_ammo3;
+
+		break;
+
+	default:
+		ammo = &lara.num_pistols_ammo;
+		break;
+	}
+
+	return ammo;
+}
+
 void inject_larafire(bool replace)
 {
 	INJECT(0x0042DDC0, CheckForHoldingState, replace);
 	INJECT(0x0042DDF0, InitialiseNewWeapon, replace);
 	INJECT(0x0042E4A0, find_target_point, replace);
 	INJECT(0x0042DF30, LaraTargetInfo, replace);
+	INJECT(0x0042F480, get_current_ammo_pointer, replace);
 }

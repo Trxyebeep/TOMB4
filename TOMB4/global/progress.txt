@@ -857,7 +857,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0042EA70		WeaponObject
 0x0042EAC0		WeaponObjectMesh
 0x0042EB30		DoProperDetection
-0x0042F480		get_current_ammo_pointer
+0x0042F480	+	get_current_ammo_pointer
 
 
 		game/laraflar.cpp
