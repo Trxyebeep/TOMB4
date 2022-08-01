@@ -811,7 +811,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0042BB70	+	undraw_pistol_mesh_left
 0x0042BBB0	+	undraw_pistol_mesh_right
 0x0042BBF0		PistolHandler
-0x0042BE40		AnimatePistols
+0x0042BE40	+	AnimatePistols
 
 
 		game/laraclmb.cpp

@@ -9,3 +9,4 @@ void ready_pistols(long weapon_type);
 void draw_pistol_meshes(long weapon_type);
 void draw_pistols(long weapon_type);
 void undraw_pistols(long weapon_type);
+void AnimatePistols(long weapon_type);
