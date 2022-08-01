@@ -10,6 +10,8 @@
 #include "sound.h"
 #include "../specific/function_stubs.h"
 #include "tomb4fx.h"
+#include "lara2gun.h"
+#include "effect2.h"
 
 void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item)
 {
@@ -441,6 +443,69 @@ void AnimateShotgun(long weapon_type)
 	lara.left_arm.anim_number = lara.right_arm.anim_number;
 }
 
+void RifleHandler(long weapon_type)
+{
+	WEAPON_INFO* winfo;
+	PHD_VECTOR pos;
+	long x, y, z, r, g, b;
+
+	winfo = &weapons[weapon_type];
+	LaraGetNewTarget(winfo);
+
+	if (input & IN_ACTION)
+		LaraTargetInfo(winfo);
+
+	AimWeapon(winfo, &lara.left_arm);
+
+	if (lara.left_arm.lock)
+	{
+		lara.torso_x_rot = lara.left_arm.x_rot;
+		lara.torso_y_rot = lara.left_arm.y_rot;
+
+		if (camera.old_type != LOOK_CAMERA && !BinocularRange)
+		{
+			lara.head_y_rot = 0;
+			lara.head_x_rot = 0;
+		}
+	}
+
+	if (weapon_type == WEAPON_REVOLVER)
+		AnimatePistols(weapon_type);
+	else
+		AnimateShotgun(weapon_type);
+
+	if (lara.right_arm.flash_gun)
+	{
+		r = (GetRandomControl() & 0x3F) + 192;
+		g = (GetRandomControl() & 0x1F) + 128;
+		b = GetRandomControl() & 63;
+
+		if (weapon_type == WEAPON_SHOTGUN)
+		{
+			x = (GetRandomControl() & 0xFF) + (phd_sin(lara_item->pos.y_rot) >> 4) + lara_item->pos.x_pos;
+			y = ((GetRandomControl() & 0x7F) - 575) + lara_item->pos.y_pos;
+			z = (GetRandomControl() & 0xFF) + (phd_cos(lara_item->pos.y_rot) >> 4) + lara_item->pos.z_pos;
+
+			if (gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom)
+				TriggerDynamic_MIRROR(x, y, z, 12, r, g, b);
+			else
+				TriggerDynamic(x, y, z, 12, r, g, b);
+		}
+		else if (weapon_type == WEAPON_REVOLVER)
+		{
+			pos.x = (GetRandomControl() & 0xFF) - 128;
+			pos.y = (GetRandomControl() & 0x7F) - 63;
+			pos.z = (GetRandomControl() & 0xFF) - 128;
+			GetLaraJointPos(&pos, 11);
+
+			if (gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom)
+				TriggerDynamic_MIRROR(pos.x, pos.y, pos.z, 12, r, g, b);
+			else
+				TriggerDynamic(pos.x, pos.y, pos.z, 12, r, g, b);
+		}
+	}
+}
+
 void inject_lara1gun(bool replace)
 {
 	INJECT(0x0042B600, DoGrenadeDamageOnBaddie, replace);
@@ -451,4 +516,5 @@ void inject_lara1gun(bool replace)
 	INJECT(0x00429260, FireShotgun, replace);
 	INJECT(0x00429480, FireGrenade, replace);
 	INJECT(0x0042B100, AnimateShotgun, replace);
+	INJECT(0x00428F10, RifleHandler, replace);
 }
