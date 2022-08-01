@@ -14,6 +14,8 @@
 #include "effect2.h"
 #include "sphere.h"
 #include "switch.h"
+#include "collide.h"
+#include "debris.h"
 
 void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item)
 {
@@ -752,6 +754,211 @@ void undraw_shotgun(long weapon_type)
 	lara.left_arm.anim_number = lara.right_arm.anim_number;
 }
 
+void ControlCrossbow(short item_number)
+{
+	ITEM_INFO** itemlist;
+	MESH_INFO** meshlist;
+	ITEM_INFO* item;
+	ITEM_INFO* target;
+	MESH_INFO* mesh;
+	FLOOR_INFO* floor;
+	ROOM_INFO* r;
+	PHD_VECTOR oldPos;
+	long abovewater, exploded, collided, rad, j;
+	short room_number;
+
+	abovewater = 0;
+	exploded = 0;
+	collided = 0;
+	item = &items[item_number];
+
+	oldPos.x = item->pos.x_pos;
+	oldPos.y = item->pos.y_pos;
+	oldPos.z = item->pos.z_pos;
+
+	if (room[item->room_number].flags & ROOM_UNDERWATER)
+	{
+		if (item->speed > 64)
+			item->speed -= item->speed >> 4;
+
+		if (GlobalCounter & 1)
+			CreateBubble(&item->pos, item->room_number, 4, 7);
+	}
+	else
+		abovewater = 1;
+
+	item->pos.x_pos += (((item->speed * phd_cos(item->pos.x_rot)) >> W2V_SHIFT) * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
+	item->pos.y_pos += (item->speed * phd_sin(-item->pos.x_rot)) >> W2V_SHIFT;
+	item->pos.z_pos += (((item->speed * phd_cos(item->pos.x_rot)) >> W2V_SHIFT) * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
+
+	room_number = item->room_number;
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+
+	if (GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos) < item->pos.y_pos ||
+		GetCeiling(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos) > item->pos.y_pos)
+	{
+		item->pos.x_pos = oldPos.x;
+		item->pos.y_pos = oldPos.y;
+		item->pos.z_pos = oldPos.z;
+
+		if (item->item_flags[0] == 3)
+			exploded = 1;
+		else
+		{
+			ExplodeItemNode(item, 0, 0, 256);
+			KillItem(item_number);
+			return;
+		}
+	}
+
+	if (item->room_number != room_number)
+		ItemNewRoom(item_number, room_number);
+
+	r = &room[room_number];
+
+	if (r->flags & ROOM_UNDERWATER && abovewater)
+	{
+		TriggerSmallSplash(item->pos.x_pos, r->maxceiling, item->pos.z_pos, 8);
+		SetupRipple(item->pos.x_pos, r->maxceiling, item->pos.z_pos, (GetRandomControl() & 7) + 8, 0);
+	}
+
+	if (exploded)
+		rad = 2048;
+	else
+		rad = 128;
+
+	itemlist = (ITEM_INFO**)&tsv_buffer[0x2000];
+	meshlist = (MESH_INFO**)&tsv_buffer[0x3000];
+
+	for (int i = 0; i < 2; i++)
+	{
+		GetCollidedObjects(item, rad, 1, itemlist, meshlist, 1);
+
+		if (!itemlist[0] && !meshlist[0])
+		{
+			if (exploded)
+				break;
+			else
+			{
+				if (collided || exploded)
+				{
+					ExplodeItemNode(item, 0, 0, 256);
+					KillItem(item_number);
+				}
+
+				return;
+			}
+		}
+
+		collided = 1;
+
+		if (item->item_flags[0] == 3 && !exploded)
+		{
+			exploded = 1;
+			rad = 2048;
+			continue;
+		}
+
+		j = 0;
+		target = itemlist[j];
+
+		while (target)
+		{
+			if (exploded)
+			{
+				if (target->object_number >= SMASH_OBJECT1 && target->object_number <= SMASH_OBJECT8)
+				{
+					TriggerExplosionSparks(target->pos.x_pos, target->pos.y_pos, target->pos.z_pos, 3, -2, 0, target->room_number);
+					target->pos.y_pos -= 128;
+					TriggerShockwave((PHD_VECTOR*)&target->pos, 0x1300030, 96, 0x18806000, 0);
+					target->pos.y_pos += 128;
+					ExplodeItemNode(target, 0, 0, 128);
+					SmashObject(target - items);
+					KillItem(target - items);
+				}
+				else if (target->object_number == SWITCH_TYPE7 || target->object_number == SWITCH_TYPE8)
+					CrossbowHitSwitchType78(item, target, 0);
+				else if (objects[target->object_number].intelligent)
+					DoGrenadeDamageOnBaddie(target, item);
+			}
+			else if (target->object_number == SWITCH_TYPE7 || target->object_number == SWITCH_TYPE8 || target->object_number == SKELETON)
+				CrossbowHitSwitchType78(item, target, 1);
+			else if (objects[target->object_number].intelligent)
+			{
+				HitTarget(target, (GAME_VECTOR*)&item->pos, weapons[WEAPON_CROSSBOW].damage, 0);
+
+				if (item->item_flags[0] == 2 && !objects[target->object_number].undead)
+					target->poisoned = 1;
+			}
+
+			j++;
+			target = itemlist[j];
+		}
+
+		j = 0;
+		mesh = meshlist[0];
+
+		while (mesh)
+		{
+			if (mesh->static_number >= SHATTER0 && mesh->static_number < SHATTER8)
+			{
+				if (exploded)
+				{
+					TriggerExplosionSparks(mesh->x, mesh->y, mesh->z, 3, -2, 0, item->room_number);
+					mesh->y -= 128;
+					TriggerShockwave((PHD_VECTOR*)mesh->x, 0xB00028, 64, 0x10806000, 0);
+					mesh->y += 128;
+				}
+
+				ShatterObject(0, mesh, -128, item->room_number, 0);
+				SmashedMeshRoom[SmashedMeshCount] = item->room_number;
+				SmashedMesh[SmashedMeshCount] = mesh;
+				SmashedMeshCount++;
+				mesh->Flags &= ~1;
+			}
+
+			j++;
+			mesh = meshlist[j];
+		}
+
+		if (exploded)
+			break;
+		else
+		{
+			if (collided || exploded)
+			{
+				ExplodeItemNode(item, 0, 0, 256);
+				KillItem(item_number);
+			}
+
+			return;
+		}
+	}
+
+	if (room[item->room_number].flags & ROOM_UNDERWATER)
+		TriggerUnderwaterExplosion(item, 0);
+	else
+	{
+		item->pos.y_pos -= 128;
+		TriggerShockwave((PHD_VECTOR*)&item->pos, 0x1300030, 96, 0x18806000, 0);
+		item->pos.y_pos += 128;
+		TriggerExplosionSparks(oldPos.x, oldPos.y, oldPos.z, 3, -2, 0, item->room_number);
+
+		for (int i = 0; i < 2; i++)
+			TriggerExplosionSparks(oldPos.x, oldPos.y, oldPos.z, 3, -1, 0, item->room_number);
+	}
+
+	AlertNearbyGuards(item);
+	SoundEffect(SFX_EXPLOSION1, &item->pos, 0x1800000 | SFX_SETPITCH);
+	SoundEffect(SFX_EXPLOSION2, &item->pos, SFX_DEFAULT);
+
+	if (collided || exploded)
+	{
+		ExplodeItemNode(item, 0, 0, 256);
+		KillItem(item_number);
+	}
+}
+
 void inject_lara1gun(bool replace)
 {
 	INJECT(0x0042B600, DoGrenadeDamageOnBaddie, replace);
@@ -767,4 +974,5 @@ void inject_lara1gun(bool replace)
 	INJECT(0x0042B430, TriggerUnderwaterExplosion, replace);
 	INJECT(0x0042AE50, draw_shotgun, replace);
 	INJECT(0x0042AFE0, undraw_shotgun, replace);
+	INJECT(0x0042A850, ControlCrossbow, replace);
 }

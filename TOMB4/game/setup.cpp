@@ -45,6 +45,7 @@
 #include "flmtorch.h"
 #include "scarab.h"
 #include "sentrygun.h"
+#include "lara1gun.h"
 
 void ObjectObjects()
 {
@@ -267,7 +268,7 @@ void ObjectObjects()
 
 	obj = &objects[CROSSBOW_BOLT];
 	obj->initialise = 0;
-//	obj->control = ControlCrossbow;
+	obj->control = ControlCrossbow;
 	obj->collision = 0;
 	obj->draw_routine = DrawWeaponMissile;
 	obj->using_drawanimating_item = 0;

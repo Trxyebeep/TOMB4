@@ -793,7 +793,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00429710		ControlGrenade
 0x0042A270	+	FireCrossbow
 0x0042A490	+	CrossbowHitSwitchType78
-0x0042A850		ControlCrossbow
+0x0042A850	+	ControlCrossbow
 0x0042AE50	+	draw_shotgun
 0x0042AFE0	+	undraw_shotgun
 0x0042B100	+	AnimateShotgun
