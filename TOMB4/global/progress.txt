@@ -845,7 +845,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/larafire.cpp
 
-0x0042D840		LaraGun
+0x0042D840	+	LaraGun
 0x0042DDC0	+	CheckForHoldingState
 0x0042DDF0	+	InitialiseNewWeapon
 0x0042DF30	+	LaraTargetInfo

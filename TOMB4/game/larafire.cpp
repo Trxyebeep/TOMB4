@@ -15,6 +15,7 @@
 #include "sound.h"
 #include "effects.h"
 #include "items.h"
+#include "flmtorch.h"
 
 static short HoldStates[] =
 {
@@ -1058,6 +1059,240 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 		ItemNewRoom(item_number, room_number);
 }
 
+void LaraGun()
+{
+	short state;
+
+	if (lara.left_arm.flash_gun > 0)
+		lara.left_arm.flash_gun--;
+
+	if (lara.right_arm.flash_gun > 0)
+		lara.right_arm.flash_gun--;
+
+	if (lara.gun_type == WEAPON_TORCH)
+	{
+		DoFlameTorch();
+		return;
+	}
+
+	if (lara_item->hit_points <= 0)
+		lara.gun_status = LG_NO_ARMS;
+	else if (lara.gun_status == LG_NO_ARMS)
+	{
+		if (input & IN_DRAW)
+			lara.request_gun_type = lara.last_gun_type;
+		else if (input & IN_FLARE && !(gfLevelFlags & GF_YOUNGLARA))
+		{
+			if (lara_item->current_anim_state == AS_DUCK && lara_item->anim_number != ANIM_DUCKBREATHE)
+				return;
+
+			if (lara.gun_type == WEAPON_FLARE)
+			{
+				if (!lara.left_arm.frame_number)
+					lara.gun_status = LG_UNDRAW_GUNS;
+			}
+			else if (lara.num_flares)
+			{
+				if (lara.num_flares != -1)
+					lara.num_flares--;
+
+				lara.request_gun_type = WEAPON_FLARE;
+			}
+		}
+
+		if (input & IN_DRAW || lara.request_gun_type != lara.gun_type)
+		{
+			state = lara_item->current_anim_state;
+
+			if ((state == AS_DUCK || state == AS_DUCKROTL || state == AS_DUCKROTR) &&
+				(lara.request_gun_type == WEAPON_SHOTGUN || lara.request_gun_type == WEAPON_CROSSBOW || lara.request_gun_type == WEAPON_GRENADE))
+			{
+				if (lara.gun_type == WEAPON_FLARE)
+					lara.request_gun_type = WEAPON_FLARE;
+			}
+			else if (lara.request_gun_type != WEAPON_FLARE && (lara.vehicle != NO_ITEM || lara.water_status != LW_ABOVE_WATER &&
+				(lara.water_status != LW_WADE || lara.water_surface_dist <= -weapons[lara.gun_type].gun_height)))
+			{
+				lara.last_gun_type = lara.request_gun_type;
+
+				if (lara.gun_type != WEAPON_FLARE)
+					lara.gun_type = lara.request_gun_type;
+				else
+					lara.request_gun_type = WEAPON_FLARE;
+			}
+			else
+			{
+				if (lara.gun_type == WEAPON_FLARE)
+				{
+					CreateFlare(FLARE_ITEM, 0);
+					undraw_flare_meshes();
+					lara.flare_control_left = 0;
+					lara.flare_age = 0;
+				}
+
+				lara.gun_type = lara.request_gun_type;
+				InitialiseNewWeapon();
+				lara.gun_status = LG_DRAW_GUNS;
+				lara.right_arm.frame_number = 0;
+				lara.left_arm.frame_number = 0;
+			}
+		}
+	}
+	else if (lara.gun_status == LG_READY)
+	{
+		if (input & IN_DRAW || lara.request_gun_type != lara.gun_type || lara.water_status != LW_ABOVE_WATER &&
+			(lara.water_status != LW_WADE || lara.water_surface_dist < -weapons[lara.gun_type].gun_height))
+			lara.gun_status = LG_UNDRAW_GUNS;
+	}
+	else if (lara.gun_status == LG_HANDS_BUSY && input & IN_FLARE && lara_item->current_anim_state == AS_ALL4S && lara_item->anim_number == ANIM_ALL4S)
+		lara.request_gun_type = 7;
+
+	switch (lara.gun_status)
+	{
+	case LG_NO_ARMS:
+
+		if (lara.gun_type == WEAPON_FLARE)
+		{
+			if (lara.vehicle == NO_ITEM && !CheckForHoldingState(lara_item->current_anim_state))
+				lara.flare_control_left = 0;
+			else if (lara.flare_control_left)
+			{
+				if (lara.left_arm.frame_number)
+				{
+					lara.left_arm.frame_number++;
+
+					if (lara.left_arm.frame_number == 110)
+						lara.left_arm.frame_number = 0;
+				}
+			}
+			else
+			{
+				lara.flare_control_left = 1;
+				lara.left_arm.frame_number = 95;
+			}
+
+			DoFlareInHand(lara.flare_age);
+			set_flare_arm(lara.left_arm.frame_number);
+		}
+
+		break;
+
+	case LG_HANDS_BUSY:
+
+		if (lara.gun_type == WEAPON_FLARE && lara.mesh_ptrs[LM_LHAND] == meshes[objects[FLARE_ANIM].mesh_index + LM_LHAND * 2])
+		{
+			lara.flare_control_left = lara.vehicle != NO_ITEM || CheckForHoldingState(lara_item->current_anim_state);
+			DoFlareInHand(lara.flare_age);
+			set_flare_arm(lara.left_arm.frame_number);
+		}
+
+		break;
+
+	case LG_DRAW_GUNS:
+
+		if (lara.gun_type != WEAPON_FLARE && lara.gun_type != WEAPON_NONE)
+			lara.last_gun_type = lara.gun_type;
+
+		switch (lara.gun_type)
+		{
+		case WEAPON_PISTOLS:
+		case WEAPON_REVOLVER:
+		case WEAPON_UZI:
+
+			if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA && camera.type != HEAVY_CAMERA)
+				camera.type = COMBAT_CAMERA;
+
+			draw_pistols(lara.gun_type);
+			break;
+
+		case WEAPON_SHOTGUN:
+		case WEAPON_GRENADE:
+		case WEAPON_CROSSBOW:
+
+			if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA && camera.type != HEAVY_CAMERA)
+				camera.type = COMBAT_CAMERA;
+
+			draw_shotgun(lara.gun_type);
+			break;
+
+		case WEAPON_FLARE:
+			draw_flare();
+			break;
+
+		default:
+			lara.gun_status = LG_NO_ARMS;
+			break;
+		}
+
+		break;
+
+	case LG_UNDRAW_GUNS:
+		lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA].mesh_index + LM_HEAD * 2];
+
+		switch (lara.gun_type)
+		{
+		case WEAPON_PISTOLS:
+		case WEAPON_REVOLVER:
+		case WEAPON_UZI:
+			undraw_pistols(lara.gun_type);
+			break;
+
+		case WEAPON_SHOTGUN:
+		case WEAPON_GRENADE:
+		case WEAPON_CROSSBOW:
+			undraw_shotgun(lara.gun_type);
+			break;
+
+		case WEAPON_FLARE:
+			undraw_flare();
+			break;
+		}
+
+		break;
+
+	case LG_READY:
+
+		if (input & IN_ACTION)
+			lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA_SCREAM].mesh_index + LM_HEAD * 2];
+		else
+			lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA].mesh_index + LM_HEAD * 2];
+
+		if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA && camera.type != HEAVY_CAMERA)
+			camera.type = COMBAT_CAMERA;
+
+		if (input & IN_ACTION)
+		{
+			if (!*get_current_ammo_pointer(lara.gun_type))
+			{
+				SoundEffect(SFX_SARLID_PALACES, &lara_item->pos, SFX_DEFAULT);
+				lara.request_gun_type = WEAPON_PISTOLS;
+				return;
+			}
+		}
+
+		switch (lara.gun_type)
+		{
+		case WEAPON_PISTOLS:
+		case WEAPON_UZI:
+			PistolHandler(lara.gun_type);
+			break;
+
+		case WEAPON_REVOLVER:
+		case WEAPON_SHOTGUN:
+		case WEAPON_GRENADE:
+		case WEAPON_CROSSBOW:
+			RifleHandler(lara.gun_type);
+			break;
+		}
+
+		break;
+
+	case LG_FLARE:
+		draw_flare();
+		break;
+	}
+}
+
 void inject_larafire(bool replace)
 {
 	INJECT(0x0042DDC0, CheckForHoldingState, replace);
@@ -1072,4 +1307,5 @@ void inject_larafire(bool replace)
 	INJECT(0x0042EA70, WeaponObject, replace);
 	INJECT(0x0042EAC0, WeaponObjectMesh, replace);
 	INJECT(0x0042EB30, DoProperDetection, replace);
+	INJECT(0x0042D840, LaraGun, replace);
 }

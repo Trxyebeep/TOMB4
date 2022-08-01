@@ -13,5 +13,4 @@ void HitTarget(ITEM_INFO* item, GAME_VECTOR* hitpos, long damage, long grenade);
 long WeaponObject(long weapon_type);
 long WeaponObjectMesh(long weapon_type);
 void DoProperDetection(short item_number, long x, long y, long z, long xv, long yv, long zv);
-
-#define LaraGun	( (void(__cdecl*)()) 0x0042D840 )
+void LaraGun();
