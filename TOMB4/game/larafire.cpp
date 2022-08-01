@@ -38,9 +38,11 @@ static short HoldStates[] =
 	-1
 };
 
-PHD_3DPOS bum_view;
-GAME_VECTOR bum_vdest;
-GAME_VECTOR bum_vsrc;
+static PHD_3DPOS bum_view;
+static GAME_VECTOR bum_vdest;
+static GAME_VECTOR bum_vsrc;
+static ITEM_INFO* TargetList[8];
+static ITEM_INFO* LastTargets[8];
 
 static long CheckForHoldingState(long state)
 {
@@ -363,6 +365,150 @@ void AimWeapon(WEAPON_INFO* winfo, LARA_ARM* arm)
 	arm->z_rot = 0;
 }
 
+void LaraGetNewTarget(WEAPON_INFO* winfo)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* bestitem;
+	CREATURE_INFO* creature;
+	GAME_VECTOR src, target;
+	long x, y, z, slot, dist, maxdist, maxdist2, bestdist;
+	short ang[2];
+	short bestyrot, targets, match;
+
+	if (BinocularRange)
+	{
+		lara.target = 0;
+		return;
+	}
+
+	bestitem = 0;
+	src.x = lara_item->pos.x_pos;
+	src.y = lara_item->pos.y_pos - 650;
+	src.z = lara_item->pos.z_pos;
+	src.room_number = lara_item->room_number;
+	bestyrot = 0x7FFF;
+	bestdist = 0x7FFFFFFF;
+	maxdist = winfo->target_dist;
+	maxdist2 = SQUARE(maxdist);
+	creature = baddie_slots;
+	targets = 0;
+
+	for (slot = 0; slot < 5; slot++, creature++)
+	{
+		if (creature->item_num != NO_ITEM)
+		{
+			item = &items[creature->item_num];
+
+			if (item->hit_points > 0)
+			{
+				x = item->pos.x_pos - src.x;
+				y = item->pos.y_pos - src.y;
+				z = item->pos.z_pos - src.z;
+
+				if (ABS(x) <= maxdist && ABS(y) <= maxdist && ABS(z) <= maxdist)
+				{
+					dist = SQUARE(x) + SQUARE(y) + SQUARE(z);
+
+					if (dist < maxdist2)
+					{
+						find_target_point(item, &target);
+
+						if (LOS(&src, &target))
+						{
+							phd_GetVectorAngles(target.x - src.x, target.y - src.y, target.z - src.z, ang);
+							ang[0] -= (lara.torso_y_rot + lara_item->pos.y_rot);
+							ang[1] -= (lara.torso_x_rot + lara_item->pos.x_rot);
+
+							if (ang[0] >= winfo->lock_angles[0] && ang[0] <= winfo->lock_angles[1] &&
+								ang[1] >= winfo->lock_angles[2] && ang[1] <= winfo->lock_angles[3])
+							{
+								TargetList[targets] = item;
+								targets++;
+
+								if (ABS(ang[0]) < bestyrot + 2730 && dist < bestdist)
+								{
+									bestdist = dist;
+									bestyrot = ABS(ang[0]);
+									bestitem = item;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	TargetList[targets] = 0;
+
+	if (TargetList[0])
+	{
+		for (slot = 0; slot < 8; slot++)
+		{
+			if (!TargetList[slot])
+				lara.target = 0;
+
+			if (TargetList[slot] == lara.target)
+				break;
+		}
+
+		if (savegame.AutoTarget || input & IN_TARGET)
+		{
+			if (!lara.target)
+			{
+				lara.target = bestitem;
+				LastTargets[0] = 0;
+			}
+			else if (input & IN_TARGET)
+			{
+				lara.target = 0;
+
+				for (match = 0; match < 8; match++)
+				{
+					if (!TargetList[match])
+						break;
+
+					for (slot = 0; slot < 8; slot++)
+					{
+						if (!LastTargets[slot])
+						{
+							slot = 8;
+							break;
+						}
+
+						if (LastTargets[slot] == TargetList[match])
+							break;
+					}
+
+					if (slot == 8)
+					{
+						lara.target = TargetList[match];
+						break;
+					}
+				}
+
+				if (!lara.target)
+				{
+					lara.target = bestitem;
+					LastTargets[0] = 0;
+				}
+			}
+		}
+	}
+	else
+		lara.target = 0;
+
+	if (lara.target != LastTargets[0])
+	{
+		for (slot = 7; slot > 0; slot--)
+			LastTargets[slot] = LastTargets[slot - 1];
+
+		LastTargets[0] = lara.target;
+	}
+
+	LaraTargetInfo(winfo);
+}
+
 void inject_larafire(bool replace)
 {
 	INJECT(0x0042DDC0, CheckForHoldingState, replace);
@@ -372,4 +518,5 @@ void inject_larafire(bool replace)
 	INJECT(0x0042F480, get_current_ammo_pointer, replace);
 	INJECT(0x0042E630, FireWeapon, replace);
 	INJECT(0x0042E560, AimWeapon, replace);
+	INJECT(0x0042E0D0, LaraGetNewTarget, replace);
 }
