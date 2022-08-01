@@ -558,6 +558,62 @@ void HitTarget(ITEM_INFO* item, GAME_VECTOR* hitpos, long damage, long grenade)
 	}
 }
 
+long WeaponObject(long weapon_type)
+{
+	switch (weapon_type)
+	{
+	case WEAPON_REVOLVER:
+		return SIXSHOOTER_ANIM;
+
+	case WEAPON_UZI:
+		return UZI_ANIM;
+
+	case WEAPON_SHOTGUN:
+		return SHOTGUN_ANIM;
+
+	case WEAPON_GRENADE:
+		return GRENADE_GUN_ANIM;
+
+	case WEAPON_CROSSBOW:
+		return CROSSBOW_ANIM;
+
+	default:
+		return PISTOLS_ANIM;
+	}
+}
+
+long WeaponObjectMesh(long weapon_type)
+{
+	switch (weapon_type)
+	{
+	case WEAPON_REVOLVER:
+
+		if (lara.sixshooter_type_carried & 4)
+			return LARA_REVOLVER_LASER;
+		else
+			return SIXSHOOTER_ANIM;
+
+	case WEAPON_UZI:
+		return UZI_ANIM;
+
+	case WEAPON_SHOTGUN:
+		return SHOTGUN_ANIM;
+
+	case WEAPON_GRENADE:
+		return GRENADE_GUN_ANIM;
+
+	case WEAPON_CROSSBOW:
+
+		if (lara.crossbow_type_carried & 4)
+			return LARA_CROSSBOW_LASER;
+		else
+			return CROSSBOW_ANIM;
+
+	default:
+		return PISTOLS_ANIM;
+	}
+}
+
 void inject_larafire(bool replace)
 {
 	INJECT(0x0042DDC0, CheckForHoldingState, replace);
@@ -569,4 +625,6 @@ void inject_larafire(bool replace)
 	INJECT(0x0042E560, AimWeapon, replace);
 	INJECT(0x0042E0D0, LaraGetNewTarget, replace);
 	INJECT(0x0042E920, HitTarget, replace);
+	INJECT(0x0042EA70, WeaponObject, replace);
+	INJECT(0x0042EAC0, WeaponObjectMesh, replace);
 }
