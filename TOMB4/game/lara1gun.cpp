@@ -8,6 +8,8 @@
 #include "delstuff.h"
 #include "control.h"
 #include "sound.h"
+#include "../specific/function_stubs.h"
+#include "tomb4fx.h"
 
 void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item)
 {
@@ -166,6 +168,70 @@ void ready_shotgun(long weapon_type)
 	lara.right_arm.frame_base = lara.left_arm.frame_base;
 }
 
+void FireShotgun()
+{
+	PHD_VECTOR pos;
+	PHD_VECTOR pos2;
+	long fired, scatter;
+	short angles[2];
+	short dangles[2];
+
+	angles[0] = lara.left_arm.y_rot + lara_item->pos.y_rot;
+	angles[1] = lara.left_arm.x_rot;
+
+	if (lara.left_arm.lock)
+	{
+		angles[0] += lara.torso_y_rot;
+		angles[1] += lara.torso_x_rot;
+	}
+
+	fired = 0;
+
+	if (lara.shotgun_type_carried & 8)
+		scatter = 1820;
+	else
+		scatter = 5460;
+
+	for (int i = 0; i < 6; i++)
+	{
+		dangles[0] = short(angles[0] + scatter * (GetRandomControl() - 0x4000) / 0x10000);
+		dangles[1] = short(angles[1] + scatter * (GetRandomControl() - 0x4000) / 0x10000);
+
+		if (FireWeapon(WEAPON_SHOTGUN, lara.target, lara_item, dangles))
+			fired = 1;
+	}
+
+	if (fired)
+	{
+		pos.x = 0;
+		pos.y = 228;
+		pos.z = 32;
+		GetLaraJointPos(&pos, 11);
+
+		pos2.x = 0;
+		pos2.y = 1508;
+		pos2.z = 32;
+		GetLaraJointPos(&pos2, 11);
+
+		SmokeCountL = 32;
+		SmokeWeapon = WEAPON_SHOTGUN;
+
+		if (lara_item->mesh_bits)
+		{
+			for (int i = 0; i < 7; i++)
+				TriggerGunSmoke(pos.x, pos.y, pos.z, pos2.x - pos.x, pos2.y - pos.y, pos2.z - pos.z, 1, SmokeWeapon, 32);
+
+		//	for (int i = 0; i < 12; i++)
+				//empty func call here
+		}
+
+		lara.right_arm.flash_gun = weapons[WEAPON_SHOTGUN].flash_time;
+		SoundEffect(SFX_EXPLOSION1, &lara_item->pos, 0x1400000 | SFX_SETPITCH);
+		SoundEffect(weapons[WEAPON_SHOTGUN].sample_num, &lara_item->pos, SFX_DEFAULT);
+		savegame.Game.AmmoUsed++;
+	}
+}
+
 void inject_lara1gun(bool replace)
 {
 	INJECT(0x0042B600, DoGrenadeDamageOnBaddie, replace);
@@ -173,4 +239,5 @@ void inject_lara1gun(bool replace)
 	INJECT(0x00428E40, draw_shotgun_meshes, replace);
 	INJECT(0x00428E70, undraw_shotgun_meshes, replace);
 	INJECT(0x00428EA0, ready_shotgun, replace);
+	INJECT(0x00429260, FireShotgun, replace);
 }

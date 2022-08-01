@@ -788,7 +788,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00428E70	+	undraw_shotgun_meshes
 0x00428EA0	+	ready_shotgun
 0x00428F10		RifleHandler
-0x00429260		FireShotgun
+0x00429260	+	FireShotgun
 0x00429480		FireGrenade
 0x00429710		ControlGrenade
 0x0042A270	+	FireCrossbow
