@@ -11,6 +11,9 @@
 #include "control.h"
 #include "../specific/function_stubs.h"
 #include "sphere.h"
+#include "effect2.h"
+#include "sound.h"
+#include "effects.h"
 
 static short HoldStates[] =
 {
@@ -509,6 +512,52 @@ void LaraGetNewTarget(WEAPON_INFO* winfo)
 	LaraTargetInfo(winfo);
 }
 
+void HitTarget(ITEM_INFO* item, GAME_VECTOR* hitpos, long damage, long grenade)
+{
+	OBJECT_INFO* obj;
+
+	obj = &objects[item->object_number];
+	item->hit_status = 1;
+
+	if (item->data && item != lara_item)
+		((CREATURE_INFO*)item->data)->hurt_by_lara = 1;
+
+	if (hitpos && obj->HitEffect)
+	{
+		switch (obj->HitEffect)
+		{
+		case 1:
+
+			if (item->object_number == SUPER_RAGHEAD && (item->current_anim_state == 8 || GetRandomControl() & 1) &&
+				(lara.gun_type == WEAPON_PISTOLS || lara.gun_type == WEAPON_SHOTGUN || lara.gun_type == WEAPON_UZI))
+			{
+				SoundEffect(SFX_BAD_SWORD_RICO, &item->pos, SFX_DEFAULT);
+				TriggerRicochetSpark(hitpos, lara_item->pos.y_rot, 3, 0);
+				return;
+			}
+
+			DoBloodSplat(hitpos->x, hitpos->y, hitpos->z, (GetRandomControl() & 3) + 3, item->pos.y_rot, item->room_number);
+			break;
+
+		case 2:
+			TriggerRicochetSpark(hitpos, lara_item->pos.y_rot, 3, -5);
+			break;
+
+		case 3:
+			TriggerRicochetSpark(hitpos, lara_item->pos.y_rot, 3, 0);
+			break;
+		}
+	}
+
+	if (!obj->undead || grenade || item->hit_points == -16384)
+	{
+		if (item->hit_points > 0 && item->hit_points <= damage)
+			savegame.Level.Kills++;
+
+		item->hit_points -= (short)damage;
+	}
+}
+
 void inject_larafire(bool replace)
 {
 	INJECT(0x0042DDC0, CheckForHoldingState, replace);
@@ -519,4 +568,5 @@ void inject_larafire(bool replace)
 	INJECT(0x0042E630, FireWeapon, replace);
 	INJECT(0x0042E560, AimWeapon, replace);
 	INJECT(0x0042E0D0, LaraGetNewTarget, replace);
+	INJECT(0x0042E920, HitTarget, replace);
 }

@@ -853,7 +853,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0042E4A0	+	find_target_point
 0x0042E560	+	AimWeapon
 0x0042E630	+	FireWeapon
-0x0042E920		HitTarget
+0x0042E920	+	HitTarget
 0x0042EA70		WeaponObject
 0x0042EAC0		WeaponObjectMesh
 0x0042EB30		DoProperDetection
