@@ -13,5 +13,4 @@ void FireGrenade();
 void AnimateShotgun(long weapon_type);
 void RifleHandler(long weapon_type);
 void CrossbowHitSwitchType78(ITEM_INFO* item, ITEM_INFO* target, long MustHitLastNode);
-
-#define TriggerUnderwaterExplosion	( (void(__cdecl*)(ITEM_INFO*, long)) 0x0042B430 )
+void TriggerUnderwaterExplosion(ITEM_INFO* item, long vehicle);

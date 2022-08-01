@@ -622,6 +622,58 @@ void CrossbowHitSwitchType78(ITEM_INFO* item, ITEM_INFO* target, long MustHitLas
 	}
 }
 
+void TriggerUnderwaterExplosion(ITEM_INFO* item, long vehicle)
+{
+	long x, y, z, wh;
+
+	if (vehicle)
+	{
+		x = (GetRandomControl() & 0x1FF) + item->pos.x_pos - 256;
+		z = (GetRandomControl() & 0x1FF) + item->pos.z_pos - 256;
+		TriggerExplosionBubble(x, item->pos.y_pos, z, item->room_number);
+		TriggerExplosionSparks(x, item->pos.y_pos, z, 2, -1, 1, item->room_number);
+		wh = GetWaterHeight(x, item->pos.y_pos, z, item->room_number);
+
+		if (wh != NO_HEIGHT)
+			TriggerSmallSplash(x, wh, z, 8);
+	}
+	else
+	{
+		TriggerExplosionBubble(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number);
+		TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 2, -2, 1, item->room_number);
+
+		for (int i = 0; i < 3; i++)
+			TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 2, -1, 1, item->room_number);
+
+		wh = GetWaterHeight(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number);
+
+		if (wh != NO_HEIGHT)
+		{
+			y = item->pos.y_pos - wh;
+
+			if (y < 2048)
+			{
+				splash_setup.x = item->pos.x_pos;
+				splash_setup.y = wh;
+				splash_setup.z = item->pos.z_pos;
+				wh = 2048 - y;
+				splash_setup.InnerRadVel = 160;
+				splash_setup.MiddleSize = 224;
+				splash_setup.OuterRad = 272;
+				splash_setup.InnerRad = short((wh >> 6) + 16);
+				splash_setup.InnerSize = short((wh >> 6) + 12);
+				splash_setup.InnerYVel = short((-512 - wh) << 3);
+				splash_setup.pad1 = short((wh >> 6) + 24);
+				splash_setup.MiddleRad = short((wh >> 6) + 24);
+				splash_setup.MiddleRadVel = short((-768 - wh) << 2);
+				splash_setup.MiddleYVel = short((wh >> 6) + 32);
+				splash_setup.pad2 = short((wh >> 6) + 32);
+				SetupSplash(&splash_setup);
+			}
+		}
+	}
+}
+
 void inject_lara1gun(bool replace)
 {
 	INJECT(0x0042B600, DoGrenadeDamageOnBaddie, replace);
@@ -634,4 +686,5 @@ void inject_lara1gun(bool replace)
 	INJECT(0x0042B100, AnimateShotgun, replace);
 	INJECT(0x00428F10, RifleHandler, replace);
 	INJECT(0x0042A490, CrossbowHitSwitchType78, replace);
+	INJECT(0x0042B430, TriggerUnderwaterExplosion, replace);
 }
