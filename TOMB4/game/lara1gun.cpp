@@ -717,6 +717,41 @@ void draw_shotgun(long weapon_type)
 	lara.right_arm.anim_number = item->anim_number;
 }
 
+void undraw_shotgun(long weapon_type)
+{
+	ITEM_INFO* item;
+
+	item = &items[lara.weapon_item];
+
+	if (lara.water_status == LW_SURFACE)
+		item->goal_anim_state = 9;
+	else
+		item->goal_anim_state = 3;
+
+	AnimateItem(item);
+
+	if (item->status == ITEM_DEACTIVATED)
+	{
+		lara.gun_status = LG_NO_ARMS;
+		lara.target = 0;
+		lara.right_arm.lock = 0;
+		lara.left_arm.lock = 0;
+		KillItem(lara.weapon_item);
+		lara.weapon_item = NO_ITEM;
+		lara.right_arm.frame_number = 0;
+		lara.left_arm.frame_number = 0;
+	}
+	else if (item->current_anim_state == 3 && anims[item->anim_number].frame_base == item->frame_number - 21)
+			undraw_shotgun_meshes(weapon_type);
+
+	lara.right_arm.frame_base = anims[item->anim_number].frame_ptr;
+	lara.left_arm.frame_base = lara.right_arm.frame_base;
+	lara.right_arm.frame_number = item->frame_number - anims[item->anim_number].frame_base;
+	lara.left_arm.frame_number = lara.right_arm.frame_number;
+	lara.right_arm.anim_number = item->anim_number;
+	lara.left_arm.anim_number = lara.right_arm.anim_number;
+}
+
 void inject_lara1gun(bool replace)
 {
 	INJECT(0x0042B600, DoGrenadeDamageOnBaddie, replace);
@@ -731,4 +766,5 @@ void inject_lara1gun(bool replace)
 	INJECT(0x0042A490, CrossbowHitSwitchType78, replace);
 	INJECT(0x0042B430, TriggerUnderwaterExplosion, replace);
 	INJECT(0x0042AE50, draw_shotgun, replace);
+	INJECT(0x0042AFE0, undraw_shotgun, replace);
 }

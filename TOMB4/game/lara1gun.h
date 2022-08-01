@@ -15,3 +15,4 @@ void RifleHandler(long weapon_type);
 void CrossbowHitSwitchType78(ITEM_INFO* item, ITEM_INFO* target, long MustHitLastNode);
 void TriggerUnderwaterExplosion(ITEM_INFO* item, long vehicle);
 void draw_shotgun(long weapon_type);
+void undraw_shotgun(long weapon_type);
