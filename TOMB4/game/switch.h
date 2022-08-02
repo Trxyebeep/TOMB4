@@ -15,3 +15,4 @@ void PulleyCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void TurnSwitchControl(short item_number);
 void TurnSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void RailSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
+void JumpSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);

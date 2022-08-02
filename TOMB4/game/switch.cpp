@@ -24,6 +24,7 @@ static PHD_VECTOR TurnSwitchPos = { 650, 0, 138 };
 static PHD_VECTOR TurnSwitchPosA = { 650, 0, -138 };
 static PHD_VECTOR RailSwitchPos = { 0, 0, -550 };
 static PHD_VECTOR RailSwitchPos2 = { 0, 0, 550 };
+static PHD_VECTOR JumpSwitchPos = { 0, -208, 256 };
 
 static short FullBlockSwitchBounds[12] = { -384, 384, 0, 256, 0, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short SwitchBounds[12] = { 0, 0, 0, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
@@ -35,6 +36,7 @@ static short TurnSwitchBoundsA[12] = { 512, 896, 0, 0, -512, 0, -1820, 1820, -54
 static short TurnSwitchBoundsC[12] = { 512, 896, 0, 0, 0, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short RailSwitchBounds[12] = { -256, 256, 0, 0, -768, -512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short RailSwitchBounds2[12] = { -256, 256, 0, 0, 512, 768, -1820, 1820, -5460, 5460, -1820, 1820 };
+static short JumpSwitchBounds[12] = { -128, 128, -256, 256, 384, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
@@ -670,6 +672,31 @@ void RailSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void JumpSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (input & IN_ACTION && lara.gun_status == LG_NO_ARMS && (l->current_anim_state == AS_REACH || l->current_anim_state == AS_UPJUMP) &&
+		l->gravity_status && l->fallspeed > 0 && !item->current_anim_state)
+	{
+		if (TestLaraPosition(JumpSwitchBounds, item, l))
+		{
+			AlignLaraPosition(&JumpSwitchPos, item, l);
+			l->anim_number = ANIM_LEAPSWITCH;
+			l->frame_number = anims[ANIM_LEAPSWITCH].frame_base;
+			l->current_anim_state = AS_SWITCHON;
+			l->fallspeed = 0;
+			l->gravity_status = 0;
+			lara.gun_status = LG_HANDS_BUSY;
+			item->status = ITEM_ACTIVE;
+			item->goal_anim_state = 1;
+			AddActiveItem(item_number);
+		}
+	}
+}
+
 void inject_switch(bool replace)
 {
 	INJECT(0x00463180, FullBlockSwitchCollision, replace);
@@ -684,4 +711,5 @@ void inject_switch(bool replace)
 	INJECT(0x004624C0, TurnSwitchControl, replace);
 	INJECT(0x00462720, TurnSwitchCollision, replace);
 	INJECT(0x00462AE0, RailSwitchCollision, replace);
+	INJECT(0x00462CB0, JumpSwitchCollision, replace);
 }

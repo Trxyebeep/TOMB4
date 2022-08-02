@@ -139,7 +139,7 @@ void ObjectObjects()
 
 	obj = &objects[JUMP_SWITCH];
 	obj->control = SwitchControl;
-//	obj->collision = JumpSwitchCollision;
+	obj->collision = JumpSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
