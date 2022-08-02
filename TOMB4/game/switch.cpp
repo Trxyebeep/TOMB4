@@ -22,6 +22,8 @@ static PHD_VECTOR UnderwaterSwitchPos2 = { 0, -736, 416 };
 static PHD_VECTOR PulleyPos = { 0, 0, -148 };
 static PHD_VECTOR TurnSwitchPos = { 650, 0, 138 };
 static PHD_VECTOR TurnSwitchPosA = { 650, 0, -138 };
+static PHD_VECTOR RailSwitchPos = { 0, 0, -550 };
+static PHD_VECTOR RailSwitchPos2 = { 0, 0, 550 };
 
 static short FullBlockSwitchBounds[12] = { -384, 384, 0, 256, 0, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short SwitchBounds[12] = { 0, 0, 0, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
@@ -31,6 +33,8 @@ static short UnderwaterSwitchBounds2[12] = { -256, 256, -1280, -512, 0, 512, -14
 static short PulleyBounds[12] = { -256, 256, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short TurnSwitchBoundsA[12] = { 512, 896, 0, 0, -512, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short TurnSwitchBoundsC[12] = { 512, 896, 0, 0, 0, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
+static short RailSwitchBounds[12] = { -256, 256, 0, 0, -768, -512, -1820, 1820, -5460, 5460, -1820, 1820 };
+static short RailSwitchBounds2[12] = { -256, 256, 0, 0, 512, 768, -1820, 1820, -5460, 5460, -1820, 1820 };
 
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
@@ -593,6 +597,79 @@ void TurnSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void RailSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	long flag;
+
+	flag = 0;
+	item = &items[item_number];
+
+	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH &&
+		lara.gun_status == LG_NO_ARMS || lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+	{
+		if (item->current_anim_state == 1)
+		{
+			l->pos.y_rot ^= 0x8000;
+
+			if (TestLaraPosition(RailSwitchBounds2, item, l))
+			{
+				if (MoveLaraPosition(&RailSwitchPos2, item, l))
+				{
+					item->goal_anim_state = 0;
+					flag = 1;
+				}
+				else
+					lara.GeneralPtr = (void*)item_number;
+			}
+			else if (lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+			{
+				lara.IsMoving = 0;
+				lara.gun_status = LG_NO_ARMS;
+			}
+
+			l->pos.y_rot ^= 0x8000;
+		}
+		else if (item->current_anim_state == 0)
+		{
+			if (TestLaraPosition(RailSwitchBounds, item, l))
+			{
+				if (MoveLaraPosition(&RailSwitchPos, item, l))
+				{
+					item->goal_anim_state = 1;
+					flag = 1;
+				}
+				else
+					lara.GeneralPtr = (void*)item_number;
+			}
+			else if (lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+			{
+				lara.IsMoving = 0;
+				lara.gun_status = LG_NO_ARMS;
+			}
+		}
+	}
+
+	if (!flag)
+		ObjectCollision(item_number, l, coll);
+	else
+	{
+		l->anim_number = ANIM_RAILSWITCH;
+		l->frame_number = anims[ANIM_RAILSWITCH].frame_base;
+		l->current_anim_state = AS_RAILSWITCH;
+		l->goal_anim_state = AS_RAILSWITCH;
+		lara.IsMoving = 0;
+		lara.head_x_rot = 0;
+		lara.head_y_rot = 0;
+		lara.torso_x_rot = 0;
+		lara.torso_y_rot = 0;
+		lara.gun_status = LG_HANDS_BUSY;
+		item->status = ITEM_ACTIVE;
+		AddActiveItem(item_number);
+		AnimateItem(item);
+	}
+}
+
 void inject_switch(bool replace)
 {
 	INJECT(0x00463180, FullBlockSwitchCollision, replace);
@@ -606,4 +683,5 @@ void inject_switch(bool replace)
 	INJECT(0x004622C0, PulleyCollision, replace);
 	INJECT(0x004624C0, TurnSwitchControl, replace);
 	INJECT(0x00462720, TurnSwitchCollision, replace);
+	INJECT(0x00462AE0, RailSwitchCollision, replace);
 }

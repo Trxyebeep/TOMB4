@@ -58,7 +58,7 @@ void ObjectObjects()
 
 	obj = &objects[FLARE_ITEM];
 	obj->initialise = 0;
-//	obj->control = FlareControl;
+	obj->control = FlareControl;
 	obj->collision = PickUpCollision;
 	obj->draw_routine = DrawFlareInAir;
 	obj->using_drawanimating_item = 0;
@@ -70,8 +70,8 @@ void ObjectObjects()
 	for (int i = SMASH_OBJECT1; i <= SMASH_OBJECT8; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseSmashObject;
-	//	obj->control = SmashObjectControl;
+		obj->initialise = InitialiseSmashObject;
+		obj->control = SmashObjectControl;
 		obj->collision = ObjectCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
@@ -92,7 +92,6 @@ void ObjectObjects()
 	for (int i = SWITCH_TYPE1; i <= SWITCH_TYPE6; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseSwitch;
 		obj->control = SwitchControl;
 		obj->collision = SwitchCollision;
 		obj->save_flags = 1;
@@ -103,7 +102,7 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 	//	obj->control = FullBlockSwitchControl;
-	//	obj->collision = FullBlockSwitchCollision;
+		obj->collision = FullBlockSwitchCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -134,7 +133,7 @@ void ObjectObjects()
 
 	obj = &objects[LEVER_SWITCH];
 	obj->control = SwitchControl;
-//	obj->collision = RailSwitchCollision;
+	obj->collision = RailSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
@@ -151,7 +150,7 @@ void ObjectObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[PULLEY];
-//	obj->initialise = InitialisePulley;
+	obj->initialise = InitialisePulley;
 	obj->control = SwitchControl;
 	obj->collision = PulleyCollision;
 	obj->save_flags = 1;
@@ -350,7 +349,7 @@ void ObjectObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[EXPANDING_PLATFORM];
-//	obj->initialise = InitialiseRaisingBlock;
+	obj->initialise = InitialiseRaisingBlock;
 	obj->control = ControlRaisingBlock;
 	obj->draw_routine = DrawScaledSpike;
 	obj->using_drawanimating_item = 0;
@@ -510,7 +509,7 @@ void ObjectObjects()
 
 	for (int i = WATERFALL1; i <= WATERFALL3; i++)
 	{
-	//	obj->control = ControlWaterfall;
+		obj->control = ControlWaterfall;
 		obj->save_flags = 1;
 	}
 
