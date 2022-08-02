@@ -1272,8 +1272,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x00461FF0	+	SwitchCollision2
 0x00462100	+	UnderwaterSwitchCollision
 0x004622C0	+	PulleyCollision
-0x004624C0		TurnSwitchControl
-0x00462720		TurnSwitchCollision
+0x004624C0	+	TurnSwitchControl
+0x00462720	+	TurnSwitchCollision
 0x00462AE0		RailSwitchCollision
 0x00462CB0		JumpSwitchCollision
 0x00462DB0		CrowbarSwitchCollision

@@ -121,8 +121,8 @@ void ObjectObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[TURN_SWITCH];
-//	obj->control = TurnSwitchControl;
-//	obj->collision = TurnSwitchCollision;
+	obj->control = TurnSwitchControl;
+	obj->collision = TurnSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
