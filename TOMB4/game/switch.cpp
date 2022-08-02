@@ -94,8 +94,46 @@ long SwitchTrigger(short item_number, short timer)
 	return 0;
 }
 
+long GetSwitchTrigger(ITEM_INFO* item, short* ItemNos, long AttatchedToSwitch)
+{
+	FLOOR_INFO* floor;
+	short* data;
+	long num;
+
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &item->room_number);
+	GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+
+	if (!trigger_index)
+		return 0;
+
+	data = trigger_index;
+
+	while ((*data & 0x1F) != TRIGGER_TYPE && !(*data & 0x8000)) data++;	//get to trigger
+
+	if (!(*data & TRIGGER_TYPE))	//no triggers, bye
+		return 0;
+
+	data += 2;
+	num = 0;
+
+	while (1)
+	{
+		if ((*data & 0x3C00) == TO_OBJECT && item != &items[*data & 0x3FF])
+		{
+			*ItemNos++ = *data & 0x3FF;
+			num++;
+		}
+
+		if (*data & 0x8000)	//gottem all
+			break;
+
+		data++;
+	}
+}
+
 void inject_switch(bool replace)
 {
 	INJECT(0x00463180, FullBlockSwitchCollision, replace);
 	INJECT(0x00461B10, SwitchTrigger, replace);
+	INJECT(0x00461BD0, GetSwitchTrigger, replace);
 }
