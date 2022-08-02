@@ -894,7 +894,7 @@ void LaraDoClimbLeftRight(ITEM_INFO* item, COLL_INFO* coll, long result, long sh
 	{
 		item->goal_anim_state = AS_HANG;
 
-		do { AnimateItem(item); } while (item->current_anim_state != AS_HANG);
+		do AnimateItem(item); while (item->current_anim_state != AS_HANG);
 
 		item->pos.x_pos = coll->old.x;
 		item->pos.z_pos = coll->old.z;

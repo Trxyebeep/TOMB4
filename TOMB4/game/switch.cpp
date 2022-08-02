@@ -6,6 +6,7 @@
 #include "control.h"
 #include "objects.h"
 #include "draw.h"
+#include "laramisc.h"
 
 #ifdef GENERAL_FIXES
 static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 0 };
@@ -14,10 +15,11 @@ static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 100 };
 #endif
 
 static PHD_VECTOR SwitchPos = { 0, 0, 0 };
+static PHD_VECTOR Switch2Pos = { 0, 0, 108 };
 
 static short FullBlockSwitchBounds[12] = { -384, 384, 0, 256, 0, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short SwitchBounds[12] = { 0, 0, 0, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
-
+static short Switch2Bounds[12] = { -1024, 1024, -1024, 1024, -1024, 512, -14560, 14560, -14560, 14560, -14560, 14560 };
 
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
@@ -262,6 +264,38 @@ void SwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		ObjectCollision(item_number, l, coll);
 }
 
+void SwitchCollision2(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (input & IN_ACTION && item->status == ITEM_INACTIVE && lara.water_status == LW_UNDERWATER &&
+		lara.gun_status == LG_NO_ARMS && l->current_anim_state == AS_TREAD)
+	{
+		if (TestLaraPosition(Switch2Bounds, item, l))
+		{
+			if (!item->current_anim_state || item->current_anim_state == 1)
+			{
+				if (MoveLaraPosition(&Switch2Pos, item, l))
+				{
+					l->fallspeed = 0;
+					l->goal_anim_state = AS_SWITCHON;
+
+					do AnimateLara(l); while (l->current_anim_state != AS_SWITCHON);
+
+					l->goal_anim_state = AS_TREAD;
+					lara.gun_status = LG_HANDS_BUSY;
+					item->goal_anim_state = item->current_anim_state != 1;
+					item->status = ITEM_ACTIVE;
+					AddActiveItem(item_number);
+					AnimateItem(item);
+				}
+			}
+		}
+	}
+}
+
 void inject_switch(bool replace)
 {
 	INJECT(0x00463180, FullBlockSwitchCollision, replace);
@@ -270,4 +304,5 @@ void inject_switch(bool replace)
 	INJECT(0x00461CA0, TestTriggersAtXYZ, replace);
 	INJECT(0x00461CF0, SwitchControl, replace);
 	INJECT(0x00461D60, SwitchCollision, replace);
+	INJECT(0x00461FF0, SwitchCollision2, replace);
 }
