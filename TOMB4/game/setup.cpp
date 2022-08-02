@@ -94,7 +94,7 @@ void ObjectObjects()
 		obj = &objects[i];
 	//	obj->initialise = InitialiseSwitch;
 		obj->control = SwitchControl;
-	//	obj->collision = SwitchCollision;
+		obj->collision = SwitchCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
