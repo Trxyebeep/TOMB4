@@ -129,6 +129,14 @@ long GetSwitchTrigger(ITEM_INFO* item, short* ItemNos, long AttatchedToSwitch)
 
 		data++;
 	}
+
+	return num;
+}
+
+void TestTriggersAtXYZ(long x, long y, long z, short room_number, short heavy, short flags)
+{
+	GetHeight(GetFloor(x, y, z, &room_number), x, y, z);
+	TestTriggers(trigger_index, heavy, flags);
 }
 
 void inject_switch(bool replace)
@@ -136,4 +144,5 @@ void inject_switch(bool replace)
 	INJECT(0x00463180, FullBlockSwitchCollision, replace);
 	INJECT(0x00461B10, SwitchTrigger, replace);
 	INJECT(0x00461BD0, GetSwitchTrigger, replace);
+	INJECT(0x00461CA0, TestTriggersAtXYZ, replace);
 }
