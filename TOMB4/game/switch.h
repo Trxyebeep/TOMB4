@@ -18,3 +18,5 @@ void RailSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void JumpSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void CrowbarSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void FullBlockSwitchControl(short item_number);
+void CogSwitchControl(short item_number);
+void CogSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);

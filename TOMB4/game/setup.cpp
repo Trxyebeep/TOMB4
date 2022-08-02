@@ -126,8 +126,8 @@ void ObjectObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[COG_SWITCH];
-//	obj->control = CogSwitchControl;
-//	obj->collision = CogSwitchCollision;
+	obj->control = CogSwitchControl;
+	obj->collision = CogSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 

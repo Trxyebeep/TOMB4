@@ -27,6 +27,7 @@ static PHD_VECTOR RailSwitchPos2 = { 0, 0, 550 };
 static PHD_VECTOR JumpSwitchPos = { 0, -208, 256 };
 static PHD_VECTOR CrowbarPos = { -89, 0, -328 };
 static PHD_VECTOR CrowbarPos2 = { 89, 0, 328 };
+static PHD_VECTOR CogSwitchPos = { 0, 0, -856 };
 
 static short FullBlockSwitchBounds[12] = { -384, 384, 0, 256, 0, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short SwitchBounds[12] = { 0, 0, 0, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
@@ -41,6 +42,7 @@ static short RailSwitchBounds2[12] = { -256, 256, 0, 0, 512, 768, -1820, 1820, -
 static short JumpSwitchBounds[12] = { -128, 128, -256, 256, 384, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short CrowbarBounds[12] = { -256, 256, 0, 0, -512, -256, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short CrowbarBounds2[12] = { -256, 256, 0, 0, 256, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
+static short CogSwitchBounds[12] = { -512, 512, 0, 0, -1536, -512, -1820, 1820, -5460, 5460, -1820, 1820 };
 
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
@@ -838,6 +840,105 @@ void FullBlockSwitchControl(short item_number)
 	AnimateItem(item);
 }
 
+void CogSwitchControl(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	AnimateItem(item);
+
+	if (item->current_anim_state == 1)
+	{
+		if (item->goal_anim_state == 1 && !(input & IN_ACTION))
+		{
+			lara_item->goal_anim_state = AS_STOP;
+			item->goal_anim_state = 0;
+		}
+
+		if (lara_item->anim_number == ANIM_COGSWITCHL && lara_item->frame_number == anims[ANIM_COGSWITCHL].frame_base + 10)
+		{
+			item = (ITEM_INFO*)lara.GeneralPtr;
+			item->item_flags[0] = 40;
+		}
+	}
+	else if (item->frame_number == anims[item->anim_number].frame_end)
+	{
+		item->current_anim_state = 0;
+		item->status = ITEM_INACTIVE;
+		RemoveActiveItem(item_number);
+		lara_item->anim_number = ANIM_STOP;
+		lara_item->frame_number = anims[ANIM_STOP].frame_base;
+		lara_item->current_anim_state = AS_STOP;
+		lara_item->goal_anim_state = AS_STOP;
+		lara.gun_status = LG_NO_ARMS;
+	}
+}
+
+void CogSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* door_item;
+	DOOR_DATA* door;
+	short* data;
+
+	item = &items[item_number];
+	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &item->room_number),
+		item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	data = trigger_index;
+
+	while ((*data & 0x1F) != TRIGGER_TYPE && !(*data & 0x8000)) data++;
+
+	door_item = &items[data[3] & 0x3FF];
+	door = (DOOR_DATA*)door_item->data;
+
+	if (item->status != ITEM_INACTIVE)
+		return;
+
+	if (!(item->flags & IFL_INVISIBLE) && (input & IN_ACTION && lara.gun_status == LG_NO_ARMS && !l->gravity_status &&
+		l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH || lara.IsMoving && lara.GeneralPtr == (void*)item_number))
+	{
+		if (TestLaraPosition(CogSwitchBounds, item, l))
+		{
+			if (MoveLaraPosition(&CogSwitchPos, item, l))
+			{
+				lara.IsMoving = 0;
+				lara.head_x_rot = 0;
+				lara.head_y_rot = 0;
+				lara.torso_x_rot = 0;
+				lara.torso_y_rot = 0;
+				lara.gun_status = LG_HANDS_BUSY;
+				lara.GeneralPtr = door_item;
+				l->anim_number = ANIM_COGSWITCHS;
+				l->frame_number = anims[ANIM_COGSWITCHS].frame_base;
+				l->current_anim_state = AS_COGSWITCH;
+				l->goal_anim_state = AS_COGSWITCH;
+				AddActiveItem(item_number);
+				item->status = ITEM_ACTIVE;
+				item->goal_anim_state = 1;
+
+				if (!door->Opened)
+				{
+					AddActiveItem(door_item - items);
+					door_item->status = ITEM_ACTIVE;
+					*(long*)&door_item->item_flags[2] = door_item->pos.y_pos;
+				}
+			}
+			else
+				lara.GeneralPtr = (void*)item_number;
+
+			return;
+		}
+
+		if (lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+		{
+			lara.IsMoving = 0;
+			lara.gun_status = LG_NO_ARMS;
+		}
+	}
+
+	ObjectCollision(item_number, l, coll);
+}
+
 void inject_switch(bool replace)
 {
 	INJECT(0x00463180, FullBlockSwitchCollision, replace);
@@ -855,4 +956,6 @@ void inject_switch(bool replace)
 	INJECT(0x00462CB0, JumpSwitchCollision, replace);
 	INJECT(0x00462DB0, CrowbarSwitchCollision, replace);
 	INJECT(0x00463080, FullBlockSwitchControl, replace);
+	INJECT(0x004632F0, CogSwitchControl, replace);
+	INJECT(0x00463400, CogSwitchCollision, replace);
 }
