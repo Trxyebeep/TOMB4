@@ -21,5 +21,4 @@ long LaraTestClimbUpPos(ITEM_INFO* item, long front, long right, long* shift, lo
 long LaraCheckForLetGo(ITEM_INFO* item, COLL_INFO* coll);
 long LaraClimbLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll);
 long LaraClimbRightCornerTest(ITEM_INFO* item, COLL_INFO* coll);
-
-#define	LaraDoClimbLeftRight	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*, long, long)) 0x0042CD20 )
+void LaraDoClimbLeftRight(ITEM_INFO* item, COLL_INFO* coll, long result, long shift);
