@@ -580,6 +580,38 @@ long LaraTestClimbUpPos(ITEM_INFO* item, long front, long right, long* shift, lo
 	return 0;
 }
 
+long LaraCheckForLetGo(ITEM_INFO* item, COLL_INFO* coll)
+{
+	FLOOR_INFO* floor;
+	short room_number;
+
+	item->fallspeed = 0;
+	item->gravity_status = 0;
+	room_number = item->room_number;
+	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
+	GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	coll->trigger = trigger_index;
+
+	if (!(input & IN_ACTION) || item->hit_points <= 0)
+	{
+		lara.torso_x_rot = 0;
+		lara.torso_y_rot = 0;
+		lara.head_x_rot = 0;
+		lara.head_y_rot = 0;
+		item->anim_number = ANIM_FALLDOWN;
+		item->frame_number = anims[ANIM_FALLDOWN].frame_base;
+		item->current_anim_state = AS_FORWARDJUMP;
+		item->goal_anim_state = AS_FORWARDJUMP;
+		item->speed = 2;
+		item->gravity_status = 1;
+		item->fallspeed = 1;
+		lara.gun_status = LG_NO_ARMS;
+		return 1;
+	}
+
+	return 0;
+}
+
 void inject_laraclmb(bool replace)
 {
 	INJECT(0x0042C6C0, lara_as_climbstnc, replace);
@@ -597,4 +629,5 @@ void inject_laraclmb(bool replace)
 	INJECT(0x0042C470, LaraTestClimb, replace);
 	INJECT(0x0042C3C0, LaraTestClimbPos, replace);
 	INJECT(0x0042CA60, LaraTestClimbUpPos, replace);
+	INJECT(0x0042C980, LaraCheckForLetGo, replace);
 }
