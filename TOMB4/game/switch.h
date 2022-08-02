@@ -4,7 +4,7 @@
 void inject_switch(bool replace);
 
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
+long SwitchTrigger(short item_number, short timer);
 
 #define GetSwitchTrigger	( (long(__cdecl*)(ITEM_INFO*, short*, long)) 0x00461BD0 )
 #define TestTriggersAtXYZ	( (void(__cdecl*)(long, long, long, short, short, short)) 0x00461CA0 )
-#define SwitchTrigger	( (long(__cdecl*)(short, short)) 0x00461B10 )

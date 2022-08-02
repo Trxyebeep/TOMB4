@@ -4,6 +4,7 @@
 #include "collide.h"
 #include "items.h"
 #include "control.h"
+#include "objects.h"
 
 static short FullBlockSwitchBounds[12] = { -384, 384, 0, 256, 0, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 #ifdef GENERAL_FIXES
@@ -55,7 +56,46 @@ void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+long SwitchTrigger(short item_number, short timer)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (item->status == ITEM_DEACTIVATED)
+	{
+		if ((item->current_anim_state || item->object_number == JUMP_SWITCH) &&
+			(item->current_anim_state != 1 || item->object_number != JUMP_SWITCH) || timer <= 0)
+		{
+			RemoveActiveItem(item_number);
+			item->status = ITEM_INACTIVE;
+
+			if (item->item_flags[0])
+				item->flags |= IFL_INVISIBLE;
+		}
+		else
+		{
+			item->timer = timer;
+			item->status = ITEM_ACTIVE;
+
+			if (timer != 1)
+				item->timer *= 30;
+		}
+
+		return 1;
+	}
+
+	if (item->status != ITEM_INACTIVE)
+	{
+		if (item->flags & IFL_INVISIBLE)
+			return 1;
+	}
+
+	return 0;
+}
+
 void inject_switch(bool replace)
 {
 	INJECT(0x00463180, FullBlockSwitchCollision, replace);
+	INJECT(0x00461B10, SwitchTrigger, replace);
 }

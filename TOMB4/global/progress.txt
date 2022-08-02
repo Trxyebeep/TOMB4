@@ -1264,7 +1264,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/switch.cpp
 
-0x00461B10		SwitchTrigger
+0x00461B10	+	SwitchTrigger
 0x00461BD0		GetSwitchTrigger
 0x00461CA0		TestTriggersAtXYZ
 0x00461CF0		SwitchControl
