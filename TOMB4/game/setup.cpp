@@ -145,7 +145,7 @@ void ObjectObjects()
 
 	obj = &objects[CROWBAR_SWITCH];
 	obj->control = SwitchControl;
-//	obj->collision = CrowbarSwitchCollision;
+	obj->collision = CrowbarSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 

@@ -25,6 +25,8 @@ static PHD_VECTOR TurnSwitchPosA = { 650, 0, -138 };
 static PHD_VECTOR RailSwitchPos = { 0, 0, -550 };
 static PHD_VECTOR RailSwitchPos2 = { 0, 0, 550 };
 static PHD_VECTOR JumpSwitchPos = { 0, -208, 256 };
+static PHD_VECTOR CrowbarPos = { -89, 0, -328 };
+static PHD_VECTOR CrowbarPos2 = { 89, 0, 328 };
 
 static short FullBlockSwitchBounds[12] = { -384, 384, 0, 256, 0, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short SwitchBounds[12] = { 0, 0, 0, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
@@ -37,6 +39,8 @@ static short TurnSwitchBoundsC[12] = { 512, 896, 0, 0, 0, 512, -1820, 1820, -546
 static short RailSwitchBounds[12] = { -256, 256, 0, 0, -768, -512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short RailSwitchBounds2[12] = { -256, 256, 0, 0, 512, 768, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short JumpSwitchBounds[12] = { -128, 128, -256, 256, 384, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
+static short CrowbarBounds[12] = { -256, 256, 0, 0, -512, -256, -1820, 1820, -5460, 5460, -1820, 1820 };
+static short CrowbarBounds2[12] = { -256, 256, 0, 0, 256, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
@@ -697,6 +701,111 @@ void JumpSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void CrowbarSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	long flag;
+
+	flag = 0;
+	item = &items[item_number];
+
+	if (input & IN_ACTION || GLOBAL_inventoryitemchosen == CROWBAR_ITEM && l->current_anim_state == AS_STOP &&
+		l->anim_number == ANIM_BREATH && lara.gun_status == LG_NO_ARMS && !item->item_flags[0] ||
+		lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+	{
+		if (item->current_anim_state == 1)
+		{
+			l->pos.y_rot ^= 0x8000;
+
+			if (TestLaraPosition(CrowbarBounds2, item, l))
+			{
+				if (lara.IsMoving || GLOBAL_inventoryitemchosen == CROWBAR_ITEM)
+				{
+					if (MoveLaraPosition(&CrowbarPos2, item, l))
+					{
+						flag = 1;
+						l->anim_number = ANIM_CROWSWITCH;
+						l->frame_number = anims[ANIM_CROWSWITCH].frame_base;
+						item->goal_anim_state = 0;
+					}
+					else
+						lara.GeneralPtr = (void*)item_number;
+
+					GLOBAL_inventoryitemchosen = NO_ITEM;
+				}
+				else
+					flag = -1;
+			}
+			else if (lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+			{
+				lara.IsMoving = 0;
+				lara.gun_status = LG_NO_ARMS;
+			}
+
+			l->pos.y_rot ^= 0x8000;
+		}
+		else if (!item->current_anim_state)
+		{
+			if (TestLaraPosition(CrowbarBounds, item, l))
+			{
+				if (lara.IsMoving || GLOBAL_inventoryitemchosen == CROWBAR_ITEM)
+				{
+					if (MoveLaraPosition(&CrowbarPos, item, l))
+					{
+						flag = 1;
+						l->anim_number = ANIM_CROWSWITCH;
+						l->frame_number = anims[ANIM_CROWSWITCH].frame_base;
+						item->goal_anim_state = 1;
+					}
+					else
+						lara.GeneralPtr = (void*)item_number;
+
+					GLOBAL_inventoryitemchosen = NO_ITEM;
+				}
+				else
+					flag = -1;
+			}
+			else if (lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+			{
+				lara.IsMoving = 0;
+				lara.gun_status = LG_NO_ARMS;
+			}
+		}
+	}
+
+	if (!flag)
+		ObjectCollision(item_number, l, coll);
+	else
+	{
+		if (flag != -1)
+		{
+			l->current_anim_state = AS_SWITCHON;
+			l->goal_anim_state = AS_SWITCHON;
+			lara.IsMoving = 0;
+			lara.head_x_rot = 0;
+			lara.head_y_rot = 0;
+			lara.torso_x_rot = 0;
+			lara.torso_y_rot = 0;
+			lara.gun_status = LG_HANDS_BUSY;
+			item->status = ITEM_ACTIVE;
+			AddActiveItem(item_number);
+			AnimateItem(item);
+		}
+		else
+		{
+			if (lara.crowbar)
+				GLOBAL_enterinventory = CROWBAR_ITEM;
+			else if (OldPickupPos.x != l->pos.x_pos || OldPickupPos.y != l->pos.y_pos || OldPickupPos.z != l->pos.z_pos)
+			{
+				OldPickupPos.x = l->pos.x_pos;
+				OldPickupPos.y = l->pos.y_pos;
+				OldPickupPos.z = l->pos.z_pos;
+				SayNo();
+			}
+		}
+	}
+}
+
 void inject_switch(bool replace)
 {
 	INJECT(0x00463180, FullBlockSwitchCollision, replace);
@@ -712,4 +821,5 @@ void inject_switch(bool replace)
 	INJECT(0x00462720, TurnSwitchCollision, replace);
 	INJECT(0x00462AE0, RailSwitchCollision, replace);
 	INJECT(0x00462CB0, JumpSwitchCollision, replace);
+	INJECT(0x00462DB0, CrowbarSwitchCollision, replace);
 }
