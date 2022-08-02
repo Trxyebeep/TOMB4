@@ -139,10 +139,31 @@ void TestTriggersAtXYZ(long x, long y, long z, short room_number, short heavy, s
 	TestTriggers(trigger_index, heavy, flags);
 }
 
+void SwitchControl(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->flags |= IFL_CODEBITS;
+
+	if (!TriggerActive(item) && !(item->flags & IFL_INVISIBLE))
+	{
+		if (item->object_number == JUMP_SWITCH)
+			item->goal_anim_state = 0;
+		else
+			item->goal_anim_state = 1;
+
+		item->timer = 0;
+	}
+
+	AnimateItem(item);
+}
+
 void inject_switch(bool replace)
 {
 	INJECT(0x00463180, FullBlockSwitchCollision, replace);
 	INJECT(0x00461B10, SwitchTrigger, replace);
 	INJECT(0x00461BD0, GetSwitchTrigger, replace);
 	INJECT(0x00461CA0, TestTriggersAtXYZ, replace);
+	INJECT(0x00461CF0, SwitchControl, replace);
 }

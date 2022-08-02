@@ -46,6 +46,7 @@
 #include "scarab.h"
 #include "sentrygun.h"
 #include "lara1gun.h"
+#include "switch.h"
 
 void ObjectObjects()
 {
@@ -92,7 +93,7 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 	//	obj->initialise = InitialiseSwitch;
-	//	obj->control = SwitchControl;
+		obj->control = SwitchControl;
 	//	obj->collision = SwitchCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
@@ -108,13 +109,13 @@ void ObjectObjects()
 	}
 
 	obj = &objects[UNDERWATER_SWITCH1];
-//	obj->control = SwitchControl;
+	obj->control = SwitchControl;
 //	obj->collision = SwitchCollision2;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[UNDERWATER_SWITCH2];
-//	obj->control = SwitchControl;
+	obj->control = SwitchControl;
 //	obj->collision = UnderwaterSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
@@ -132,26 +133,26 @@ void ObjectObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[LEVER_SWITCH];
-//	obj->control = SwitchControl;
+	obj->control = SwitchControl;
 //	obj->collision = RailSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[JUMP_SWITCH];
-//	obj->control = SwitchControl;
+	obj->control = SwitchControl;
 //	obj->collision = JumpSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[CROWBAR_SWITCH];
-//	obj->control = SwitchControl;
+	obj->control = SwitchControl;
 //	obj->collision = CrowbarSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[PULLEY];
 //	obj->initialise = InitialisePulley;
-//	obj->control = SwitchControl;
+	obj->control = SwitchControl;
 //	obj->collision = PulleyCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
