@@ -153,7 +153,7 @@ void ObjectObjects()
 	obj = &objects[PULLEY];
 //	obj->initialise = InitialisePulley;
 	obj->control = SwitchControl;
-//	obj->collision = PulleyCollision;
+	obj->collision = PulleyCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 

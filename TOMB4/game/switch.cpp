@@ -7,6 +7,7 @@
 #include "objects.h"
 #include "draw.h"
 #include "laramisc.h"
+#include "sound.h"
 
 #ifdef GENERAL_FIXES
 static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 0 };
@@ -18,12 +19,14 @@ static PHD_VECTOR SwitchPos = { 0, 0, 0 };
 static PHD_VECTOR Switch2Pos = { 0, 0, 108 };
 static PHD_VECTOR UnderwaterSwitchPos = { 0, -736, -416 };
 static PHD_VECTOR UnderwaterSwitchPos2 = { 0, -736, 416 };
+static PHD_VECTOR PulleyPos = { 0, 0, -148 };
 
 static short FullBlockSwitchBounds[12] = { -384, 384, 0, 256, 0, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short SwitchBounds[12] = { 0, 0, 0, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short Switch2Bounds[12] = { -1024, 1024, -1024, 1024, -1024, 512, -14560, 14560, -14560, 14560, -14560, 14560 };
 static short UnderwaterSwitchBounds[12] = { -256, 256, -1280, -512, -512, 0, -14560, 14560, -14560, 14560, -14560, 14560 };
 static short UnderwaterSwitchBounds2[12] = { -256, 256, -1280, -512, 0, 512, -14560, 14560, -14560, 14560, -14560, 14560 };
+static short PulleyBounds[12] = { -256, 256, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
@@ -353,6 +356,65 @@ void UnderwaterSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void PulleyCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	short roty;
+
+	item = &items[item_number];
+
+	if (!(item->flags & IFL_INVISIBLE) && (input & IN_ACTION && lara.gun_status == LG_NO_ARMS && l->current_anim_state == AS_STOP &&
+		l->anim_number == ANIM_BREATH && !l->gravity_status || lara.IsMoving && lara.GeneralPtr == (void*)item_number))
+	{
+		roty = item->pos.y_rot;
+		item->pos.y_rot = l->pos.y_rot;
+
+		if (TestLaraPosition(PulleyBounds, item, l))
+		{
+			if (item->item_flags[1])
+			{
+				if (OldPickupPos.x != l->pos.x_pos || OldPickupPos.y != l->pos.y_pos || OldPickupPos.z != l->pos.z_pos)
+				{
+					OldPickupPos.x = l->pos.x_pos;
+					OldPickupPos.y = l->pos.y_pos;
+					OldPickupPos.z = l->pos.z_pos;
+					SayNo();
+				}
+			}
+			else
+			{
+				if (MoveLaraPosition(&PulleyPos, item, l))
+				{
+					l->anim_number = ANIM_STAT2PULLEY;
+					l->frame_number = anims[ANIM_STAT2PULLEY].frame_base;
+					l->current_anim_state = AS_PULLEY;
+					AddActiveItem(item_number);
+					item->status = ITEM_ACTIVE;
+					item->pos.y_rot = roty;
+					lara.IsMoving = 0;
+					lara.head_x_rot = 0;
+					lara.head_y_rot = 0;
+					lara.torso_x_rot = 0;
+					lara.torso_y_rot = 0;
+					lara.gun_status = LG_HANDS_BUSY;
+					lara.GeneralPtr = item;
+				}
+				else
+					lara.GeneralPtr = (void*)item_number;
+			}
+		}
+		else if (lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+		{
+			lara.IsMoving = 0;
+			lara.gun_status = 0;
+		}
+
+		item->pos.y_rot = roty;
+	}
+	else if (l->current_anim_state != AS_PULLEY)
+		ObjectCollision(item_number, l, coll);
+}
+
 void inject_switch(bool replace)
 {
 	INJECT(0x00463180, FullBlockSwitchCollision, replace);
@@ -363,4 +425,5 @@ void inject_switch(bool replace)
 	INJECT(0x00461D60, SwitchCollision, replace);
 	INJECT(0x00461FF0, SwitchCollision2, replace);
 	INJECT(0x00462100, UnderwaterSwitchCollision, replace);
+	INJECT(0x004622C0, PulleyCollision, replace);
 }
