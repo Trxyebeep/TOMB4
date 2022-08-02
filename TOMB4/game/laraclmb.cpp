@@ -489,6 +489,97 @@ long LaraTestClimbPos(ITEM_INFO* item, long front, long right, long origin, long
 	return LaraTestClimb(x, origin + item->pos.y_pos, z, xfront, zfront, height, item->room_number, shift);
 }
 
+long LaraTestClimbUpPos(ITEM_INFO* item, long front, long right, long* shift, long* ledge)
+{
+	FLOOR_INFO* floor;
+	long angle, x, y, z, xfront, zfront, h, c;
+	short room_number;
+
+	xfront = 0;
+	zfront = 0;
+	y = item->pos.y_pos - 768;
+	angle = ushort(item->pos.y_rot + 0x2000) / 0x4000;
+
+	switch (angle)
+	{
+	case NORTH:
+		x = right + item->pos.x_pos;
+		z = front + item->pos.z_pos;
+		zfront = 4;
+		break;
+
+	case EAST:
+		x = front + item->pos.x_pos;
+		z = item->pos.z_pos - right;
+		xfront = 4;
+		break;
+
+	case SOUTH:
+		x = item->pos.x_pos - right;
+		z = item->pos.z_pos - front;
+		zfront = -4;
+		break;
+
+	default:
+		x = item->pos.x_pos - front;
+		z = right + item->pos.z_pos;
+		xfront = -4;
+		break;
+	}
+
+	*shift = 0;
+	room_number = item->room_number;
+	floor = GetFloor(x, y, z, &room_number);
+	c = 256 - y + GetCeiling(floor, x, y, z);
+
+	if (c > 70)
+		return 0;
+
+	if (c > 0)
+		*shift = c;
+
+	floor = GetFloor(x + xfront, y, z + zfront, &room_number);
+	h = GetHeight(floor, x + xfront, y, z + zfront);
+
+	if (h == NO_HEIGHT)
+	{
+		*ledge = NO_HEIGHT;
+		return 1;
+	}
+
+	h -= y;
+	*ledge = h;
+
+	if (h > 128)
+	{
+		c = GetCeiling(floor, x+xfront, y, z+zfront) - y;
+
+		if (c >= 512)
+			return 1;
+
+		if (h - c > 762)
+		{
+			*shift = h;
+			return -1;
+		}
+	}
+	else
+	{
+		if (h > 0 && h > *shift)
+			*shift = h;
+
+		room_number = item->room_number;
+		GetFloor(x, y + 512, z, &room_number);
+		floor = GetFloor(x + xfront, y + 512, z + zfront, &room_number);
+		c = GetCeiling(floor, x + xfront, y + 512, z + zfront) - y;
+
+		if (c <= h || c >= 512)
+			return 1;
+	}
+
+	return 0;
+}
+
 void inject_laraclmb(bool replace)
 {
 	INJECT(0x0042C6C0, lara_as_climbstnc, replace);
@@ -505,4 +596,5 @@ void inject_laraclmb(bool replace)
 	INJECT(0x0042D7D0, GetClimbTrigger, replace);
 	INJECT(0x0042C470, LaraTestClimb, replace);
 	INJECT(0x0042C3C0, LaraTestClimbPos, replace);
+	INJECT(0x0042CA60, LaraTestClimbUpPos, replace);
 }

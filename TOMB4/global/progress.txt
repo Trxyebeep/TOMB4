@@ -821,7 +821,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0042C6C0	+	lara_as_climbstnc
 0x0042C770	+	lara_col_climbstnc
 0x0042C980		LaraCheckForLetGo
-0x0042CA60		LaraTestClimbUpPos
+0x0042CA60	+	LaraTestClimbUpPos
 0x0042CC80	+	lara_as_climbleft
 0x0042CCC0	+	lara_col_climbleft
 0x0042CD20		LaraDoClimbLeftRight
