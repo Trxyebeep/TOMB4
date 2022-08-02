@@ -35,6 +35,7 @@ long IsRoomOutside(long x, long y, long z);
 long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, MESH_INFO** StaticMesh);
 long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long firing);
 void AnimateItem(ITEM_INFO* item);
+long RayBoxIntersect(PHD_VECTOR* min, PHD_VECTOR* max, PHD_VECTOR* mid, PHD_VECTOR* dir, PHD_VECTOR* bound);
 
 #define DoRayBox	( (long(__cdecl*)(GAME_VECTOR*, GAME_VECTOR*, short*, PHD_3DPOS*, PHD_VECTOR*, short)) 0x0044CDF0 )
 

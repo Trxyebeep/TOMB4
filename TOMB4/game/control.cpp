@@ -2825,6 +2825,131 @@ void AnimateItem(ITEM_INFO* item)
 	item->pos.z_pos += (speed2 * phd_cos(item->pos.y_rot + 0x4000)) >> W2V_SHIFT;
 }
 
+long RayBoxIntersect(PHD_VECTOR* min, PHD_VECTOR* max, PHD_VECTOR* origin, PHD_VECTOR* dir, PHD_VECTOR* bound)
+{
+	long planes[3];
+	long dists[3];
+	long plane;
+	char quad[3];
+	char inside;
+
+	inside = 1;
+
+	if (origin->x < min->x)
+	{
+		quad[0] = 1;
+		planes[0] = min->x;
+		inside = 0;
+	}
+	else if (origin->x > max->x)
+	{
+		quad[0] = 0;
+		planes[0] = max->x;
+		inside = 0;
+	}
+	else
+		quad[0] = 1;
+
+	if (origin->y < min->y)
+	{
+		quad[1] = 1;
+		planes[1] = min->y;
+		inside = 0;
+	}
+	else if (origin->y > max->y)
+	{
+		quad[1] = 0;
+		planes[1] = max->y;
+		inside = 0;
+	}
+	else
+		quad[1] = 2;
+
+	if (origin->z < min->z)
+	{
+		quad[2] = 1;
+		planes[2] = min->z;
+		inside = 0;
+	}
+	else if (origin->z > max->z)
+	{
+		quad[2] = 0;
+		planes[2] = max->z;
+		inside = 0;
+	}
+	else
+		quad[2] = 2;
+
+	if (inside)
+	{
+		bound->x = origin->x >> 16;
+		bound->y = origin->y >> 16;
+		bound->z = origin->z >> 16;
+		return 1;
+	}
+
+	if (quad[0] == 2 || !dir->x)
+		dists[0] = -65536;
+	else
+		dists[0] = ((planes[0] - origin->x) / (dir->x >> 8)) << 8;
+
+	if (quad[1] == 2 || !dir->y)
+		dists[1] = -65536;
+	else
+		dists[1] = ((planes[1] - origin->y) / (dir->y >> 8)) << 8;
+
+	if (quad[2] == 2 || !dir->z)
+		dists[2] = -65536;
+	else
+		dists[2] = ((planes[2] - origin->z) / (dir->z >> 8)) << 8;
+
+	plane = 0;
+
+	for (int i = 1; i < 3; i++)
+	{
+		if (dists[plane] < dists[i])
+			plane = i;
+	}
+
+	if (dists[plane] < 0)
+		return 0;
+
+	if (!plane)
+		bound->x = planes[0];
+	else
+	{
+		bound->x = origin->x + (((__int64)dir->x * (__int64)dists[plane]) >> 16);
+
+		if ((!quad[0] && bound->x < min->x) || (quad[0] == 1 && bound->x > max->x))
+			return 0;
+	}
+
+	if (plane == 1)
+		bound->y = planes[1];
+	else
+	{
+		bound->y = origin->y + (((__int64)dir->y * (__int64)dists[plane]) >> 16);
+
+		if ((!quad[1] && bound->y < min->y) || (quad[1] == 1 && bound->y > max->y))
+			return 0;
+	}
+
+	if (plane == 2)
+		bound->z = planes[2];
+	else
+	{
+		bound->z = origin->z + (((__int64)dir->z * (__int64)dists[plane]) >> 16);
+
+		if ((!quad[2] && bound->z < min->z) || (quad[2] == 1 && bound->z > max->z))
+			return 0;
+	}
+
+	bound->x >>= 16;
+	bound->y >>= 16;
+	bound->z >>= 16;
+	return 1;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -2859,4 +2984,5 @@ void inject_control(bool replace)
 	INJECT(0x0044CBE0, ObjectOnLOS2, replace);
 	INJECT(0x0044D890, GetTargetOnLOS, replace);
 	INJECT(0x00449B90, AnimateItem, replace);
+	INJECT(0x0044D530, RayBoxIntersect, replace);
 }

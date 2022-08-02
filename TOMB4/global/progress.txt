@@ -175,7 +175,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044C9C0	+	IsRoomOutside
 0x0044CBE0	+	ObjectOnLOS2
 0x0044CDF0		DoRayBox
-0x0044D530		RayBoxIntersect
+0x0044D530	+	RayBoxIntersect
 0x0044D820	+	FireCrossBowFromLaserSight
 0x0044D890	+	GetTargetOnLOS
 0x0044DE50	+	ExplodeItemNode

@@ -47,6 +47,7 @@
 #include "sentrygun.h"
 #include "lara1gun.h"
 #include "switch.h"
+#include "missile.h"
 
 void ObjectObjects()
 {
@@ -230,7 +231,7 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 		obj->initialise = InitialisePickUp;
-	//	obj->control = AnimatingPickUp;
+		obj->control = AnimatingPickUp;
 		obj->collision = PickUpCollision;
 		obj->save_position = 1;
 		obj->save_flags = 1;
@@ -240,7 +241,7 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 		obj->initialise = InitialisePickUp;
-	//	obj->control = AnimatingPickUp;
+		obj->control = AnimatingPickUp;
 		obj->collision = PickUpCollision;
 		obj->save_position = 1;
 		obj->save_flags = 1;
@@ -254,14 +255,14 @@ void ObjectObjects()
 
 	obj = &objects[WATERSKIN1_EMPTY];
 	obj->initialise = InitialisePickUp;
-//	obj->control = AnimatingPickUp;
+	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
 	obj = &objects[WATERSKIN2_EMPTY];
 	obj->initialise = InitialisePickUp;
-//	obj->control = AnimatingPickUp;
+	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
@@ -282,14 +283,14 @@ void ObjectObjects()
 
 	obj = &objects[FLARE_INV_ITEM];
 	obj->initialise = InitialisePickUp;
-//	obj->control = AnimatingPickUp;
+	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
 	obj = &objects[COMPASS_ITEM];
 	obj->initialise = InitialisePickUp;
-//	obj->control = AnimatingPickUp;
+	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
@@ -530,7 +531,7 @@ void ObjectObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[BODY_PART];
-//	obj->control = ControlBodyPart;
+	obj->control = ControlBodyPart;
 	obj->draw_routine = (void(*)(ITEM_INFO*))1;
 	obj->nmeshes = 0;
 	obj->loaded = 1;
