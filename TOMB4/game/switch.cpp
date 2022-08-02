@@ -806,6 +806,38 @@ void CrowbarSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void FullBlockSwitchControl(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
+	if (item->anim_number != objects[item->object_number].anim_index + 2 || CurrentSequence >= 3 || item->item_flags[0])
+	{
+		if (CurrentSequence >= 4)
+		{
+			item->item_flags[0] = 0;
+			item->goal_anim_state = 1;
+			item->status = ITEM_INACTIVE;
+			CurrentSequence++;
+
+			if (CurrentSequence >= 7)
+				CurrentSequence = 0;
+		}
+	}
+	else
+	{
+		item->item_flags[0] = 1;
+		Sequences[CurrentSequence] = (uchar)item->trigger_flags;
+		CurrentSequence++;
+
+		if (CurrentSequence == 3 && SequenceUsed[SequenceResults[Sequences[0]][Sequences[1]][Sequences[2]]])
+			CurrentSequence++;
+	}
+
+	AnimateItem(item);
+}
+
 void inject_switch(bool replace)
 {
 	INJECT(0x00463180, FullBlockSwitchCollision, replace);
@@ -822,4 +854,5 @@ void inject_switch(bool replace)
 	INJECT(0x00462AE0, RailSwitchCollision, replace);
 	INJECT(0x00462CB0, JumpSwitchCollision, replace);
 	INJECT(0x00462DB0, CrowbarSwitchCollision, replace);
+	INJECT(0x00463080, FullBlockSwitchControl, replace);
 }

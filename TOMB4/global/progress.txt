@@ -1277,7 +1277,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00462AE0	+	RailSwitchCollision
 0x00462CB0	+	JumpSwitchCollision
 0x00462DB0	+	CrowbarSwitchCollision
-0x00463080		FullBlockSwitchControl
+0x00463080	+	FullBlockSwitchControl
 0x00463180	+	FullBlockSwitchCollision
 0x004632F0		CogSwitchControl
 0x00463400		CogSwitchCollision

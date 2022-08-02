@@ -101,7 +101,7 @@ void ObjectObjects()
 	for (int i = SEQUENCE_SWITCH1; i <= SEQUENCE_SWITCH3; i++)
 	{
 		obj = &objects[i];
-	//	obj->control = FullBlockSwitchControl;
+		obj->control = FullBlockSwitchControl;
 		obj->collision = FullBlockSwitchCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
