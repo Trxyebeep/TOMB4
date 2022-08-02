@@ -116,7 +116,7 @@ void ObjectObjects()
 
 	obj = &objects[UNDERWATER_SWITCH2];
 	obj->control = SwitchControl;
-//	obj->collision = UnderwaterSwitchCollision;
+	obj->collision = UnderwaterSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 

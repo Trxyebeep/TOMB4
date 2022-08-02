@@ -16,10 +16,14 @@ static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 100 };
 
 static PHD_VECTOR SwitchPos = { 0, 0, 0 };
 static PHD_VECTOR Switch2Pos = { 0, 0, 108 };
+static PHD_VECTOR UnderwaterSwitchPos = { 0, -736, -416 };
+static PHD_VECTOR UnderwaterSwitchPos2 = { 0, -736, 416 };
 
 static short FullBlockSwitchBounds[12] = { -384, 384, 0, 256, 0, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short SwitchBounds[12] = { 0, 0, 0, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short Switch2Bounds[12] = { -1024, 1024, -1024, 1024, -1024, 512, -14560, 14560, -14560, 14560, -14560, 14560 };
+static short UnderwaterSwitchBounds[12] = { -256, 256, -1280, -512, -512, 0, -14560, 14560, -14560, 14560, -14560, 14560 };
+static short UnderwaterSwitchBounds2[12] = { -256, 256, -1280, -512, 0, 512, -14560, 14560, -14560, 14560, -14560, 14560 };
 
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
@@ -296,6 +300,59 @@ void SwitchCollision2(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void UnderwaterSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	long flag;
+
+	item = &items[item_number];
+
+	if (input & IN_ACTION && lara.water_status == LW_UNDERWATER && l->current_anim_state == AS_TREAD && l->anim_number == ANIM_TREAD &&
+		lara.gun_status == LG_NO_ARMS && item->current_anim_state == 0 || lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+	{
+		flag = 0;
+
+		if (TestLaraPosition(UnderwaterSwitchBounds, item, l))
+		{
+			if (!MoveLaraPosition(&UnderwaterSwitchPos, item, l))
+				lara.GeneralPtr = (void*)item_number;
+			else
+				flag = 1;
+		}
+		else
+		{
+			l->pos.y_rot ^= 0x8000;
+
+			if (TestLaraPosition(UnderwaterSwitchBounds2, item, l))
+			{
+				if (MoveLaraPosition(&UnderwaterSwitchPos2, item, l))
+					flag = 1;
+				else
+					lara.GeneralPtr = (void*)item_number;
+			}
+
+			l->pos.y_rot ^= 0x8000;
+		}
+
+		if (flag)
+		{
+			l->anim_number = ANIM_WATERSWITCH;
+			l->frame_number = anims[ANIM_WATERSWITCH].frame_base;
+			l->current_anim_state = AS_SWITCHON;
+			l->fallspeed = 0;
+			lara.IsMoving = 0;
+			lara.gun_status = LG_HANDS_BUSY;
+			item->goal_anim_state = 1;
+			item->status = ITEM_ACTIVE;
+			AddActiveItem(item_number);
+			ForcedFixedCamera.x = item->pos.x_pos - ((1024 * phd_sin(item->pos.y_rot + 16380)) >> W2V_SHIFT);
+			ForcedFixedCamera.y = item->pos.y_pos - 1024;
+			ForcedFixedCamera.z = item->pos.z_pos - ((1024 * phd_cos(item->pos.y_rot + 16380)) >> W2V_SHIFT);
+			ForcedFixedCamera.room_number = item->room_number;
+		}
+	}
+}
+
 void inject_switch(bool replace)
 {
 	INJECT(0x00463180, FullBlockSwitchCollision, replace);
@@ -305,4 +362,5 @@ void inject_switch(bool replace)
 	INJECT(0x00461CF0, SwitchControl, replace);
 	INJECT(0x00461D60, SwitchCollision, replace);
 	INJECT(0x00461FF0, SwitchCollision2, replace);
+	INJECT(0x00462100, UnderwaterSwitchCollision, replace);
 }
