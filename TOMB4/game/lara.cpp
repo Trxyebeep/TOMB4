@@ -321,7 +321,7 @@ static void TiltHer(ITEM_INFO* item, long rad, long height)
 		room_number = item->room_number;
 		floor = GetFloor(wx, yT, wz, &room_number);
 		wy[i] = GetHeight(floor, wx, yT, wz);
-
+    
 		if (abs(y - wy[i]) > rad / 2)
 			wy[i] = (long)(plane.x * wx + plane.y * wz + plane.z);
 	}
