@@ -34,3 +34,8 @@ __inline short phd_cos(long angle)
 	angle >>= 3;
 	return 4 * rcossin_tbl[(angle & 0x1FFE) + 1];
 }
+
+__inline void phd_PopMatrix()
+{
+	phd_mxptr -= indices_count;
+}

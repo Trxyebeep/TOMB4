@@ -32,7 +32,6 @@ do \
 
 #define ABS(x) (((x)<0) ? (-(x)) : (x))
 #define SQUARE(x) ((x)*(x))
-#define phd_PopMatrix()		phd_mxptr -= 12
 #define RGBONLY(r, g, b) ((b) | (((g) | ((r) << 8)) << 8))
 #define RGBA(r, g, b, a) (RGBONLY(r, g, b) | ((a) << 24))
 #define	CLRA(clr)	((clr >> 24) & 0xFF)	//shift r, g, and b out of the way and 0xFF
