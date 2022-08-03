@@ -57,6 +57,7 @@ void LaraCheatyBits()
 		lara.num_flares = -1;
 		lara.num_shotgun_ammo1 = -1;
 		lara.num_shotgun_ammo2 = -1;
+		savegame.HaveBikeBooster = 1;
 
 		if (objects[LASERSIGHT_ITEM].loaded)
 			lara.lasersight = 1;
