@@ -944,10 +944,133 @@ void LoadGameflow()
 	}
 }
 
+short CreditGroups[18] =
+{
+	0,
+	TXT_PC_Programmer,
+	TXT_PSX_Programmers,
+	TXT_Additional_Programming,
+	TXT_Additional_Programmers,
+	TXT_AI_Programming,
+	TXT_Animators,
+	TXT_Level_Designers,
+	TXT_FMV_Sequences,
+	TXT_Additional_Artwork,
+	TXT_Music_Sound_FX,
+	TXT_Original_Story,
+	TXT_Script,
+	TXT_Producer,
+	TXT_QA,
+	TXT_Executive_Producers,
+	TXT_Additional_Sound_FX,
+	0
+};
+
+const char* CreditsTable[]
+{
+	"%01",
+	"Richard Flower", "0",
+
+	"%05",
+	"Tom Scutt", "0", 
+
+	"%02",
+	"Chris Coupe", "Martin Gibbins", "Derek Leigh-Gilchrist", "0",
+
+	"%03",
+	"Martin Jensen", "0",
+
+	"%06",
+	"Phil Chapman", "Jerr O'Carroll", "0",
+
+	"%07",
+	"Andrea Cordella", "Pete Duncan", "Jamie Morton", "Richard Morton", "Andy Sandham", "Joby Wood", "0",
+
+	"%08",
+	"Peter Barnard", "David Reading", "Matt Furniss", "Simeon Furniss", "John Lilley", "0",
+
+	"%09",
+	"Damon Godley", "Mark Hazelton", "Steve Huckle", "Steve Hawkes", "Darren Wakeman", "0",
+
+	"%10",
+	"Peter Connelly", "0",
+
+	"%16",
+	"Martin Iveson", "0",
+
+	"%11",
+	"Pete Duncan", "Dr Kieron O'Hara", "Richard Morton", "Andy Sandham", "0",
+
+	"%12",
+	"Hope Canton", "Andy Sandham", "0",
+
+	"%13",
+	"Troy Horton", "0",
+
+	"%14",
+	"Tiziano Cirillo", "Nick Conelly", "Hayos Fatunmbi", "Paul Field", "Steve Wakeman", "Dave Ward", "Jason Churchman", "0",
+
+	"%15",
+	"Jeremy H. Smith", "Adrian Smith",
+
+#ifdef GENERAL_FIXES
+	"0",
+	"Tomb Raider IV Community Edition",
+	"Troye", "ChocolateFan"
+#endif
+};
+
+long DoCredits()
+{
+	const char* s;
+	static ulong StartPos = 0;
+	static long init = 0;
+	long y, num_drawn;
+
+	num_drawn = 0;
+
+	if (!init)
+	{
+		StartPos = font_height + phd_winheight;
+		init = 1;
+	}
+
+	y = StartPos;
+
+	for (int i = 0; i < sizeof(CreditsTable) / 4; i++)
+	{
+		s = CreditsTable[i];
+
+		if (y < font_height + phd_winheight + 1 && y > -font_height)
+		{
+			if (*s == '%')
+				PrintString(ushort(phd_winwidth >> 1), (ushort)y, 6, SCRIPT_TEXT(CreditGroups[atoi(s + 1)]), FF_CENTER);
+			else if (*s != '0')
+#ifdef GENERAL_FIXES
+				PrintString(ushort(phd_winwidth >> 1), (ushort)y, 2 + (i == 72 ? 4 : 0), s, FF_CENTER);
+#else
+				PrintString(ushort(phd_winwidth >> 1), (ushort)y, 2, s, FF_CENTER);
+#endif
+
+			num_drawn++;
+		}
+
+		y += font_height;
+	}
+
+	StartPos--;
+
+	if (!num_drawn)
+		init = 0;
+
+	return num_drawn;
+}
+
 void inject_gameflow(bool replace)
 {
 	INJECT(0x00451770, DoGameflow, replace);
 	INJECT(0x00452710, DoLevel, replace);
 	INJECT(0x00451E30, DoTitle, replace);
 	INJECT(0x00451510, LoadGameflow, replace);
+	INJECT(0x00452B80, DoCredits, replace);
 }

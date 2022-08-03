@@ -4,6 +4,8 @@
 #include "function_stubs.h"
 #include "audio.h"
 
+char* samples_buffer;
+
 static LPDIRECTSOUNDBUFFER DSPrimary;
 static DS_SAMPLE DS_Samples[32];
 static DS_SAMPLE DS_Buffers[256];
@@ -11,6 +13,7 @@ static MMRESULT mmresult;
 static WAVEFORMATEX pcm_format;
 static HACMSTREAM hACMStream;
 static ACMSTREAMHEADER ACMStreamHeader;
+static char* decompressed_samples_buffer;
 
 bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 {

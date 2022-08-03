@@ -66,31 +66,31 @@ x for functions decompiled but not injected, for one reason or another.
 0x004401F0	+	TargetBox
 0x00440290	+	EscapeBox
 0x00440340	+	ValidBox
-0x004403E0		GetCreatureMood
+0x004403E0	+	GetCreatureMood
 0x00440620	+	CreatureMood
 0x00440940	+	StalkBox
 0x00440A40	+	CalculateTarget
-0x00440E90		CreatureCreature
-0x00440FD0		BadFloor
+0x00440E90	+	CreatureCreature
+0x00440FD0	+	BadFloor
 0x00441080	+	CreatureDie
-0x00441230		CreatureAnimation
-0x00441C60		CreatureTurn
-0x00441EE0		CreatureTilt
-0x00441F20		CreatureJoint
-0x00441F80		CreatureFloat
-0x00442080		CreatureUnderwater
-0x00442110		CreatureEffect
-0x00442170		CreatureEffectT
-0x004421D0		CreatureVault
-0x00442380		CreatureKill
-0x00442550		AlertAllGuards
-0x004425D0		AlertNearbyGuards
-0x00442670		AIGuard
-0x00442720		GetAITarget
-0x00442A60		FindAITargetObject
-0x00442C40		SameZone
-0x00442D30		CreatureYRot
-0x00442D70		MoveCreature3DPos
+0x00441230	+	CreatureAnimation
+0x00441C60	+	CreatureTurn
+0x00441EE0	+	CreatureTilt
+0x00441F20	+	CreatureJoint
+0x00441F80	+	CreatureFloat
+0x00442080	+	CreatureUnderwater
+0x00442110	+	CreatureEffect
+0x00442170	+	CreatureEffectT
+0x004421D0	+	CreatureVault
+0x00442380	+	CreatureKill
+0x00442550	+	AlertAllGuards
+0x004425D0	+	AlertNearbyGuards
+0x00442670	+	AIGuard
+0x00442720	+	GetAITarget
+0x00442A60	+	FindAITargetObject
+0x00442C40	+	SameZone
+0x00442D30	+	CreatureYRot
+0x00442D70	+	MoveCreature3DPos
 
 
 		game/camera.cpp
@@ -174,8 +174,8 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044C8D0	+	CheckNoColCeilingTriangle
 0x0044C9C0	+	IsRoomOutside
 0x0044CBE0	+	ObjectOnLOS2
-0x0044CDF0		DoRayBox
-0x0044D530		RayBoxIntersect
+0x0044CDF0	+	DoRayBox
+0x0044D530	+	RayBoxIntersect
 0x0044D820	+	FireCrossBowFromLaserSight
 0x0044D890	+	GetTargetOnLOS
 0x0044DE50	+	ExplodeItemNode
@@ -358,7 +358,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0044F5D0	+	GetRoomBounds
 0x0044F790	+	SetRoomBounds
 0x0044FB10	+	DrawEffect
-0x0044FC00		calc_animating_item_clip_window
+0x0044FC00	+	calc_animating_item_clip_window
 0x0044FF60	+	DrawAnimatingItem
 0x00450520	+	InitInterpolate
 0x00450560	+	phd_PopMatrix_I
@@ -482,7 +482,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00451770	+	DoGameflow
 0x00451E30	+	DoTitle
 0x00452710	+	DoLevel
-0x00452B80		DoCredits
+0x00452B80	+	DoCredits
 
 
 		game/guide.cpp
@@ -784,20 +784,20 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/lara1gun.cpp
 
-0x00428E40		draw_shotgun_meshes
-0x00428E70		undraw_shotgun_meshes
-0x00428EA0		ready_shotgun
-0x00428F10		RifleHandler
-0x00429260		FireShotgun
-0x00429480		FireGrenade
-0x00429710		ControlGrenade
+0x00428E40	+	draw_shotgun_meshes
+0x00428E70	+	undraw_shotgun_meshes
+0x00428EA0	+	ready_shotgun
+0x00428F10	+	RifleHandler
+0x00429260	+	FireShotgun
+0x00429480	+	FireGrenade
+0x00429710	+	ControlGrenade
 0x0042A270	+	FireCrossbow
-0x0042A490		CrossbowHitSwitchType78
-0x0042A850		ControlCrossbow
-0x0042AE50		draw_shotgun
-0x0042AFE0		undraw_shotgun
-0x0042B100		AnimateShotgun
-0x0042B430		TriggerUnderwaterExplosion
+0x0042A490	+	CrossbowHitSwitchType78
+0x0042A850	+	ControlCrossbow
+0x0042AE50	+	draw_shotgun
+0x0042AFE0	+	undraw_shotgun
+0x0042B100	+	AnimateShotgun
+0x0042B430	+	TriggerUnderwaterExplosion
 0x0042B600	+	DoGrenadeDamageOnBaddie
 
 
@@ -810,23 +810,23 @@ x for functions decompiled but not injected, for one reason or another.
 0x0042BB20	+	draw_pistol_meshes
 0x0042BB70	+	undraw_pistol_mesh_left
 0x0042BBB0	+	undraw_pistol_mesh_right
-0x0042BBF0		PistolHandler
-0x0042BE40		AnimatePistols
+0x0042BBF0	+	PistolHandler
+0x0042BE40	+	AnimatePistols
 
 
 		game/laraclmb.cpp
 
-0x0042C3C0		LaraTestClimbPos
-0x0042C470		LaraTestClimb
+0x0042C3C0	+	LaraTestClimbPos
+0x0042C470	+	LaraTestClimb
 0x0042C6C0	+	lara_as_climbstnc
 0x0042C770	+	lara_col_climbstnc
-0x0042C980		LaraCheckForLetGo
-0x0042CA60		LaraTestClimbUpPos
+0x0042C980	+	LaraCheckForLetGo
+0x0042CA60	+	LaraTestClimbUpPos
 0x0042CC80	+	lara_as_climbleft
 0x0042CCC0	+	lara_col_climbleft
-0x0042CD20		LaraDoClimbLeftRight
-0x0042CEE0		LaraClimbLeftCornerTest
-0x0042D160		LaraClimbRightCornerTest
+0x0042CD20	+	LaraDoClimbLeftRight
+0x0042CEE0	+	LaraClimbLeftCornerTest
+0x0042D160	+	LaraClimbRightCornerTest
 0x0042D3D0	+	lara_as_climbright
 0x0042D410	+	lara_col_climbright
 0x0042D470	+	lara_as_climbing
@@ -845,19 +845,19 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/larafire.cpp
 
-0x0042D840		LaraGun
+0x0042D840	+	LaraGun
 0x0042DDC0	+	CheckForHoldingState
 0x0042DDF0	+	InitialiseNewWeapon
 0x0042DF30	+	LaraTargetInfo
-0x0042E0D0		LaraGetNewTarget
+0x0042E0D0	+	LaraGetNewTarget
 0x0042E4A0	+	find_target_point
-0x0042E560		AimWeapon
-0x0042E630		FireWeapon
-0x0042E920		HitTarget
-0x0042EA70		WeaponObject
-0x0042EAC0		WeaponObjectMesh
-0x0042EB30		DoProperDetection
-0x0042F480		get_current_ammo_pointer
+0x0042E560	+	AimWeapon
+0x0042E630	+	FireWeapon
+0x0042E920	+	HitTarget
+0x0042EA70	+	WeaponObject
+0x0042EAC0	+	WeaponObjectMesh
+0x0042EB30	+	DoProperDetection
+0x0042F480	+	get_current_ammo_pointer
 
 
 		game/laraflar.cpp
@@ -1264,23 +1264,23 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/switch.cpp
 
-0x00461B10		SwitchTrigger
-0x00461BD0		GetSwitchTrigger
-0x00461CA0		TestTriggersAtXYZ
-0x00461CF0		SwitchControl
-0x00461D60		SwitchCollision
-0x00461FF0		SwitchCollision2
-0x00462100		UnderwaterSwitchCollision
-0x004622C0		PulleyCollision
-0x004624C0		TurnSwitchControl
-0x00462720		TurnSwitchCollision
-0x00462AE0		RailSwitchCollision
-0x00462CB0		JumpSwitchCollision
-0x00462DB0		CrowbarSwitchCollision
-0x00463080		FullBlockSwitchControl
+0x00461B10	+	SwitchTrigger
+0x00461BD0	+	GetSwitchTrigger
+0x00461CA0	+	TestTriggersAtXYZ
+0x00461CF0	+	SwitchControl
+0x00461D60	+	SwitchCollision
+0x00461FF0	+	SwitchCollision2
+0x00462100	+	UnderwaterSwitchCollision
+0x004622C0	+	PulleyCollision
+0x004624C0	+	TurnSwitchControl
+0x00462720	+	TurnSwitchCollision
+0x00462AE0	+	RailSwitchCollision
+0x00462CB0	+	JumpSwitchCollision
+0x00462DB0	+	CrowbarSwitchCollision
+0x00463080	+	FullBlockSwitchControl
 0x00463180	+	FullBlockSwitchCollision
-0x004632F0		CogSwitchControl
-0x00463400		CogSwitchCollision
+0x004632F0	+	CogSwitchControl
+0x00463400	+	CogSwitchCollision
 
 
 		game/templar.cpp

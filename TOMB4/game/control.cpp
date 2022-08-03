@@ -33,6 +33,7 @@
 #include "sphere.h"
 #include "draw.h"
 #include "larafire.h"
+#include "rope.h"
 
 #ifdef GENERAL_FIXES
 char DeathMenuActive;
@@ -2825,6 +2826,300 @@ void AnimateItem(ITEM_INFO* item)
 	item->pos.z_pos += (speed2 * phd_cos(item->pos.y_rot + 0x4000)) >> W2V_SHIFT;
 }
 
+long RayBoxIntersect(PHD_VECTOR* min, PHD_VECTOR* max, PHD_VECTOR* origin, PHD_VECTOR* dir, PHD_VECTOR* Coord)
+{
+	long planes[3];
+	long dists[3];
+	long plane;
+	char quad[3];
+	char inside;
+
+	inside = 1;
+
+	if (origin->x < min->x)
+	{
+		quad[0] = 1;
+		planes[0] = min->x;
+		inside = 0;
+	}
+	else if (origin->x > max->x)
+	{
+		quad[0] = 0;
+		planes[0] = max->x;
+		inside = 0;
+	}
+	else
+		quad[0] = 2;
+
+	if (origin->y < min->y)
+	{
+		quad[1] = 1;
+		planes[1] = min->y;
+		inside = 0;
+	}
+	else if (origin->y > max->y)
+	{
+		quad[1] = 0;
+		planes[1] = max->y;
+		inside = 0;
+	}
+	else
+		quad[1] = 2;
+
+	if (origin->z < min->z)
+	{
+		quad[2] = 1;
+		planes[2] = min->z;
+		inside = 0;
+	}
+	else if (origin->z > max->z)
+	{
+		quad[2] = 0;
+		planes[2] = max->z;
+		inside = 0;
+	}
+	else
+		quad[2] = 2;
+
+	if (inside)
+	{
+		Coord->x = origin->x >> 16;
+		Coord->y = origin->y >> 16;
+		Coord->z = origin->z >> 16;
+		return 1;
+	}
+
+	if (quad[0] == 2 || !dir->x)
+		dists[0] = -65536;
+	else
+		dists[0] = ((planes[0] - origin->x) / (dir->x >> 8)) << 8;
+
+	if (quad[1] == 2 || !dir->y)
+		dists[1] = -65536;
+	else
+		dists[1] = ((planes[1] - origin->y) / (dir->y >> 8)) << 8;
+
+	if (quad[2] == 2 || !dir->z)
+		dists[2] = -65536;
+	else
+		dists[2] = ((planes[2] - origin->z) / (dir->z >> 8)) << 8;
+
+	plane = 0;
+
+	for (int i = 1; i < 3; i++)
+	{
+		if (dists[plane] < dists[i])
+			plane = i;
+	}
+
+	if (dists[plane] < 0)
+		return 0;
+
+	if (!plane)
+		Coord->x = planes[0];
+	else
+	{
+		Coord->x = origin->x + (((__int64)dir->x * (__int64)dists[plane]) >> 16);
+
+		if ((!quad[0] && Coord->x < min->x) || (quad[0] == 1 && Coord->x > max->x))
+			return 0;
+	}
+
+	if (plane == 1)
+		Coord->y = planes[1];
+	else
+	{
+		Coord->y = origin->y + (((__int64)dir->y * (__int64)dists[plane]) >> 16);
+
+		if ((!quad[1] && Coord->y < min->y) || (quad[1] == 1 && Coord->y > max->y))
+			return 0;
+	}
+
+	if (plane == 2)
+		Coord->z = planes[2];
+	else
+	{
+		Coord->z = origin->z + (((__int64)dir->z * (__int64)dists[plane]) >> 16);
+
+		if ((!quad[2] && Coord->z < min->z) || (quad[2] == 1 && Coord->z > max->z))
+			return 0;
+	}
+
+	Coord->x >>= 16;
+	Coord->y >>= 16;
+	Coord->z >>= 16;
+	return 1;
+}
+
+long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS* ItemPos, PHD_VECTOR* Coord, short item_number)
+{
+	ITEM_INFO* item;
+	OBJECT_INFO* obj;
+	SPHERE* sphere;
+	PHD_VECTOR min, max, origin, dir;
+	PHD_VECTOR spos, tpos, s, t, sp, pos;
+	short** meshpp;
+	short* ClosestMesh;
+	long x, y, z, ClosestNode, ClosestBit, bit, r, r0, r1, dist, max_dist;
+
+	min.x = bounds[0] << 16;
+	min.y = bounds[2] << 16;
+	min.z = bounds[4] << 16;
+
+	max.x = bounds[1] << 16;
+	max.y = bounds[3] << 16;
+	max.z = bounds[5] << 16;
+
+	phd_PushUnitMatrix();
+	phd_RotY(-ItemPos->y_rot);
+
+	x = target->x - ItemPos->x_pos;
+	y = target->y - ItemPos->y_pos;
+	z = target->z - ItemPos->z_pos;
+	tpos.x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z) >> W2V_SHIFT;
+	tpos.y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z) >> W2V_SHIFT;
+	tpos.z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z) >> W2V_SHIFT;
+
+	x = start->x - ItemPos->x_pos;
+	y = start->y - ItemPos->y_pos;
+	z = start->z - ItemPos->z_pos;
+	spos.x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z) >> W2V_SHIFT;
+	spos.y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z) >> W2V_SHIFT;
+	spos.z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z) >> W2V_SHIFT;
+
+	phd_PopMatrix();
+
+	dir.x = (tpos.x - spos.x) << 16;
+	dir.y = (tpos.y - spos.y) << 16;
+	dir.z = (tpos.z - spos.z) << 16;
+	origin.x = spos.x << 16;
+	origin.y = spos.y << 16;
+	origin.z = spos.z << 16;
+	Normalise(&dir);
+	dir.x <<= 8;
+	dir.y <<= 8;
+	dir.z <<= 8;
+
+	if (!RayBoxIntersect(&min, &max, &origin, &dir, Coord))
+		return 0;
+
+	if (Coord->x < bounds[0] || Coord->x > bounds[1] ||
+		Coord->y < bounds[2] || Coord->y > bounds[3] ||
+		Coord->z < bounds[4] || Coord->z > bounds[5])
+		return 0;
+
+	phd_PushUnitMatrix();
+	phd_RotY(ItemPos->y_rot);
+
+	x = (phd_mxptr[M00] * Coord->x + phd_mxptr[M01] * Coord->y + phd_mxptr[M02] * Coord->z) >> W2V_SHIFT;
+	y = (phd_mxptr[M10] * Coord->x + phd_mxptr[M11] * Coord->y + phd_mxptr[M12] * Coord->z) >> W2V_SHIFT;
+	z = (phd_mxptr[M20] * Coord->x + phd_mxptr[M21] * Coord->y + phd_mxptr[M22] * Coord->z) >> W2V_SHIFT;
+	Coord->x = x;
+	Coord->y = y;
+	Coord->z = z;
+
+	phd_PopMatrix();
+	max_dist = 0x7FFFFFFF;
+	ClosestMesh = 0;
+	ClosestBit = 0;
+	item = 0;
+
+	if (item_number < 0)
+		ClosestNode = -1;
+	else
+	{
+		item = &items[item_number];
+		obj = &objects[item->object_number];
+		meshpp = &meshes[obj->mesh_index];
+
+		GetSpheres(item, Slist, 1);
+		bit = 1;
+		ClosestNode = -2;
+
+		for (int i = 0; i < obj->nmeshes; i++, meshpp += 2, bit <<= 1)
+		{
+			if (!(item->mesh_bits & bit))
+				continue;
+
+			sphere = &Slist[i];
+			s.x = start->x;
+			s.y = start->y;
+			s.z = start->z;
+
+			t.x = target->x;
+			t.y = target->y;
+			t.z = target->z;
+
+			sp.x = sphere->x;
+			sp.y = sphere->y;
+			sp.z = sphere->z;
+
+			r0 = ((sp.x - s.x) * (t.x - s.x)) + ((sp.y - s.y) * (t.y - s.y)) + ((sp.z - s.z) * (t.z - s.z));
+			r1 = SQUARE(t.x - s.x) + SQUARE(t.y - s.y) + SQUARE(t.z - s.z);
+
+			if ((r0 >= 0 || r1 >= 0) && (r1 <= 0 || r0 <= 0) || (ABS(r0) > ABS(r1)))
+				continue;
+
+			r1 >>= 16;
+
+			if (r1)
+				r = r0 / r1;
+			else
+				r = 0;
+
+			pos.x = s.x + ((r * (t.x - s.x)) >> 16);
+			pos.y = s.y + ((r * (t.y - s.y)) >> 16);
+			pos.z = s.z + ((r * (t.z - s.z)) >> 16);
+
+			if (SQUARE(pos.x - sp.x) + SQUARE(pos.y - sp.y) + SQUARE(pos.z - sp.z) < SQUARE(sphere->r))
+			{
+				dist = SQUARE(sphere->x - start->x) + SQUARE(sphere->y - start->y) + SQUARE(sphere->z - start->z);
+
+				if (dist < max_dist)
+				{
+					max_dist = dist;
+					ClosestMesh = *meshpp;
+					ClosestBit = bit;
+					ClosestNode = i;
+				}
+			}
+		}
+	}
+
+	if (ClosestNode >= -1)
+	{
+		dist = SQUARE(Coord->x + ItemPos->x_pos - start->x) +
+			SQUARE(Coord->y + ItemPos->y_pos - start->y) +
+			SQUARE(Coord->z + ItemPos->z_pos - start->z);
+
+		if (dist < ClosestDist)
+		{
+			ClosestCoord.x = Coord->x + ItemPos->x_pos;
+			ClosestCoord.y = Coord->y + ItemPos->y_pos;
+			ClosestCoord.z = Coord->z + ItemPos->z_pos;
+			ClosestItem = item_number;
+			ClosestDist = dist;
+
+			if (ClosestNode >= 0)
+			{
+				GetSpheres(item, Slist, 3);
+				ShatterItem.YRot = item->pos.y_rot;
+				ShatterItem.meshp = ClosestMesh;
+				ShatterItem.Sphere.x = Slist[ClosestNode].x;
+				ShatterItem.Sphere.y = Slist[ClosestNode].y;
+				ShatterItem.Sphere.z = Slist[ClosestNode].z;
+				ShatterItem.Bit = ClosestBit;
+				ShatterItem.il = &item->il;
+				ShatterItem.Flags = 0;
+			}
+
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 void inject_control(bool replace)
 {
 	INJECT(0x00449410, ControlPhase, replace);
@@ -2859,4 +3154,6 @@ void inject_control(bool replace)
 	INJECT(0x0044CBE0, ObjectOnLOS2, replace);
 	INJECT(0x0044D890, GetTargetOnLOS, replace);
 	INJECT(0x00449B90, AnimateItem, replace);
+	INJECT(0x0044D530, RayBoxIntersect, replace);
+	INJECT(0x0044CDF0, DoRayBox, replace);
 }
