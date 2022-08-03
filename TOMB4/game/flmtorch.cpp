@@ -11,6 +11,7 @@
 #include "laraflar.h"
 #include "delstuff.h"
 #include "larafire.h"
+#include "../specific/3dmath.h"
 
 static short FireBounds[12] = { 0, 0, 0, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
@@ -106,7 +107,7 @@ void FireCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 			else
 			{
 				l->item_flags[3] = 1;
-				l->anim_number = short((ABS(l->pos.y_pos - item->pos.y_pos) >> 8) + ANIM_LIGHT_TORCH1);
+				l->anim_number = short((abs(l->pos.y_pos - item->pos.y_pos) >> 8) + ANIM_LIGHT_TORCH1);
 			}
 
 			l->current_anim_state = AS_CONTROLLED;

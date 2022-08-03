@@ -1731,8 +1731,8 @@ void BuildOutsideTable()
 	char flipped[256];
 
 	max_slots = 0;
-	OutsideRoomOffsets = (short*)MALLOC(0x5B2);
-	OutsideRoomTable = (char*)MALLOC(0xB640);
+	OutsideRoomOffsets = (short*)malloc(0x5B2);
+	OutsideRoomTable = (char*)malloc(0xB640);
 	memset(OutsideRoomTable, 0xFF, 0xB640);
 	memset(flipped, 0, 255);
 
@@ -2032,7 +2032,7 @@ void GetCarriedItems()
 			{
 				pickup = &items[item_num];
 
-				if (baddy->pos.x_pos == pickup->pos.x_pos && ABS(baddy->pos.y_pos - pickup->pos.y_pos) < 256 &&
+				if (baddy->pos.x_pos == pickup->pos.x_pos && abs(baddy->pos.y_pos - pickup->pos.y_pos) < 256 &&
 					baddy->pos.z_pos == pickup->pos.z_pos && objects[pickup->object_number].collision == PickUpCollision)
 				{
 					pickup->carried_item = baddy->carried_item;

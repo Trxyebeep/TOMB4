@@ -7,6 +7,7 @@
 #include "collide.h"
 #include "larafire.h"
 #include "control.h"
+#include "../specific/3dmath.h"
 
 void lara_as_surfswim(ITEM_INFO* item, COLL_INFO* coll)
 {
@@ -244,7 +245,7 @@ long LaraTestWaterClimbOut(ITEM_INFO* item, COLL_INFO* coll)
 	long hdif;
 	short angle;
 
-	if (coll->coll_type != CT_FRONT || !(input & IN_ACTION) || ABS(coll->left_floor2 - coll->right_floor2) >= 60)
+	if (coll->coll_type != CT_FRONT || !(input & IN_ACTION) || abs(coll->left_floor2 - coll->right_floor2) >= 60)
 		return 0;
 
 	if (lara.gun_status != LG_NO_ARMS && (lara.gun_status != LG_READY || lara.gun_type != WEAPON_FLARE))

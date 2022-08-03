@@ -484,7 +484,7 @@ void LaraSwimCollision(ITEM_INFO* item, COLL_INFO* coll)
 
 	coll->facing = lara.move_angle;
 	y = 762 * phd_sin(item->pos.x_rot) >> W2V_SHIFT;
-	y = ABS(y);
+	y = abs(y);
 
 	if (y < 200)
 		y = 200;
@@ -558,7 +558,7 @@ void LaraWaterCurrent(COLL_INFO* coll)
 	}
 	else
 	{
-		absvel = ABS(lara.current_xvel);
+		absvel = abs(lara.current_xvel);
 
 		if (absvel > 16)
 			shifter = 4;
@@ -569,10 +569,10 @@ void LaraWaterCurrent(COLL_INFO* coll)
 
 		lara.current_xvel -= lara.current_xvel >> shifter;
 
-		if (ABS(lara.current_xvel) < 4)
+		if (abs(lara.current_xvel) < 4)
 			lara.current_xvel = 0;
 
-		absvel = ABS(lara.current_zvel);
+		absvel = abs(lara.current_zvel);
 
 		if (absvel > 16)
 			shifter = 4;
@@ -583,7 +583,7 @@ void LaraWaterCurrent(COLL_INFO* coll)
 
 		lara.current_zvel -= lara.current_zvel >> shifter;
 
-		if (ABS(lara.current_zvel) < 4)
+		if (abs(lara.current_zvel) < 4)
 			lara.current_zvel = 0;
 
 		if (!lara.current_xvel && !lara.current_zvel)

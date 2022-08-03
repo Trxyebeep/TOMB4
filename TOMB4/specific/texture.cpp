@@ -131,7 +131,7 @@ void FreeTextures()
 			Log(1, "%s Attempt To Release NULL Ptr", "Surface");
 	}
 
-	FREE(Textures);
+	free(Textures);
 	Textures = 0;
 }
 

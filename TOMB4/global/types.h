@@ -1,5 +1,4 @@
 #pragma once
-
 #pragma pack(push, 1)
 
 /*typedefs*/
@@ -30,11 +29,12 @@ do \
 	((JMP*)(from))->offset = (DWORD)(to) - ((DWORD)(from) + sizeof(JMP)); \
 } while (false)
 
-#define ABS(x) (((x)<0) ? (-(x)) : (x))
-#define phd_sin(x) (4 * rcossin_tbl[((long)(x) >> 3) & 0x1FFE])
-#define phd_cos(x) (4 * rcossin_tbl[(((long)(x) >> 3) & 0x1FFE) + 1])
+/*math*/
 #define SQUARE(x) ((x)*(x))
-#define phd_PopMatrix()		phd_mxptr -= 12
+#define	TRIGMULT2(a,b)		(((a) * (b)) >> W2V_SHIFT)
+#define	TRIGMULT3(a,b,c)	(TRIGMULT2((TRIGMULT2(a, b)), c))
+
+/*color*/
 #define RGBONLY(r, g, b) ((b) | (((g) | ((r) << 8)) << 8))
 #define RGBA(r, g, b, a) (RGBONLY(r, g, b) | ((a) << 24))
 #define	CLRA(clr)	((clr >> 24) & 0xFF)	//shift r, g, and b out of the way and 0xFF
@@ -42,20 +42,14 @@ do \
 #define	CLRG(clr)	((clr >> 8) & 0xFF)		//shift b out of the way and 0xFF
 #define	CLRB(clr)	((clr) & 0xFF)			//and 0xFF
 #define RGB_M(clr, m)	(clr = (clr & 0xFF000000) | (((CLRR(clr) * 8 * m) >> 8) << 16) | (((CLRG(clr) * 8 * m) >> 8) << 8) | ((CLRB(clr) * 8 * m) >> 8))
+
+/*misc*/
 #define SCRIPT_TEXT(num)		(&gfStringWad[gfStringOffset[num]])
 #define SetCutPlayed(num)	(CutSceneTriggered |= 1 << (num))
 #define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
 #define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
-#define	TRIGMULT2(a,b)		(((a) * (b)) >> W2V_SHIFT)
-#define	TRIGMULT3(a,b,c)	(TRIGMULT2((TRIGMULT2(a, b)), c))
 
-	/**********************************/
-#define MALLOC	( (void*(__cdecl*)(size_t)) 0x004A0558 )
-#define REALLOC	( (void*(__cdecl*)(void*, size_t)) 0x004A1453 )
-#define FREE	( (void(__cdecl*)(void*)) 0x004A0A01 )
-	/**********************************/
-
-	/**********************************/
+/********************DX defs********************/
 #define LPDIRECTDRAWX			LPDIRECTDRAW4
 #define LPDIRECT3DX				LPDIRECT3D3
 #define LPDIRECT3DDEVICEX		LPDIRECT3DDEVICE3
@@ -81,7 +75,7 @@ do \
 #endif
 
 #define DSNGUID					IID_IDirectSoundNotify
-	/**********************************/
+/***********************************************/
 
 enum anim_commands
 {
@@ -96,18 +90,18 @@ enum anim_commands
 
 enum ai_bits
 {
-	GUARD = 1 << 0,
-	AMBUSH = 1 << 1,
-	PATROL1 = 1 << 2,
-	MODIFY = 1 << 3,
-	FOLLOW = 1 << 4
+	GUARD =		1 << 0,
+	AMBUSH =	1 << 1,
+	PATROL1 =	1 << 2,
+	MODIFY =	1 << 3,
+	FOLLOW =	1 << 4
 };
 
 enum win_commands
 {
-	KA_ALTENTER = 8,
-	KA_ALTP = 40001,
-	KA_ALTM = 40002
+	KA_ALTENTER =	8,
+	KA_ALTP =		40001,
+	KA_ALTM =		40002
 };
 
 enum languages
@@ -124,19 +118,19 @@ enum languages
 
 enum font_flags
 {
-	FF_SMALL = 0x1000,
-	FF_BLINK = 0x2000,
-	FF_RJUSTIFY = 0x4000,
-	FF_CENTER = 0x8000
+	FF_SMALL =		0x1000,
+	FF_BLINK =		0x2000,
+	FF_RJUSTIFY =	0x4000,
+	FF_CENTER =		0x8000
 };
 
 enum room_flags
 {
-	ROOM_UNDERWATER = 0x1,
-	ROOM_OUTSIDE = 0x8,
-	ROOM_DYNAMIC_LIT = 0x10,
-	ROOM_NOT_INSIDE = 0x20,
-	ROOM_INSIDE = 0x40,
+	ROOM_UNDERWATER =	0x1,
+	ROOM_OUTSIDE =		0x8,
+	ROOM_DYNAMIC_LIT =	0x10,
+	ROOM_NOT_INSIDE =	0x20,
+	ROOM_INSIDE =		0x40,
 	ROOM_NO_LENSFLARE = 0x80
 };
 
@@ -161,9 +155,9 @@ enum collision_types
 
 enum sfx_types
 {
-	SFX_LANDANDWATER = 0,
-	SFX_LANDONLY = 0x4000,
-	SFX_WATERONLY = 0x8000
+	SFX_LANDANDWATER =	0,
+	SFX_LANDONLY =		0x4000,
+	SFX_WATERONLY =		0x8000
 };
 
 enum target_type
@@ -360,13 +354,13 @@ enum input_buttons
 
 enum ITEM_FLAGS
 {
-	IFL_TRIGGERED = 0x20,
-	IFL_SWITCH_ONESHOT = 0x40,	//oneshot for switch items
-	IFL_ANTITRIGGER_ONESHOT = 0x80,	//oneshot for antitriggers
-	IFL_INVISIBLE = 0x100,	//also used as oneshot for everything else
-	IFL_CODEBITS = 0x3E00,
-	IFL_REVERSE = 0x4000,
-	IFL_CLEARBODY = 0x8000
+	IFL_TRIGGERED =				0x20,
+	IFL_SWITCH_ONESHOT =		0x40,	//oneshot for switch items
+	IFL_ANTITRIGGER_ONESHOT =	0x80,	//oneshot for antitriggers
+	IFL_INVISIBLE =				0x100,	//also used as oneshot for everything else
+	IFL_CODEBITS =				0x3E00,
+	IFL_REVERSE =				0x4000,
+	IFL_CLEARBODY =				0x8000
 };
 
 enum lara_gun_status
@@ -580,7 +574,6 @@ struct ITEM_INFO
 	ulong poisoned : 1;
 	ulong ai_bits : 5;
 	ulong really_active : 1;
-	ulong InDrawRoom : 1;	//I don't think this exists in TR4
 	ulong meshswap_meshbits;
 	short draw_room;
 	short TOSSPAD;
@@ -1304,7 +1297,6 @@ struct DXDIRECTDRAWINFO
 	DXDISPLAYMODE* DisplayModes;
 	int nD3DDevices;
 	DXD3DDEVICE* D3DDevices;
-
 };
 
 struct DXDIRECTSOUNDINFO

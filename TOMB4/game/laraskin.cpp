@@ -178,7 +178,7 @@ void CreateSkinningData()
 				laraZ = AboveMeshXYZ.z + LaraMesh[2];
 				LaraMesh += 3;
 
-				if (ABS(laraX - jointX) <= 1 && ABS(laraY - jointY) <= 1 && ABS(laraZ - jointZ) <= 1)
+				if (abs(laraX - jointX) <= 1 && abs(laraY - jointY) <= 1 && abs(laraZ - jointZ) <= 1)
 				{
 					vertCount++;
 					vertBuf[j] = 1;
@@ -210,7 +210,7 @@ void CreateSkinningData()
 				laraZ = BelowMeshXYZ.z + LaraMesh[2];
 				LaraMesh += 3;
 
-				if (ABS(laraX - jointX) <= 1 && ABS(laraY - jointY) <= 1 && ABS(laraZ - jointZ) <= 1)
+				if (abs(laraX - jointX) <= 1 && abs(laraY - jointY) <= 1 && abs(laraZ - jointZ) <= 1)
 				{
 					vertCount++;
 					vertBuf[j] = 1;

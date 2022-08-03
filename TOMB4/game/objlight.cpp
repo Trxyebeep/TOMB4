@@ -5,6 +5,7 @@
 #include "sound.h"
 #include "../specific/function_stubs.h"
 #include "sphere.h"
+#include "../specific/3dmath.h"
 
 void ControlPulseLight(short item_number)
 {
@@ -44,7 +45,7 @@ void ControlPulseLight(short item_number)
 	}
 
 	item->item_flags[0] -= 2048;
-	sin = ABS(phd_sin(item->item_flags[0] + ((item->pos.y_pos & 0x3FFF) << 2)) >> 6);
+	sin = abs(phd_sin(item->item_flags[0] + ((item->pos.y_pos & 0x3FFF) << 2)) >> 6);
 
 	if (sin > 255)
 		sin = 255;

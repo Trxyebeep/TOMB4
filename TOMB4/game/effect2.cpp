@@ -573,12 +573,12 @@ void ControlEnemyMissile(short fx_number)
 
 		oy = (ushort)angles[0] - (ushort)fx->pos.y_rot;
 
-		if (ABS(oy) > 0x8000)
+		if (abs(oy) > 0x8000)
 			oy = (ushort)fx->pos.y_rot - (ushort)angles[0];
 
 		ox = (ushort)angles[1] - (ushort)fx->pos.x_rot;
 
-		if (ABS(ox) > 0x8000)
+		if (abs(ox) > 0x8000)
 			ox = (ushort)fx->pos.x_rot - (ushort)angles[1];
 
 		oy >>= 3;

@@ -817,7 +817,7 @@ void GetCorrectStashPoints(long pigtail, long hair_node, long skin_node)
 
 	rot2 = hair[2].pos.y_rot;
 
-	while (ABS(rot1 - rot2) > 8192 && ABS(rot1 - rot2) < 57344)
+	while (abs(rot1 - rot2) > 8192 && abs(rot1 - rot2) < 57344)
 	{
 		rot1 += 16384;
 		num++;

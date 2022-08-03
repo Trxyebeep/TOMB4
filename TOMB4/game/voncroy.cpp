@@ -922,7 +922,7 @@ void VoncroyRaceControl(short item_number)
 
 		VonCroy->maximum_turn = 0;
 
-		if (ABS(info.angle) < 1092)
+		if (abs(info.angle) < 1092)
 			item->pos.y_rot += info.angle;
 		else if (info.angle < 0)
 			item->pos.y_rot -= 1092;
@@ -953,9 +953,9 @@ void VoncroyRaceControl(short item_number)
 			{
 				if (item->frame_number > anims[item->anim_number].frame_base + 15 && item->frame_number < anims[item->anim_number].frame_base + 26)
 				{
-					if (ABS(oEnemy->pos.x_pos - item->pos.x_pos) < 512 &&
-						ABS(oEnemy->pos.y_pos - item->pos.y_pos) <= 512 &&
-						ABS(oEnemy->pos.z_pos - item->pos.z_pos) < 512)
+					if (abs(oEnemy->pos.x_pos - item->pos.x_pos) < 512 &&
+						abs(oEnemy->pos.y_pos - item->pos.y_pos) <= 512 &&
+						abs(oEnemy->pos.z_pos - item->pos.z_pos) < 512)
 					{
 						oEnemy->hit_points -= 20;
 						oEnemy->hit_status = 1;
@@ -1142,7 +1142,7 @@ void VoncroyControl(short item_number)
 					dx = candidate->pos.x_pos - item->pos.x_pos;
 					dz = candidate->pos.z_pos - item->pos.z_pos;
 
-					if (ABS(dx) <= 5120 && ABS(dz) <= 5120)
+					if (abs(dx) <= 5120 && abs(dz) <= 5120)
 					{
 						dist = SQUARE(dx) + SQUARE(dz);
 
@@ -1205,10 +1205,10 @@ void VoncroyControl(short item_number)
 		else
 			VonCroyLaraAI.distance = SQUARE(dx) + SQUARE(dz);
 
-		if (ABS(dx) > ABS(dz))
-			VonCroyLaraAI.x_angle = (short)phd_atan(ABS(dx) + (ABS(dz) >> 1), item->pos.y_pos - lara_item->pos.y_pos);
+		if (abs(dx) > abs(dz))
+			VonCroyLaraAI.x_angle = (short)phd_atan(abs(dx) + (abs(dz) >> 1), item->pos.y_pos - lara_item->pos.y_pos);
 		else
-			VonCroyLaraAI.x_angle = (short)phd_atan(ABS(dz) + (ABS(dx) >> 1), item->pos.y_pos - lara_item->pos.y_pos);
+			VonCroyLaraAI.x_angle = (short)phd_atan(abs(dz) + (abs(dx) >> 1), item->pos.y_pos - lara_item->pos.y_pos);
 	}
 
 	if (VonCroyLaraAI.angle > -6144 && VonCroyLaraAI.angle < 6144 && VonCroyLaraAI.distance < 0x100000)
@@ -1331,7 +1331,7 @@ void VoncroyControl(short item_number)
 					item->goal_anim_state = 31;
 				else if (oEnemy->hit_points > 0)
 				{
-					if (VonCroyAI.ahead && ABS(oEnemy->pos.y_pos - item->pos.y_pos + 512) < 512)
+					if (VonCroyAI.ahead && abs(oEnemy->pos.y_pos - item->pos.y_pos + 512) < 512)
 						item->goal_anim_state = 21;
 				}
 			}
@@ -1368,7 +1368,7 @@ void VoncroyControl(short item_number)
 						item->goal_anim_state = 31;
 					else if (oEnemy->hit_points > 0)
 					{
-						if (VonCroyAI.ahead && ABS(oEnemy->pos.y_pos - item->pos.y_pos + 512) < 512)
+						if (VonCroyAI.ahead && abs(oEnemy->pos.y_pos - item->pos.y_pos + 512) < 512)
 							item->goal_anim_state = 21;
 					}
 				}
@@ -1818,9 +1818,9 @@ void VoncroyControl(short item_number)
 		{
 			if (item->frame_number > anims[item->anim_number].frame_base + 20 && item->frame_number < anims[item->anim_number].frame_base + 45)
 			{
-				if (ABS(oEnemy->pos.x_pos - item->pos.x_pos) < 512 &&
-					ABS(oEnemy->pos.y_pos - item->pos.y_pos + 768) <= 512 &&
-					ABS(oEnemy->pos.z_pos - item->pos.z_pos) < 512)
+				if (abs(oEnemy->pos.x_pos - item->pos.x_pos) < 512 &&
+					abs(oEnemy->pos.y_pos - item->pos.y_pos + 768) <= 512 &&
+					abs(oEnemy->pos.z_pos - item->pos.z_pos) < 512)
 				{
 					oEnemy->hit_points -= 40;
 
@@ -1897,9 +1897,9 @@ void VoncroyControl(short item_number)
 		{
 			if (item->frame_number > anims[item->anim_number].frame_base + 15 && item->frame_number < anims[item->anim_number].frame_base + 26)
 			{
-				if (ABS(oEnemy->pos.x_pos - item->pos.x_pos) < 512 &&
-					ABS(oEnemy->pos.y_pos - item->pos.y_pos) <= 512 &&
-					ABS(oEnemy->pos.z_pos - item->pos.z_pos) < 512)
+				if (abs(oEnemy->pos.x_pos - item->pos.x_pos) < 512 &&
+					abs(oEnemy->pos.y_pos - item->pos.y_pos) <= 512 &&
+					abs(oEnemy->pos.z_pos - item->pos.z_pos) < 512)
 				{
 					oEnemy->hit_points -= 20;
 

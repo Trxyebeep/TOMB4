@@ -185,7 +185,7 @@ void MummyControl(short item_number)
 		case 10:
 			mummy->maximum_turn = 0;
 
-			if (ABS(info.angle) < 1274)
+			if (abs(info.angle) < 1274)
 				item->pos.y_rot += info.angle;
 			else if (info.angle < 0)
 				item->pos.y_rot -= 1274;

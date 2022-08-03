@@ -317,7 +317,7 @@ void MovableBlock(short item_number)
 		case NORTH:
 			offset = pos.z + *(long*)&item->item_flags[2] - *(long*)&lara_item->item_flags[2];
 
-			if (ABS(item->pos.z_pos - offset) < 512 && item->pos.z_pos < offset)
+			if (abs(item->pos.z_pos - offset) < 512 && item->pos.z_pos < offset)
 				item->pos.z_pos = offset;
 
 			break;
@@ -325,7 +325,7 @@ void MovableBlock(short item_number)
 		case EAST:
 			offset = pos.x + *(long*)item->item_flags - *(long*)lara_item->item_flags;
 
-			if (ABS(item->pos.x_pos - offset) < 512 && item->pos.x_pos < offset)
+			if (abs(item->pos.x_pos - offset) < 512 && item->pos.x_pos < offset)
 				item->pos.x_pos = offset;
 
 			break;
@@ -333,7 +333,7 @@ void MovableBlock(short item_number)
 		case SOUTH:
 			offset = pos.z + *(long*)&item->item_flags[2] - *(long*)&lara_item->item_flags[2];
 
-			if (ABS(item->pos.z_pos - offset) < 512 && item->pos.z_pos > offset)
+			if (abs(item->pos.z_pos - offset) < 512 && item->pos.z_pos > offset)
 				item->pos.z_pos = offset;
 
 			break;
@@ -341,7 +341,7 @@ void MovableBlock(short item_number)
 		case WEST:
 			offset = pos.x + *(long*)item->item_flags - *(long*)lara_item->item_flags;
 
-			if (ABS(item->pos.x_pos - offset) < 512 && item->pos.x_pos > offset)
+			if (abs(item->pos.x_pos - offset) < 512 && item->pos.x_pos > offset)
 				item->pos.x_pos = offset;
 
 			break;
@@ -386,7 +386,7 @@ void MovableBlock(short item_number)
 		case NORTH:
 			offset = pos.z + *(long*)&item->item_flags[2] - *(long*)&lara_item->item_flags[2];
 
-			if (ABS(item->pos.z_pos - offset) < 512 && item->pos.z_pos > offset)
+			if (abs(item->pos.z_pos - offset) < 512 && item->pos.z_pos > offset)
 				item->pos.z_pos = offset;
 
 			break;
@@ -394,7 +394,7 @@ void MovableBlock(short item_number)
 		case EAST:
 			offset = pos.x + *(long*)item->item_flags - *(long*)lara_item->item_flags;
 
-			if (ABS(item->pos.x_pos - offset) < 512 && item->pos.x_pos > offset)
+			if (abs(item->pos.x_pos - offset) < 512 && item->pos.x_pos > offset)
 				item->pos.x_pos = offset;
 
 			break;
@@ -402,7 +402,7 @@ void MovableBlock(short item_number)
 		case SOUTH:
 			offset = pos.z + *(long*)&item->item_flags[2] - *(long*)&lara_item->item_flags[2];
 
-			if (ABS(item->pos.z_pos - offset) < 512 && item->pos.z_pos < offset)
+			if (abs(item->pos.z_pos - offset) < 512 && item->pos.z_pos < offset)
 				item->pos.z_pos = offset;
 
 			break;
@@ -410,7 +410,7 @@ void MovableBlock(short item_number)
 		case WEST:
 			offset = pos.x + *(long*)item->item_flags - *(long*)lara_item->item_flags;
 
-			if (ABS(item->pos.x_pos - offset) < 512 && item->pos.x_pos < offset)
+			if (abs(item->pos.x_pos - offset) < 512 && item->pos.x_pos < offset)
 				item->pos.x_pos = offset;
 
 			break;

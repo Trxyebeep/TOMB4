@@ -108,7 +108,7 @@ void S_DrawFootPrints()
 				room_number = lara_item->room_number;
 				pos[j].y = GetHeight(GetFloor(x, print->y, z, &room_number), x, print->y, z) - print->y;
 
-				if (ABS(pos[j].y) > PRINT_HEIGHT_CORRECTION)
+				if (abs(pos[j].y) > PRINT_HEIGHT_CORRECTION)
 					pos[j].y = 0;
 			}
 

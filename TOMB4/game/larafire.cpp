@@ -296,7 +296,7 @@ long FireWeapon(long weapon_type, ITEM_INFO* target, ITEM_INFO* src, short* angl
 		sptr = &Slist[i];
 		r = sptr->r;
 
-		if (ABS(sptr->x) < r && ABS(sptr->y) < r && sptr->z > r && SQUARE(sptr->x) + SQUARE(sptr->y) <= SQUARE(r))
+		if (abs(sptr->x) < r && abs(sptr->y) < r && sptr->z > r && SQUARE(sptr->x) + SQUARE(sptr->y) <= SQUARE(r))
 		{
 			if (sptr->z - r < bestdist)
 			{
@@ -410,7 +410,7 @@ void LaraGetNewTarget(WEAPON_INFO* winfo)
 				y = item->pos.y_pos - src.y;
 				z = item->pos.z_pos - src.z;
 
-				if (ABS(x) <= maxdist && ABS(y) <= maxdist && ABS(z) <= maxdist)
+				if (abs(x) <= maxdist && abs(y) <= maxdist && abs(z) <= maxdist)
 				{
 					dist = SQUARE(x) + SQUARE(y) + SQUARE(z);
 
@@ -430,10 +430,10 @@ void LaraGetNewTarget(WEAPON_INFO* winfo)
 								TargetList[targets] = item;
 								targets++;
 
-								if (ABS(ang[0]) < bestyrot + 2730 && dist < bestdist)
+								if (abs(ang[0]) < bestyrot + 2730 && dist < bestdist)
 								{
 									bestdist = dist;
-									bestyrot = ABS(ang[0]);
+									bestyrot = abs(ang[0]);
 									bestitem = item;
 								}
 							}
@@ -649,7 +649,7 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 
 		if (y > height + 32 && !bs && ((item->pos.x_pos ^ x) & ~0x3FF || (item->pos.z_pos ^ z) & ~0x3FF))
 		{
-			xs = (item->pos.x_pos ^ x) & ~0x3FF && (item->pos.z_pos ^ z) & ~0x3FF ? ABS(x - item->pos.x_pos) < ABS(z - item->pos.z_pos) : 1;
+			xs = (item->pos.x_pos ^ x) & ~0x3FF && (item->pos.z_pos ^ z) & ~0x3FF ? abs(x - item->pos.x_pos) < abs(z - item->pos.z_pos) : 1;
 			item->pos.y_rot = (item->pos.x_pos ^ x) & ~0x3FF && xs ? -item->pos.y_rot : -32768 - item->pos.y_rot;
 			item->pos.x_pos = x;
 			item->pos.y_pos = y;
@@ -696,7 +696,7 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 		{
 			item->speed -= item->speed >> 2;
 
-			if (tiltyoff < 0 && ABS(tiltyoff) - ABS(tiltxoff) >= 2)
+			if (tiltyoff < 0 && abs(tiltyoff) - abs(tiltxoff) >= 2)
 			{
 				if ((ushort)item->pos.y_rot > 32768)
 				{
@@ -730,7 +730,7 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 					item->fallspeed = item->fallspeed > 0 ? -(item->fallspeed >> 1) : 0;
 				}
 			}
-			else if (tiltyoff > 0 && ABS(tiltyoff) - ABS(tiltxoff) >= 2)
+			else if (tiltyoff > 0 && abs(tiltyoff) - abs(tiltxoff) >= 2)
 			{
 				if ((ushort)item->pos.y_rot < 32768)
 				{
@@ -764,7 +764,7 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 					item->fallspeed = item->fallspeed > 0 ? -(item->fallspeed >> 1) : 0;
 				}
 			}
-			else if (tiltxoff < 0 && ABS(tiltxoff) - ABS(tiltyoff) >= 2)
+			else if (tiltxoff < 0 && abs(tiltxoff) - abs(tiltyoff) >= 2)
 			{
 				if ((ushort)item->pos.y_rot > 16384 && (ushort)item->pos.y_rot < 49152)
 				{
@@ -798,7 +798,7 @@ void DoProperDetection(short item_number, long x, long y, long z, long xv, long 
 					item->fallspeed = item->fallspeed > 0 ? -(item->fallspeed >> 1) : 0;
 				}
 			}
-			else if (tiltxoff > 0 && ABS(tiltxoff) - ABS(tiltyoff) >= 2)
+			else if (tiltxoff > 0 && abs(tiltxoff) - abs(tiltyoff) >= 2)
 			{
 				if ((ushort)item->pos.y_rot > 49152 || (ushort)item->pos.y_rot < 16384)
 				{

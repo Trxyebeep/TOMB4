@@ -127,8 +127,8 @@ bool InitSampleDecompress()
 	if (mmresult != DS_OK)
 		Log(1, "Stream Open %d", mmresult);
 
-	decompressed_samples_buffer = (char*)MALLOC(0x40000);
-	samples_buffer = (char*)MALLOC(0x4005A);
+	decompressed_samples_buffer = (char*)malloc(0x40000);
+	samples_buffer = (char*)malloc(0x4005A);
 	memset(&ACMStreamHeader, 0, sizeof(ACMStreamHeader));
 	ACMStreamHeader.pbSrc = (uchar*)(samples_buffer + 90);
 	ACMStreamHeader.cbStruct = 84;
@@ -156,8 +156,8 @@ bool FreeSampleDecompress()
 	if (mmresult != DS_OK)
 		Log(1, "Stream Close %d", mmresult);
 
-	FREE(decompressed_samples_buffer);
-	FREE(samples_buffer);
+	free(decompressed_samples_buffer);
+	free(samples_buffer);
 	return 1;
 }
 

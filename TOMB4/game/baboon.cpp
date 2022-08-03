@@ -186,7 +186,7 @@ void BaboonControl(short item_number)
 						item->goal_anim_state = 14;
 				}
 				else if (info.distance < 465124 && item2 != lara_item && item2 && item2->object_number != AI_PATROL1 &&
-					item2->object_number != AI_PATROL2 && ABS(item->pos.y_pos - item2->pos.y_pos) < 256)
+					item2->object_number != AI_PATROL2 && abs(item->pos.y_pos - item2->pos.y_pos) < 256)
 				{
 					item->pos.x_pos = item2->pos.x_pos;
 					item->pos.y_pos = item2->pos.y_pos;
@@ -274,7 +274,7 @@ void BaboonControl(short item_number)
 					{
 						baboon->maximum_turn = 0;
 
-						if (ABS(info.angle) < 1274)
+						if (abs(info.angle) < 1274)
 							item->pos.y_rot += info.angle;
 						else if (info.angle < 0)
 							item->pos.y_rot -= 1274;
@@ -353,7 +353,7 @@ void BaboonControl(short item_number)
 
 				baboon->maximum_turn = 0;
 				
-				if (ABS(info.angle) < 1274)
+				if (abs(info.angle) < 1274)
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
 					item->pos.y_rot -= 1274;

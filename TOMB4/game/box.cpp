@@ -164,8 +164,8 @@ void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
 	info->angle = ang - item->pos.y_rot;
 	info->enemy_facing = ang - enemy->pos.y_rot + 0x8000;
 
-	x = ABS(x);
-	z = ABS(z);
+	x = abs(x);
+	z = abs(z);
 
 	if (enemy == lara_item)
 	{
@@ -191,7 +191,7 @@ void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
 	else
 		info->ahead = 0;
 
-	if (info->ahead && enemy->hit_points > 0 && ABS(enemy->pos.y_pos - item->pos.y_pos) <= 512)
+	if (info->ahead && enemy->hit_points > 0 && abs(enemy->pos.y_pos - item->pos.y_pos) <= 512)
 		info->bite = 1;
 	else
 		info->bite = 0;
@@ -388,7 +388,7 @@ long StalkBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number)
 		return 0;
 
 	baddie_quad = item->pos.z_pos <= enemy->pos.z_pos ? (item->pos.x_pos <= enemy->pos.x_pos ? 0 : 3) : (item->pos.x_pos > enemy->pos.x_pos) + 1;
-	return enemy_quad != baddie_quad || ABS(enemy_quad - box_quad) != 2;
+	return enemy_quad != baddie_quad || abs(enemy_quad - box_quad) != 2;
 }
 
 target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
@@ -857,8 +857,8 @@ long CreatureCreature(short item_number)
 
 		if (item_num != item_number && item != lara_item && item->status == ITEM_ACTIVE && item->hit_points > 0)
 		{
-			dx = ABS(item->pos.x_pos - x);
-			dz = ABS(item->pos.z_pos - z);
+			dx = abs(item->pos.x_pos - x);
+			dz = abs(item->pos.z_pos - z);
 			dist = dx > dz ? dx + (dz >> 1) : dz + (dx >> 1);
 
 			if (dist < rad + objects[item->object_number].radius)
@@ -1081,7 +1081,7 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 
 		if (angle)
 		{
-			if (ABS(angle) < 2048)
+			if (abs(angle) < 2048)
 				item->pos.y_rot -= angle;
 			else if (angle > 0)
 				item->pos.y_rot -= 2048;
@@ -1691,7 +1691,7 @@ void GetAITarget(CREATURE_INFO* creature)
 			if (enemy_object != AI_PATROL2)
 				FindAITargetObject(creature, AI_PATROL2);
 		}
-		else if (ABS(enemy->pos.x_pos - item->pos.x_pos) < 640 && ABS(enemy->pos.y_pos - item->pos.y_pos) < 640 && ABS(enemy->pos.z_pos - item->pos.z_pos) < 640)
+		else if (abs(enemy->pos.x_pos - item->pos.x_pos) < 640 && abs(enemy->pos.y_pos - item->pos.y_pos) < 640 && abs(enemy->pos.z_pos - item->pos.z_pos) < 640)
 		{
 			GetHeight(GetFloor(enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos, &enemy->room_number),
 				enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos);
@@ -1703,7 +1703,7 @@ void GetAITarget(CREATURE_INFO* creature)
 	{
 		if (enemy_object != AI_AMBUSH)
 			FindAITargetObject(creature, AI_AMBUSH);
-		else if (ABS(enemy->pos.x_pos - item->pos.x_pos) < 640 && ABS(enemy->pos.y_pos - item->pos.y_pos) < 640 && ABS(enemy->pos.z_pos - item->pos.z_pos) < 640)
+		else if (abs(enemy->pos.x_pos - item->pos.x_pos) < 640 && abs(enemy->pos.y_pos - item->pos.y_pos) < 640 && abs(enemy->pos.z_pos - item->pos.z_pos) < 640)
 		{
 			GetHeight(GetFloor(enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos, &enemy->room_number),
 				enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos);
@@ -1731,7 +1731,7 @@ void GetAITarget(CREATURE_INFO* creature)
 			item->ai_bits &= ~FOLLOW;
 		else if (enemy_object != AI_FOLLOW)
 			FindAITargetObject(creature, AI_FOLLOW);
-		else if (ABS(enemy->pos.x_pos - item->pos.x_pos) < 640 && ABS(enemy->pos.y_pos - item->pos.y_pos) < 640 && ABS(enemy->pos.z_pos - item->pos.z_pos) < 640)
+		else if (abs(enemy->pos.x_pos - item->pos.x_pos) < 640 && abs(enemy->pos.y_pos - item->pos.y_pos) < 640 && abs(enemy->pos.z_pos - item->pos.z_pos) < 640)
 		{
 			creature->reached_goal = 1;
 			item->ai_bits &= ~FOLLOW;

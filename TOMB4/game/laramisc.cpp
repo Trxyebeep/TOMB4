@@ -57,6 +57,7 @@ void LaraCheatyBits()
 		lara.num_flares = -1;
 		lara.num_shotgun_ammo1 = -1;
 		lara.num_shotgun_ammo2 = -1;
+		savegame.HaveBikeBooster = 1;
 
 		if (objects[LASERSIGHT_ITEM].loaded)
 			lara.lasersight = 1;
@@ -549,7 +550,7 @@ void LaraControl(short item_number)
 
 				if (!room_water_state)
 				{
-					if (wd != NO_HEIGHT && ABS(hfw) < 256)
+					if (wd != NO_HEIGHT && abs(hfw) < 256)
 					{
 						lara.water_status = LW_SURFACE;
 						l->pos.y_pos = wh;
