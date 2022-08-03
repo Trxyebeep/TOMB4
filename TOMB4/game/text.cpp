@@ -6,6 +6,7 @@
 long stash_font_height;
 long smol_font_height;
 #endif
+#include "../specific/specificfx.h"
 
 char AccentTable[46][2] =
 {
@@ -260,9 +261,64 @@ long GetStringLength(char* string, short* top, short* bottom)
 	return length;
 }
 
+void DrawChar(short x, short y, ushort col, CHARDEF* def)
+{
+	D3DTLVERTEX v[4];
+	TEXTURESTRUCT tex;
+	float u1, v1, u2, v2;
+	long x1, y1, x2, y2, top, bottom;
+
+	y1 = short(y + phd_winymin) + def->YOffset;
+	y2 = short(y + phd_winymin) + def->h + def->YOffset;
+
+	if (small_font)
+	{
+		y1 = long((float)y1 * 0.75F);
+		y2 = long((float)y2 * 0.75F);
+	}
+
+	x1 = short(x + phd_winxmin);
+	x2 = x1 + def->w;
+	setXY4(v, x1, y1, x2, y1, x2, y2, x1, y2, (long)f_mznear, clipflags);
+
+	top = *(long*)&FontShades[col][2 * def->TopShade];
+	bottom = *(long*)&FontShades[col][2 * def->BottomShade];
+	v[0].color = top;
+	v[1].color = top;
+	v[2].color = bottom;
+	v[3].color = bottom;
+
+	top = *(long*)&FontShades[col][(2 * def->TopShade) + 1];
+	bottom = *(long*)&FontShades[col][(2 * def->BottomShade) + 1];
+	v[0].specular = top;
+	v[1].specular = top;
+	v[2].specular = bottom;
+	v[3].specular = bottom;
+
+	u1 = def->u + (1.0F / 512.0F);
+	v1 = def->v + (1.0F / 512.0F);
+	u2 = 512.0F / float(phd_winxmax + 1) * (float)def->w * (1.0F / 256.0F) + def->u - (1.0F / 512.0F);
+	v2 = 240.0F / float(phd_winymax + 1) * (float)def->h * (1.0F / 256.0F) + def->v - (1.0F / 512.0F);
+	tex.u1 = u1;
+	tex.v1 = v1;
+	tex.u2 = u2;
+	tex.v2 = v1;
+	tex.u3 = u2;
+	tex.v3 = v2;
+	tex.u4 = u1;
+	tex.v4 = v2;
+
+	tex.drawtype = 1;
+	tex.tpage = ushort(nTextures - 2);
+	tex.flag = 0;
+	nPolyType = 4;
+	AddQuadClippedSorted(v, 0, 1, 2, 3, &tex, 0);
+}
+
 void inject_text(bool replace)
 {
 	INJECT(0x00463650, InitFont, replace);
 	INJECT(0x00463930, UpdatePulseColour, replace);
 	INJECT(0x004639E0, GetStringLength, replace);
+	INJECT(0x00463DE0, DrawChar, replace);
 }

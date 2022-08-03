@@ -1295,7 +1295,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x00463930	+	UpdatePulseColour
 0x004639E0	+	GetStringLength
 0x00463B50		PrintString
-0x00463DE0		DrawChar
+0x00463DE0	+	DrawChar
 
 
 		game/tomb4fx.cpp

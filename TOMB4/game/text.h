@@ -6,6 +6,7 @@ void inject_text(bool replace);
 void InitFont();
 void UpdatePulseColour();
 long GetStringLength(char* string, short* top, short* bottom);
+void DrawChar(short x, short y, ushort col, CHARDEF* def);
 
 #define PrintString	( (void(__cdecl*)(ushort, ushort, uchar, const char*, ushort)) 0x00463B50 )
 
