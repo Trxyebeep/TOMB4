@@ -275,7 +275,7 @@ static void TiltHer(ITEM_INFO* item, long rad, long height)
 	FLOOR_INFO* floor;
 	FVECTOR plane;
 	long wy[4];
-	long yT, wx, wz, cx, cz, x, z, ctx, cty, ctz, tx, ty, tz, dy;
+	long yT, y, wx, wz, dy;
 	short room_number, rotX, rotZ;
 
 	if (!tomb4.crawltilt)
@@ -284,7 +284,7 @@ static void TiltHer(ITEM_INFO* item, long rad, long height)
 	yT = item->pos.y_pos - height - 162;
 	room_number = item->room_number;
 	floor = GetFloor(item->pos.x_pos, yT, item->pos.z_pos, &room_number);
-	GetHeight(floor, item->pos.x_pos, yT, item->pos.z_pos);
+	y = GetHeight(floor, item->pos.x_pos, yT, item->pos.z_pos);
 
 	if (!OnObject)
 	{
@@ -313,72 +313,17 @@ static void TiltHer(ITEM_INFO* item, long rad, long height)
 	}
 
 	plane.z = item->pos.y_pos - plane.x * item->pos.x_pos - plane.y * item->pos.z_pos;
-	cx = item->pos.x_pos >> 10;
-	cz = item->pos.z_pos >> 10;
 
 	for (int i = 0; i < 4; i++)
 	{
 		wx = item->pos.x_pos + (rad * phd_sin(item->pos.y_rot + 16384 * i) >> W2V_SHIFT);
 		wz = item->pos.z_pos + (rad * phd_cos(item->pos.y_rot + 16384 * i) >> W2V_SHIFT);
-		x = wx >> 10;
-		z = wz >> 10;
+		room_number = item->room_number;
+		floor = GetFloor(wx, yT, wz, &room_number);
+		wy[i] = GetHeight(floor, wx, yT, wz);
 
-		if (x != cx || z != cz)
-		{
-			if (x > cx)
-			{
-				ctx = item->pos.x_pos | 0x3FF;
-				tx = ctx + 1;
-			}
-			else if (x < cx)
-			{
-				ctx = item->pos.x_pos & 0xFFFFFC00;
-				tx = ctx - 1;
-			}
-			else
-			{
-				ctx = item->pos.x_pos & 0xFFFFFC00 | ((item->pos.x_pos & 0x3FF) + (wx & 0x3FF) < 1024 ? 0xFF : 0x2FF);
-				tx = ctx;
-			}
-
-			if (z > cz)
-			{
-				ctz = item->pos.z_pos | 0x3FF;
-				tz = ctz + 1;
-			}
-			else if (z < cz)
-			{
-				ctz = item->pos.z_pos & 0xFFFFFC00;
-				tz = ctz - 1;
-			}
-			else
-			{
-				ctz = item->pos.z_pos & 0xFFFFFC00 | ((item->pos.z_pos & 0x3FF) + (wz & 0x3FF) < 1024 ? 0xFF : 0x2FF);
-				tz = ctz;
-			}
-
-			room_number = item->room_number;
-			floor = GetFloor(ctx, yT, ctz, &room_number);
-			cty = GetHeight(floor, ctx, yT, ctz);
-			room_number = item->room_number;
-			floor = GetFloor(tx, yT, tz, &room_number);
-			ty = GetHeight(floor, tx, yT, tz);
-
-			if (abs(cty - ty) > 1)
-				wy[i] = (long)(plane.x * wx + plane.y * wz + plane.z);
-			else
-			{
-				room_number = item->room_number;
-				floor = GetFloor(wx, yT, wz, &room_number);
-				wy[i] = GetHeight(floor, wx, yT, wz);
-			}
-		}
-		else
-		{
-			room_number = item->room_number;
-			floor = GetFloor(wx, yT, wz, &room_number);
-			wy[i] = GetHeight(floor, wx, yT, wz);
-		}
+		if (abs(y - wy[i]) > rad / 2)
+			wy[i] = (long)(plane.x * wx + plane.y * wz + plane.z);
 	}
 
 	dy = wy[0] - wy[2];
@@ -5673,9 +5618,9 @@ long LaraHangTest(ITEM_INFO* item, COLL_INFO* coll)
 	flag = 0;
 	angle = lara.move_angle;
 
-	if (angle == item->pos.y_rot - 0x4000)
+	if (angle == short(item->pos.y_rot - 0x4000))
 		move = -100;
-	else if (angle == item->pos.y_rot + 0x4000)
+	else if (angle == short(item->pos.y_rot + 0x4000))
 		move = 100;
 
 	wall = LaraFloorFront(item, angle, 100);
