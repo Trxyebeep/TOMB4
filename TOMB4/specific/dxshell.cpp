@@ -78,9 +78,9 @@ void* AddStruct(void* p, long num, long size)
 	void* ptr;
 
 	if (!num)
-		ptr = MALLOC(size);
+		ptr = malloc(size);
 	else
-		ptr = REALLOC(p, size * (num + 1));
+		ptr = realloc(p, size * (num + 1));
 
 	memset((char*)ptr + size * num, 0, size);
 	return ptr;
@@ -283,17 +283,17 @@ void DXFreeInfo(DXINFO* dxinfo)
 		for (int j = 0; j < DDInfo->nD3DDevices; j++)
 		{
 			d3d = &DDInfo->D3DDevices[j];
-			FREE(d3d->DisplayModes);
-			FREE(d3d->TextureInfos);
-			FREE(d3d->ZBufferInfos);
+			free(d3d->DisplayModes);
+			free(d3d->TextureInfos);
+			free(d3d->ZBufferInfos);
 		}
 
-		FREE(DDInfo->D3DDevices);
-		FREE(DDInfo->DisplayModes);
+		free(DDInfo->D3DDevices);
+		free(DDInfo->DisplayModes);
 	}
 
-	FREE(dxinfo->DDInfo);
-	FREE(dxinfo->DSInfo);
+	free(dxinfo->DDInfo);
+	free(dxinfo->DSInfo);
 }
 
 HRESULT __stdcall DXEnumDisplayModes(LPDDSURFACEDESCX lpDDSurfaceDesc2, LPVOID lpContext)
@@ -597,7 +597,7 @@ void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 		*(short*)&tga_header[12] = (short)desc.dwWidth;
 		*(short*)&tga_header[14] = (short)desc.dwHeight;
 		fwrite(tga_header, sizeof(tga_header), 1, file);
-		pM = (char*)MALLOC(2 * desc.dwWidth * desc.dwHeight);
+		pM = (char*)malloc(2 * desc.dwWidth * desc.dwHeight);
 		pDest = (short*)pM;
 		pSurf += desc.dwHeight * (desc.lPitch / 2);
 
@@ -623,7 +623,7 @@ void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name)
 
 		fwrite(pM, 2 * desc.dwWidth * desc.dwHeight, 1, file);
 		fclose(file);
-		FREE(pM);
+		free(pM);
 		buf[7]++;
 
 		if (buf[7] > '9')

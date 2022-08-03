@@ -33,17 +33,17 @@ void GameClose()
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Dest VB");
 
-	FREE(clipflags);
+	free(clipflags);
 
 	if (wav_file_buffer)
-		FREE(wav_file_buffer);
+		free(wav_file_buffer);
 
 	if (ADPCMBuffer)
-		FREE(ADPCMBuffer);
+		free(ADPCMBuffer);
 
-	FREE(malloc_buffer);
-	FREE(gfScriptFile);
-	FREE(gfLanguageFile);
+	free(malloc_buffer);
+	free(gfScriptFile);
+	free(gfLanguageFile);
 }
 
 unsigned int __stdcall GameMain(void* ptr)
@@ -180,7 +180,7 @@ bool GameInitialise()
 	desc.dwNumVertices = 0x2000;
 	DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&desc, &DestVB, D3DDP_DONOTCLIP, 0));
 	init_game_malloc();
-	clipflags = (short*)MALLOC(0x4000);
+	clipflags = (short*)malloc(0x4000);
 	init_water_table();
 	return 1;
 }

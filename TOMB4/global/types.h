@@ -47,12 +47,6 @@ do \
 #define	TRIGMULT3(a,b,c)	(TRIGMULT2((TRIGMULT2(a, b)), c))
 
 	/**********************************/
-#define MALLOC	( (void*(__cdecl*)(size_t)) 0x004A0558 )
-#define REALLOC	( (void*(__cdecl*)(void*, size_t)) 0x004A1453 )
-#define FREE	( (void(__cdecl*)(void*)) 0x004A0A01 )
-	/**********************************/
-
-	/**********************************/
 #define LPDIRECTDRAWX			LPDIRECTDRAW4
 #define LPDIRECT3DX				LPDIRECT3D3
 #define LPDIRECT3DDEVICEX		LPDIRECT3DDEVICE3
