@@ -112,7 +112,7 @@ void floor_shake_effect(ITEM_INFO* item)
 	y = item->pos.y_pos - camera.pos.y;
 	z = item->pos.z_pos - camera.pos.z;
 
-	if ((ABS(x) < 16384) && (ABS(y) < 16384) && (ABS(z) < 16384))
+	if ((abs(x) < 16384) && (abs(y) < 16384) && (abs(z) < 16384))
 	{
 		dist = (SQUARE(x) + SQUARE(y) + SQUARE(z)) / 256;
 		camera.bounce = ((SQUARE(1024) - dist) * 100) / SQUARE(1024);

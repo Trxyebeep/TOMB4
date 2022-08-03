@@ -368,7 +368,7 @@ void InitialiseSethBlade(short item_number)
 	item->frame_number = anims[item->anim_number].frame_base;
 	item->current_anim_state = 2;
 	item->goal_anim_state = 2;
-	item->item_flags[2] = ABS(item->trigger_flags);
+	item->item_flags[2] = abs(item->trigger_flags);
 }
 
 void InitialiseObelisk(short item_number)
@@ -471,7 +471,7 @@ void InitialisePulley(short item_number)
 
 	item = &items[item_number];
 	item->item_flags[3] = item->trigger_flags;
-	item->trigger_flags = ABS(item->trigger_flags);
+	item->trigger_flags = abs(item->trigger_flags);
 
 	if (item->status == ITEM_INVISIBLE)
 	{

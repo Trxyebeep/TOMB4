@@ -168,7 +168,7 @@ void TroopControl(short item_number)
 
 			if (item->anim_number == objects[item->object_number].anim_index + 17)
 			{
-				if (ABS(info.angle) < 1820)
+				if (abs(info.angle) < 1820)
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
 					item->pos.y_rot -= 1820;

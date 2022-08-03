@@ -127,9 +127,9 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 	if (wy < ceiling || wy > height)
 	{
 		mgLOS(&camera.target, &camera.pos, 0);
-		dx = ABS(camera.pos.x - ideal->x);
-		dy = ABS(camera.pos.y - ideal->y);
-		dz = ABS(camera.pos.z - ideal->z);
+		dx = abs(camera.pos.x - ideal->x);
+		dy = abs(camera.pos.y - ideal->y);
+		dz = abs(camera.pos.z - ideal->z);
 
 		if (dx < 768 && dy < 768 && dz < 768)
 		{

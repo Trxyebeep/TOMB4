@@ -123,7 +123,7 @@ void ControlClockworkBeetle(short item_number)
 			floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 			h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 
-			if (ABS(lara_item->pos.y_pos - h) > 64)
+			if (abs(lara_item->pos.y_pos - h) > 64)
 			{
 				item->pos.x_pos = lara_item->pos.x_pos;
 				item->pos.y_pos = lara_item->pos.y_pos;
@@ -179,10 +179,10 @@ void ControlClockworkBeetle(short item_number)
 				angle = (short)phd_atan(z, x);
 				rotY = angle - item->pos.y_rot;
 
-				if (ABS(rotY) > 0x8000)
+				if (abs(rotY) > 0x8000)
 					rotY = item->pos.y_rot - angle;
 
-				if (ABS(rotY) < 256)
+				if (abs(rotY) < 256)
 				{
 					item->pos.y_rot = angle;
 					item->item_flags[2] = 1;
@@ -257,10 +257,10 @@ void ControlClockworkBeetle(short item_number)
 		case 2:
 			rotY = item->item_flags[1] - item->pos.y_rot;
 
-			if (ABS(rotY) > 0x8000)
+			if (abs(rotY) > 0x8000)
 				rotY = item->pos.y_rot - item->item_flags[1];
 
-			if (ABS(rotY) < 256)
+			if (abs(rotY) < 256)
 			{
 				item->item_flags[2] = 3;
 				item->pos.y_rot = item->item_flags[1];

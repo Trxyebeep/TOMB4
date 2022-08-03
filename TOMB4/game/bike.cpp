@@ -89,7 +89,7 @@ long GetOnBike(short item_number, COLL_INFO* coll)
 	if (item->flags & IFL_INVISIBLE || lara.gun_status != LG_NO_ARMS || lara_item->gravity_status)
 		return 0;
 
-	if (ABS(item->pos.y_pos - lara_item->pos.y_pos) > 256 || !(input & IN_ACTION) && GLOBAL_inventoryitemchosen != PUZZLE_ITEM1)
+	if (abs(item->pos.y_pos - lara_item->pos.y_pos) > 256 || !(input & IN_ACTION) && GLOBAL_inventoryitemchosen != PUZZLE_ITEM1)
 		return 0;
 
 	dx = lara_item->pos.x_pos - item->pos.x_pos;
@@ -321,7 +321,7 @@ static long CanGetOff(short num)	//always called with num = 1
 	if (height_type == BIG_SLOPE || height_type == DIAGONAL || h == NO_HEIGHT)
 		return 0;
 
-	if (ABS(h - item->pos.y_pos) > 272)
+	if (abs(h - item->pos.y_pos) > 272)
 		return 0;
 
 	c = GetCeiling(floor, x, y, z);
@@ -338,7 +338,7 @@ static long CanGetOff(short num)	//always called with num = 1
 	if (height_type == BIG_SLOPE || height_type == DIAGONAL || h == NO_HEIGHT)
 		return 0;
 
-	if (ABS(h - item->pos.y_pos) > 80)
+	if (abs(h - item->pos.y_pos) > 80)
 		return 0;
 
 	c = GetCeiling(floor, x, y, z);
@@ -1090,7 +1090,7 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 			else
 				bike->velocity = 0xC000;
 
-			bike->velocity -= ABS(item->pos.y_rot - bike->move_angle) >> 6;
+			bike->velocity -= abs(item->pos.y_rot - bike->move_angle) >> 6;
 		}
 
 		if (lara_item->current_anim_state == 3)
@@ -1125,7 +1125,7 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 		if (vel < 0)
 			vel >>= 1;
 
-		bike->pitch1 += (ABS(vel) - 0x2000 - bike->pitch1) >> 3;
+		bike->pitch1 += (abs(vel) - 0x2000 - bike->pitch1) >> 3;
 	}
 	else if (bike->pitch1 < 0xFFFF)
 		bike->pitch1 += (0xFFFF - bike->pitch1) >> 3;
@@ -1232,7 +1232,7 @@ long BikeDynamics(ITEM_INFO* item)
 	{
 		ang = (100 * phd_sin(item->pos.x_rot)) >> W2V_SHIFT;
 
-		if (ABS(ang) > 16)
+		if (abs(ang) > 16)
 		{
 			ang2 = (100 * phd_sin(item->pos.x_rot)) >> W2V_SHIFT;
 
@@ -1248,7 +1248,7 @@ long BikeDynamics(ITEM_INFO* item)
 
 		ang = (128 * phd_sin(item->pos.z_rot)) >> W2V_SHIFT;
 
-		if (ABS(ang) > 32)
+		if (abs(ang) > 32)
 		{
 			dont_exit_bike = 1;
 
@@ -1257,8 +1257,8 @@ long BikeDynamics(ITEM_INFO* item)
 			else
 				ang2 = item->pos.y_rot + 0x4000;
 
-			item->pos.x_pos += ((ABS(ang) - 24) * phd_sin(ang2)) >> W2V_SHIFT;
-			item->pos.z_pos += ((ABS(ang) - 24) * phd_cos(ang2)) >> W2V_SHIFT;
+			item->pos.x_pos += ((abs(ang) - 24) * phd_sin(ang2)) >> W2V_SHIFT;
+			item->pos.z_pos += ((abs(ang) - 24) * phd_cos(ang2)) >> W2V_SHIFT;
 		}
 	}
 
@@ -1335,10 +1335,10 @@ long BikeDynamics(ITEM_INFO* item)
 
 	bike->rot_thing = short((bike->rot_thing + shift2) >> 1);
 
-	if (ABS(bike->rot_thing) < 2)
+	if (abs(bike->rot_thing) < 2)
 		bike->rot_thing = 0;
 
-	if (ABS(bike->rot_thing) < 4)
+	if (abs(bike->rot_thing) < 4)
 		bike->extra_rotation = bike->rot_thing;
 	else
 		bike->extra_rotation += (bike->rot_thing - bike->extra_rotation) >> 2;

@@ -2032,7 +2032,7 @@ void GetCarriedItems()
 			{
 				pickup = &items[item_num];
 
-				if (baddy->pos.x_pos == pickup->pos.x_pos && ABS(baddy->pos.y_pos - pickup->pos.y_pos) < 256 &&
+				if (baddy->pos.x_pos == pickup->pos.x_pos && abs(baddy->pos.y_pos - pickup->pos.y_pos) < 256 &&
 					baddy->pos.z_pos == pickup->pos.z_pos && objects[pickup->object_number].collision == PickUpCollision)
 				{
 					pickup->carried_item = baddy->carried_item;

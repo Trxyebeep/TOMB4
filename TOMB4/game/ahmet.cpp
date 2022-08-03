@@ -387,7 +387,7 @@ void AhmetControl(short item_number)
 		case 4:
 			ahmet->maximum_turn = 0;
 
-			if (ABS(info.angle) < 910)
+			if (abs(info.angle) < 910)
 				item->pos.y_rot += info.angle;
 			else if (info.angle < 0)
 				item->pos.y_rot -= 910;
@@ -416,7 +416,7 @@ void AhmetControl(short item_number)
 
 			if (item->anim_number == objects[AHMET].anim_index + 3)
 			{
-				if (ABS(info.angle) < 910)
+				if (abs(info.angle) < 910)
 					item->pos.y_rot += info.angle;
 			}
 			else if (!ahmet->flags && item->anim_number == objects[AHMET].anim_index + 4 && frame > base + 11 && item->touch_bits & 0xC00)
@@ -435,7 +435,7 @@ void AhmetControl(short item_number)
 
 			if (item->anim_number == objects[AHMET].anim_index + 7)
 			{
-				if (ABS(info.angle) < 910)
+				if (abs(info.angle) < 910)
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
 					item->pos.y_rot -= 910;

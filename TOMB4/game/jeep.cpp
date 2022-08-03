@@ -63,7 +63,7 @@ static long GetOnJeep(short item_number, COLL_INFO* coll)
 		if (!(item->flags & IFL_INVISIBLE) && lara.gun_status == LG_NO_ARMS && lara_item->current_anim_state == AS_STOP &&
 			lara_item->anim_number == ANIM_BREATH && !lara_item->gravity_status)
 		{
-			if (ABS(item->pos.y_pos - lara_item->pos.y_pos) < 256 && TestBoundsCollide(item, lara_item, 100))
+			if (abs(item->pos.y_pos - lara_item->pos.y_pos) < 256 && TestBoundsCollide(item, lara_item, 100))
 			{
 				room_number = item->room_number;
 				floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
@@ -292,7 +292,7 @@ static long CanGetOff(short num)
 
 	if (height_type != BIG_SLOPE && height_type != DIAGONAL && h != NO_HEIGHT)
 	{
-		if (ABS(h - item->pos.y_pos) <= 512)
+		if (abs(h - item->pos.y_pos) <= 512)
 		{
 			c = GetCeiling(floor, x, y, z);
 
@@ -391,7 +391,7 @@ long GetCollisionAnim(ITEM_INFO* item, PHD_VECTOR* pos, BIKEINFO* vehicle)
 	fb = (sin * pos->x + cos * pos->z) >> W2V_SHIFT;
 	lr = (cos * pos->x - sin * pos->z) >> W2V_SHIFT;
 
-	if (ABS(fb) <= ABS(lr))
+	if (abs(fb) <= abs(lr))
 	{
 		if (lr > 0)
 			return 11;
@@ -753,7 +753,7 @@ static void AnimateJeep(ITEM_INFO* item, long hitWall, long killed)
 
 			if (killed)
 				lara_item->goal_anim_state = 17;
-			else if (ABS(jeep->velocity) & 0xFFFFFF00)
+			else if (abs(jeep->velocity) & 0xFFFFFF00)
 			{
 				if (input & (IN_LSTEP | IN_LEFT))
 					lara_item->goal_anim_state = 15;
@@ -921,7 +921,7 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 		if (!jeep->velocity && input & IN_LOOK)
 			LookUpDown();
 
-		vel = ABS(jeep->velocity);
+		vel = abs(jeep->velocity);
 
 		if (vel > 0x4000)
 		{
@@ -1004,10 +1004,10 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 				if (jeep->velocity <= -0x4000)
 					jeep->velocity = -0x4000;
 				else
-					jeep->velocity -= (ABS(-0x4000 - jeep->velocity) >> 3) - 2;
+					jeep->velocity -= (abs(-0x4000 - jeep->velocity) >> 3) - 2;
 			}
 
-			jeep->velocity -= ABS(item->pos.y_rot - jeep->move_angle) >> 6;
+			jeep->velocity -= abs(item->pos.y_rot - jeep->move_angle) >> 6;
 		}
 
 		if (!(input & IN_ACTION))
@@ -1030,7 +1030,7 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 		if (vel < 0)
 			vel >>= 1;
 
-		jeep->pitch1 += (ABS(vel) - jeep->pitch1) >> 3;
+		jeep->pitch1 += (abs(vel) - jeep->pitch1) >> 3;
 	}
 	else if (jeep->pitch1 < 0xFFFF)
 		jeep->pitch1 += (0xFFFF - jeep->pitch1) >> 3;
@@ -1353,7 +1353,7 @@ long JeepDynamics(ITEM_INFO* item)
 	{
 		ang = (100 * phd_sin(item->pos.x_rot)) >> W2V_SHIFT;
 
-		if (ABS(ang) > 16)
+		if (abs(ang) > 16)
 		{
 			dont_exit_jeep = 1;
 
@@ -1365,7 +1365,7 @@ long JeepDynamics(ITEM_INFO* item)
 
 		ang = (128 * phd_sin(item->pos.z_rot)) >> W2V_SHIFT;
 
-		if (ABS(ang) > 32)
+		if (abs(ang) > 32)
 		{
 			dont_exit_jeep = 1;
 
@@ -1374,8 +1374,8 @@ long JeepDynamics(ITEM_INFO* item)
 			else
 				ang2 = item->pos.y_rot + 0x4000;
 
-			item->pos.x_pos += ((ABS(ang) - 24) * phd_sin(ang2)) >> W2V_SHIFT;
-			item->pos.z_pos += ((ABS(ang) - 24) * phd_cos(ang2)) >> 14;
+			item->pos.x_pos += ((abs(ang) - 24) * phd_sin(ang2)) >> W2V_SHIFT;
+			item->pos.z_pos += ((abs(ang) - 24) * phd_cos(ang2)) >> 14;
 		}
 	}
 
@@ -1445,10 +1445,10 @@ long JeepDynamics(ITEM_INFO* item)
 
 	jeep->rot_thing = short((jeep->rot_thing + shift) >> 1);
 
-	if (ABS(jeep->rot_thing) < 2)
+	if (abs(jeep->rot_thing) < 2)
 		jeep->rot_thing = 0;
 
-	if (ABS(jeep->rot_thing - jeep->extra_rotation) < 4)
+	if (abs(jeep->rot_thing - jeep->extra_rotation) < 4)
 		jeep->extra_rotation = jeep->rot_thing;
 	else
 		jeep->extra_rotation += (jeep->rot_thing - jeep->extra_rotation) >> 2;
@@ -1755,7 +1755,7 @@ void EnemyJeepControl(short item_number)
 	floor = GetFloor(x, y, z, &room_number);
 	h1 = GetHeight(floor, x, y, z);
 	
-	if (ABS(y - h1) > 768)
+	if (abs(y - h1) > 768)
 	{
 		item->pos.x_pos += Zoffset >> 6;
 		item->pos.z_pos -= Xoffset >> 6;
@@ -1769,7 +1769,7 @@ void EnemyJeepControl(short item_number)
 	floor = GetFloor(x, y, z, &room_number);
 	h2 = GetHeight(floor, x, y, z);
 
-	if (ABS(y - h2) > 768)
+	if (abs(y - h2) > 768)
 	{
 		item->pos.x_pos -= Zoffset >> 6;
 		item->pos.z_pos += Xoffset >> 6;
@@ -1785,7 +1785,7 @@ void EnemyJeepControl(short item_number)
 	floor = GetFloor(x, y, z, &room_number);
 	h1 = GetHeight(floor, x, y, z);
 
-	if (ABS(y - h1) > 768)
+	if (abs(y - h1) > 768)
 		h1 = y;
 
 	x = item->pos.x_pos - Xoffset;
@@ -1794,7 +1794,7 @@ void EnemyJeepControl(short item_number)
 	floor = GetFloor(x, y, z, &room_number);
 	h2 = GetHeight(floor, x, y, z);
 
-	if (ABS(y - h2) > 768)
+	if (abs(y - h2) > 768)
 		h2 = y;
 
 	xrot = (short)phd_atan(1364, h2 - h1);
@@ -1991,14 +1991,14 @@ void EnemyJeepControl(short item_number)
 	if (item->item_flags[2] < 0)
 		item->item_flags[2] = 0;
 
-	if (ABS(xrot - item->pos.x_rot) < 256)
+	if (abs(xrot - item->pos.x_rot) < 256)
 		item->pos.x_rot = xrot;
 	else if (xrot > item->pos.x_rot)
 		item->pos.x_rot += 256;
 	else if (xrot < item->pos.x_rot)
 		item->pos.x_rot -= 256;
 
-	if (ABS(zrot - item->pos.z_rot) < 256)
+	if (abs(zrot - item->pos.z_rot) < 256)
 		item->pos.z_rot = zrot;
 	else if (zrot > item->pos.z_rot)
 		item->pos.z_rot += 256;

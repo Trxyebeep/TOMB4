@@ -549,7 +549,7 @@ void LaraControl(short item_number)
 
 				if (!room_water_state)
 				{
-					if (wd != NO_HEIGHT && ABS(hfw) < 256)
+					if (wd != NO_HEIGHT && abs(hfw) < 256)
 					{
 						lara.water_status = LW_SURFACE;
 						l->pos.y_pos = wh;

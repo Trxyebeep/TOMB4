@@ -1397,7 +1397,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 			tiltxoff = xoff;
 			tiltyoff = yoff;
 
-			if (ABS(xoff) > 2 || ABS(yoff) > 2)
+			if (abs(xoff) > 2 || abs(yoff) > 2)
 				height_type = BIG_SLOPE;
 			else
 				height_type = SMALL_SLOPE;
@@ -1527,7 +1527,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 			tiltxoff = xoff;
 			tiltyoff = yoff;
 
-			if (ABS(xoff) > 2 || ABS(yoff) > 2)
+			if (abs(xoff) > 2 || abs(yoff) > 2)
 				height_type = DIAGONAL;
 
 			if (xoff >= 0)
@@ -2302,7 +2302,7 @@ long LOS(GAME_VECTOR* start, GAME_VECTOR* target)
 
 	target->room_number = start->room_number;
 
-	if (ABS(target->z - start->z) > ABS(target->x - start->x))
+	if (abs(target->z - start->z) > abs(target->x - start->x))
 	{
 		los1 = xLOS(start, target);
 		los2 = zLOS(start, target);
@@ -3057,7 +3057,7 @@ long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS*
 			r0 = ((sp.x - s.x) * (t.x - s.x)) + ((sp.y - s.y) * (t.y - s.y)) + ((sp.z - s.z) * (t.z - s.z));
 			r1 = SQUARE(t.x - s.x) + SQUARE(t.y - s.y) + SQUARE(t.z - s.z);
 
-			if ((r0 >= 0 || r1 >= 0) && (r1 <= 0 || r0 <= 0) || (ABS(r0) > ABS(r1)))
+			if ((r0 >= 0 || r1 >= 0) && (r1 <= 0 || r0 <= 0) || (abs(r0) > abs(r1)))
 				continue;
 
 			r1 >>= 16;

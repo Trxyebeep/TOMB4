@@ -251,14 +251,14 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 		room_number = item->room_number;
 		cp[i].y = GetHeight(GetFloor(cp[i].x, item->floor, cp[i].z, &room_number), cp[i].x, item->floor, cp[i].z);
 
-		if (ABS(cp[i].y - item->floor) > POINT_HEIGHT_CORRECTION)
+		if (abs(cp[i].y - item->floor) > POINT_HEIGHT_CORRECTION)
 			cp[i].y = item->floor;
 	}
 
 	room_number = item->room_number;
 	ccp.y = GetHeight(GetFloor(ccp.x, item->floor, ccp.z, &room_number), ccp.x, item->floor, ccp.z);
 
-	if (ABS(ccp.y - item->floor) > POINT_HEIGHT_CORRECTION)
+	if (abs(ccp.y - item->floor) > POINT_HEIGHT_CORRECTION)
 		ccp.y = item->floor;
 
 	phd_PushMatrix();
@@ -498,7 +498,7 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 		room_number = item->room_number;
 		*hY = GetHeight(GetFloor(hXZ[0], item->floor, hXZ[1], &room_number), hXZ[0], item->floor, hXZ[1]);
 
-		if (ABS(*hY - item->floor) > POINT_HEIGHT_CORRECTION)
+		if (abs(*hY - item->floor) > POINT_HEIGHT_CORRECTION)
 			*hY = item->floor;
 	}
 
@@ -758,7 +758,7 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	x = (float)phd_winxmax / 512.0F * 448.0F;
 	y = (float)phd_winymax / 240.0F * 224.0F;
 	rSize = (7 * size) >> 3;
-	rVel = ABS(vel >> 1);
+	rVel = abs(vel >> 1);
 
 	if (rVel)
 	{
@@ -896,7 +896,7 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	Draw2DSprite(long(x + 24), long(y - 16), spriteSlot + 17, RGBONLY(GetRandomDraw() & 0xFF, GetRandomDraw() & 0xFF, GetRandomDraw() & 0xFF), 0);
 #endif
 	rSize = (7 * size) >> 3;
-	rVel = ABS(vel >> 1);
+	rVel = abs(vel >> 1);
 
 	if (rVel)
 	{
@@ -2059,9 +2059,9 @@ void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj)
 		pos.x = lfobj->x;
 		pos.y = lfobj->y;
 		pos.z = lfobj->z;
-		dx = ABS(pos.x - lara_item->pos.x_pos);
-		dy = ABS(pos.y - lara_item->pos.y_pos);
-		dz = ABS(pos.z - lara_item->pos.z_pos);
+		dx = abs(pos.x - lara_item->pos.x_pos);
+		dy = abs(pos.y - lara_item->pos.y_pos);
+		dz = abs(pos.z - lara_item->pos.z_pos);
 
 		if (dx > 0x8000 || dy > 0x8000 || dz > 0x8000)
 			return;
@@ -2083,7 +2083,7 @@ void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj)
 		pos.y = y;
 		pos.z = z;
 
-		while (ABS(pos.x) > 0x36000 || ABS(pos.y) > 0x36000 || ABS(pos.z) > 0x36000)
+		while (abs(pos.x) > 0x36000 || abs(pos.y) > 0x36000 || abs(pos.z) > 0x36000)
 		{
 			pos.x -= (x - camera.pos.x) >> 4;
 			pos.y -= (y - camera.pos.y) >> 4;
@@ -2094,7 +2094,7 @@ void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj)
 		dy = (pos.y - camera.pos.y) >> 4;
 		dz = (pos.z - camera.pos.z) >> 4;
 
-		while (ABS(pos.x - camera.pos.x) > 0x8000 || ABS(pos.y - camera.pos.y) > 0x8000 || ABS(pos.z - camera.pos.z) > 0x8000)
+		while (abs(pos.x - camera.pos.x) > 0x8000 || abs(pos.y - camera.pos.y) > 0x8000 || abs(pos.z - camera.pos.z) > 0x8000)
 		{
 			pos.x -= dx;
 			pos.y -= dy;
@@ -3532,7 +3532,7 @@ void DrawRope(ROPE_STRUCT* rope)
 	dx = rope->Coords[1][0] - rope->Coords[0][0];
 	dy = rope->Coords[1][1] - rope->Coords[0][1];
 	d = SQUARE(dx) + SQUARE(dy);
-	d = phd_sqrt(ABS(d));
+	d = phd_sqrt(abs(d));
 
 	dx <<= W2V_SHIFT + 2;
 	dy <<= W2V_SHIFT + 2;
@@ -3570,7 +3570,7 @@ void DrawRope(ROPE_STRUCT* rope)
 		dx = rope->Coords[i + 1][0] - rope->Coords[i][0];
 		dy = rope->Coords[i + 1][1] - rope->Coords[i][1];
 		d = SQUARE(dx) + SQUARE(dy);
-		d = phd_sqrt(ABS(d));
+		d = phd_sqrt(abs(d));
 
 		dx <<= W2V_SHIFT + 2;
 		dy <<= W2V_SHIFT + 2;

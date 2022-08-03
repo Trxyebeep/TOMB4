@@ -113,7 +113,7 @@ void BatControl(short item_number)
 				bat->flags = 0;
 
 			if (!bat->flags && (item->touch_bits || bat->enemy != lara_item && info.distance < 0x10000 &&
-				info.ahead && ABS(item->pos.y_pos - bat->enemy->pos.y_pos) < 896))
+				info.ahead && abs(item->pos.y_pos - bat->enemy->pos.y_pos) < 896))
 				item->goal_anim_state = 3;
 
 			break;
@@ -121,7 +121,7 @@ void BatControl(short item_number)
 		case 3:
 
 			if (!bat->flags && item->touch_bits || bat->enemy != lara_item && info.distance < 0x10000 &&
-				info.ahead && ABS(item->pos.y_pos - bat->enemy->pos.y_pos) < 896)
+				info.ahead && abs(item->pos.y_pos - bat->enemy->pos.y_pos) < 896)
 			{
 				CreatureEffect(item, &bat_bite, DoBloodSplat);
 

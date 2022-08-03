@@ -64,7 +64,7 @@ void CrocControl(short item_number)
 	floor = GetFloor(x, item->pos.y_pos, z, &room_number);
 	h = GetHeight(floor, x, item->pos.y_pos, z);
 
-	if (ABS(item->pos.y_pos - h) > 512)
+	if (abs(item->pos.y_pos - h) > 512)
 		h = item->pos.y_pos;
 
 	x = item->pos.x_pos - s;
@@ -73,7 +73,7 @@ void CrocControl(short item_number)
 	floor = GetFloor(x, item->pos.y_pos, z, &room_number);
 	h2 = GetHeight(floor, x, item->pos.y_pos, z);
 
-	if (ABS(item->pos.y_pos - h2) > 512)
+	if (abs(item->pos.y_pos - h2) > 512)
 		h2 = item->pos.y_pos;
 
 	roll = (short)phd_atan(2048, h2 - h);
@@ -252,7 +252,7 @@ void CrocControl(short item_number)
 
 	if (item->current_anim_state < 8)
 	{
-		if (ABS(roll - item->pos.x_rot) < 256)
+		if (abs(roll - item->pos.x_rot) < 256)
 			item->pos.x_rot = roll;
 		else if (roll > item->pos.x_rot)
 			item->pos.x_rot += 256;
@@ -523,7 +523,7 @@ void UpdateLocusts()
 
 				ox = (ushort)angles[1] - (ushort)fx->pos.x_rot;
 
-				if (ABS(ox) > 32768)
+				if (abs(ox) > 32768)
 					ox = (ushort)fx->pos.x_rot - (ushort)angles[0];
 
 				ox >>= 3;

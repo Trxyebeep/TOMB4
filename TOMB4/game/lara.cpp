@@ -364,7 +364,7 @@ static void TiltHer(ITEM_INFO* item, long rad, long height)
 			floor = GetFloor(tx, yT, tz, &room_number);
 			ty = GetHeight(floor, tx, yT, tz);
 
-			if (ABS(cty - ty) > 1)
+			if (abs(cty - ty) > 1)
 				wy[i] = (long)(plane.x * wx + plane.y * wz + plane.z);
 			else
 			{
@@ -393,7 +393,7 @@ static void TiltHer(ITEM_INFO* item, long rad, long height)
 	if (dy > 0 && rotZ > 0 || dy < 0 && rotZ < 0)
 		rotZ = -rotZ;
 
-	if (ABS(rotX - item->pos.x_rot) < 546)
+	if (abs(rotX - item->pos.x_rot) < 546)
 		item->pos.x_rot = rotX;
 	else if (rotX > item->pos.x_rot)
 		item->pos.x_rot += 546;
@@ -405,7 +405,7 @@ static void TiltHer(ITEM_INFO* item, long rad, long height)
 	else if (item->pos.x_rot < -8192)
 		item->pos.x_rot = -8192;
 
-	if (ABS(rotZ - item->pos.z_rot) < 546)
+	if (abs(rotZ - item->pos.z_rot) < 546)
 		item->pos.z_rot = rotZ;
 	else if (rotZ > item->pos.z_rot)
 		item->pos.z_rot += 546;
@@ -703,7 +703,7 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		if (input & IN_FORWARD)
 		{
-			if (coll->front_floor > -850 && coll->front_floor < -650 && ABS(coll->left_floor2 - coll->right_floor2) < 60 && !coll->hit_static)
+			if (coll->front_floor > -850 && coll->front_floor < -650 && abs(coll->left_floor2 - coll->right_floor2) < 60 && !coll->hit_static)
 			{
 				if (coll->front_floor - coll->front_ceiling >= 0 &&
 					coll->front_floor - coll->left_ceiling2 >= 0 &&
@@ -738,7 +738,7 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
 				}
 			}
 
-			if (lara.climb_status && coll->mid_ceiling <= -256 && ABS(coll->left_ceiling2 - coll->right_ceiling2) < 60)
+			if (lara.climb_status && coll->mid_ceiling <= -256 && abs(coll->left_ceiling2 - coll->right_ceiling2) < 60)
 			{
 				if (LaraTestClimbStance(item, coll))
 					item->goal_anim_state = AS_CLIMBSTNC;
@@ -837,7 +837,7 @@ long TestLaraSlide(ITEM_INFO* item, COLL_INFO* coll)
 	static short old_ang = 1;
 	short ang_diff, ang;
 
-	if (ABS(coll->tilt_x) <= 2 && ABS(coll->tilt_z) <= 2)
+	if (abs(coll->tilt_x) <= 2 && abs(coll->tilt_z) <= 2)
 		return 0;
 
 	ang = 0;
@@ -847,9 +847,9 @@ long TestLaraSlide(ITEM_INFO* item, COLL_INFO* coll)
 	else if (coll->tilt_x < -2)
 		ang = 16384;
 
-	if (coll->tilt_z > 2 && coll->tilt_z > ABS(coll->tilt_x))
+	if (coll->tilt_z > 2 && coll->tilt_z > abs(coll->tilt_x))
 		ang = -32768;
-	else if (coll->tilt_z < -2 && (-coll->tilt_z > ABS(coll->tilt_x)))
+	else if (coll->tilt_z < -2 && (-coll->tilt_z > abs(coll->tilt_x)))
 		ang = 0;
 
 	ang_diff = ang - item->pos.y_rot;
@@ -1079,7 +1079,7 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 		lara.gun_status = LG_NO_ARMS;
 	else if (!TestLaraSlide(item, coll))
 	{
-		slope = ABS(coll->left_floor2 - coll->right_floor2) >= 120;
+		slope = abs(coll->left_floor2 - coll->right_floor2) >= 120;
 		lara.keep_ducked = coll->mid_ceiling >= -362;
 		ShiftItem(item, coll);
 
@@ -1731,7 +1731,7 @@ void lara_col_hang2(ITEM_INFO* item, COLL_INFO* coll)
 		coll->radius = 100;
 		GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 600);
 
-		if (input & IN_FORWARD && coll->coll_type != CT_FRONT && ABS(coll->mid_ceiling - coll->front_ceiling) < 50)
+		if (input & IN_FORWARD && coll->coll_type != CT_FRONT && abs(coll->mid_ceiling - coll->front_ceiling) < 50)
 			item->goal_anim_state = AS_MONKEYSWING;
 		else if (input & IN_LSTEP && TestMonkeyLeft(item, coll))
 			item->goal_anim_state = AS_MONKEYL;
@@ -1833,7 +1833,7 @@ void lara_col_monkeyswing(ITEM_INFO* item, COLL_INFO* coll)
 	coll->radius = 100;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 600);
 
-	if (coll->coll_type == CT_FRONT || ABS(coll->mid_ceiling - coll->front_ceiling) > 50)
+	if (coll->coll_type == CT_FRONT || abs(coll->mid_ceiling - coll->front_ceiling) > 50)
 	{
 		item->anim_number = ANIM_MONKEYHANG;
 		item->frame_number = anims[ANIM_MONKEYHANG].frame_base;
@@ -1842,12 +1842,12 @@ void lara_col_monkeyswing(ITEM_INFO* item, COLL_INFO* coll)
 	}
 	else
 	{
-		if (ABS(coll->mid_ceiling - coll->left_ceiling2) > 50)
+		if (abs(coll->mid_ceiling - coll->left_ceiling2) > 50)
 		{
 			ShiftItem(item, coll);
 			item->pos.y_rot += 910;
 		}
-		else if (ABS(coll->mid_ceiling - coll->right_ceiling2) > 50)
+		else if (abs(coll->mid_ceiling - coll->right_ceiling2) > 50)
 		{
 			ShiftItem(item, coll);
 			item->pos.y_rot -= 910;
@@ -2921,7 +2921,7 @@ void lara_as_pulley(ITEM_INFO* item, COLL_INFO* coll)
 					p->item_flags[2] = 1;
 
 					if (p->item_flags[3] >= 0)
-						p->trigger_flags = ABS(p->item_flags[3]);
+						p->trigger_flags = abs(p->item_flags[3]);
 					else
 						p->item_flags[0] = 1;
 				}
@@ -4224,8 +4224,8 @@ void lara_col_ropefwd(ITEM_INFO* item, COLL_INFO* coll)
 	{
 		if (input & IN_SPRINT)
 		{
-			if (ABS(lara.RopeLastX) < 9000)
-				Vel = 192 * (9000 - ABS(lara.RopeLastX)) / 9000;
+			if (abs(lara.RopeLastX) < 9000)
+				Vel = 192 * (9000 - abs(lara.RopeLastX)) / 9000;
 			else
 				Vel = 0;
 
@@ -4367,7 +4367,7 @@ void lara_slide_slope(ITEM_INFO* item, COLL_INFO* coll)
 			TestLaraSlide(item, coll);
 			item->pos.y_pos += coll->mid_floor;
 
-			if (ABS(coll->tilt_x) <= 2 && ABS(coll->tilt_z) <= 2)
+			if (abs(coll->tilt_x) <= 2 && abs(coll->tilt_z) <= 2)
 			{
 				item->goal_anim_state = AS_STOP;
 				StopSoundEffect(SFX_LARA_SLIPPING);
@@ -4687,7 +4687,7 @@ static long IsValidHangPos(ITEM_INFO* item, COLL_INFO* coll)
 		lara.move_angle = item->pos.y_rot;
 		GetLaraCollisionInfo(item, coll);
 
-		if (coll->mid_ceiling < 0 && coll->coll_type == CT_FRONT && !coll->hit_static && ABS(coll->front_floor - coll->right_floor2) < 60)
+		if (coll->mid_ceiling < 0 && coll->coll_type == CT_FRONT && !coll->hit_static && abs(coll->front_floor - coll->right_floor2) < 60)
 			return 1;
 	}
 
@@ -4725,7 +4725,7 @@ long LaraTestHangOnClimbWall(ITEM_INFO* item, COLL_INFO* coll)
 		r = LaraCeilingFront(item, item->pos.y_rot, 0, 0);
 		l = LaraCeilingFront(item, lara.move_angle, 128, 0);
 
-		if (ABS(r - l) > 60)
+		if (abs(r - l) > 60)
 			return 0;
 	}
 
@@ -4786,7 +4786,7 @@ long LaraHangRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 			if (!(GetClimbTrigger(x, item->pos.y_pos, z, item->room_number) & LeftClimbTab[angle]))
 				flag = 0;
 		}
-		else if (ABS(front - coll->front_floor) > 60)
+		else if (abs(front - coll->front_floor) > 60)
 			flag = 0;
 	}
 
@@ -4843,13 +4843,13 @@ long LaraHangRightCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 				{
 					front = LaraFloorFront(item, item->pos.y_rot, 116);
 
-					if (ABS(coll->front_floor - front) > 60 || front < -768)
+					if (abs(coll->front_floor - front) > 60 || front < -768)
 						flag = 0;
 				}
 			}
 			else
 			{
-				if (ABS(front - coll->front_floor) <= 60)
+				if (abs(front - coll->front_floor) <= 60)
 				{
 					switch (angle)
 					{
@@ -4939,7 +4939,7 @@ long LaraHangLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 			if (!(GetClimbTrigger(x, item->pos.y_pos, z, item->room_number) & RightClimbTab[angle]))
 				flag = 0;
 		}
-		else if (ABS(front - coll->front_floor) > 60)
+		else if (abs(front - coll->front_floor) > 60)
 			flag = 0;
 	}
 
@@ -4996,13 +4996,13 @@ long LaraHangLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll)
 				{
 					front = LaraFloorFront(item, item->pos.y_rot, 116);
 
-					if (ABS(coll->front_floor - front) > 60 || front < -768)
+					if (abs(coll->front_floor - front) > 60 || front < -768)
 						flag = 0;
 				}
 			}
 			else
 			{
-				if (ABS(front - coll->front_floor) <= 60)
+				if (abs(front - coll->front_floor) <= 60)
 				{
 					switch (angle)
 					{
@@ -5191,14 +5191,14 @@ void UpdateRopeSwing(ITEM_INFO* item)
 			lara.RopeMaxXForward = item->pos.x_rot;
 	}
 	else if (item->pos.x_rot < -lara.RopeMaxXBackward)
-		lara.RopeMaxXBackward = ABS(item->pos.x_rot);
+		lara.RopeMaxXBackward = abs(item->pos.x_rot);
 }
 
 void FallFromRope(ITEM_INFO* item)
 {
 	long l;
 
-	l = ABS(CurrentPendulum.Velocity.x >> 16) + ABS(CurrentPendulum.Velocity.z >> 16);
+	l = abs(CurrentPendulum.Velocity.x >> 16) + abs(CurrentPendulum.Velocity.z >> 16);
 	item->speed = short(l >> 1);
 	item->pos.x_rot = 0;
 	item->pos.y_pos += 320;
@@ -5214,7 +5214,7 @@ void FallFromRope(ITEM_INFO* item)
 
 short GetDirOctant(long rot)
 {
-	rot = ABS(rot);
+	rot = abs(rot);
 	return rot >= 0x2000 && rot <= 0x6000;
 }
 
@@ -5231,7 +5231,7 @@ short TestMonkeyLeft(ITEM_INFO* item, COLL_INFO* coll)
 	coll->slopes_are_walls = 0;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 600);
 
-	if (ABS(coll->mid_ceiling - coll->front_ceiling) > 50)
+	if (abs(coll->mid_ceiling - coll->front_ceiling) > 50)
 		return 0;
 
 	if (coll->coll_type != CT_NONE)
@@ -5261,7 +5261,7 @@ short TestMonkeyRight(ITEM_INFO* item, COLL_INFO* coll)
 	coll->slopes_are_walls = 0;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 600);
 
-	if (ABS(coll->mid_ceiling - coll->front_ceiling) > 50)
+	if (abs(coll->mid_ceiling - coll->front_ceiling) > 50)
 		return 0;
 
 	if (coll->coll_type != CT_NONE)
@@ -5288,7 +5288,7 @@ long LaraTestEdgeCatch(ITEM_INFO* item, COLL_INFO* coll, long* edge)
 
 	if ((hdif >= 0 || item->fallspeed + hdif >= 0) && (hdif <= 0 || item->fallspeed + hdif <= 0))
 	{
-		if (ABS(coll->left_floor2 - coll->right_floor2) >= 60)
+		if (abs(coll->left_floor2 - coll->right_floor2) >= 60)
 			return 0;
 
 		return 1;
@@ -5391,7 +5391,7 @@ long TestLaraVault(ITEM_INFO* item, COLL_INFO* coll)
 		return 0;
 
 	hdif = coll->front_floor;
-	slope = ABS(coll->left_floor2 - coll->right_floor2) >= 60;
+	slope = abs(coll->left_floor2 - coll->right_floor2) >= 60;
 
 	if (hdif >= -640 && hdif <= -384)
 	{
@@ -5786,7 +5786,7 @@ long LaraHangTest(ITEM_INFO* item, COLL_INFO* coll)
 			if (!LaraTestHangOnClimbWall(item, coll))
 				hdif = 0;
 		}
-		else if (ABS(coll->left_floor2 - coll->right_floor2) >= 60 && (move < 0 && coll->left_floor2 != coll->front_floor || move > 0 && coll->right_floor2 != coll->front_floor))
+		else if (abs(coll->left_floor2 - coll->right_floor2) >= 60 && (move < 0 && coll->left_floor2 != coll->front_floor || move > 0 && coll->right_floor2 != coll->front_floor))
 			wall = 1;
 
 		coll->front_floor = oldfloor;

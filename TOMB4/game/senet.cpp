@@ -214,7 +214,7 @@ void GameStixControl(short item_number)
 
 				if (item->hit_points < 40 - 2 * i)
 				{
-					if (ABS(item->item_flags[i]) < 4096 && item->trigger_flags & 1 << i)
+					if (abs(item->item_flags[i]) < 4096 && item->trigger_flags & 1 << i)
 						item->item_flags[i] = 0;
 					else if ((item->item_flags[i] > 28672 || item->item_flags[i] < -28672) && !(item->trigger_flags & 1 << i))
 						item->item_flags[i] = -0x8000;
@@ -263,14 +263,14 @@ void GameStixControl(short item_number)
 			z = SenetTargetZ + ((4 - piece_num) << 10);
 		}
 
-		if (ABS(x - piece->pos.x_pos) < 128)
+		if (abs(x - piece->pos.x_pos) < 128)
 			piece->pos.x_pos = x;
 		else if (x > piece->pos.x_pos)
 			piece->pos.x_pos += 128;
 		else
 			piece->pos.x_pos -= 128;
 
-		if (ABS(z - piece->pos.z_pos) < 128)
+		if (abs(z - piece->pos.z_pos) < 128)
 			piece->pos.z_pos = z;
 		else if (z > piece->pos.z_pos)
 			piece->pos.z_pos += 128;

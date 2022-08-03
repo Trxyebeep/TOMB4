@@ -98,8 +98,8 @@ void WildboarControl(short item_number)
 
 		CreatureMood(item, &info, 1);
 		angle = CreatureTurn(item, boar->maximum_turn);
-		dx = ABS(item->item_flags[2] - item->pos.x_pos);
-		dz = ABS(item->item_flags[3] - item->pos.z_pos);
+		dx = abs(item->item_flags[2] - item->pos.x_pos);
+		dz = abs(item->item_flags[3] - item->pos.z_pos);
 
 		if (info.ahead)
 		{

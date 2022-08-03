@@ -107,7 +107,7 @@ void FireCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 			else
 			{
 				l->item_flags[3] = 1;
-				l->anim_number = short((ABS(l->pos.y_pos - item->pos.y_pos) >> 8) + ANIM_LIGHT_TORCH1);
+				l->anim_number = short((abs(l->pos.y_pos - item->pos.y_pos) >> 8) + ANIM_LIGHT_TORCH1);
 			}
 
 			l->current_anim_state = AS_CONTROLLED;

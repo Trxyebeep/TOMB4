@@ -296,7 +296,7 @@ void ControlJobySpike(short item_number)
 		y = lara_item->pos.y_pos + frm[0][2];
 		h = item->pos.y_pos + (3328 * item->item_flags[1] >> 12);
 
-		if (lara_item->hit_points > 0 && h > y && ABS(item->pos.x_pos - lara_item->pos.x_pos) < 512 && ABS(item->pos.z_pos - lara_item->pos.z_pos) < 512)
+		if (lara_item->hit_points > 0 && h > y && abs(item->pos.x_pos - lara_item->pos.x_pos) < 512 && abs(item->pos.z_pos - lara_item->pos.z_pos) < 512)
 		{
 			DoBloodSplat(lara_item->pos.x_pos + (GetRandomControl() & 0x7F) - 64, GetRandomControl() % (h - y) + y, lara_item->pos.z_pos + (GetRandomControl() & 0x7F) - 64, (GetRandomControl() & 3) + 2, (short)(2 * GetRandomControl()), item->room_number);
 			lara_item->hit_points -= 8;
@@ -1172,9 +1172,9 @@ void ControlBurningFloor(short item_number)
 		{
 			xoff = deadly_floor_fires[(i * 2) + 0];
 			zoff = deadly_floor_fires[(i * 2) + 1];
-			dx = ABS(item->pos.x_pos + xoff - lara_item->pos.x_pos);
-			dy = ABS(item->pos.y_pos - lara_item->pos.y_pos);
-			dz = ABS(item->pos.z_pos + xoff - lara_item->pos.z_pos);	//ORIGINAL BUG uses xoff instead of zoff, only affects last test
+			dx = abs(item->pos.x_pos + xoff - lara_item->pos.x_pos);
+			dy = abs(item->pos.y_pos - lara_item->pos.y_pos);
+			dz = abs(item->pos.z_pos + xoff - lara_item->pos.z_pos);	//ORIGINAL BUG uses xoff instead of zoff, only affects last test
 
 			if (dx < 200 && dy < 200 && dz < 200)
 			{
@@ -1265,8 +1265,8 @@ void ControlRaisingBlock(short item_number)
 			SoundEffect(SFX_RUMBLE_NEXTDOOR, &item->pos, SFX_DEFAULT);
 			item->item_flags[1] += 64;
 
-			if (item->trigger_flags && ABS(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
-				ABS(item->pos.y_pos - lara_item->pos.y_pos) < 10240 && ABS(item->pos.z_pos - lara_item->pos.z_pos) < 10240)
+			if (item->trigger_flags && abs(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
+				abs(item->pos.y_pos - lara_item->pos.y_pos) < 10240 && abs(item->pos.z_pos - lara_item->pos.z_pos) < 10240)
 			{
 				if (item->item_flags[1] == 64 || item->item_flags[1] == 4096)
 					camera.bounce = -32;
@@ -1279,8 +1279,8 @@ void ControlRaisingBlock(short item_number)
 	{
 		SoundEffect(SFX_RUMBLE_NEXTDOOR, &item->pos, SFX_DEFAULT);
 
-		if (item->trigger_flags && ABS(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
-			ABS(item->pos.y_pos - lara_item->pos.y_pos) < 10240 && ABS(item->pos.z_pos - lara_item->pos.z_pos) < 10240)
+		if (item->trigger_flags && abs(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
+			abs(item->pos.y_pos - lara_item->pos.y_pos) < 10240 && abs(item->pos.z_pos - lara_item->pos.z_pos) < 10240)
 		{
 			if (item->item_flags[1] == 64 || item->item_flags[1] == 4096)
 				camera.bounce = -32;
@@ -1392,7 +1392,7 @@ void ControlScaledSpike(short item_number)
 			if (yb > item->pos.y_pos + iyb2)
 				yb = short(iyb2 + item->pos.y_pos);
 
-			dy = ABS(yt - yb) + 1;
+			dy = abs(yt - yb) + 1;
 
 			if ((item->trigger_flags & 7) == 2 || (item->trigger_flags & 7) == 6)
 				num >>= 1;
@@ -1779,12 +1779,12 @@ void ControlRollingBall(short item_number)
 
 	if (item->pos.y_pos > h)
 	{
-		if (ABS(item->fallspeed) > 16)
+		if (abs(item->fallspeed) > 16)
 		{
 			fz = phd_sqrt(SQUARE(camera.pos.x - item->pos.x_pos) + SQUARE(camera.pos.y - item->pos.y_pos) + SQUARE(camera.pos.z - item->pos.z_pos));
 
 			if (fz < 0x4000)
-				camera.bounce = -(((0x4000 - fz) * ABS(item->fallspeed)) >> W2V_SHIFT);
+				camera.bounce = -(((0x4000 - fz) * abs(item->fallspeed)) >> W2V_SHIFT);
 
 			SoundEffect(SFX_BOULDER_FALL, &item->pos, SFX_DEFAULT);
 		}
@@ -1796,7 +1796,7 @@ void ControlRollingBall(short item_number)
 			item->fallspeed = -(item->fallspeed >> 2);
 		else
 		{
-			if (ABS(item->speed) <= 512 || GetRandomControl() & 0x1F)
+			if (abs(item->speed) <= 512 || GetRandomControl() & 0x1F)
 				item->fallspeed = 0;
 			else
 				item->fallspeed = -(GetRandomControl() % (item->speed >> 3));
@@ -1870,7 +1870,7 @@ void ControlRollingBall(short item_number)
 
 		if (velnotadjusted == 2)
 		{
-			if (ABS(item->item_flags[1]) <= 64)
+			if (abs(item->item_flags[1]) <= 64)
 				item->item_flags[1] = 0;
 			else
 				item->item_flags[1] -= item->item_flags[1] >> 6;
@@ -1922,7 +1922,7 @@ void ControlRollingBall(short item_number)
 
 		if (velnotadjusted == 2)
 		{
-			if (ABS(item->item_flags[0]) <= 64)
+			if (abs(item->item_flags[0]) <= 64)
 				item->item_flags[0] = 0;
 			else
 				item->item_flags[0] -= item->item_flags[0] >> 6;
@@ -1964,7 +1964,7 @@ void ControlRollingBall(short item_number)
 			item->pos.y_rot = destyrot;
 	}
 
-	item->pos.x_rot -= (ABS(item->item_flags[0]) + ABS(item->item_flags[1])) >> 1;
+	item->pos.x_rot -= (abs(item->item_flags[0]) + abs(item->item_flags[1])) >> 1;
 	GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number), item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	TestTriggers(trigger_index, 1, 0);
 }
@@ -2083,9 +2083,9 @@ void DartEmitterControl(short item_number)
 		zLimit = 0;
 
 		if (x)
-			xLimit = ABS(x << 1) - 1;
+			xLimit = abs(x << 1) - 1;
 		else
-			zLimit = ABS(z << 1) - 1;
+			zLimit = abs(z << 1) - 1;
 
 		for (int i = 0; i < 5; i++)
 		{
