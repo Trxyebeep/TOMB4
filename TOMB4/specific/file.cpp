@@ -14,6 +14,7 @@
 #include "../game/items.h"
 #include "specificfx.h"
 #include "../game/tomb4fx.h"
+#include "audio.h"
 
 unsigned int __stdcall LoadLevel(void* name)
 {
