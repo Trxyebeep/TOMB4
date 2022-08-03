@@ -174,7 +174,7 @@ void UpdatePulseColour()
 	}
 }
 
-long GetStringLength(char* string, short* top, short* bottom)
+long GetStringLength(const char* string, short* top, short* bottom)
 {
 	CHARDEF* def;
 	long s, accent, length;
@@ -315,10 +315,116 @@ void DrawChar(short x, short y, ushort col, CHARDEF* def)
 	AddQuadClippedSorted(v, 0, 1, 2, 3, &tex, 0);
 }
 
+void PrintString(ushort x, ushort y, uchar col, const char* string, ushort flags)
+{
+	CHARDEF* def;
+	CHARDEF* accent;
+	short x2, bottom, l, top, bottom2;
+	uchar s;
+
+	if (flags & FF_BLINK && GnFrameCounter & 0x10)
+		return;
+
+	ScaleFlag = (flags & FF_SMALL) != 0;
+	x2 = (short)GetStringLength(string, 0, &bottom);
+
+	if (flags & FF_CENTER)
+		x2 = x - (x2 >> 1);
+	else if (flags & FF_RJUSTIFY)
+		x2 = x - x2;
+	else
+		x2 = x;
+
+	s = *string++;
+
+	while (s)
+	{
+		if (s == '\n')
+		{
+			if (*string == '\n')
+			{
+				bottom = 0;
+				y += 16;
+			}
+			else
+			{
+				l = (short)GetStringLength(string, &top, &bottom2);
+
+				if (flags & FF_CENTER)
+					x2 = x - (l >> 1);
+				else if (flags & FF_RJUSTIFY)
+					x2 = x - l;
+				else
+					x2 = x;
+
+				y += bottom - top + 2;
+				bottom = bottom2;
+			}
+
+			s = *string++;
+			continue;
+		}
+
+		if (s == ' ')
+		{
+			if (ScaleFlag)
+				x2 += 6;
+			else
+				x2 += short(float(phd_winxmax + 1) / 640.0F * 8.0F);
+
+			s = *string++;
+			continue;
+		}
+
+		if (s == '\t')
+		{
+			x2 += 40;
+			s = *string++;
+			continue;
+		}
+
+		if (s < 20)
+		{
+			col = s - 1;
+			s = *string++;
+			continue;
+		}
+
+		if (s >= 128 && s <= 173)
+		{
+			def = &CharDef[AccentTable[s - 128][0] - '!'];
+			accent = &CharDef[AccentTable[s - 128][1] - '!'];
+			DrawChar(x2, y, col, def);
+
+			if (AccentTable[s - 128][1] != ' ')
+				DrawChar(def->w / 2 + x2 - 3, y + def->YOffset, col, accent);
+		}
+		else
+		{
+			if (s < ' ')
+				def = &CharDef[s + 74];
+			else
+				def = &CharDef[s - '!'];
+
+			DrawChar(x2, y, col, def);
+		}
+
+		if (ScaleFlag)
+			x2 += def->w - def->w / 4;
+		else
+			x2 += def->w;
+
+		s = *string++;
+	}
+
+	ScaleFlag = 0;
+}
+
 void inject_text(bool replace)
 {
 	INJECT(0x00463650, InitFont, replace);
 	INJECT(0x00463930, UpdatePulseColour, replace);
 	INJECT(0x004639E0, GetStringLength, replace);
 	INJECT(0x00463DE0, DrawChar, replace);
+	INJECT(0x00463B50, PrintString, replace);
 }
