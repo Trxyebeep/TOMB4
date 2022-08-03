@@ -7,6 +7,7 @@
 #include "collide.h"
 #include "larafire.h"
 #include "control.h"
+#include "../specific/3dmath.h"
 
 void lara_as_surfswim(ITEM_INFO* item, COLL_INFO* coll)
 {

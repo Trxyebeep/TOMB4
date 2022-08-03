@@ -31,8 +31,6 @@ do \
 } while (false)
 
 #define ABS(x) (((x)<0) ? (-(x)) : (x))
-#define phd_sin(x) (4 * rcossin_tbl[((long)(x) >> 3) & 0x1FFE])
-#define phd_cos(x) (4 * rcossin_tbl[(((long)(x) >> 3) & 0x1FFE) + 1])
 #define SQUARE(x) ((x)*(x))
 #define phd_PopMatrix()		phd_mxptr -= 12
 #define RGBONLY(r, g, b) ((b) | (((g) | ((r) << 8)) << 8))

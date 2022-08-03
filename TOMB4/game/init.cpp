@@ -9,6 +9,7 @@
 #include "draw.h"
 #include "rope.h"
 #include "scarab.h"
+#include "../specific/3dmath.h"
 
 void InitialiseMapper(short item_number)
 {

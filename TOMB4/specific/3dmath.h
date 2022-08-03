@@ -22,3 +22,15 @@ void SetupZRange(long znear, long zfar);
 void InitWindow(long x, long y, long w, long h, long znear, long zfar, long fov, long a, long b);
 void phd_GenerateW2V(PHD_3DPOS* viewPos);
 void phd_LookAt(long sx, long sy, long sz, long tx, long ty, long tz, short roll);
+
+__inline short phd_sin(long angle)
+{
+	angle >>= 3;
+	return 4 * rcossin_tbl[angle & 0x1FFE];
+}
+
+__inline short phd_cos(long angle)
+{
+	angle >>= 3;
+	return 4 * rcossin_tbl[(angle & 0x1FFE) + 1];
+}

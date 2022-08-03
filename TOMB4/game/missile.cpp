@@ -6,6 +6,7 @@
 #include "sound.h"
 #include "../specific/function_stubs.h"
 #include "effects.h"
+#include "../specific/3dmath.h"
 
 long ExplodeFX(FX_INFO* fx, long NoXZVel, short Num)
 {

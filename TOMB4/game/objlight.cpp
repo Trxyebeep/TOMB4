@@ -5,6 +5,7 @@
 #include "sound.h"
 #include "../specific/function_stubs.h"
 #include "sphere.h"
+#include "../specific/3dmath.h"
 
 void ControlPulseLight(short item_number)
 {
