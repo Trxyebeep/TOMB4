@@ -374,7 +374,7 @@ void ObjectObjects()
 
 	obj = &objects[OBELISK];
 	obj->initialise = InitialiseObelisk;
-//	obj->control = ControlObelisk;
+	obj->control = ControlObelisk;
 	obj->collision = ObjectCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
