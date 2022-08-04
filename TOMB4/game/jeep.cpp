@@ -1727,7 +1727,7 @@ void InitialiseEnemyJeep(short item_number)
 	item->current_anim_state = 0;
 	item->goal_anim_state = 0;
 	item->mesh_bits = ~0x24000;
-	item->status ^= item->status;
+	item->status += ITEM_ACTIVE;
 }
 
 void EnemyJeepControl(short item_number)
