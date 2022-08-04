@@ -9,3 +9,4 @@ void TriggerSethSparks(long x, long y, long z, short xv, short yv, short zv);
 void TriggerSethFlame(short item_number, uchar NodeNumber, short size);
 void DoSethEffects(short item_number);
 void InitialiseSeth(short item_number);
+void SethControl(short item_number);

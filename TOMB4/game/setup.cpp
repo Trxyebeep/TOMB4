@@ -49,6 +49,7 @@
 #include "switch.h"
 #include "missile.h"
 #include "dog.h"
+#include "seth.h"
 
 void ObjectObjects()
 {
@@ -1141,8 +1142,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseSeth;
-//		obj->control = SethControl;
+		obj->initialise = InitialiseSeth;
+		obj->control = SethControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 500;

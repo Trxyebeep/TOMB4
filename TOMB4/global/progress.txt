@@ -1202,7 +1202,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x004103B0	+	TriggerSethMissileFlame
 0x00410530	+	DoSethEffects
 0x00410C30	+	InitialiseSeth
-0x00410C90		SethControl
+0x00410C90	+	SethControl
 
 
 		game/setup.cpp
