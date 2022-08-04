@@ -7,6 +7,7 @@
 #include "tomb4fx.h"
 #include "sphere.h"
 #include "../specific/3dmath.h"
+#include "box.h"
 
 void TriggerSethMissileFlame(short fx_number, long xv, long yv, long zv)
 {
@@ -373,6 +374,18 @@ void DoSethEffects(short item_number)
 	}
 }
 
+void InitialiseSeth(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	InitialiseCreature(item_number);
+	item->anim_number = objects[SETHA].anim_index + 4;
+	item->frame_number = item->anim_number;
+	item->current_anim_state = 12;
+	item->goal_anim_state = 12;
+}
+
 void inject_seth(bool replace)
 {
 	INJECT(0x004103B0, TriggerSethMissileFlame, replace);
@@ -380,4 +393,5 @@ void inject_seth(bool replace)
 	INJECT(0x00410130, TriggerSethSparks, replace);
 	INJECT(0x00410220, TriggerSethFlame, replace);
 	INJECT(0x00410530, DoSethEffects, replace);
+	INJECT(0x00410C30, InitialiseSeth, replace);
 }
