@@ -332,8 +332,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/dog.cpp
 
-0x00405820		InitialiseDog
-0x004058B0		DogControl
+0x00405820	+	InitialiseDog
+0x004058B0	+	DogControl
 
 
 		game/door.cpp

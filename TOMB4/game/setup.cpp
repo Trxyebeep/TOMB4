@@ -48,6 +48,7 @@
 #include "lara1gun.h"
 #include "switch.h"
 #include "missile.h"
+#include "dog.h"
 
 void ObjectObjects()
 {
@@ -1439,8 +1440,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseDog;
-//		obj->control = DogControl;
+		obj->initialise = InitialiseDog;
+		obj->control = DogControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 16;
