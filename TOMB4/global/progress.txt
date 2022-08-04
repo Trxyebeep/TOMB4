@@ -1097,7 +1097,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/raghead.cpp
 
-0x0040B3C0		InitialiseRaghead
+0x0040B3C0	+	InitialiseRaghead
 0x0040B600		RagheadControl
 
 
