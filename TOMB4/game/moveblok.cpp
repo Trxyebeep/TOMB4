@@ -9,10 +9,7 @@
 #include "items.h"
 #include "draw.h"
 
-static short MovingBlockBounds[12] =
-{
-	0, 0, -256, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820
-};
+static short MovingBlockBounds[12] = { 0, 0, -256, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
 static PHD_VECTOR MovingBlockPos = { 0, 0, 0 };
 
@@ -553,6 +550,57 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 		ObjectCollision(item_number, laraitem, coll);
 }
 
+void InitialisePlanetEffect(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+	char* pifl;
+	uchar others[4];
+
+	item = &items[item_number];
+
+	for (int i = 0; i < level_items; i++)	//get the pushable we are linked to
+	{
+		item2 = &items[i];
+
+		if (item2->object_number >= PUSHABLE_OBJECT1 && item2->object_number <= PUSHABLE_OBJECT5 && item2->trigger_flags == item->trigger_flags)
+		{
+			item->item_flags[0] = i;
+			break;
+		}
+	}
+
+	if (item->trigger_flags == 1)	//get other planet effects
+	{
+		for (int i = 0, j = 0; i < level_items; i++)
+		{
+			item2 = &items[i];
+
+			if (item2->object_number == PLANET_EFFECT && item_number != i)
+			{
+				others[j] = i;
+				j++;
+			}
+		}
+
+		pifl = (char*)&item->item_flags[2];
+
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				item2 = &items[others[j]];
+
+				if (item2->trigger_flags == i + 2)
+				{
+					*pifl++ = others[j];
+					break;
+				}
+			}
+		}
+	}
+}
+
 void inject_moveblok(bool replace)
 {
 	INJECT(0x004094A0, ClearMovableBlockSplitters, replace);
@@ -561,4 +609,5 @@ void inject_moveblok(bool replace)
 	INJECT(0x00409D20, TestBlockPull, replace);
 	INJECT(0x004096D0, MovableBlock, replace);
 	INJECT(0x0040A040, MovableBlockCollision, replace);
+	INJECT(0x0040A3C0, InitialisePlanetEffect, replace);
 }
