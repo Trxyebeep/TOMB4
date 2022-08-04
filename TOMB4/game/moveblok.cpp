@@ -8,6 +8,10 @@
 #include "delstuff.h"
 #include "items.h"
 #include "draw.h"
+#include "sphere.h"
+#include "deltapak.h"
+#include "../specific/function_stubs.h"
+#include "tomb4fx.h"
 
 static short MovingBlockBounds[12] = { 0, 0, -256, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
@@ -558,6 +562,7 @@ void InitialisePlanetEffect(short item_number)
 	uchar others[4];
 
 	item = &items[item_number];
+	item->mesh_bits = 0;
 
 	for (int i = 0; i < level_items; i++)	//get the pushable we are linked to
 	{
@@ -601,6 +606,77 @@ void InitialisePlanetEffect(short item_number)
 	}
 }
 
+void ControlPlanetEffect(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+	PHD_VECTOR pos;
+	PHD_VECTOR pos2;
+	char* pifl;
+	long b, g;
+
+	item = &items[item_number];
+
+	if (!TriggerActive(item))
+		return;
+
+	if (item->item_flags[0] > 0)
+	{
+		items[item->item_flags[0]].trigger_flags = -items[item->item_flags[0]].trigger_flags;	//disable pushable :D
+		item->item_flags[0] = NO_ITEM;
+	}
+
+	item->mesh_bits = 255;
+	AnimateItem(item);
+
+	if (item->trigger_flags == 1)
+	{
+		if ((items[LOBYTE(item->item_flags[2])].flags & IFL_CODEBITS) == IFL_CODEBITS &&
+			(items[HIBYTE(item->item_flags[2])].flags & IFL_CODEBITS) == IFL_CODEBITS &&
+			(items[LOBYTE(item->item_flags[3])].flags & IFL_CODEBITS) == IFL_CODEBITS &&
+			(items[HIBYTE(item->item_flags[3])].flags & IFL_CODEBITS) == IFL_CODEBITS)
+		{
+			pos.x = 0;
+			pos.y = 0;
+			pos.z = 0;
+			GetJointAbsPosition(item, &pos, 0);
+
+			item2 = find_a_fucking_item(ANIMATING4);
+			pos2.x = 0;
+			pos2.y = 0;
+			pos2.z = 0;
+			GetJointAbsPosition(item2, &pos2, 0);
+
+			b = (GetRandomControl() & 0x1F) + 224;
+			g = b - (GetRandomControl() & 0x3F);
+			TriggerLightningGlow(pos.x, pos.y, pos.z, RGBA(0, g, b, (GetRandomControl() & 0x1F) + 48));
+			TriggerLightningGlow(pos2.x, pos2.y, pos2.z, RGBA(0, g, b, (GetRandomControl() & 0x1F) + 64));
+
+			if (!(GlobalCounter & 3))
+				TriggerLightning(&pos, &pos2, (GetRandomControl() & 0x1F) + 32, RGBA(0, g, b, 24), 1, 32, 5);
+
+			pifl = (char*)&item->item_flags[2];
+
+			for (int i = 0; i < 4; i++)
+			{
+				pos2.x = 0;
+				pos2.y = 0;
+				pos2.z = 0;
+				GetJointAbsPosition(&items[pifl[i]], &pos2, 0);
+
+				if (!(GlobalCounter & 3))
+					TriggerLightning(&pos2, &pos, (GetRandomControl() & 0x1F) + 32, RGBA(0, g, b, 24), 1, 32, 5);
+
+				TriggerLightningGlow(pos.x, pos.y, pos.z, RGBA(0, g, b, (GetRandomControl() & 0x1F) + 48));
+				SoundEffect(SFX_ELEC_ARCING_LOOP, (PHD_3DPOS*)&pos, SFX_DEFAULT);
+				pos = pos2;	//!!!!!!!!!!!!!!! so cool
+			}
+
+			TriggerLightningGlow(pos2.x, pos2.y, pos2.z, RGBA(0, g, b, (GetRandomControl() & 0x1F) + 48));
+		}
+	}
+}
+
 void inject_moveblok(bool replace)
 {
 	INJECT(0x004094A0, ClearMovableBlockSplitters, replace);
@@ -610,4 +686,5 @@ void inject_moveblok(bool replace)
 	INJECT(0x004096D0, MovableBlock, replace);
 	INJECT(0x0040A040, MovableBlockCollision, replace);
 	INJECT(0x0040A3C0, InitialisePlanetEffect, replace);
+	INJECT(0x0040A4C0, ControlPlanetEffect, replace);
 }
