@@ -12,6 +12,8 @@
 #include "deltapak.h"
 #include "../specific/function_stubs.h"
 #include "tomb4fx.h"
+#include "../specific/3dmath.h"
+#include "../specific/output.h"
 
 static short MovingBlockBounds[12] = { 0, 0, -256, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
@@ -677,6 +679,53 @@ void ControlPlanetEffect(short item_number)
 	}
 }
 
+void DrawPlanetEffect(ITEM_INFO* item)
+{
+	OBJECT_INFO* obj;
+	short** meshpp;
+	long* bone;
+	short* frm[2];
+	short* rot;
+	long poppush;
+
+	if (!item->mesh_bits)
+		return;
+
+	GetFrames(item, frm, &poppush);
+
+	phd_PushMatrix();
+	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+	CalculateObjectLighting(item, frm[0]);
+
+	obj = &objects[item->object_number];
+	meshpp = &meshes[obj->mesh_index];
+	bone = &bones[obj->bone_index];
+	phd_TranslateRel(frm[0][6], frm[0][7], frm[0][8]);
+	rot = frm[0] + 9;
+	gar_RotYXZsuperpack(&rot, 0);
+	phd_PutPolygons(*meshpp, -1);
+	phd_PutPolygons(*meshpp, -1);
+	meshpp += 2;
+
+	for (int i = 0; i < obj->nmeshes - 1; i++, bone += 4, meshpp += 2)
+	{
+		poppush = bone[0];
+
+		if (poppush & 1)
+			phd_PushMatrix();
+
+		if (poppush & 2)
+			phd_PopMatrix();
+
+		phd_TranslateRel(bone[1], bone[2], bone[3]);
+		gar_RotYXZsuperpack(&rot, 0);
+		phd_PutPolygons(*meshpp, -1);
+	}
+
+	phd_PopMatrix();
+}
+
 void inject_moveblok(bool replace)
 {
 	INJECT(0x004094A0, ClearMovableBlockSplitters, replace);
@@ -687,4 +736,5 @@ void inject_moveblok(bool replace)
 	INJECT(0x0040A040, MovableBlockCollision, replace);
 	INJECT(0x0040A3C0, InitialisePlanetEffect, replace);
 	INJECT(0x0040A4C0, ControlPlanetEffect, replace);
+	INJECT(0x0040A7F0, DrawPlanetEffect, replace);
 }

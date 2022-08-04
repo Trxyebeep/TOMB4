@@ -789,9 +789,9 @@ void TrapObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[PLANET_EFFECT];
-//	obj->initialise = InitialisePlanetEffect;
-//	obj->control = ControlPlanetEffect;
-//	obj->draw_routine = DrawPlanetEffect;
+	obj->initialise = InitialisePlanetEffect;
+	obj->control = ControlPlanetEffect;
+	obj->draw_routine = DrawPlanetEffect;
 	obj->save_flags = 1;
 	obj->using_drawanimating_item = 0;
 	obj->save_mesh = 1;

@@ -966,7 +966,7 @@ x for functions decompiled but not injected, for one reason or another.
 0x0040A040	+	MovableBlockCollision
 0x0040A3C0	+	InitialisePlanetEffect
 0x0040A4C0	+	ControlPlanetEffect
-0x0040A7F0		DrawPlanetEffect
+0x0040A7F0	+	DrawPlanetEffect
 
 
 		game/mummy.cpp
