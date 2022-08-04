@@ -1196,11 +1196,11 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/seth.cpp
 
-0x00410070		TriggerSethMissile
-0x00410130		TriggerSethSparks
-0x00410220		TriggerSethFlame
+0x00410070	+	TriggerSethMissile
+0x00410130	+	TriggerSethSparks
+0x00410220	+	TriggerSethFlame
 0x004103B0	+	TriggerSethMissileFlame
-0x00410530		DoSethEffects
+0x00410530	+	DoSethEffects
 0x00410C30		InitialiseSeth
 0x00410C90		SethControl
 
