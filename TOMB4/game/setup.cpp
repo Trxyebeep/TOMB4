@@ -52,6 +52,7 @@
 #include "seth.h"
 #include "raghead.h"
 #include "templar.h"
+#include "skeleton.h"
 
 void ObjectObjects()
 {
@@ -845,8 +846,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseSkeleton;
-//		obj->control = SkeletonControl;
+		obj->initialise = InitialiseSkeleton;
+		obj->control = SkeletonControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 15;
