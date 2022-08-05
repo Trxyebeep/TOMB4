@@ -9,6 +9,12 @@
 #include "../specific/output.h"
 #include "delstuff.h"
 
+HAIR_STRUCT hairs[2][7];
+static long hair_wind = 0;
+static long hair_dwind_angle = 0;
+static long hair_wind_angle = 0;
+static long first_hair[2];
+
 void InitialiseHair()
 {
 	OBJECT_INFO* obj;
