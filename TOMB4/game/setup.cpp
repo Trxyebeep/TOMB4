@@ -1058,8 +1058,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseSmlscorp;
-//		obj->control = SmlscorpControl;
+		obj->initialise = InitialiseSmlscorp;
+		obj->control = SmlscorpControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 8;

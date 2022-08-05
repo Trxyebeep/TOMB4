@@ -1168,8 +1168,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 0x0040E780	+	InitialiseScorpion
 0x0040E800	+	ScorpionControl
-0x0040EFD0		InitialiseSmlscorp
-0x0040F030		SmlscorpControl
+0x0040EFD0	+	InitialiseSmlscorp
+0x0040F030	+	SmlscorpControl
 
 
 		game/senet.cpp

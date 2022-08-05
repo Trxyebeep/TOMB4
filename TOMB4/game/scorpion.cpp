@@ -323,8 +323,144 @@ void ScorpionControl(short item_number)
 		CreatureAnimation(item_number, angle, 0);
 }
 
+void InitialiseSmlscorp(short item_number)
+{
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	InitialiseCreature(item_number);
+	item->anim_number = objects[SMALL_SCORPION].anim_index + 2;
+	item->frame_number = anims[item->anim_number].frame_base;
+	item->current_anim_state = 1;
+	item->goal_anim_state = 1;
+}
+
+void SmlscorpControl(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* enemy;
+	CREATURE_INFO* scorpion;
+	AI_INFO info;
+	short angle;
+
+	if (!CreatureActive(item_number))
+		return;
+
+	angle = 0;
+	item = &items[item_number];
+	scorpion = (CREATURE_INFO*)item->data;
+
+	if (item->hit_points <= 0)
+	{
+		item->hit_points = 0;
+
+		if (item->current_anim_state != 6 && item->current_anim_state != 7)
+		{
+			item->anim_number = objects[SMALL_SCORPION].anim_index + 5;
+			item->frame_number = anims[item->anim_number].frame_base;
+			item->current_anim_state = 6;
+		}
+	}
+	else
+	{
+		if (item->ai_bits)
+			GetAITarget(scorpion);
+		else
+			scorpion->enemy = lara_item;
+
+		CreatureAIInfo(item, &info);
+		enemy = scorpion->enemy;
+
+		if (enemy != lara_item)
+			phd_atan(lara_item->pos.z_pos - item->pos.z_pos, lara_item->pos.x_pos - item->pos.x_pos);
+
+		GetCreatureMood(item, &info, 1);
+		CreatureMood(item, &info, 1);
+		angle = CreatureTurn(item, scorpion->maximum_turn);
+
+		switch (item->current_anim_state)
+		{
+		case 1:
+			scorpion->maximum_turn = 0;
+			scorpion->flags = 0;
+
+			if (info.distance > 0x1C6E39)
+				item->goal_anim_state = 2;
+			else if (info.bite)
+			{
+				scorpion->maximum_turn = 1092;
+
+				if (GetRandomControl() & 1 || enemy->object_number == TROOPS && enemy->hit_points <= 2)
+					item->goal_anim_state = 4;
+				else
+					item->goal_anim_state = 5;
+			}
+			else if (!info.ahead)
+				item->goal_anim_state = 2;
+
+			break;
+
+		case 2:
+			scorpion->maximum_turn = 1092;
+
+			if (info.distance >= 0x1C639)
+				item->goal_anim_state = 3;
+			else
+				item->goal_anim_state = 1;
+
+			break;
+
+		case 3:
+			scorpion->maximum_turn = 1456;
+
+			if (info.distance < 0x1C639)
+				item->goal_anim_state = 1;
+
+			break;
+
+		case 4:
+		case 5:
+			scorpion->maximum_turn = 0;
+
+			if (abs(info.angle) < 1092)
+				item->pos.y_rot += info.angle;
+			else if (info.angle < 0)
+				item->pos.y_rot -= 1092;
+			else
+				item->pos.y_rot += 1092;
+
+			if (!scorpion->flags && item->touch_bits & 0x1B00100)
+			{
+				if (item->frame_number > anims[item->anim_number].frame_base + 20 && item->frame_number < anims[item->anim_number].frame_base + 32)
+				{
+					lara_item->hit_points -= 20;
+					lara_item->hit_status = 1;
+
+					if (item->current_anim_state == 5)
+					{
+						if (gfCurrentLevel > 3u)
+							lara.dpoisoned += 512;
+
+						CreatureEffectT(item, &s_stinger, 3, item->pos.y_rot + 0x8000, DoBloodSplat);
+					}
+					else
+						CreatureEffectT(item, &s_pincer, 3, item->pos.y_rot + 0x8000, DoBloodSplat);
+
+					scorpion->flags = 1;
+				}
+			}
+
+			break;
+		}
+	}
+
+	CreatureAnimation(item_number, angle, 0);
+}
+
 void inject_scorpion(bool replace)
 {
 	INJECT(0x0040E780, InitialiseScorpion, replace);
 	INJECT(0x0040E800, ScorpionControl, replace);
+	INJECT(0x0040EFD0, InitialiseSmlscorp, replace);
+	INJECT(0x0040F030, SmlscorpControl, replace);
 }
