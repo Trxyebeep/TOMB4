@@ -4,3 +4,4 @@
 void inject_skelly(bool replace);
 
 void TriggerRiseEffect(ITEM_INFO* item);
+void InitialiseSkeleton(short item_number);
