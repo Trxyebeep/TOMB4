@@ -562,7 +562,11 @@ void S_InitialisePolyList()
 	rect.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
 
 	if (gfLevelFlags & GF_TRAIN)
+#ifdef GENERAL_FIXES
+		col = 0xD2B163;
+#else
 		col = 0xCEAE60;
+#endif
 	else if (gfCurrentLevel == 5 || gfCurrentLevel == 6)
 	{
 		col = FogTableColor[19];
