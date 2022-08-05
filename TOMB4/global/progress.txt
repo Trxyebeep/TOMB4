@@ -964,9 +964,9 @@ x for functions decompiled but not injected, for one reason or another.
 0x00409B80	+	TestBlockPush
 0x00409D20	+	TestBlockPull
 0x0040A040	+	MovableBlockCollision
-0x0040A3C0		InitialisePlanetEffect
-0x0040A4C0		ControlPlanetEffect
-0x0040A7F0		DrawPlanetEffect
+0x0040A3C0	+	InitialisePlanetEffect
+0x0040A4C0	+	ControlPlanetEffect
+0x0040A7F0	+	DrawPlanetEffect
 
 
 		game/mummy.cpp
@@ -1097,8 +1097,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/raghead.cpp
 
-0x0040B3C0		InitialiseRaghead
-0x0040B600		RagheadControl
+0x0040B3C0	+	InitialiseRaghead
+0x0040B600	+	RagheadControl
 
 
 		game/rope.cpp
@@ -1196,13 +1196,13 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/seth.cpp
 
-0x00410070		TriggerSethMissile
-0x00410130		TriggerSethSparks
-0x00410220		TriggerSethFlame
+0x00410070	+	TriggerSethMissile
+0x00410130	+	TriggerSethSparks
+0x00410220	+	TriggerSethFlame
 0x004103B0	+	TriggerSethMissileFlame
-0x00410530		DoSethEffects
-0x00410C30		InitialiseSeth
-0x00410C90		SethControl
+0x00410530	+	DoSethEffects
+0x00410C30	+	InitialiseSeth
+0x00410C90	+	SethControl
 
 
 		game/setup.cpp

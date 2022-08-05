@@ -908,7 +908,7 @@ void ControlCrossbow(short item_number)
 				{
 					TriggerExplosionSparks(mesh->x, mesh->y, mesh->z, 3, -2, 0, item->room_number);
 					mesh->y -= 128;
-					TriggerShockwave((PHD_VECTOR*)mesh->x, 0xB00028, 64, 0x10806000, 0);
+					TriggerShockwave((PHD_VECTOR*)&mesh->x, 0xB00028, 64, 0x10806000, 0);
 					mesh->y += 128;
 				}
 
@@ -1252,7 +1252,7 @@ void ControlGrenade(short item_number)
 					Log(0, "Shatter");
 					TriggerExplosionSparks(mesh->x, mesh->y, mesh->z, 3, -2, 0, item->room_number);
 					mesh->y -= 128;
-					TriggerShockwave((PHD_VECTOR*)mesh->x, 0xB00028, 64, 0x10806000, 0);
+					TriggerShockwave((PHD_VECTOR*)&mesh->x, 0xB00028, 64, 0x10806000, 0);
 					mesh->y += 128;
 					ShatterObject(0, mesh, -128, item->room_number, 0);
 					SmashedMeshRoom[SmashedMeshCount] = item->room_number;

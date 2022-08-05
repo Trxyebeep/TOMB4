@@ -8,11 +8,14 @@
 #include "delstuff.h"
 #include "items.h"
 #include "draw.h"
+#include "sphere.h"
+#include "deltapak.h"
+#include "../specific/function_stubs.h"
+#include "tomb4fx.h"
+#include "../specific/3dmath.h"
+#include "../specific/output.h"
 
-static short MovingBlockBounds[12] =
-{
-	0, 0, -256, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820
-};
+static short MovingBlockBounds[12] = { 0, 0, -256, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
 static PHD_VECTOR MovingBlockPos = { 0, 0, 0 };
 
@@ -553,6 +556,176 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 		ObjectCollision(item_number, laraitem, coll);
 }
 
+void InitialisePlanetEffect(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+	char* pifl;
+	uchar others[4];
+
+	item = &items[item_number];
+	item->mesh_bits = 0;
+
+	for (int i = 0; i < level_items; i++)	//get the pushable we are linked to
+	{
+		item2 = &items[i];
+
+		if (item2->object_number >= PUSHABLE_OBJECT1 && item2->object_number <= PUSHABLE_OBJECT5 && item2->trigger_flags == item->trigger_flags)
+		{
+			item->item_flags[0] = i;
+			break;
+		}
+	}
+
+	if (item->trigger_flags == 1)	//get other planet effects
+	{
+		for (int i = 0, j = 0; i < level_items; i++)
+		{
+			item2 = &items[i];
+
+			if (item2->object_number == PLANET_EFFECT && item_number != i)
+			{
+				others[j] = i;
+				j++;
+			}
+		}
+
+		pifl = (char*)&item->item_flags[2];
+
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				item2 = &items[others[j]];
+
+				if (item2->trigger_flags == i + 2)
+				{
+					*pifl++ = others[j];
+					break;
+				}
+			}
+		}
+	}
+}
+
+void ControlPlanetEffect(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* item2;
+	PHD_VECTOR pos;
+	PHD_VECTOR pos2;
+	char* pifl;
+	long b, g;
+
+	item = &items[item_number];
+
+	if (!TriggerActive(item))
+		return;
+
+	if (item->item_flags[0] > 0)
+	{
+		items[item->item_flags[0]].trigger_flags = -items[item->item_flags[0]].trigger_flags;	//disable pushable :D
+		item->item_flags[0] = NO_ITEM;
+	}
+
+	item->mesh_bits = 255;
+	AnimateItem(item);
+
+	if (item->trigger_flags == 1)
+	{
+		if ((items[LOBYTE(item->item_flags[2])].flags & IFL_CODEBITS) == IFL_CODEBITS &&
+			(items[HIBYTE(item->item_flags[2])].flags & IFL_CODEBITS) == IFL_CODEBITS &&
+			(items[LOBYTE(item->item_flags[3])].flags & IFL_CODEBITS) == IFL_CODEBITS &&
+			(items[HIBYTE(item->item_flags[3])].flags & IFL_CODEBITS) == IFL_CODEBITS)
+		{
+			pos.x = 0;
+			pos.y = 0;
+			pos.z = 0;
+			GetJointAbsPosition(item, &pos, 0);
+
+			item2 = find_a_fucking_item(ANIMATING4);
+			pos2.x = 0;
+			pos2.y = 0;
+			pos2.z = 0;
+			GetJointAbsPosition(item2, &pos2, 0);
+
+			b = (GetRandomControl() & 0x1F) + 224;
+			g = b - (GetRandomControl() & 0x3F);
+			TriggerLightningGlow(pos.x, pos.y, pos.z, RGBA(0, g, b, (GetRandomControl() & 0x1F) + 48));
+			TriggerLightningGlow(pos2.x, pos2.y, pos2.z, RGBA(0, g, b, (GetRandomControl() & 0x1F) + 64));
+
+			if (!(GlobalCounter & 3))
+				TriggerLightning(&pos, &pos2, (GetRandomControl() & 0x1F) + 32, RGBA(0, g, b, 24), 1, 32, 5);
+
+			pifl = (char*)&item->item_flags[2];
+
+			for (int i = 0; i < 4; i++)
+			{
+				pos2.x = 0;
+				pos2.y = 0;
+				pos2.z = 0;
+				GetJointAbsPosition(&items[pifl[i]], &pos2, 0);
+
+				if (!(GlobalCounter & 3))
+					TriggerLightning(&pos2, &pos, (GetRandomControl() & 0x1F) + 32, RGBA(0, g, b, 24), 1, 32, 5);
+
+				TriggerLightningGlow(pos.x, pos.y, pos.z, RGBA(0, g, b, (GetRandomControl() & 0x1F) + 48));
+				SoundEffect(SFX_ELEC_ARCING_LOOP, (PHD_3DPOS*)&pos, SFX_DEFAULT);
+				pos = pos2;	//!!!!!!!!!!!!!!! so cool
+			}
+
+			TriggerLightningGlow(pos2.x, pos2.y, pos2.z, RGBA(0, g, b, (GetRandomControl() & 0x1F) + 48));
+		}
+	}
+}
+
+void DrawPlanetEffect(ITEM_INFO* item)
+{
+	OBJECT_INFO* obj;
+	short** meshpp;
+	long* bone;
+	short* frm[2];
+	short* rot;
+	long poppush;
+
+	if (!item->mesh_bits)
+		return;
+
+	GetFrames(item, frm, &poppush);
+
+	phd_PushMatrix();
+	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+	CalculateObjectLighting(item, frm[0]);
+
+	obj = &objects[item->object_number];
+	meshpp = &meshes[obj->mesh_index];
+	bone = &bones[obj->bone_index];
+	phd_TranslateRel(frm[0][6], frm[0][7], frm[0][8]);
+	rot = frm[0] + 9;
+	gar_RotYXZsuperpack(&rot, 0);
+	phd_PutPolygons(*meshpp, -1);
+	phd_PutPolygons(*meshpp, -1);
+	meshpp += 2;
+
+	for (int i = 0; i < obj->nmeshes - 1; i++, bone += 4, meshpp += 2)
+	{
+		poppush = bone[0];
+
+		if (poppush & 1)
+			phd_PushMatrix();
+
+		if (poppush & 2)
+			phd_PopMatrix();
+
+		phd_TranslateRel(bone[1], bone[2], bone[3]);
+		gar_RotYXZsuperpack(&rot, 0);
+		phd_PutPolygons(*meshpp, -1);
+	}
+
+	phd_PopMatrix();
+}
+
 void inject_moveblok(bool replace)
 {
 	INJECT(0x004094A0, ClearMovableBlockSplitters, replace);
@@ -561,4 +734,7 @@ void inject_moveblok(bool replace)
 	INJECT(0x00409D20, TestBlockPull, replace);
 	INJECT(0x004096D0, MovableBlock, replace);
 	INJECT(0x0040A040, MovableBlockCollision, replace);
+	INJECT(0x0040A3C0, InitialisePlanetEffect, replace);
+	INJECT(0x0040A4C0, ControlPlanetEffect, replace);
+	INJECT(0x0040A7F0, DrawPlanetEffect, replace);
 }

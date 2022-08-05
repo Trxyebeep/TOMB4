@@ -953,9 +953,9 @@ void AlignLaraPosition(PHD_VECTOR* pos, ITEM_INFO* item, ITEM_INFO* l)
 
 	phd_PushUnitMatrix();
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
-	x = item->pos.x_pos + ((pos->x * phd_mxptr[M00] + pos->y * phd_mxptr[M10] + pos->z * phd_mxptr[M20]) >> W2V_SHIFT);
-	y = item->pos.y_pos + ((pos->x * phd_mxptr[M01] + pos->y * phd_mxptr[M11] + pos->z * phd_mxptr[M21]) >> W2V_SHIFT);
-	z = item->pos.z_pos + ((pos->x * phd_mxptr[M02] + pos->y * phd_mxptr[M12] + pos->z * phd_mxptr[M22]) >> W2V_SHIFT);
+	x = item->pos.x_pos + ((pos->x * phd_mxptr[M00] + pos->y * phd_mxptr[M01] + pos->z * phd_mxptr[M02]) >> W2V_SHIFT);
+	y = item->pos.y_pos + ((pos->x * phd_mxptr[M10] + pos->y * phd_mxptr[M11] + pos->z * phd_mxptr[M12]) >> W2V_SHIFT);
+	z = item->pos.z_pos + ((pos->x * phd_mxptr[M20] + pos->y * phd_mxptr[M21] + pos->z * phd_mxptr[M22]) >> W2V_SHIFT);
 	phd_PopMatrix();
 
 	l->pos.x_pos = x;
