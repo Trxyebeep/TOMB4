@@ -1224,7 +1224,7 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/skeleton.cpp
 
-0x004115E0		TriggerRiseEffect
+0x004115E0	+	TriggerRiseEffect
 0x004117E0		InitialiseSkeleton
 0x004118D0		SkeletonControl
 
