@@ -1286,7 +1286,7 @@ x for functions decompiled but not injected, for one reason or another.
 		game/templar.cpp
 
 0x00413020	+	InitialiseTemplar
-0x00413090		TemplarControl
+0x00413090	+	TemplarControl
 
 
 		game/text.cpp

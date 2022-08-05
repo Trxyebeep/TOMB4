@@ -51,6 +51,7 @@
 #include "dog.h"
 #include "seth.h"
 #include "raghead.h"
+#include "templar.h"
 
 void ObjectObjects()
 {
@@ -1098,8 +1099,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseTemplar;
-//		obj->control = TemplarControl;
+		obj->initialise = InitialiseTemplar;
+		obj->control = TemplarControl;
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
