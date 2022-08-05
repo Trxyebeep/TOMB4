@@ -97,6 +97,7 @@
 #include "../game/sentrygun.h"
 #include "../game/dog.h"
 #include "../game/raghead.h"
+#include "../game/templar.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -213,6 +214,7 @@ void inject_all(bool replace)
 	inject_sentry(replace);
 	inject_dog(replace);
 	inject_raghead(replace);
+	inject_templar(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

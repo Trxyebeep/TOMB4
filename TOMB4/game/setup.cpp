@@ -50,6 +50,7 @@
 #include "missile.h"
 #include "dog.h"
 #include "seth.h"
+#include "raghead.h"
 
 void ObjectObjects()
 {
@@ -947,8 +948,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseRaghead;
-//		obj->control = RagheadControl;
+		obj->initialise = InitialiseRaghead;
+		obj->control = RagheadControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 25;
@@ -992,8 +993,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseRaghead;
-//		obj->control = RagheadControl;
+		obj->initialise = InitialiseRaghead;
+		obj->control = RagheadControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 35;
