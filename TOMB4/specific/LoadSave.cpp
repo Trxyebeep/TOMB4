@@ -18,6 +18,7 @@
 #include "dxshell.h"
 #include "function_stubs.h"
 #include "texture.h"
+#include "../game/newinv.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #include "../game/control.h"

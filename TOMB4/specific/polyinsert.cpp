@@ -8,6 +8,7 @@
 #include "../game/tomb4fx.h"
 #include "function_table.h"
 #include "clipping.h"
+#include "../game/newinv.h"
 
 static long rgb80h = 0x808080;
 static long rgbmask = 0xFFFFFFFF;
