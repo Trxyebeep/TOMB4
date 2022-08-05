@@ -187,7 +187,7 @@ void FireShotgun()
 	angles[0] = lara.left_arm.y_rot + lara_item->pos.y_rot;
 	angles[1] = lara.left_arm.x_rot;
 
-	if (lara.left_arm.lock)
+	if (!lara.left_arm.lock)
 	{
 		angles[0] += lara.torso_y_rot;
 		angles[1] += lara.torso_x_rot;
