@@ -12,17 +12,22 @@
 #include "../tomb4/tomb4.h"
 #endif
 
-char lara_underwater_skin_sweetness_table[15] =
+char SkinVertNums[40][12];
+char ScratchVertNums[40][12];
+
+char HairRotScratchVertNums[5][12] =
 {
-	0, 2, 3, 0, 5, 6, 7, 9, 10, 11, 12, 13, 14, 8, 0
+	{ 4, 5, 6, 7, -1, 0, 0, 0, 0, 0, 0, 0 },
+	{ 5, 6, 7, 4, -1, 0, 0, 0, 0, 0, 0, 0 },
+	{ 6, 7, 4, 5, -1, 0, 0, 0, 0, 0, 0, 0 },
+	{ 7, 4, 5, 6, -1, 0, 0, 0, 0, 0, 0, 0 },
+	{ 4, 5, 6, 7, -1, 0, 0, 0, 0, 0, 0, 0 }
 };
 
-long lara_mesh_sweetness_table[15] =
-{
-	0, 1, 2, 3, 4, 5, 6, 7, 14, 8, 9, 10, 11, 12, 13
-};
+static long lara_mesh_sweetness_table[15] = { 0, 1, 2, 3, 4, 5, 6, 7, 14, 8, 9, 10, 11, 12, 13 };
+static char lara_underwater_skin_sweetness_table[15] = { 0, 2, 3, 0, 5, 6, 7, 9, 10, 11, 12, 13, 14, 8, 0 };
 
-char NodesToStashToScratch[14][2] =
+static char NodesToStashToScratch[14][2] =
 {
 	{1, 3},
 	{4, 5},
@@ -40,7 +45,7 @@ char NodesToStashToScratch[14][2] =
 	{16, 27}
 };
 
-char NodesToStashFromScratch[15][4] =
+static char NodesToStashFromScratch[15][4] =
 {
 	{0, 1, 2, -1},
 	{3, 4, -1, 0},
@@ -59,7 +64,7 @@ char NodesToStashFromScratch[15][4] =
 	{26, -1, 0, 0}
 };
 
-uchar SkinUseMatrix[14][2] =
+static uchar SkinUseMatrix[14][2] =
 {
 	{255, 255},
 	{1, 2},

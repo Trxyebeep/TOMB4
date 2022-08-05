@@ -13,14 +13,15 @@
 #include "specificfx.h"
 #include "function_stubs.h"
 #include "../game/newinv.h"
+#include "time.h"
+#include "winmain.h"
+#include "../game/tomb4fx.h"
+#include "../game/delstuff.h"
 #ifdef GENERAL_FIXES
 #include "../game/text.h"
 #include "../game/gameflow.h"
 #include "../tomb4/tomb4.h"
 #endif
-#include "time.h"
-#include "winmain.h"
-#include "../game/tomb4fx.h"
 
 D3DTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];

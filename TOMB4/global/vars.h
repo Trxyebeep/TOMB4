@@ -541,8 +541,6 @@
 #define first_hair	ARRAY_(0x0080E140, long, [2])
 #define SortList	ARRAY_(0x00660C94, SORTLIST*, [16384])
 #define SortBuffer	ARRAY_(0x005C07AC, char, [65536])
-#define ScratchVertNums	ARRAY_(0x0080E320, char, [40][12])
-#define HairRotScratchVertNums	ARRAY_(0x004AD6D4, char, [5][12])
 #define IMstack	ARRAY_(0x007FD320, long, [768])
 #define vert_wibble_table	ARRAY_(0x00535520, float, [32])
 #define unused_vert_wibble_table	ARRAY_(0x0053511C, float, [256])
@@ -605,8 +603,6 @@
 #define AnimatingWaterfallsV	ARRAY_(0x007FD1F0, long, [3])
 #define source_pcm_format	ARRAY_(0x004B263C, char, [50])
 #define source_wav_format	ARRAY_(0x004B22C0, char, [50])
-#define SkinVertNums	ARRAY_(0x0080E520, char, [40][12])
-#define ScratchVertNums	ARRAY_(0x0080E320, char, [40][12])
 #define Bubbles	ARRAY_(0x00800920, BUBBLE_STRUCT, [40])
 #define ShockWaves	ARRAY_(0x007FF960, SHOCKWAVE_STRUCT, [16])
 #define splashes	ARRAY_(0x00804E80, SPLASH_STRUCT, [4])
@@ -658,21 +654,6 @@
 #define BinkSurfaceType	VAR_U_(0x007E6E00, long)
 #define BinkSurface	VAR_U_(0x007E6E04, LPDIRECTDRAWSURFACEX)
 #define Bink	VAR_U_(0x007E6E08, BINK_STRUCT*)
-
-
-/*skin bs*/
-#define SkinXYZPtr	VAR_U_(0x0080DBCC, PHD_VECTOR*)
-#define BelowMeshXYZ	VAR_U_(0x0080DBE0, PHD_VECTOR)
-#define JointMeshXYZ	VAR_U_(0x0080DBD0, PHD_VECTOR)
-#define AboveMeshXYZ	VAR_U_(0x0080DBC0, PHD_VECTOR)
-
-#define XYZList	ARRAY_(0x0080DC00, PHD_VECTOR, [32])
-#define HairSkinVertNums	ARRAY_(0x004ADDB0, char, [6][12])
-#define HairScratchVertNums	ARRAY_(0x004ADDF8, char, [3][12])
-#define PointsToCalc ARRAY_(0x0080DD80, uchar, [26][12])
-#define SkinJoints ARRAY_(0x004ADD78, uchar, [14][4])
-
-
 
 #define NO_HEIGHT	-32512
 #define NO_ITEM	-1
