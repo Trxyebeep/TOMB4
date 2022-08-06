@@ -10,6 +10,7 @@
 #include "drawroom.h"
 #include "winmain.h"
 #include "mmx.h"
+#include "../game/debris.h"
 
 #ifdef SMOOTH_SHADOWS
 #include "../tomb4/tomb4.h"

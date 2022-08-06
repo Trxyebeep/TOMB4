@@ -16,6 +16,7 @@
 #include "delstuff.h"
 #include "effects.h"
 #include "../specific/3dmath.h"
+#include "debris.h"
 
 static short StatuePlinthBounds[12] = { 0, 0, -64, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short PoleBounds[12] = { -256, 256, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
