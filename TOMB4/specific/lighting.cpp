@@ -6,6 +6,7 @@
 #include "d3dmatrix.h"
 #include "../game/objects.h"
 #include "../game/control.h"
+#include "../game/delstuff.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4244)

@@ -12,8 +12,15 @@
 #include "../tomb4/tomb4.h"
 #endif
 
+short* GLaraShadowframe;
+long lara_matrices[180];
+long lara_joint_matrices[180];
+long LaraNodeAmbient[2];
+long bLaraUnderWater;
+uchar LaraNodeUnderwater[15];
 char SkinVertNums[40][12];
 char ScratchVertNums[40][12];
+char bLaraInWater;
 
 char HairRotScratchVertNums[5][12] =
 {
@@ -81,6 +88,8 @@ static uchar SkinUseMatrix[14][2] =
 	{255, 255},
 	{255, 255}
 };
+
+static long in_joints;
 
 void DrawLara(ITEM_INFO* item, long mirror)
 {

@@ -18,6 +18,7 @@
 #include "newinv.h"
 #include "clockworkbeetle.h"
 #include "rope.h"
+#include "delstuff.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
