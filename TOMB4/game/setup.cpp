@@ -55,6 +55,7 @@
 #include "skeleton.h"
 #include "scorpion.h"
 #include "footprnt.h"
+#include "guide.h"
 
 void ObjectObjects()
 {
@@ -914,8 +915,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseGuide;
-//		obj->control = GuideControl;
+		obj->initialise = InitialiseGuide;
+		obj->control = GuideControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = -16384;

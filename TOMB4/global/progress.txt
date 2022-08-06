@@ -487,8 +487,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/guide.cpp
 
-0x00405F20		InitialiseGuide
-0x00405FA0		GuideControl
+0x00405F20	+	InitialiseGuide
+0x00405FA0	+	GuideControl
 
 
 		game/hair.cpp
