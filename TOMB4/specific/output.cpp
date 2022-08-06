@@ -22,6 +22,7 @@
 #include "../game/gameflow.h"
 #include "../tomb4/tomb4.h"
 #include "../game/spotcam.h"
+#include "../game/effect2.h"
 #endif
 
 D3DTLVERTEX SkinVerts[40][12];

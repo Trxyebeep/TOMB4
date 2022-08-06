@@ -7,6 +7,15 @@
 #include "../game/objects.h"
 #include "../game/control.h"
 #include "../game/delstuff.h"
+#include "../game/effect2.h"
+
+long StaticMeshShade;
+long MaxRoomLights;
+
+static D3DLIGHT_STRUCT* D3DDynamics;
+static D3DLIGHT_STRUCT* D3DLights;
+static ITEM_INFO StaticMeshLightItem;
+static long SetupLight_thing;
 
 #pragma warning(push)
 #pragma warning(disable : 4244)

@@ -29,3 +29,5 @@ void TriggerSuperJetFlame(ITEM_INFO* item, long yvel, long deadly);
 void TriggerRocketSmoke(long x, long y, long z, long col);
 void SetupSplash(SPLASH_SETUP* setup);
 void UpdateSplashes();
+
+extern DYNAMIC dynamics[MAX_DYNAMICS * 2];

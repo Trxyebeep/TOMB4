@@ -5,6 +5,7 @@
 #include "polyinsert.h"
 #include "function_table.h"
 #include "d3dmatrix.h"
+#include "lighting.h"
 
 void ProjectVerts(long nVerts, D3DTLVERTEX* v, short* clip)
 {

@@ -18,3 +18,6 @@ void FadeLightList(PCLIGHT* lights, long nLights);
 void InitObjectLighting(ITEM_INFO* item);
 void ClearObjectLighting();
 void CalcAmbientLight(ITEM_INFO* item);
+
+extern long StaticMeshShade;
+extern long MaxRoomLights;
