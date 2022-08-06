@@ -54,6 +54,7 @@
 #include "templar.h"
 #include "skeleton.h"
 #include "scorpion.h"
+#include "footprnt.h"
 
 void ObjectObjects()
 {
