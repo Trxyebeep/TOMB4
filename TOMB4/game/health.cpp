@@ -13,6 +13,7 @@
 #ifdef GENERAL_FIXES
 #include "../specific/input.h"
 #endif
+#include "spotcam.h"
 
 long FlashIt()
 {

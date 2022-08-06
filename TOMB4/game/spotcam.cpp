@@ -9,6 +9,46 @@
 #include "../tomb4/tomb4.h"
 #endif
 
+SPOTCAM SpotCam[128];
+long bTrackCamInit = 0;
+long bUseSpotCam = 0;
+long bDisableLaraControl = 0;
+short LastSequence;
+short CurrentFov;
+short number_spotcams;
+
+static PHD_VECTOR LaraFixedPosition;
+static PHD_VECTOR InitialCameraPosition;
+static PHD_VECTOR InitialCameraTarget;
+
+static long camera_xposition[18];
+static long camera_yposition[18];
+static long camera_zposition[18];
+static long camera_xtarget[18];
+static long camera_ytarget[18];
+static long camera_ztarget[18];
+static long camera_roll[18];
+static long camera_fov[18];
+static long camera_speed[18];
+static long CameraFade;
+static long LaraHealth;
+static long LaraAir;
+static long spline_to_camera;
+static long spline_from_camera;
+static long bCheckTrigger = 0;
+static long current_spline_position;
+static short current_sequence;
+static short current_spline_camera;
+static short current_camera_cnt;
+static short first_camera;
+static short last_camera;
+static short InitialCameraRoom;
+static short LastFov;
+static short spotcam_timer;
+static short spotcam_loopcnt;
+static uchar SpotRemap[8];
+static uchar CameraCnt[8];
+
 void SetSplineData(long num, long cam)
 {
 	SPOTCAM* spotcam;

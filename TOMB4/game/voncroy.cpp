@@ -13,6 +13,7 @@
 #include "lot.h"
 #include "effects.h"
 #include "switch.h"
+#include "spotcam.h"
 
 static BITE_INFO voncroy_hit = { 0, 35, 130, 18 };
 

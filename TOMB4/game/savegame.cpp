@@ -10,6 +10,7 @@
 #include "lot.h"
 #include "pickup.h"
 #include "clockworkbeetle.h"
+#include "spotcam.h"
 
 long CheckSumValid(char* buffer)
 {

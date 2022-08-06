@@ -6,6 +6,7 @@
 #include "../game/lara_states.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
+#include "../game/spotcam.h"
 
 short ammo_change_timer = 0;
 char ammo_change_buf[12];
