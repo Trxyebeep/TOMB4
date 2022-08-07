@@ -18,6 +18,7 @@
 #include "debris.h"
 #include "../specific/polyinsert.h"
 #include "../specific/3dmath.h"
+#include "camera.h"
 
 void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item)
 {

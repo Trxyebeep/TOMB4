@@ -24,6 +24,7 @@
 #include "../game/spotcam.h"
 #include "../game/effect2.h"
 #endif
+#include "../game/camera.h"
 
 D3DTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];

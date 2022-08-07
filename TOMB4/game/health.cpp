@@ -11,6 +11,7 @@
 #endif
 #ifdef AMMO_COUNTER
 #include "larafire.h"
+#include "camera.h"
 #endif
 #ifdef GENERAL_FIXES
 #include "../specific/input.h"

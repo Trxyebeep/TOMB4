@@ -16,6 +16,7 @@
 #include "collide.h"
 #include "delstuff.h"
 #include "switch.h"
+#include "camera.h"
 
 short SPxzoffs[8] = { 0, 0, 0x200, 0, 0, 0, -0x200, 0 };
 short SPyoffs[8] = { -0x400, 0, -0x200, 0, 0, 0, -0x200, 0 };

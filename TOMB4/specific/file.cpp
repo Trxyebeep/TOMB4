@@ -17,6 +17,7 @@
 #include "audio.h"
 #include "../game/spotcam.h"
 #include "../game/control.h"
+#include "../game/camera.h"
 
 unsigned int __stdcall LoadLevel(void* name)
 {

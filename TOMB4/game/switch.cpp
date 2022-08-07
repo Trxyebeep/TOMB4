@@ -9,6 +9,7 @@
 #include "laramisc.h"
 #include "sound.h"
 #include "../specific/3dmath.h"
+#include "camera.h"
 
 #ifdef GENERAL_FIXES
 static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 0 };

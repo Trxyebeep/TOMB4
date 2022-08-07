@@ -57,6 +57,7 @@
 #include "footprnt.h"
 #include "guide.h"
 #include "control.h"
+#include "camera.h"
 
 void ObjectObjects()
 {

@@ -18,6 +18,7 @@
 #include "../specific/function_stubs.h"
 #include "../specific/3dmath.h"
 #include "../specific/dxsound.h"
+#include "camera.h"
 
 void(*effect_routines[47])(ITEM_INFO* item) =
 {

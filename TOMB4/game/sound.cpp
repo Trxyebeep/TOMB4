@@ -3,6 +3,7 @@
 #include "../specific/3dmath.h"
 #include "../specific/dxsound.h"
 #include "../specific/function_stubs.h"
+#include "camera.h"
 
 void GetPanVolume(SoundSlot* slot)
 {

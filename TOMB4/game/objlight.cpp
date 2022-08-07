@@ -6,6 +6,7 @@
 #include "../specific/function_stubs.h"
 #include "sphere.h"
 #include "../specific/3dmath.h"
+#include "camera.h"
 
 void ControlPulseLight(short item_number)
 {

@@ -24,6 +24,7 @@
 #ifdef FOOTPRINTS
 #include "footprnt.h"
 #endif
+#include "camera.h"
 
 void InitInterpolate(long frac, long rate)
 {

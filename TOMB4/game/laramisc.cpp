@@ -17,6 +17,7 @@
 #include "larasurf.h"
 #include "../specific/3dmath.h"
 #include "spotcam.h"
+#include "camera.h"
 
 void LaraCheatGetStuff()
 {

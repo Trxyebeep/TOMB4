@@ -8,6 +8,7 @@
 #include "../game/control.h"
 #include "../game/delstuff.h"
 #include "../game/effect2.h"
+#include "../game/camera.h"
 
 long StaticMeshShade;
 long MaxRoomLights;

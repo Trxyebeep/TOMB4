@@ -11,14 +11,15 @@
 #include "winmain.h"
 #include "mmx.h"
 #include "../game/debris.h"
+#include "../game/rope.h"
+#include "../game/tomb4fx.h"
+#include "../game/camera.h"
 
 #ifdef SMOOTH_SHADOWS
 #include "../tomb4/tomb4.h"
 
 #define CIRCUMFERENCE_POINTS 32 // Number of points in the circumference
 #endif
-#include "../game/rope.h"
-#include "../game/tomb4fx.h"
 
 #define LINE_POINTS	4	//number of points in each grid line
 #define POINT_HEIGHT_CORRECTION	196	//if the difference between the floor below Lara and the floor height below the point is greater than this value, point height is corrected to lara's floor level.
