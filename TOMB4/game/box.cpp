@@ -10,6 +10,7 @@
 #include "lara_states.h"
 #include "../specific/function_stubs.h"
 #include "sphere.h"
+#include "camera.h"
 
 void CreatureDie(short item_number, long explode)
 {

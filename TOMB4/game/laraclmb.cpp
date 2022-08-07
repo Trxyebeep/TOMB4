@@ -4,6 +4,7 @@
 #include "lara_states.h"
 #include "laramisc.h"
 #include "control.h"
+#include "camera.h"
 
 static short LeftIntRightExtTab[4] = { 2048, 256, 512, 1024 };
 static short LeftExtRightIntTab[4] = { 512, 1024, 2048, 256 };

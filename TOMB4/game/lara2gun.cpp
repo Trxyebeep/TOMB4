@@ -7,6 +7,7 @@
 #include "tomb4fx.h"
 #include "../specific/function_stubs.h"
 #include "effect2.h"
+#include "camera.h"
 
 static PISTOL_DEF PistolTable[4] =
 {

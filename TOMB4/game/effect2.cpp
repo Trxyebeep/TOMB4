@@ -16,6 +16,10 @@
 #include "draw.h"
 #include "sound.h"
 
+DYNAMIC dynamics[MAX_DYNAMICS * 2];
+
+static long number_dynamics;
+
 void ControlSmokeEmitter(short item_number)
 {
 	ITEM_INFO* item;

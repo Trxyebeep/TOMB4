@@ -50,6 +50,14 @@
 #include "missile.h"
 #include "dog.h"
 #include "seth.h"
+#include "raghead.h"
+#include "templar.h"
+#include "skeleton.h"
+#include "scorpion.h"
+#include "footprnt.h"
+#include "guide.h"
+#include "control.h"
+#include "camera.h"
 
 void ObjectObjects()
 {
@@ -843,8 +851,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseSkeleton;
-//		obj->control = SkeletonControl;
+		obj->initialise = InitialiseSkeleton;
+		obj->control = SkeletonControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 15;
@@ -909,8 +917,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseGuide;
-//		obj->control = GuideControl;
+		obj->initialise = InitialiseGuide;
+		obj->control = GuideControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = -16384;
@@ -947,8 +955,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseRaghead;
-//		obj->control = RagheadControl;
+		obj->initialise = InitialiseRaghead;
+		obj->control = RagheadControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 25;
@@ -992,8 +1000,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseRaghead;
-//		obj->control = RagheadControl;
+		obj->initialise = InitialiseRaghead;
+		obj->control = RagheadControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 35;
@@ -1034,8 +1042,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseScorpion;
-//		obj->control = ScorpionControl;
+		obj->initialise = InitialiseScorpion;
+		obj->control = ScorpionControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 80;
@@ -1054,8 +1062,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseSmlscorp;
-//		obj->control = SmlscorpControl;
+		obj->initialise = InitialiseSmlscorp;
+		obj->control = SmlscorpControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 8;
@@ -1097,8 +1105,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseTemplar;
-//		obj->control = TemplarControl;
+		obj->initialise = InitialiseTemplar;
+		obj->control = TemplarControl;
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;

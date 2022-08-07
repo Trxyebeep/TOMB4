@@ -22,9 +22,86 @@
 #include "draw.h"
 #include "../specific/LoadSave.h"
 #include "../specific/gamemain.h"
+#include "newinv.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
+
+short CreditGroups[18] =
+{
+	0,
+	TXT_PC_Programmer,
+	TXT_PSX_Programmers,
+	TXT_Additional_Programming,
+	TXT_Additional_Programmers,
+	TXT_AI_Programming,
+	TXT_Animators,
+	TXT_Level_Designers,
+	TXT_FMV_Sequences,
+	TXT_Additional_Artwork,
+	TXT_Music_Sound_FX,
+	TXT_Original_Story,
+	TXT_Script,
+	TXT_Producer,
+	TXT_QA,
+	TXT_Executive_Producers,
+	TXT_Additional_Sound_FX,
+	0
+};
+
+const char* CreditsTable[]
+{
+	"%01",
+	"Richard Flower", "0",
+
+	"%05",
+	"Tom Scutt", "0",
+
+	"%02",
+	"Chris Coupe", "Martin Gibbins", "Derek Leigh-Gilchrist", "0",
+
+	"%03",
+	"Martin Jensen", "0",
+
+	"%06",
+	"Phil Chapman", "Jerr O'Carroll", "0",
+
+	"%07",
+	"Andrea Cordella", "Pete Duncan", "Jamie Morton", "Richard Morton", "Andy Sandham", "Joby Wood", "0",
+
+	"%08",
+	"Peter Barnard", "David Reading", "Matt Furniss", "Simeon Furniss", "John Lilley", "0",
+
+	"%09",
+	"Damon Godley", "Mark Hazelton", "Steve Huckle", "Steve Hawkes", "Darren Wakeman", "0",
+
+	"%10",
+	"Peter Connelly", "0",
+
+	"%16",
+	"Martin Iveson", "0",
+
+	"%11",
+	"Pete Duncan", "Dr Kieron O'Hara", "Richard Morton", "Andy Sandham", "0",
+
+	"%12",
+	"Hope Canton", "Andy Sandham", "0",
+
+	"%13",
+	"Troy Horton", "0",
+
+	"%14",
+	"Tiziano Cirillo", "Nick Conelly", "Hayos Fatunmbi", "Paul Field", "Steve Wakeman", "Dave Ward", "Jason Churchman", "0",
+
+	"%15",
+	"Jeremy H. Smith", "Adrian Smith",
+
+#ifdef GENERAL_FIXES
+	"0",
+	"Tomb Raider IV Community Edition",
+	"Troye", "ChocolateFan"
+#endif
+};
 
 void DoGameflow()
 {
@@ -943,82 +1020,6 @@ void LoadGameflow()
 		}
 	}
 }
-
-short CreditGroups[18] =
-{
-	0,
-	TXT_PC_Programmer,
-	TXT_PSX_Programmers,
-	TXT_Additional_Programming,
-	TXT_Additional_Programmers,
-	TXT_AI_Programming,
-	TXT_Animators,
-	TXT_Level_Designers,
-	TXT_FMV_Sequences,
-	TXT_Additional_Artwork,
-	TXT_Music_Sound_FX,
-	TXT_Original_Story,
-	TXT_Script,
-	TXT_Producer,
-	TXT_QA,
-	TXT_Executive_Producers,
-	TXT_Additional_Sound_FX,
-	0
-};
-
-const char* CreditsTable[]
-{
-	"%01",
-	"Richard Flower", "0",
-
-	"%05",
-	"Tom Scutt", "0", 
-
-	"%02",
-	"Chris Coupe", "Martin Gibbins", "Derek Leigh-Gilchrist", "0",
-
-	"%03",
-	"Martin Jensen", "0",
-
-	"%06",
-	"Phil Chapman", "Jerr O'Carroll", "0",
-
-	"%07",
-	"Andrea Cordella", "Pete Duncan", "Jamie Morton", "Richard Morton", "Andy Sandham", "Joby Wood", "0",
-
-	"%08",
-	"Peter Barnard", "David Reading", "Matt Furniss", "Simeon Furniss", "John Lilley", "0",
-
-	"%09",
-	"Damon Godley", "Mark Hazelton", "Steve Huckle", "Steve Hawkes", "Darren Wakeman", "0",
-
-	"%10",
-	"Peter Connelly", "0",
-
-	"%16",
-	"Martin Iveson", "0",
-
-	"%11",
-	"Pete Duncan", "Dr Kieron O'Hara", "Richard Morton", "Andy Sandham", "0",
-
-	"%12",
-	"Hope Canton", "Andy Sandham", "0",
-
-	"%13",
-	"Troy Horton", "0",
-
-	"%14",
-	"Tiziano Cirillo", "Nick Conelly", "Hayos Fatunmbi", "Paul Field", "Steve Wakeman", "Dave Ward", "Jason Churchman", "0",
-
-	"%15",
-	"Jeremy H. Smith", "Adrian Smith",
-
-#ifdef GENERAL_FIXES
-	"0",
-	"Tomb Raider IV Community Edition",
-	"Troye", "ChocolateFan"
-#endif
-};
 
 long DoCredits()
 {

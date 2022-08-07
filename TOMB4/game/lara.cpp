@@ -17,10 +17,12 @@
 #include "laraclmb.h"
 #include "newinv.h"
 #include "clockworkbeetle.h"
+#include "rope.h"
+#include "delstuff.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
-#include "rope.h"
+#include "camera.h"
 
 void(*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 {

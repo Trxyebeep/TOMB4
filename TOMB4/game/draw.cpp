@@ -20,9 +20,11 @@
 #include "croc.h"
 #include "health.h"
 #include "items.h"
+#include "effect2.h"
 #ifdef FOOTPRINTS
 #include "footprnt.h"
 #endif
+#include "camera.h"
 
 void InitInterpolate(long frac, long rate)
 {

@@ -38,6 +38,47 @@ void AnimateItem(ITEM_INFO* item);
 long RayBoxIntersect(PHD_VECTOR* min, PHD_VECTOR* max, PHD_VECTOR* mid, PHD_VECTOR* dir, PHD_VECTOR* Coord);
 long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS* ItemPos, PHD_VECTOR* Coord, short item_number);
 
+extern short* OutsideRoomOffsets;
+extern char* OutsideRoomTable;
+extern short IsRoomOutsideNo;
+
+extern MESH_INFO* SmashedMesh[16];
+extern short SmashedMeshRoom[16];
+extern short SmashedMeshCount;
+
+extern long flip_stats[10];
+extern long flip_status;
+extern long flipeffect;
+extern long fliptimer;
+
+extern short* trigger_index;
+extern long tiltxoff;
+extern long tiltyoff;
+extern long OnObject;
+extern long height_type;
+
+extern long InItemControlLoop;
+extern short ItemNewRooms[256][2];
+extern short ItemNewRoomNo;
+
+extern uchar CurrentAtmosphere;
+extern uchar IsAtmospherePlaying;
+extern char cd_flags[128];
+
+extern ulong FmvSceneTriggered;
+extern long SetDebounce;
+extern long framecount;
+extern long reset_flag;
+extern long WeaponDelay;
+extern short XSoff1;
+extern short XSoff2;
+extern short YSoff1;
+extern short YSoff2;
+extern short ZSoff1;
+extern short ZSoff2;
+extern char PoisonFlag;
+extern char TriggerTimer;
+
 #ifdef GENERAL_FIXES
 extern char DeathMenuActive;
 #endif

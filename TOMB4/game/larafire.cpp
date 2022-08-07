@@ -16,6 +16,7 @@
 #include "effects.h"
 #include "items.h"
 #include "flmtorch.h"
+#include "camera.h"
 
 static short HoldStates[] =
 {

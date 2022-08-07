@@ -5,6 +5,17 @@
 #include "tomb4fx.h"
 #include "../specific/3dmath.h"
 
+DEBRIS_STRUCT debris[256];
+long next_debris;
+short DebrisFlags;
+
+static MESH_DATA* DebrisMesh;
+static long DebrisMeshC1;
+static long DebrisMeshC2;
+static long DebrisMeshC3;
+static long DebrisMeshAmbient;
+static long DebrisMeshFlags;
+
 void UpdateDebris()
 {
 	DEBRIS_STRUCT* dptr;

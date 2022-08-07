@@ -42,4 +42,6 @@ void Richochet(GAME_VECTOR* pos);
 void SoundEffects();
 long ItemNearLara(PHD_3DPOS* pos, long rad);
 
+extern long GlobalFogOff;
+extern long FogTableColor[28];
 extern void(*effect_routines[])(ITEM_INFO* item);

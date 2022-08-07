@@ -487,8 +487,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/guide.cpp
 
-0x00405F20		InitialiseGuide
-0x00405FA0		GuideControl
+0x00405F20	+	InitialiseGuide
+0x00405FA0	+	GuideControl
 
 
 		game/hair.cpp
@@ -1166,10 +1166,10 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/scorpion.cpp
 
-0x0040E780		InitialiseScorpion
-0x0040E800		ScorpionControl
-0x0040EFD0		InitialiseSmlscorp
-0x0040F030		SmlscorpControl
+0x0040E780	+	InitialiseScorpion
+0x0040E800	+	ScorpionControl
+0x0040EFD0	+	InitialiseSmlscorp
+0x0040F030	+	SmlscorpControl
 
 
 		game/senet.cpp
@@ -1224,9 +1224,9 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/skeleton.cpp
 
-0x004115E0		TriggerRiseEffect
-0x004117E0		InitialiseSkeleton
-0x004118D0		SkeletonControl
+0x004115E0	+	TriggerRiseEffect
+0x004117E0	+	InitialiseSkeleton
+0x004118D0	+	SkeletonControl
 
 
 		game/sound.cpp
@@ -1285,8 +1285,8 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/templar.cpp
 
-0x00413020		InitialiseTemplar
-0x00413090		TemplarControl
+0x00413020	+	InitialiseTemplar
+0x00413090	+	TemplarControl
 
 
 		game/text.cpp

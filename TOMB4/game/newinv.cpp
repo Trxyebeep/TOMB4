@@ -15,9 +15,151 @@
 #include "../specific/input.h"
 #include "health.h"
 #include "gameflow.h"
+#include "control.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
+#include "camera.h"
+
+#pragma warning(push)
+#pragma warning(disable : 4838)	//long -> char truncation bullshit
+#pragma warning(disable : 4309)
+INVOBJ inventry_objects_list[NUM_INVOBJ] =
+{
+	//main items
+	{UZI_ITEM, -4, 0x3E8, 0x4000, 0x6000, 0x4000, 2, TXT_Uzi, -1},
+	{PISTOLS_ITEM, 6, 0x3E8, 0x4000, 0xAD4C, 0xBD40, 2, TXT_Pistols, -1},
+	{SHOTGUN_ITEM, -6, 0x280, 0x8000, 0xC000, 0x2000, 2, TXT_Shotgun, 1},
+	{SIXSHOOTER_ITEM, 0, 0x320, 0x4000, 0x2AAA, 0x3BC2, 2, TXT_Revolver, 1},
+	{SIXSHOOTER_ITEM, 0, 0x320, 0x4000, 0x2AAA, 0x3BC2, 2, TXT_Revolver_LaserSight, 11},
+	{CROSSBOW_ITEM, 0, 0x300, 0x2000, 0x1800, 0, 2, TXT_Crossbow, 1},
+	{CROSSBOW_ITEM, 0, 0x300, 0x2000, 0x1800, 0, 2, TXT_Crossbow_LaserSight, 11},
+	{GRENADE_GUN_ITEM, 0, 0x320, 0x4000, 0, 0x2ECC, 2, TXT_Grenade_Gun, -1},
+	{SHOTGUN_AMMO1_ITEM, 0, 0x1F4, 0x4000, 0, 0, 2, TXT_Shotgun_Normal_Ammo, -1},
+	{SHOTGUN_AMMO2_ITEM, 0, 0x1F4, 0x4000, 0, 0, 2, TXT_Shotgun_Wideshot_Ammo, -1},
+	{GRENADE_GUN_AMMO1_ITEM, 3, 0x320, 0x4000, 0, 0, 2, TXT_Grenadegun_Normal_Ammo, -1},
+	{GRENADE_GUN_AMMO2_ITEM, 3, 0x320, 0x4000, 0, 0, 2, TXT_Grenadegun_Super_Ammo, -1},
+	{GRENADE_GUN_AMMO3_ITEM, 3, 0x320, 0x4000, 0, 0, 2, TXT_Grenadegun_Flash_Ammo, -1},
+	{CROSSBOW_AMMO1_ITEM, 0, 0x44C, 0x4000, 0, 0, 2, TXT_Crossbow_Normal_Ammo, -1},
+	{CROSSBOW_AMMO2_ITEM, 0, 0x44C, 0x4000, 0, 0, 2, TXT_Crossbow_Poison_Ammo, -1},
+	{CROSSBOW_AMMO3_ITEM, 0, 0x44C, 0x4000, 0, 0, 2, TXT_Crossbow_Explosive_Ammo, -1},
+	{SIXSHOOTER_AMMO_ITEM, 0, 0x2BC, 0x4000, 0xF448, 0, 2, TXT_Revolver_Ammo, -1},
+	{UZI_AMMO_ITEM, 5, 0x2BC, 0, 0x1508, 0, 2, TXT_Uzi_Ammo, -1},
+	{PISTOLS_AMMO_ITEM, 4, 0x2BC, 0, 0x4000, 0, 2, TXT_Pistol_Ammo, -1},
+	{LASERSIGHT_ITEM, 2, 0x2BC, 0x4000, 0x7D0, 0, 2, TXT_LaserSight, -1},
+	{BIGMEDI_ITEM, 2, 0x320, 0, 0, 0, 2, TXT_Large_Medipack, -1},
+	{SMALLMEDI_ITEM, 0, 0x200, 0, 0x5000, 0, 2, TXT_Small_Medipack, -1},
+	{BINOCULARS_ITEM, -1, 0x2BC, 0x1000, 0x7D0, 0, 2, TXT_Binoculars, -1},
+	{FLARE_INV_ITEM, 2, 0x44C, 0x4000, 0, 0, 2, TXT_Flares, -1},
+	{COMPASS_ITEM, -14, 0x258, 0, 0x36B0, 0, 0, TXT_Compass, -1},
+	{MEMCARD_LOAD_INV_ITEM, 2, 0xFA0, 0, 0, 0, 2, TXT_Load, -1},
+	{MEMCARD_SAVE_INV_ITEM, 2, 0xFA0, 0, 0, 0, 2, TXT_Save, -1},
+
+	//waterskins
+	{WATERSKIN1_EMPTY, 2, 0x640, 0, 0xC950, 0, 2, TXT_Small_Waterskin_Empty, -1},
+	{WATERSKIN1_1, 2, 0x640, 0, 0xC950, 0, 2, TXT_Small_Waterskin, -1},
+	{WATERSKIN1_2, 2, 0x640, 0, 0xC950, 0, 2, TXT_Small_Waterskin2, -1},
+	{WATERSKIN1_3, 2, 0x640, 0, 0xC950, 0, 2, TXT_Small_Waterskin3, -1},
+	{WATERSKIN2_EMPTY, 2, 0x640, 0, 0xC950, 0, 2, TXT_Large_WaterSkin_Empty, -1},
+	{WATERSKIN2_1, 2, 0x640, 0, 0xC950, 0, 2, TXT_Large_WaterSkin, -1},
+	{WATERSKIN2_2, 2, 0x640, 0, 0xC950, 0, 2, TXT_Large_WaterSkin2, -1},
+	{WATERSKIN2_3, 2, 0x640, 0, 0xC950, 0, 2, TXT_Large_WaterSkin3, -1},
+	{WATERSKIN2_4, 2, 0x640, 0, 0xC950, 0, 2, TXT_Large_WaterSkin4, -1},
+	{WATERSKIN2_5, 2, 0x640, 0, 0xC950, 0, 2, TXT_Large_WaterSkin5, -1},
+
+	//puzzles and their combines
+	{PUZZLE_ITEM1, 14, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM2, 14, 0x258, 0, 0xC000, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM3, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM4, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM5, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM6, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM7, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM8, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM9, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM10, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM11, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM12, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM1_COMBO1, 18, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM1_COMBO2, 18, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM2_COMBO1, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM2_COMBO2, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM3_COMBO1, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM3_COMBO2, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM4_COMBO1, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM4_COMBO2, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM5_COMBO1, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM5_COMBO2, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM6_COMBO1, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM6_COMBO2, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM7_COMBO1, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM7_COMBO2, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM8_COMBO1, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+	{PUZZLE_ITEM8_COMBO2, 8, 1200, 0, 0, 0, 2, TXT_Load, -1},
+
+	//keys and their combines
+	{KEY_ITEM1, 14, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM2, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM3, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM4, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM5, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM6, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM7, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM8, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM9, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM10, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM11, 4, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM12, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM1_COMBO1, 18, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM1_COMBO2, 18, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM2_COMBO1, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM2_COMBO2, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM3_COMBO1, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM3_COMBO2, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM4_COMBO1, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM4_COMBO2, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM5_COMBO1, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM5_COMBO2, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM6_COMBO1, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM6_COMBO2, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM7_COMBO1, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM7_COMBO2, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM8_COMBO1, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{KEY_ITEM8_COMBO2, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+
+	//pickup items and their combines
+	{PICKUP_ITEM1, 14, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PICKUP_ITEM2, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PICKUP_ITEM3, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PICKUP_ITEM4, 8, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PICKUP_ITEM1_COMBO1, 14, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PICKUP_ITEM1_COMBO2, 14, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PICKUP_ITEM2_COMBO1, 14, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PICKUP_ITEM2_COMBO2, 14, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PICKUP_ITEM3_COMBO1, 14, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PICKUP_ITEM3_COMBO2, 14, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PICKUP_ITEM4_COMBO1, 14, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+	{PICKUP_ITEM4_COMBO2, 14, 0x4B0, 0, 0, 0, 2, TXT_Load, -1},
+
+	//quest items
+	{QUEST_ITEM1, 0, 0x4B0, 0x8000, 0xC000, 0, 2, TXT_QuestItem1, -1},
+	{QUEST_ITEM2, 0, 0x400, 0x8000, 0, 0, 2, TXT_QuestItem2, -1},
+	{QUEST_ITEM3, 0, 0x500, 0xC000, 0, 0xC000, 2, TXT_QuestItem3, -1},
+	{QUEST_ITEM4, 0, 0x500, 0x4000, 0, 0xC000, 2, TXT_QuestItem4, -1},
+	{QUEST_ITEM5, 0, 0x300, 0, 0, 0x2000, 2, TXT_QuestItem5, -1},
+	{QUEST_ITEM6, 0, 0x300, 0x8000, 0, 0x2000, 2, TXT_QuestItem6, -1},
+	
+	//the rest
+	{BURNING_TORCH_ITEM, 14, 0x4B0, 0, 0x4000, 0, 2, TXT_Load, -1},
+	{CROWBAR_ITEM, 4, 0x76C, 0, 0x4000, 0, 2, TXT_Crowbar, -1},
+	{CLOCKWORK_BEETLE, 14, 0x2BC, 0x4000, 0, 0, 2, TXT_Mechanical_Scarab_With, -1},
+	{CLOCKWORK_BEETLE_COMBO2, 14, 0x2BC, 0x4000, 0, 0, 2, TXT_Mechanical_Scarab, -1},
+	{CLOCKWORK_BEETLE_COMBO1, 18, 0x2BC, 0x4000, 0, 0, 2, TXT_Winding_Key, -1},
+	{EXAMINE1, 4, 0x514, 0, 0x4000, 0, 2, TXT_Load, -1},
+	{EXAMINE2, 14, 0x4B0, 0, 0x4000, 0, 2, TXT_Load, -1},
+	{EXAMINE3, 14, 0x4B0, 0, 0x4000, 0, 2, TXT_Load, -1}
+};
+#pragma warning(pop)
 
 COMBINELIST dels_handy_combine_table[23] =
 {
@@ -46,9 +188,212 @@ COMBINELIST dels_handy_combine_table[23] =
 	{combine_ClockWorkBeetle, INV_MECHANICAL_SCARAB_ITEM, INV_WINDING_KEY_ITEM, INV_CLOCKWORK_BEETLE_ITEM}
 };
 
-short optmessages[9] = { TXT_USE, TXT_CHOOSE_AMMO, TXT_COMBINE, TXT_SEPERATE, TXT_EQUIP, TXT_COMBINE_WITH, TXT_LOAD_GAME, TXT_SAVE_GAME, TXT_EXAMINE };
-RINGME pcring1;
-RINGME pcring2;
+static short options_table[NUM_INVOBJ] =
+{
+	OPT_EQUIP | OPT_COMBINE | OPT_UZI,			//INV_UZI_ITEM
+	OPT_EQUIP | OPT_COMBINE | OPT_PISTOLS,		//INV_PISTOLS_ITEM
+	OPT_EQUIP | OPT_COMBINE | OPT_SHOTGUN,		//INV_SHOTGUN_ITEM
+	OPT_EQUIP | OPT_COMBINE | OPT_REVOLVER,		//INV_REVOLVER_ITEM
+	OPT_EQUIP | OPT_SEPARATE | OPT_REVOLVER,	//INV_REVOLVER_LASER_ITEM
+	OPT_EQUIP | OPT_COMBINE | OPT_CROSSBOW,		//INV_CROSSBOW_ITEM
+	OPT_EQUIP | OPT_SEPARATE | OPT_CROSSBOW,	//INV_CROSSBOW_LASER_ITEM
+	OPT_EQUIP | OPT_SEPARATE | OPT_GRENADE,		//INV_GRENADEGUN_ITEM
+	OPT_USE,									//INV_SHOTGUN_AMMO1_ITEM
+	OPT_USE,									//INV_SHOTGUN_AMMO2_ITEM
+	OPT_USE,									//INV_GRENADEGUN_AMMO1_ITEM
+	OPT_USE,									//INV_GRENADEGUN_AMMO2_ITEM
+	OPT_USE,									//INV_GRENADEGUN_AMMO3_ITEM
+	OPT_USE,									//INV_CROSSBOW_AMMO1_ITEM
+	OPT_USE,									//INV_CROSSBOW_AMMO2_ITEM
+	OPT_USE,									//INV_CROSSBOW_AMMO3_ITEM
+	OPT_USE,									//INV_REVOLVER_AMMO_ITEM
+	OPT_USE,									//INV_UZI_AMMO_ITEM
+	OPT_USE,									//INV_PISTOLS_AMMO_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_LASERSIGHT_ITEM
+	OPT_USE,									//INV_BIGMEDI_ITEM
+	OPT_USE,									//INV_SMALLMEDI_ITEM
+	OPT_USE,									//INV_BINOCULARS_ITEM
+	OPT_USE,									//INV_FLARE_INV_ITEM
+	OPT_USE,									//INV_COMPASS_ITEM
+	OPT_LOAD,									//INV_MEMCARD_LOAD_ITEM
+	OPT_SAVE,									//INV_MEMCARD_SAVE_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_WATERSKIN1_EMPTY_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_WATERSKIN1_1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_WATERSKIN1_2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_WATERSKIN1_3_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_WATERSKIN2_EMPTY_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_WATERSKIN2_1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_WATERSKIN2_2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_WATERSKIN2_3_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_WATERSKIN2_4_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_WATERSKIN2_5_ITEM
+	OPT_USE,									//INV_PUZZLE1_ITEM
+	OPT_USE,									//INV_PUZZLE2_ITEM
+	OPT_USE,									//INV_PUZZLE3_ITEM
+	OPT_USE,									//INV_PUZZLE4_ITEM
+	OPT_USE,									//INV_PUZZLE5_ITEM
+	OPT_USE,									//INV_PUZZLE6_ITEM
+	OPT_USE,									//INV_PUZZLE7_ITEM
+	OPT_USE,									//INV_PUZZLE8_ITEM
+	OPT_USE,									//INV_PUZZLE9_ITEM
+	OPT_USE,									//INV_PUZZLE10_ITEM
+	OPT_USE,									//INV_PUZZLE11_ITEM
+	OPT_USE,									//INV_PUZZLE12_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE1_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE1_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE2_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE2_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE3_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE3_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE4_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE4_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE5_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE5_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE6_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE6_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE7_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE7_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE8_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PUZZLE8_COMBO2_ITEM
+	OPT_USE,									//INV_KEY1_ITEM
+	OPT_USE,									//INV_KEY2_ITEM
+	OPT_USE,									//INV_KEY3_ITEM
+	OPT_USE,									//INV_KEY4_ITEM
+	OPT_USE,									//INV_KEY5_ITEM
+	OPT_USE,									//INV_KEY6_ITEM
+	OPT_USE,									//INV_KEY7_ITEM
+	OPT_USE,									//INV_KEY8_ITEM
+	OPT_USE,									//INV_KEY9_ITEM
+	OPT_USE,									//INV_KEY10_ITEM
+	OPT_USE,									//INV_KEY11_ITEM
+	OPT_USE,									//INV_KEY12_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY1_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY1_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY2_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY2_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY3_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY3_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY4_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY4_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY5_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY5_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY6_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY6_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY7_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY7_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY8_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_KEY8_COMBO2_ITEM
+	OPT_USE,									//INV_PICKUP1_ITEM
+	OPT_USE,									//INV_PICKUP2_ITEM
+	OPT_USE,									//INV_PICKUP3_ITEM
+	OPT_USE,									//INV_PICKUP4_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PICKUP1_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PICKUP1_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PICKUP2_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PICKUP2_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PICKUP3_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PICKUP3_COMBO2_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PICKUP4_COMBO1_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_PICKUP4_COMBO2_ITEM
+	OPT_USE,									//INV_QUEST1_ITEM
+	OPT_USE,									//INV_QUEST2_ITEM
+	OPT_USE,									//INV_QUEST3_ITEM
+	OPT_USE,									//INV_QUEST4_ITEM
+	OPT_USE,									//INV_QUEST5_ITEM
+	OPT_USE,									//INV_QUEST6_ITEM
+	OPT_USE,									//INV_BURNING_TORCH_ITEM
+	OPT_USE,									//INV_CROWBAR_ITEM
+	OPT_USE,									//INV_CLOCKWORK_BEETLE_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_MECHANICAL_SCARAB_ITEM
+	OPT_USE | OPT_COMBINE,						//INV_WINDING_KEY_ITEM
+	OPT_EXAMINE,								//INV_EXAMINE1_ITEM
+	OPT_EXAMINE,								//INV_EXAMINE2_ITEM
+	OPT_EXAMINE									//INV_EXAMINE3_ITEM
+};
+
+static short optmessages[9] = { TXT_USE, TXT_CHOOSE_AMMO, TXT_COMBINE, TXT_SEPERATE, TXT_EQUIP, TXT_COMBINE_WITH, TXT_LOAD_GAME, TXT_SAVE_GAME, TXT_EXAMINE };
+
+long InventoryActive = 0;
+
+static RINGME* rings[2];
+static RINGME pcring1;
+static RINGME pcring2;
+
+static AMMOLIST ammo_object_list[3];
+static MENUTHANG current_options[3];
+
+static long compass_settle_thang;
+static short examine_mode = 0;
+static short stats_mode;
+static uchar current_selected_option;
+static char menu_active;
+static char ammo_active;
+static char oldLaraBusy;
+
+static char* current_ammo_type;
+static short AmountShotGunAmmo1 = 0;
+static short AmountShotGunAmmo2 = 0;
+static short AmountGrenadeAmmo1 = 0;
+static short AmountGrenadeAmmo2 = 0;
+static short AmountGrenadeAmmo3 = 0;
+static short AmountCrossBowAmmo1 = 0;
+static short AmountCrossBowAmmo2 = 0;
+static short AmountCrossBowAmmo3 = 0;
+static short AmountUziAmmo = 0;
+static short AmountRevolverAmmo = 0;
+static short AmountPistolsAmmo = 0;
+static char CurrentPistolsAmmoType = 0;
+static char CurrentUziAmmoType = 0;
+static char CurrentRevolverAmmoType = 0;
+static char CurrentShotGunAmmoType = 0;
+static char CurrentGrenadeGunAmmoType = 0;
+static char CurrentCrossBowAmmoType = 0;
+static char StashedCurrentPistolsAmmoType = 0;
+static char StashedCurrentUziAmmoType = 0;
+static char StashedCurrentRevolverAmmoType = 0;
+static char StashedCurrentShotGunAmmoType = 0;
+static char StashedCurrentGrenadeGunAmmoType = 0;
+static char StashedCurrentCrossBowAmmoType = 0;
+static char Stashedcurrent_selected_option = 0;
+static char num_ammo_slots;
+
+static long combine_obj1;
+static long combine_obj2;
+static short ammo_selector_fade_val;
+static short ammo_selector_fade_dir;
+static short combine_ring_fade_val;
+static short combine_ring_fade_dir;
+static short normal_ring_fade_val;
+static short normal_ring_fade_dir;
+static char ammo_selector_flag;
+static char combine_type_flag;
+static char seperate_type_flag;
+
+static long xoffset;
+static long yoffset;
+static long OBJLIST_SPACING;
+static long pcbright = 0x7F7F7F;
+static short inventry_xpos = 0;
+static short inventry_ypos = 0;
+
+static uchar go_left;
+static uchar go_right;
+static uchar go_up;
+static uchar go_down;
+static uchar go_select;
+static uchar go_deselect;
+static uchar left_repeat;
+static uchar left_debounce;
+static uchar right_repeat;
+static uchar right_debounce;
+static uchar up_debounce;
+static uchar down_debounce;
+static uchar select_debounce;
+static uchar deselect_debounce;
+static uchar friggrimmer;
+static uchar friggrimmer2;
+static char loading_or_saving;
+static char use_the_bitch;
 
 long LoadGame()
 {
@@ -1366,7 +1711,7 @@ void do_examine_mode()
 
 void dels_give_lara_items_cheat()
 {
-	long piss;	//for historical purposes
+	long piss;
 
 	if (objects[CROWBAR_ITEM].loaded)
 		lara.crowbar = 1;
@@ -1560,7 +1905,7 @@ void use_current_item()
 		GLOBAL_inventoryitemchosen = gmeobject;
 }
 
-void DEL_picked_up_object(short objnum)	//did sexy fall-throughs for ammo
+void DEL_picked_up_object(short objnum)
 {
 	long lf;
 

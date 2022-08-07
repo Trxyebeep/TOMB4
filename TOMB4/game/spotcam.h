@@ -9,6 +9,14 @@ void InitSpotCamSequences();
 long Spline(long x, long* knots, long nk);
 void CalculateSpotCams();
 
+extern SPOTCAM SpotCam[];
+extern long bTrackCamInit;
+extern short LastSequence;
+extern short CurrentFov;
+extern short number_spotcams;
+extern long bUseSpotCam;
+extern long bDisableLaraControl;
+
 enum spotcam_flags
 {
 	SP_SNAPCAMERA = (1 << 0),	//snaps the camera to the first spline

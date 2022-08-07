@@ -18,6 +18,41 @@
 #include "../specific/function_stubs.h"
 #include "../specific/3dmath.h"
 #include "../specific/dxsound.h"
+#include "camera.h"
+
+long GlobalFogOff = 0;
+
+long FogTableColor[28] =
+{
+	0,
+	RGBONLY(245,200,60),
+	RGBONLY(120,196,112),
+	RGBONLY(202,204,230),
+	RGBONLY(128,64,0),
+	RGBONLY(64,64,64),
+	RGBONLY(243,232,236),
+	RGBONLY(0,64,192),
+	RGBONLY(0,128,0),
+	RGBONLY(150,172,157),
+	RGBONLY(128,128,128),
+	RGBONLY(204,163,123),
+	RGBONLY(177,162,140),
+	RGBONLY(0,223,191),
+	RGBONLY(111,255,223),
+	RGBONLY(244,216,152),
+	RGBONLY(248,192,60),
+	RGBONLY(252,0,0),
+	RGBONLY(198,95,87),
+	RGBONLY(226,151,118),
+	RGBONLY(248,235,206),
+	RGBONLY(0,30,16),
+	RGBONLY(250,222,167),
+	RGBONLY(218,175,117),
+	RGBONLY(225,191,78),
+	RGBONLY(77,140,141),
+	RGBONLY(4,181,154),
+	RGBONLY(255,174,0)
+};
 
 void(*effect_routines[47])(ITEM_INFO* item) =
 {

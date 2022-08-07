@@ -13,6 +13,8 @@ HRESULT HWBeginScene();
 HRESULT HWEndScene();
 void InitialiseFunctionTable();
 
+extern long CurrentFog;
+
 #define AddQuadSorted	( *(void(__cdecl**)(D3DTLVERTEX*, short, short, short, short, TEXTURESTRUCT*, long)) 0x00533AD4 )
 #define AddQuadZBuffer	( *(void(__cdecl**)(D3DTLVERTEX*, short, short, short, short, TEXTURESTRUCT*, long)) 0x00533AD8 )
 #define AddTriZBuffer	( *(void(__cdecl**)(D3DTLVERTEX*, short, short, short, TEXTURESTRUCT*, long)) 0x00533AE0 )

@@ -10,6 +10,7 @@
 #include "effect2.h"
 #endif
 #include "../specific/3dmath.h"
+#include "camera.h"
 
 #ifdef GENERAL_FIXES
 static void lara_as_swimcheat(ITEM_INFO* item, COLL_INFO* coll)

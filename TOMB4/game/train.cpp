@@ -6,6 +6,7 @@
 #include "sound.h"
 #include "control.h"
 #include "items.h"
+#include "camera.h"
 
 void DrawTrainObjects()
 {
