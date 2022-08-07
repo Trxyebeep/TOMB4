@@ -25,3 +25,5 @@ void DXFreeSounds();
 long S_SoundSampleIsPlaying(long num);
 void S_SoundSetPanAndVolume(long num, short pan, ushort volume);
 void S_SoundSetPitch(long num, long pitch);
+
+extern char* samples_buffer;

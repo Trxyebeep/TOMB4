@@ -4,8 +4,11 @@
 #include "../game/sound.h"
 #include "../game/newinv.h"
 #include "../game/lara_states.h"
+#include "../game/control.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
+#include "../game/spotcam.h"
+#include "../game/camera.h"
 
 short ammo_change_timer = 0;
 char ammo_change_buf[12];

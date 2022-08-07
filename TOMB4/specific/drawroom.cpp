@@ -5,6 +5,8 @@
 #include "polyinsert.h"
 #include "function_table.h"
 #include "d3dmatrix.h"
+#include "lighting.h"
+#include "../game/camera.h"
 
 void ProjectVerts(long nVerts, D3DTLVERTEX* v, short* clip)
 {
@@ -254,8 +256,8 @@ void ProcessRoomData(ROOM_INFO* r)
 	data_ptr += r->gt4cnt * 5;
 	r->gt3cnt = *data_ptr;
 	r->verts = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * r->nVerts);
-	faces = (short*)MALLOC(2 * r->nVerts);
-	prelight = (short*)MALLOC(2 * r->nVerts);
+	faces = (short*)malloc(2 * r->nVerts);
+	prelight = (short*)malloc(2 * r->nVerts);
 	data_ptr = r->data + 1;	//go to vert data
 	nWaterVerts = 0;
 
@@ -336,7 +338,7 @@ void ProcessRoomData(ROOM_INFO* r)
 		data_ptr += 4;
 	}
 
-	FREE(faces);
+	free(faces);
 	CreateVertexNormals(r);
 	r->prelight = (long*)game_malloc(4 * r->nVerts);
 	r->prelightwater = (long*)game_malloc(4 * r->nVerts);
@@ -373,7 +375,7 @@ void ProcessRoomData(ROOM_INFO* r)
 	}
 
 	r->SourceVB->Unlock();
-	FREE(prelight);
+	free(prelight);
 	r->pclight = 0;
 
 	if (r->num_lights)

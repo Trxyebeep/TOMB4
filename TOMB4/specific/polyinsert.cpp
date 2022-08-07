@@ -8,6 +8,19 @@
 #include "../game/tomb4fx.h"
 #include "function_table.h"
 #include "clipping.h"
+#include "../game/newinv.h"
+#include "../game/camera.h"
+#include "../game/effects.h"
+
+FOGBULB_STRUCT FogBulbs[20];
+long NumLevelFogBulbs;
+
+static FOGBULB_STRUCT* ActiveFogBulbs[5];
+static FOGBULB_STRUCT FXFogBulbs[5];
+
+static long NumFXFogBulbs;
+static long NumActiveFogBulbs;
+static long NumFogBulbsInRange;
 
 static long rgb80h = 0x808080;
 static long rgbmask = 0xFFFFFFFF;

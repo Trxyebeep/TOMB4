@@ -2,6 +2,11 @@
 #include "d3dmatrix.h"
 #include "dxshell.h"
 
+D3DMATRIX D3DMView;
+
+static D3DMATRIX D3DMWorld;
+static D3DMATRIX D3DMProjection;
+
 D3DMATRIX* D3DIdentityMatrix(D3DMATRIX* mx)
 {
 	mx->_11 = 1;

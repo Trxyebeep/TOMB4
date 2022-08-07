@@ -95,6 +95,12 @@
 #include "../game/larafire.h"
 #include "../game/lot.h"
 #include "../game/sentrygun.h"
+#include "../game/dog.h"
+#include "../game/raghead.h"
+#include "../game/templar.h"
+#include "../game/skeleton.h"
+#include "../game/scorpion.h"
+#include "../game/guide.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -209,6 +215,12 @@ void inject_all(bool replace)
 	inject_larafire(replace);
 	inject_lot(replace);
 	inject_sentry(replace);
+	inject_dog(replace);
+	inject_raghead(replace);
+	inject_templar(replace);
+	inject_skelly(replace);
+	inject_scorpion(replace);
+	inject_guide(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

@@ -3,12 +3,15 @@
 #include "../specific/LoadSave.h"
 #include "text.h"
 #include "newinv.h"
+#include "spotcam.h"
+#include "control.h"
 #ifdef ENEMY_BARS
 #include "../tomb4/tomb4.h"
 #include "objects.h"
 #endif
 #ifdef AMMO_COUNTER
 #include "larafire.h"
+#include "camera.h"
 #endif
 #ifdef GENERAL_FIXES
 #include "../specific/input.h"

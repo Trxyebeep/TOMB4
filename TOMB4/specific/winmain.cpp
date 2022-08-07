@@ -558,8 +558,8 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	{
 		if (!DXSetupDialog())
 		{
-			FREE(gfScriptFile);
-			FREE(gfLanguageFile);
+			free(gfScriptFile);
+			free(gfLanguageFile);
 			WinClose();
 			return 0;
 		}
@@ -615,9 +615,9 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
 	if (size)
 	{
-		cutseqpakPtr = (char*)MALLOC(*(long*)buf);
+		cutseqpakPtr = (char*)malloc(*(long*)buf);
 		Decompress(cutseqpakPtr, buf + 4, size - 4, *(long*)buf);
-		FREE(buf);
+		free(buf);
 	}
 
 	MainThread.active = 1;
@@ -628,7 +628,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	while (MainThread.active) {};
 
 	if (cutseqpakPtr)
-		FREE(cutseqpakPtr);
+		free(cutseqpakPtr);
 
 	WinClose();
 	desktop = GetDesktopWindow();

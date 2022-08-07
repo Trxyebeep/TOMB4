@@ -52,3 +52,5 @@ void UpdateFadeClip();
 void SetScreenFadeOut(short speed, short back);
 void SetScreenFadeIn(short speed);
 void Fade();
+
+extern NODEOFFSET_INFO NodeOffsets[];

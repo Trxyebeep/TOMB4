@@ -13,6 +13,31 @@
 #include "../tomb4/tomb4.h"
 #endif
 
+CAMERA_INFO camera;
+
+GAME_VECTOR ForcedFixedCamera;
+char UseForcedFixedCamera;
+
+PHD_VECTOR LaraTorchStart;
+PHD_VECTOR LaraTorchEnd;
+long bLaraTorch;
+long LaraTorchIntensity;
+long LaraTorchYRot;
+
+camera_type BinocularOldCamera = CHASE_CAMERA;
+long BinocularOn = 0;
+long BinocularRange = 0;
+long ExittingBinos = 0;
+long LaserSight = 0;
+
+static OLD_CAMERA old_cam;
+static GAME_VECTOR last_target;
+static GAME_VECTOR last_ideal;
+static char camerasnaps = 0;
+
+static GAME_VECTOR static_lookcamp;
+static GAME_VECTOR static_lookcamt;
+
 void InitialiseCamera()
 {
 	last_target.x = lara_item->pos.x_pos;
@@ -127,9 +152,9 @@ void MoveCamera(GAME_VECTOR* ideal, long speed)
 	if (wy < ceiling || wy > height)
 	{
 		mgLOS(&camera.target, &camera.pos, 0);
-		dx = ABS(camera.pos.x - ideal->x);
-		dy = ABS(camera.pos.y - ideal->y);
-		dz = ABS(camera.pos.z - ideal->z);
+		dx = abs(camera.pos.x - ideal->x);
+		dy = abs(camera.pos.y - ideal->y);
+		dz = abs(camera.pos.z - ideal->z);
 
 		if (dx < 768 && dy < 768 && dz < 768)
 		{
@@ -1092,7 +1117,7 @@ void BinocularCamera(ITEM_INFO* item)
 	}
 
 	lara_item->mesh_bits = 0;
-	AlterFOV((short)(7 * (2080 - BinocularRange)));
+	AlterFOV(short(7 * (2080 - BinocularRange)));
 	hxrot = lara.head_x_rot << 1;
 	hyrot = lara.head_y_rot;
 
@@ -1302,7 +1327,7 @@ void CalculateCamera()
 	else
 		y = item->pos.y_pos + bounds[3] + ((3 * (bounds[2] - bounds[3])) >> 2);
 
-	if (camera.item && !fixed_camera)	//fixme
+	if (camera.item && !fixed_camera)
 	{
 		dx = camera.item->pos.x_pos - item->pos.x_pos;
 		dz = camera.item->pos.z_pos - item->pos.z_pos;

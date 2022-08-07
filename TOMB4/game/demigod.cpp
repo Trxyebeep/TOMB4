@@ -11,6 +11,7 @@
 #include "control.h"
 #include "lara_states.h"
 #include "people.h"
+#include "camera.h"
 
 void TriggerDemigodMissile(PHD_3DPOS* pos, short room_number, short type)
 {
@@ -340,9 +341,9 @@ void DemigodControl(short item_number)
 			dx = lara_item->pos.x_pos - item->pos.x_pos;
 			dz = lara_item->pos.z_pos - item->pos.z_pos;
 			iAngle = (short)phd_atan(dz, dx) - item->pos.y_rot;
-			iAhead = ABS(iAngle) < 16384;
-			dx = ABS(dx);
-			dz = ABS(dz);
+			iAhead = abs(iAngle) < 16384;
+			dx = abs(dx);
+			dz = abs(dz);
 
 			if (dx > dz)
 				info.x_angle = (short)phd_atan(dx + (dz >> 1), item->pos.y_pos - lara_item->pos.y_pos);
@@ -500,7 +501,7 @@ void DemigodControl(short item_number)
 
 			if (item->anim_number == objects[objnum].anim_index + 6)
 			{
-				if (ABS(info.angle) < 1274)
+				if (abs(info.angle) < 1274)
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
 					item->pos.y_rot -= 1274;
@@ -558,7 +559,7 @@ void DemigodControl(short item_number)
 
 			if (item->anim_number == objects[objnum].anim_index + 6)
 			{
-				if (ABS(info.angle) < 1274)
+				if (abs(info.angle) < 1274)
 					item->pos.y_rot += info.angle;
 				else if (info.angle < 0)
 					item->pos.y_rot -= 1274;
@@ -579,7 +580,7 @@ void DemigodControl(short item_number)
 			torso_y = iAngle;
 			torso_z = 0;
 
-			if (ABS(info.angle) < 1274)
+			if (abs(info.angle) < 1274)
 				item->pos.y_rot += info.angle;
 			else if (info.angle < 0)
 				item->pos.y_rot -= 1274;

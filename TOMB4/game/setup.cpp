@@ -45,6 +45,19 @@
 #include "flmtorch.h"
 #include "scarab.h"
 #include "sentrygun.h"
+#include "lara1gun.h"
+#include "switch.h"
+#include "missile.h"
+#include "dog.h"
+#include "seth.h"
+#include "raghead.h"
+#include "templar.h"
+#include "skeleton.h"
+#include "scorpion.h"
+#include "footprnt.h"
+#include "guide.h"
+#include "control.h"
+#include "camera.h"
 
 void ObjectObjects()
 {
@@ -56,7 +69,7 @@ void ObjectObjects()
 
 	obj = &objects[FLARE_ITEM];
 	obj->initialise = 0;
-//	obj->control = FlareControl;
+	obj->control = FlareControl;
 	obj->collision = PickUpCollision;
 	obj->draw_routine = DrawFlareInAir;
 	obj->using_drawanimating_item = 0;
@@ -68,8 +81,8 @@ void ObjectObjects()
 	for (int i = SMASH_OBJECT1; i <= SMASH_OBJECT8; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseSmashObject;
-	//	obj->control = SmashObjectControl;
+		obj->initialise = InitialiseSmashObject;
+		obj->control = SmashObjectControl;
 		obj->collision = ObjectCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
@@ -90,9 +103,8 @@ void ObjectObjects()
 	for (int i = SWITCH_TYPE1; i <= SWITCH_TYPE6; i++)
 	{
 		obj = &objects[i];
-	//	obj->initialise = InitialiseSwitch;
-	//	obj->control = SwitchControl;
-	//	obj->collision = SwitchCollision;
+		obj->control = SwitchControl;
+		obj->collision = SwitchCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -100,58 +112,58 @@ void ObjectObjects()
 	for (int i = SEQUENCE_SWITCH1; i <= SEQUENCE_SWITCH3; i++)
 	{
 		obj = &objects[i];
-	//	obj->control = FullBlockSwitchControl;
-	//	obj->collision = FullBlockSwitchCollision;
+		obj->control = FullBlockSwitchControl;
+		obj->collision = FullBlockSwitchCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
 
 	obj = &objects[UNDERWATER_SWITCH1];
-//	obj->control = SwitchControl;
-//	obj->collision = SwitchCollision2;
+	obj->control = SwitchControl;
+	obj->collision = SwitchCollision2;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[UNDERWATER_SWITCH2];
-//	obj->control = SwitchControl;
-//	obj->collision = UnderwaterSwitchCollision;
+	obj->control = SwitchControl;
+	obj->collision = UnderwaterSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[TURN_SWITCH];
-//	obj->control = TurnSwitchControl;
-//	obj->collision = TurnSwitchCollision;
+	obj->control = TurnSwitchControl;
+	obj->collision = TurnSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[COG_SWITCH];
-//	obj->control = CogSwitchControl;
-//	obj->collision = CogSwitchCollision;
+	obj->control = CogSwitchControl;
+	obj->collision = CogSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[LEVER_SWITCH];
-//	obj->control = SwitchControl;
-//	obj->collision = RailSwitchCollision;
+	obj->control = SwitchControl;
+	obj->collision = RailSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[JUMP_SWITCH];
-//	obj->control = SwitchControl;
-//	obj->collision = JumpSwitchCollision;
+	obj->control = SwitchControl;
+	obj->collision = JumpSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[CROWBAR_SWITCH];
-//	obj->control = SwitchControl;
-//	obj->collision = CrowbarSwitchCollision;
+	obj->control = SwitchControl;
+	obj->collision = CrowbarSwitchCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
 	obj = &objects[PULLEY];
-//	obj->initialise = InitialisePulley;
-//	obj->control = SwitchControl;
-//	obj->collision = PulleyCollision;
+	obj->initialise = InitialisePulley;
+	obj->control = SwitchControl;
+	obj->collision = PulleyCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
@@ -229,7 +241,7 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 		obj->initialise = InitialisePickUp;
-	//	obj->control = AnimatingPickUp;
+		obj->control = AnimatingPickUp;
 		obj->collision = PickUpCollision;
 		obj->save_position = 1;
 		obj->save_flags = 1;
@@ -239,7 +251,7 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 		obj->initialise = InitialisePickUp;
-	//	obj->control = AnimatingPickUp;
+		obj->control = AnimatingPickUp;
 		obj->collision = PickUpCollision;
 		obj->save_position = 1;
 		obj->save_flags = 1;
@@ -253,42 +265,42 @@ void ObjectObjects()
 
 	obj = &objects[WATERSKIN1_EMPTY];
 	obj->initialise = InitialisePickUp;
-//	obj->control = AnimatingPickUp;
+	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
 	obj = &objects[WATERSKIN2_EMPTY];
 	obj->initialise = InitialisePickUp;
-//	obj->control = AnimatingPickUp;
+	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
 	obj = &objects[CROSSBOW_BOLT];
 	obj->initialise = 0;
-//	obj->control = ControlCrossbow;
+	obj->control = ControlCrossbow;
 	obj->collision = 0;
 	obj->draw_routine = DrawWeaponMissile;
 	obj->using_drawanimating_item = 0;
 
 	obj = &objects[GRENADE];
 	obj->initialise = 0;
-//	obj->control = ControlGrenade;
+	obj->control = ControlGrenade;
 	obj->collision = 0;
 	obj->draw_routine = DrawWeaponMissile;
 	obj->using_drawanimating_item = 0;
 
 	obj = &objects[FLARE_INV_ITEM];
 	obj->initialise = InitialisePickUp;
-//	obj->control = AnimatingPickUp;
+	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
 	obj = &objects[COMPASS_ITEM];
 	obj->initialise = InitialisePickUp;
-//	obj->control = AnimatingPickUp;
+	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
@@ -348,7 +360,7 @@ void ObjectObjects()
 	obj->save_anim = 1;
 
 	obj = &objects[EXPANDING_PLATFORM];
-//	obj->initialise = InitialiseRaisingBlock;
+	obj->initialise = InitialiseRaisingBlock;
 	obj->control = ControlRaisingBlock;
 	obj->draw_routine = DrawScaledSpike;
 	obj->using_drawanimating_item = 0;
@@ -508,7 +520,7 @@ void ObjectObjects()
 
 	for (int i = WATERFALL1; i <= WATERFALL3; i++)
 	{
-	//	obj->control = ControlWaterfall;
+		obj->control = ControlWaterfall;
 		obj->save_flags = 1;
 	}
 
@@ -529,7 +541,7 @@ void ObjectObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[BODY_PART];
-//	obj->control = ControlBodyPart;
+	obj->control = ControlBodyPart;
 	obj->draw_routine = (void(*)(ITEM_INFO*))1;
 	obj->nmeshes = 0;
 	obj->loaded = 1;
@@ -785,9 +797,9 @@ void TrapObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[PLANET_EFFECT];
-//	obj->initialise = InitialisePlanetEffect;
-//	obj->control = ControlPlanetEffect;
-//	obj->draw_routine = DrawPlanetEffect;
+	obj->initialise = InitialisePlanetEffect;
+	obj->control = ControlPlanetEffect;
+	obj->draw_routine = DrawPlanetEffect;
 	obj->save_flags = 1;
 	obj->using_drawanimating_item = 0;
 	obj->save_mesh = 1;
@@ -839,8 +851,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseSkeleton;
-//		obj->control = SkeletonControl;
+		obj->initialise = InitialiseSkeleton;
+		obj->control = SkeletonControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 15;
@@ -905,8 +917,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseGuide;
-//		obj->control = GuideControl;
+		obj->initialise = InitialiseGuide;
+		obj->control = GuideControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = -16384;
@@ -943,8 +955,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseRaghead;
-//		obj->control = RagheadControl;
+		obj->initialise = InitialiseRaghead;
+		obj->control = RagheadControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 25;
@@ -988,8 +1000,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseRaghead;
-//		obj->control = RagheadControl;
+		obj->initialise = InitialiseRaghead;
+		obj->control = RagheadControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 35;
@@ -1030,8 +1042,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseScorpion;
-//		obj->control = ScorpionControl;
+		obj->initialise = InitialiseScorpion;
+		obj->control = ScorpionControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 80;
@@ -1050,8 +1062,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseSmlscorp;
-//		obj->control = SmlscorpControl;
+		obj->initialise = InitialiseSmlscorp;
+		obj->control = SmlscorpControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 8;
@@ -1093,8 +1105,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseTemplar;
-//		obj->control = TemplarControl;
+		obj->initialise = InitialiseTemplar;
+		obj->control = TemplarControl;
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
@@ -1138,8 +1150,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseSeth;
-//		obj->control = SethControl;
+		obj->initialise = InitialiseSeth;
+		obj->control = SethControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 500;
@@ -1437,8 +1449,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseDog;
-//		obj->control = DogControl;
+		obj->initialise = InitialiseDog;
+		obj->control = DogControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 16;
@@ -1729,8 +1741,8 @@ void BuildOutsideTable()
 	char flipped[256];
 
 	max_slots = 0;
-	OutsideRoomOffsets = (short*)MALLOC(0x5B2);
-	OutsideRoomTable = (char*)MALLOC(0xB640);
+	OutsideRoomOffsets = (short*)malloc(0x5B2);
+	OutsideRoomTable = (char*)malloc(0xB640);
 	memset(OutsideRoomTable, 0xFF, 0xB640);
 	memset(flipped, 0, 255);
 
@@ -2030,7 +2042,7 @@ void GetCarriedItems()
 			{
 				pickup = &items[item_num];
 
-				if (baddy->pos.x_pos == pickup->pos.x_pos && ABS(baddy->pos.y_pos - pickup->pos.y_pos) < 256 &&
+				if (baddy->pos.x_pos == pickup->pos.x_pos && abs(baddy->pos.y_pos - pickup->pos.y_pos) < 256 &&
 					baddy->pos.z_pos == pickup->pos.z_pos && objects[pickup->object_number].collision == PickUpCollision)
 				{
 					pickup->carried_item = baddy->carried_item;

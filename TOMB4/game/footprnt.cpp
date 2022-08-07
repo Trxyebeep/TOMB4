@@ -13,10 +13,10 @@
 #define PRINT_HEIGHT_CORRECTION 128 // The maximum difference between the footprint and the floor
 #endif
 
-static char footsounds[14] =
-{
-	0, 5, 3, 2, 1, 9, 9, 4, 6, 5, 3, 9, 4, 6
-};
+static char footsounds[14] = { 0, 5, 3, 2, 1, 9, 9, 4, 6, 5, 3, 9, 4, 6 };
+
+FOOTPRINT FootPrint[32];
+long FootPrintNum;
 
 void AddFootPrint(ITEM_INFO* item)
 {
@@ -108,7 +108,7 @@ void S_DrawFootPrints()
 				room_number = lara_item->room_number;
 				pos[j].y = GetHeight(GetFloor(x, print->y, z, &room_number), x, print->y, z) - print->y;
 
-				if (ABS(pos[j].y) > PRINT_HEIGHT_CORRECTION)
+				if (abs(pos[j].y) > PRINT_HEIGHT_CORRECTION)
 					pos[j].y = 0;
 			}
 

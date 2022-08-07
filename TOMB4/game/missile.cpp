@@ -6,6 +6,7 @@
 #include "sound.h"
 #include "../specific/function_stubs.h"
 #include "effects.h"
+#include "../specific/3dmath.h"
 
 long ExplodeFX(FX_INFO* fx, long NoXZVel, short Num)
 {
@@ -93,7 +94,7 @@ void ControlBodyPart(short fx_number)
 
 		fx->speed -= fx->speed >> 2;
 
-		if (ABS(fx->speed) < 4)
+		if (abs(fx->speed) < 4)
 			fx->speed = 0;
 
 		fx->pos.y_pos = oy;

@@ -13,7 +13,7 @@
 #include "effect2.h"
 #include "sphere.h"
 
-static NODEOFFSET_INFO NodeOffsets[16] =
+NODEOFFSET_INFO NodeOffsets[16] =
 {
 	{ -16, 40, 160, -14, 0 },
 	{ -16, -8, 160, 0, 0 },

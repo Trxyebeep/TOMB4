@@ -15,6 +15,9 @@
 #include "switch.h"
 #include "delstuff.h"
 #include "effects.h"
+#include "../specific/3dmath.h"
+#include "debris.h"
+#include "camera.h"
 
 static short StatuePlinthBounds[12] = { 0, 0, -64, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short PoleBounds[12] = { -256, 256, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
@@ -527,9 +530,9 @@ void BurningRopeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	for (int i = 0; i < nSpheres; i++)
 	{
 		sphere = &Slist[i];
-		dx = ABS(sphere->x - pos.x);
-		dy = ABS(sphere->y - pos.y);
-		dz = ABS(sphere->z - pos.z);
+		dx = abs(sphere->x - pos.x);
+		dy = abs(sphere->y - pos.y);
+		dz = abs(sphere->z - pos.z);
 
 		if (dx < sphere->r && dy < sphere->r && dz < sphere->r)
 		{
@@ -841,7 +844,7 @@ void EarthQuake(short item_number)
 
 		if (!item->item_flags[2])
 		{
-			if (ABS(item->item_flags[0] - item->item_flags[1]) < 16)
+			if (abs(item->item_flags[0] - item->item_flags[1]) < 16)
 			{
 				if (item->item_flags[1] == 20)
 				{

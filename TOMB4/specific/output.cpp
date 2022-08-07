@@ -13,14 +13,18 @@
 #include "specificfx.h"
 #include "function_stubs.h"
 #include "../game/newinv.h"
+#include "time.h"
+#include "winmain.h"
+#include "../game/tomb4fx.h"
+#include "../game/delstuff.h"
 #ifdef GENERAL_FIXES
 #include "../game/text.h"
 #include "../game/gameflow.h"
 #include "../tomb4/tomb4.h"
+#include "../game/spotcam.h"
+#include "../game/effect2.h"
 #endif
-#include "time.h"
-#include "winmain.h"
-#include "../game/tomb4fx.h"
+#include "../game/camera.h"
 
 D3DTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];
@@ -562,7 +566,11 @@ void S_InitialisePolyList()
 	rect.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
 
 	if (gfLevelFlags & GF_TRAIN)
+#ifdef GENERAL_FIXES
+		col = 0xD2B163;
+#else
 		col = 0xCEAE60;
+#endif
 	else if (gfCurrentLevel == 5 || gfCurrentLevel == 6)
 	{
 		col = FogTableColor[19];

@@ -3,6 +3,7 @@
 #include "file.h"
 #include "function_stubs.h"
 #include "dxshell.h"
+#include "../game/control.h"
 
 const char* TrackFileNames[112] =
 {
@@ -121,6 +122,9 @@ const char* TrackFileNames[112] =
 };
 
 HACMDRIVER hACMDriver;
+uchar* wav_file_buffer = 0;
+uchar* ADPCMBuffer = 0;
+bool acm_ready = 0;
 
 static LPDIRECTSOUNDBUFFER DSBuffer = 0;
 static LPDIRECTSOUNDNOTIFY DSNotify = 0;
@@ -129,6 +133,8 @@ static HACMDRIVERID hACMDriverID = 0;
 static HACMSTREAM hACMStream = 0;
 static HANDLE NotifyEventHandles[2];
 static HANDLE NotificationThreadHandle = 0;
+static FILE* audio_stream_fp;
+static CRITICAL_SECTION audio_cs;
 static uchar* audio_fp_write_ptr = 0;
 static uchar* pAudioWrite = 0;
 static ulong AudioBytes = 0;
@@ -136,6 +142,10 @@ static long audio_buffer_size = 0;
 static long CurrentNotify = 0;
 static long NotifySize = 0;
 static long NextWriteOffset = 0;
+static long auido_play_mode = 0;
+static long audio_counter = 0;
+static volatile bool reading_audio_file = 0;
+static volatile bool continue_reading_audio_file = 0;
 
 void OpenStreamFile(char* name)
 {
@@ -248,7 +258,7 @@ BOOL __stdcall ACMEnumCallBack(HACMDRIVERID hadid, DWORD_PTR dwInstance, DWORD f
 
 	memset(&driver, 0, sizeof(driver));
 	driver.cbStruct = sizeof(ACMDRIVERDETAILS);
-	acmDriverDetailsA(hadid, &driver, 0);
+	acmDriverDetails(hadid, &driver, 0);
 
 	if (strcmp(driver.szShortName, "MS-ADPCM"))
 		return 1;
@@ -445,8 +455,8 @@ bool ACMInit()
 		return 0;
 	}
 
-	ADPCMBuffer = (uchar*)MALLOC(0x5800);
-	wav_file_buffer = (uchar*)MALLOC(0x37000);
+	ADPCMBuffer = (uchar*)malloc(0x5800);
+	wav_file_buffer = (uchar*)malloc(0x37000);
 	wav_format.wFormatTag = WAVE_FORMAT_PCM;
 	acmMetrics(0, ACM_METRIC_MAX_SIZE_FORMAT, &pMetric);
 	acmFormatSuggest(hACMDriver, (LPWAVEFORMATEX)&source_wav_format, &wav_format, pMetric, ACM_FORMATSUGGESTF_WFORMATTAG);
@@ -464,7 +474,7 @@ bool ACMInit()
 
 	ACMSetupNotifications();
 	acmStreamOpen(&hACMStream, hACMDriver, (LPWAVEFORMATEX)&source_wav_format, &wav_format, 0, 0, 0, 0);
-	acmStreamSize(hACMStream, 0x5800u, &StreamSize, 0);
+	acmStreamSize(hACMStream, 0x5800, &StreamSize, 0);
 	DXAttempt(DSBuffer->Lock(0, audio_buffer_size, (LPVOID*)&pAudioWrite, &AudioBytes, 0, 0, 0));
 	memset(pAudioWrite, 0, audio_buffer_size);
 

@@ -8,6 +8,7 @@
 #include "newinv.h"
 #include "control.h"
 #include "draw.h"
+#include "camera.h"
 
 static short SarcophagusBounds[12] = { -512, 512, -100, 100, -512, 0, -1820, 1820, -5460, 5460, 0, 0 };
 static short KeyHoleBounds[12] = { -256, 256, 0, 0, 0, 412, -1820, 1820, -5460, 5460, -1820, 1820 };

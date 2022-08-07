@@ -15,8 +15,10 @@ void lara_col_climbstnc(ITEM_INFO* item, COLL_INFO* coll);
 void lara_col_climbing(ITEM_INFO* item, COLL_INFO* coll);
 void lara_col_climbdown(ITEM_INFO* item, COLL_INFO* coll);
 short GetClimbTrigger(long x, long y, long z, short room_number);
-
-#define LaraCheckForLetGo	( (long(__cdecl*)(ITEM_INFO*, COLL_INFO*)) 0x0042C980 )
-#define	LaraDoClimbLeftRight	( (void(__cdecl*)(ITEM_INFO*, COLL_INFO*, long, long)) 0x0042CD20 )
-#define LaraTestClimbPos	( (long(__cdecl*)(ITEM_INFO*, long, long, long, long, long*)) 0x0042C3C0 )
-#define	LaraTestClimbUpPos	( (long(__cdecl*)(ITEM_INFO*, long, long, long*, long*)) 0x0042CA60 )
+long LaraTestClimb(long x, long y, long z, long xfront, long zfront, long item_height, short item_room, long* shift);
+long LaraTestClimbPos(ITEM_INFO* item, long front, long right, long origin, long height, long* shift);
+long LaraTestClimbUpPos(ITEM_INFO* item, long front, long right, long* shift, long* ledge);
+long LaraCheckForLetGo(ITEM_INFO* item, COLL_INFO* coll);
+long LaraClimbLeftCornerTest(ITEM_INFO* item, COLL_INFO* coll);
+long LaraClimbRightCornerTest(ITEM_INFO* item, COLL_INFO* coll);
+void LaraDoClimbLeftRight(ITEM_INFO* item, COLL_INFO* coll, long result, long shift);

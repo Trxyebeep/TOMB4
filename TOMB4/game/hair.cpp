@@ -7,6 +7,13 @@
 #include "control.h"
 #include "../specific/function_stubs.h"
 #include "../specific/output.h"
+#include "delstuff.h"
+
+HAIR_STRUCT hairs[2][7];
+static long hair_wind = 0;
+static long hair_dwind_angle = 0;
+static long hair_wind_angle = 0;
+static long first_hair[2];
 
 void InitialiseHair()
 {
@@ -813,13 +820,13 @@ void GetCorrectStashPoints(long pigtail, long hair_node, long skin_node)
 	if (hair_node)
 		rot1 = hair->pos.y_rot;
 	else
-		rot1 = (ushort)(32768 - (CamRot.y << 4));
+		rot1 = ushort(0x8000 - (CamRot.y << 4));
 
 	rot2 = hair[2].pos.y_rot;
 
-	while (ABS(rot1 - rot2) > 8192 && ABS(rot1 - rot2) < 57344)
+	while (abs(rot1 - rot2) > 0x2000 && abs(rot1 - rot2) < 0xE000)
 	{
-		rot1 += 16384;
+		rot1 += 0x4000;
 		num++;
 	}
 

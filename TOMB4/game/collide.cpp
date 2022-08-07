@@ -739,7 +739,7 @@ long ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, lon
 		zmax += coll->radius;
 	}
 
-	if (ABS(dx) > 4608 || ABS(dz) > 4608 || x <= xmin || x >= xmax || z <= zmin || z >= zmax)
+	if (abs(dx) > 4608 || abs(dz) > 4608 || x <= xmin || x >= xmax || z <= zmin || z >= zmax)
 		return 0;
 
 	left = x - xmin;
@@ -866,7 +866,7 @@ long ItemPushLaraStatic(ITEM_INFO* l, short* bounds, PHD_3DPOS* pos, COLL_INFO* 
 	zmin = bounds[4] - coll->radius;
 	zmax = bounds[5] + coll->radius;
 
-	if (ABS(dx) > 4608 || ABS(dz) > 4608 || x <= xmin || x >= xmax || z <= zmin || z >= zmax)
+	if (abs(dx) > 4608 || abs(dz) > 4608 || x <= xmin || x >= xmax || z <= zmin || z >= zmax)
 		return 0;
 
 	left = x - xmin;
@@ -953,9 +953,9 @@ void AlignLaraPosition(PHD_VECTOR* pos, ITEM_INFO* item, ITEM_INFO* l)
 
 	phd_PushUnitMatrix();
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
-	x = item->pos.x_pos + ((pos->x * phd_mxptr[M00] + pos->y * phd_mxptr[M10] + pos->z * phd_mxptr[M20]) >> W2V_SHIFT);
-	y = item->pos.y_pos + ((pos->x * phd_mxptr[M01] + pos->y * phd_mxptr[M11] + pos->z * phd_mxptr[M21]) >> W2V_SHIFT);
-	z = item->pos.z_pos + ((pos->x * phd_mxptr[M02] + pos->y * phd_mxptr[M12] + pos->z * phd_mxptr[M22]) >> W2V_SHIFT);
+	x = item->pos.x_pos + ((pos->x * phd_mxptr[M00] + pos->y * phd_mxptr[M01] + pos->z * phd_mxptr[M02]) >> W2V_SHIFT);
+	y = item->pos.y_pos + ((pos->x * phd_mxptr[M10] + pos->y * phd_mxptr[M11] + pos->z * phd_mxptr[M12]) >> W2V_SHIFT);
+	z = item->pos.z_pos + ((pos->x * phd_mxptr[M20] + pos->y * phd_mxptr[M21] + pos->z * phd_mxptr[M22]) >> W2V_SHIFT);
 	phd_PopMatrix();
 
 	l->pos.x_pos = x;
@@ -1079,7 +1079,7 @@ long MoveLaraPosition(PHD_VECTOR* v, ITEM_INFO* item, ITEM_INFO* l)
 		room_number = l->room_number;
 		height = GetHeight(GetFloor(pos.x_pos, pos.y_pos, pos.z_pos, &room_number), pos.x_pos, pos.y_pos, pos.z_pos);
 
-		if (ABS(height - l->pos.y_pos) > 512)
+		if (abs(height - l->pos.y_pos) > 512)
 		{
 			if (lara.IsMoving)
 			{
@@ -1237,7 +1237,7 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 	coll->shift.z = 0;
 	coll->quadrant = ushort(coll->facing + 0x2000) / 0x4000;
 
-	ang = ABS(lara_item->pos.y_rot - coll->facing) > 0x7000 ? 0x3000 : 0x4000;
+	ang = abs(lara_item->pos.y_rot - coll->facing) > 0x7000 ? 0x3000 : 0x4000;
 	xright2 = (250 * phd_sin(coll->facing + ang)) >> W2V_SHIFT;
 	xleft2 = (250 * phd_sin(coll->facing - ang)) >> W2V_SHIFT;
 	zright2 = (250 * phd_cos(coll->facing + ang)) >> W2V_SHIFT;

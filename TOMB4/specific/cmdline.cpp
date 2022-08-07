@@ -102,6 +102,7 @@ void InitResolution(HWND dlg, HWND hwnd, bool resetvms)
 	bool software;
 
 	n = 0;
+
 	if (nD3DDevice)
 	{
 		SendMessage(GetDlgItem(dlg, 1010), BM_SETCHECK, 1, 0);

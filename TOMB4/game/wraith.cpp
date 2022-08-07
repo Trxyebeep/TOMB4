@@ -188,7 +188,7 @@ void WraithControl(short item_number)
 		y = target->pos.y_pos;
 		dz = target->pos.z_pos - item->pos.z_pos;
 		dist = SQUARE(dx) + SQUARE(dz);
-		dy = ABS((dist >> 13) - 512);
+		dy = abs((dist >> 13) - 512);
 	}
 	else
 	{
@@ -196,22 +196,22 @@ void WraithControl(short item_number)
 		dx = r->x + (r->y_size << 9) - item->pos.x_pos;
 		dz = r->z + (r->x_size << 9) - item->pos.z_pos;
 		dist = SQUARE(dx) + SQUARE(dz);
-		dy = ABS((dist >> 13) - 768);
+		dy = abs((dist >> 13) - 768);
 		y = r->y + ((r->minfloor - r->maxceiling) >> 1);
 	}
 
 	y = y - item->pos.y_pos - dy - 128;
 	rotY = short(phd_atan(dz, dx) - item->pos.y_rot);
 
-	if (ABS(dx) > ABS(dz))
-		rotX = short(phd_atan(ABS(dx) + (ABS(dz) >> 1), y));
+	if (abs(dx) > abs(dz))
+		rotX = short(phd_atan(abs(dx) + (abs(dz) >> 1), y));
 	else
-		rotX = short(phd_atan(ABS(dz) + (ABS(dx) >> 1), y));
+		rotX = short(phd_atan(abs(dz) + (abs(dx) >> 1), y));
 
 	rotX -= item->pos.x_rot;
 	speed = (WraithSpeed / item->speed) << 3;
 
-	if (ABS(rotY) < item->item_flags[2] && (rotY > 0 == item->item_flags[2] > 0))
+	if (abs(rotY) < item->item_flags[2] && (rotY > 0 == item->item_flags[2] > 0))
 		item->pos.y_rot += rotY;
 	else if (rotY >= 0)
 	{
@@ -231,7 +231,7 @@ void WraithControl(short item_number)
 		item->pos.y_rot += item->item_flags[2];
 	}
 
-	if (ABS(rotX) < item->item_flags[3] && (rotX > 0 == item->item_flags[3] > 0))
+	if (abs(rotX) < item->item_flags[3] && (rotX > 0 == item->item_flags[3] > 0))
 		item->pos.x_rot += rotX;
 	else if (rotX >= 0)
 	{
@@ -329,7 +329,7 @@ void WraithControl(short item_number)
 		}
 	}
 
-	if (dist < 28900 && ABS(item->pos.y_pos - target->pos.y_pos + 384) < 256)
+	if (dist < 28900 && abs(item->pos.y_pos - target->pos.y_pos + 384) < 256)
 	{
 		if (item->speed > 32)
 			item->speed -= 12;

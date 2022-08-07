@@ -1,6 +1,49 @@
 #include "../tomb4/pch.h"
 #include "laraskin.h"
 #include "objects.h"
+#include "delstuff.h"
+
+static uchar SkinJoints[14][4] =
+{
+	{ 0, 1, 1, 3 },
+	{ 1, 2, 4, 5 },
+	{ 2, 3, 6, 7 },
+	{ 0, 4, 2, 8 },
+	{ 4, 5, 9, 10 },
+	{ 5, 6, 11, 12 },
+	{ 7, 0, 13, 0 },
+	{ 7, 8, 14, 17 },
+	{ 8, 9, 18, 19 },
+	{ 9, 10, 20, 21 },
+	{ 7, 11, 15, 22 },
+	{ 11, 12, 23, 24 },
+	{ 12, 13, 25, 26 },
+	{ 14, 7, 27, 16 }
+};
+
+static char HairSkinVertNums[6][12] =
+{
+	{ 37, 38, 39, 40, -1, 0, 0, 0, 0, 0, 0, 0 },
+	{ 79, 77, 78, 76, -1, 0, 0, 0, 0, 0, 0, 0 },
+	{ 68, 71, 69, 70, -1, 0, 0, 0, 0, 0, 0, 0 },
+	{ 0, 1, 2, 3, -1, 0, 0, 0, 0, 0, 0, 0 },
+	{ 4, 5, 6, 7, -1, 0, 0, 0, 0, 0, 0, 0 },
+	{ 0, 3, 1, 2, -1, 0, 0, 0, 0, 0, 0, 0 }
+};
+
+static char HairScratchVertNums[3][12] =
+{
+	{ 0, 3, 1, 2, -1, 0, 0, 0, 0, 0, 0, 0 },
+	{ 4, 5, 6, 7, -1, 0, 0, 0, 0, 0, 0, 0 },
+	{ 0, 1, 2, 3, -1, 0, 0, 0, 0, 0, 0, 0 }
+};
+
+static PHD_VECTOR* SkinXYZPtr;
+static PHD_VECTOR BelowMeshXYZ;
+static PHD_VECTOR JointMeshXYZ;
+static PHD_VECTOR AboveMeshXYZ;
+static PHD_VECTOR XYZList[32];
+static uchar PointsToCalc[26][12];
 
 void PushXYZ()
 {
@@ -178,7 +221,7 @@ void CreateSkinningData()
 				laraZ = AboveMeshXYZ.z + LaraMesh[2];
 				LaraMesh += 3;
 
-				if (ABS(laraX - jointX) <= 1 && ABS(laraY - jointY) <= 1 && ABS(laraZ - jointZ) <= 1)
+				if (abs(laraX - jointX) <= 1 && abs(laraY - jointY) <= 1 && abs(laraZ - jointZ) <= 1)
 				{
 					vertCount++;
 					vertBuf[j] = 1;
@@ -210,7 +253,7 @@ void CreateSkinningData()
 				laraZ = BelowMeshXYZ.z + LaraMesh[2];
 				LaraMesh += 3;
 
-				if (ABS(laraX - jointX) <= 1 && ABS(laraY - jointY) <= 1 && ABS(laraZ - jointZ) <= 1)
+				if (abs(laraX - jointX) <= 1 && abs(laraY - jointY) <= 1 && abs(laraZ - jointZ) <= 1)
 				{
 					vertCount++;
 					vertBuf[j] = 1;

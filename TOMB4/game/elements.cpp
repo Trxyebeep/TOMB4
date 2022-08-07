@@ -90,7 +90,7 @@ void ElementPuzzleCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 		if (TestLaraPosition(ElementPuzzleBounds, item, l))
 		{
-			y = ABS(item->pos.y_pos - l->pos.y_pos);	//literally 0
+			y = abs(item->pos.y_pos - l->pos.y_pos);	//literally 0
 			l->anim_number = short((y >> 8) + ANIM_LIGHT_TORCH3);
 			l->frame_number = anims[l->anim_number].frame_base;
 			l->current_anim_state = AS_CONTROLLED;

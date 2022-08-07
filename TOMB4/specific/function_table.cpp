@@ -4,6 +4,8 @@
 #include "dxshell.h"
 #include "polyinsert.h"
 
+long CurrentFog;
+
 void SetFogColor(long r, long g, long b)
 {
 	r &= 0xFF;

@@ -401,7 +401,7 @@ void HarpyControl(short item_number)
 
 			if (info.ahead)
 			{
-				dy = ABS(enemy->pos.y_pos - item->pos.y_pos);
+				dy = abs(enemy->pos.y_pos - item->pos.y_pos);
 
 				if (dy <= 1024 && info.distance < 0x1C639)
 				{
@@ -479,7 +479,7 @@ void HarpyControl(short item_number)
 		case 5:
 			harpy->maximum_turn = 364;
 			item->goal_anim_state = 2;
-			dy = ABS(enemy->pos.y_pos - item->pos.y_pos);
+			dy = abs(enemy->pos.y_pos - item->pos.y_pos);
 
 			if (item->touch_bits & 0x14 || enemy && enemy != lara_item && dy <= 1024 && info.distance < 0x40000)
 			{
@@ -499,7 +499,7 @@ void HarpyControl(short item_number)
 
 			if (!harpy->flags)
 			{
-				dy = ABS(enemy->pos.y_pos - item->pos.y_pos);
+				dy = abs(enemy->pos.y_pos - item->pos.y_pos);
 
 				if (item->touch_bits & 0x300000 || enemy && enemy != lara_item && dy <= 1024 && info.distance < 0x40000)
 				{
