@@ -10,6 +10,7 @@
 #include "../game/text.h"
 #include "d3dmatrix.h"
 #include "dxsound.h"
+#include "../game/control.h"
 
 void ShowBinkFrame()
 {

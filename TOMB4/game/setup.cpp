@@ -56,6 +56,7 @@
 #include "scorpion.h"
 #include "footprnt.h"
 #include "guide.h"
+#include "control.h"
 
 void ObjectObjects()
 {

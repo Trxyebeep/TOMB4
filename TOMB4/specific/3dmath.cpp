@@ -2,6 +2,7 @@
 #include "3dmath.h"
 #include "d3dmatrix.h"
 #include "../game/spotcam.h"
+#include "../game/control.h"
 
 void phd_PushMatrix()
 {

@@ -3,6 +3,8 @@
 #include "../specific/LoadSave.h"
 #include "text.h"
 #include "newinv.h"
+#include "spotcam.h"
+#include "control.h"
 #ifdef ENEMY_BARS
 #include "../tomb4/tomb4.h"
 #include "objects.h"
@@ -13,7 +15,6 @@
 #ifdef GENERAL_FIXES
 #include "../specific/input.h"
 #endif
-#include "spotcam.h"
 
 long FlashIt()
 {

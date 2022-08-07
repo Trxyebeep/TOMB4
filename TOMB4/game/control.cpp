@@ -35,6 +35,54 @@
 #include "larafire.h"
 #include "rope.h"
 
+short* OutsideRoomOffsets;
+char* OutsideRoomTable;
+short IsRoomOutsideNo;
+
+MESH_INFO* SmashedMesh[16];
+short SmashedMeshRoom[16];
+short SmashedMeshCount = 0;
+
+long flip_stats[10];
+long flip_status;
+long flipeffect = -1;
+long fliptimer = 0;
+
+short* trigger_index;
+long tiltxoff;
+long tiltyoff;
+long OnObject;
+long height_type;
+
+long InItemControlLoop = 0;
+short ItemNewRooms[256][2];
+short ItemNewRoomNo = 0;
+
+uchar CurrentAtmosphere;
+uchar IsAtmospherePlaying;
+char cd_flags[128];
+
+ulong FmvSceneTriggered;
+long SetDebounce;
+long framecount = 0;
+long reset_flag = 0;
+long WeaponDelay = 0;
+short XSoff1;
+short XSoff2;
+short YSoff1;
+short YSoff2;
+short ZSoff1;
+short ZSoff2;
+char PoisonFlag;
+char TriggerTimer = 0;
+
+static PHD_VECTOR ClosestCoord;
+static long ClosestItem;
+static long ClosestDist;
+
+static long number_los_rooms = 0;
+static short los_rooms[20];
+
 #ifdef GENERAL_FIXES
 char DeathMenuActive;
 
@@ -265,8 +313,8 @@ long ControlPhase(long nframes, long demo_mode)
 		if (MainThread.ended)
 			return 4;
 
-		if (input & IN_LOOK && (lara_item->current_anim_state == 2 && lara_item->anim_number == 103 ||
-			(lara.IsDucked && input & IN_DUCK && lara_item->anim_number == 222 && lara_item->goal_anim_state == 71)))
+		if (input & IN_LOOK && (lara_item->current_anim_state == AS_STOP && lara_item->anim_number == ANIM_BREATH ||
+			(lara.IsDucked && input & IN_DUCK && lara_item->anim_number == ANIM_DUCKBREATHE && lara_item->goal_anim_state == AS_DUCK)))
 		{
 			if (!BinocularRange)
 			{
@@ -552,6 +600,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 	ITEM_INFO* camera_item;
 	long switch_off, flip, flip_available, neweffect, key, quad;
 	short camera_flags, camera_timer, type, trigger, value, flags, state;
+	static uchar HeavyTriggered;
 	char timer;
 
 	switch_off = 0;

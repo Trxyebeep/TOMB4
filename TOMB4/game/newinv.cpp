@@ -15,6 +15,7 @@
 #include "../specific/input.h"
 #include "health.h"
 #include "gameflow.h"
+#include "control.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif

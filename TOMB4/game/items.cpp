@@ -3,6 +3,7 @@
 #include "effect2.h"
 #include "objects.h"
 #include "../specific/function_stubs.h"
+#include "control.h"
 
 void InitialiseItemArray(short num)
 {

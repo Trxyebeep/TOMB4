@@ -16,6 +16,7 @@
 #include "../game/tomb4fx.h"
 #include "audio.h"
 #include "../game/spotcam.h"
+#include "../game/control.h"
 
 unsigned int __stdcall LoadLevel(void* name)
 {
