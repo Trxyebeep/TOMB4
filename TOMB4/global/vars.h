@@ -410,21 +410,6 @@
 #define DeadlyBounds	ARRAY_(0x00804840, long, [6])
 #define spark_dynamics	ARRAY_(0x00804800, SP_DYNAMIC, [8])
 
-
-/*Fog stuff*/
-#define NumFXFogBulbs	VAR_U_(0x00670CB8, long)
-#define NumActiveFogBulbs	VAR_U_(0x00670CAC, long)
-#define NumFogBulbsInRange	VAR_U_(0x00670CB4, long)
-#define NumLevelFogBulbs	VAR_U_(0x0052A348, long)
-#define GlobalFogOff	VAR_U_(0x004BF370, long)
-#define CurrentFog	VAR_U_(0x00533AEC, long)
-
-#define FogBulbs	ARRAY_(0x0052A350, FOGBULB_STRUCT, [20])
-#define FXFogBulbs	ARRAY_(0x00660AD0, FOGBULB_STRUCT, [5])
-#define ActiveFogBulbs	ARRAY_(0x00670C94, FOGBULB_STRUCT*, [5])
-#define FogTableColor	ARRAY_(0x004ADE1C, long, [28])
-
-
 /*VonCroy stuff*/
 #define bVoncroyCutScene	VAR_U_(0x007FE288, char)
 #define actualCameraPos	VAR_U_(0x0080ECF0, PHD_VECTOR)

@@ -18,6 +18,7 @@
 #include "../game/spotcam.h"
 #include "../game/control.h"
 #include "../game/camera.h"
+#include "polyinsert.h"
 
 unsigned int __stdcall LoadLevel(void* name)
 {

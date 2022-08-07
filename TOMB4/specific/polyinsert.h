@@ -33,3 +33,6 @@ void AddQuadSubdivide(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TE
 void CalcColorSplit(D3DCOLOR s, D3DCOLOR* r);
 void AddPrelitMMX(long prelight, D3DCOLOR* color);
 void CalcColorSplitMMX(D3DCOLOR s, D3DCOLOR* d);
+
+extern FOGBULB_STRUCT FogBulbs[20];
+extern long NumLevelFogBulbs;
