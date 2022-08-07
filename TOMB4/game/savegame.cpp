@@ -11,6 +11,7 @@
 #include "pickup.h"
 #include "clockworkbeetle.h"
 #include "spotcam.h"
+#include "../specific/function_stubs.h"
 
 long CheckSumValid(char* buffer)
 {

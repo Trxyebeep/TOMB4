@@ -1,6 +1,16 @@
 #include "../tomb4/pch.h"
 #include "function_stubs.h"
 
+char* malloc_buffer;
+char* malloc_ptr;
+long malloc_size;
+long malloc_free;
+
+static long malloc_used;
+
+static long rand_1 = 0xD371F947;
+static long rand_2 = 0xD371F947;
+
 void other_log(char* format, ...)
 {
 	va_list arglist;
