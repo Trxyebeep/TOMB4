@@ -7,6 +7,7 @@
 #include "d3dmatrix.h"
 #include "lighting.h"
 #include "../game/camera.h"
+#include "../game/draw.h"
 
 void ProjectVerts(long nVerts, D3DTLVERTEX* v, short* clip)
 {

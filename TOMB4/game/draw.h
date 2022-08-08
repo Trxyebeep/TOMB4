@@ -34,3 +34,23 @@ short* GetBestFrame(ITEM_INFO* item);
 void UpdateSkyLightning();
 void mRotBoundingBoxNoPersp(short* bounds, short* rotatedBounds);
 void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds);
+
+extern STATIC_INFO static_objects[];
+
+extern long* IMptr;
+extern long IM_rate;
+extern long IM_frac;
+extern long IMstack[indices_count * 64];
+
+extern long current_room;
+extern short no_rotation[12];
+
+extern long outside;
+
+extern short SkyPos;
+extern short SkyPos2;
+
+extern ushort LightningRGB[3];
+extern ushort LightningRGBs[3];
+extern short LightningCount;
+extern short dLightningRand;

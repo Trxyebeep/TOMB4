@@ -204,7 +204,7 @@ void DoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 
 				if (GLOBAL_inventoryitemchosen != CROWBAR_ITEM)
 				{
-					item->pos.y_rot ^= 32768;
+					item->pos.y_rot ^= 0x8000;
 					return;
 				}
 			}

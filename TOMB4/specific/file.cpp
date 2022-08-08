@@ -20,6 +20,7 @@
 #include "../game/camera.h"
 #include "polyinsert.h"
 #include "../game/box.h"
+#include "../game/draw.h"
 
 unsigned int __stdcall LoadLevel(void* name)
 {
@@ -722,7 +723,7 @@ bool LoadObjects()
 
 	Log(2, "LoadObjects");
 	memset(objects, 0, sizeof(objects));
-	memset(static_objects, 0, sizeof(static_objects));
+	memset(static_objects, 0, sizeof(STATIC_INFO) * NUMBER_STATIC_OBJECTS);
 
 	size = *(long*)FileData;
 	FileData += sizeof(long);

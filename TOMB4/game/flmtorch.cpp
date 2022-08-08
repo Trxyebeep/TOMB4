@@ -12,6 +12,7 @@
 #include "delstuff.h"
 #include "larafire.h"
 #include "../specific/3dmath.h"
+#include "draw.h"
 
 static short FireBounds[12] = { 0, 0, 0, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
