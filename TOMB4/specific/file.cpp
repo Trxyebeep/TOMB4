@@ -22,6 +22,7 @@
 #include "../game/box.h"
 #include "../game/draw.h"
 #include "../game/effect2.h"
+#include "../game/effects.h"
 
 unsigned int __stdcall LoadLevel(void* name)
 {

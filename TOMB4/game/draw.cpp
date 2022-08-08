@@ -22,6 +22,7 @@
 #include "items.h"
 #include "effect2.h"
 #include "camera.h"
+#include "effects.h"
 #ifdef FOOTPRINTS
 #include "footprnt.h"
 #endif
