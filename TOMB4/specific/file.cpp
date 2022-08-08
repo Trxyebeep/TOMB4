@@ -19,6 +19,7 @@
 #include "../game/control.h"
 #include "../game/camera.h"
 #include "polyinsert.h"
+#include "../game/box.h"
 
 unsigned int __stdcall LoadLevel(void* name)
 {

@@ -37,3 +37,8 @@ void GetAITarget(CREATURE_INFO* creature);
 short SameZone(CREATURE_INFO* creature, ITEM_INFO* target_item);
 void CreatureYRot(PHD_3DPOS* srcpos, short angle, short angadd);
 long MoveCreature3DPos(PHD_3DPOS* srcpos, struct PHD_3DPOS* destpos, long velocity, short angdif, long angadd);
+
+extern BOX_INFO* boxes;
+extern ushort* overlap;
+extern short* ground_zone[5][2];
+extern long num_boxes;

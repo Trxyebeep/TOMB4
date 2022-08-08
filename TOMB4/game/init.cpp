@@ -11,6 +11,7 @@
 #include "scarab.h"
 #include "../specific/3dmath.h"
 #include "debris.h"
+#include "box.h"
 
 void InitialiseMapper(short item_number)
 {
