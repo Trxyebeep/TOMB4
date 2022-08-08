@@ -311,9 +311,14 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 
 		if (item->after_death)
 		{
-			v[0].color = 0x80000000 - (item->after_death << 24);
-			v[1].color = v[0].color;
-			v[2].color = v[0].color;
+			if (tomb4.shadow_mode == 3)
+				v[2].color = 0xFF000000 - (item->after_death << 24);
+			else
+			{
+				v[0].color = 0x80000000 - (item->after_death << 24);
+				v[1].color = v[0].color;
+				v[2].color = v[0].color;
+			}
 		}
 
 		v[0].specular = 0xFF000000;
