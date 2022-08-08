@@ -13,6 +13,7 @@
 #include "debris.h"
 #include "box.h"
 #include "croc.h"
+#include "effect2.h"
 
 void InitialiseMapper(short item_number)
 {

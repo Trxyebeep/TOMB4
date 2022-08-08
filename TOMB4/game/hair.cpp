@@ -8,6 +8,7 @@
 #include "../specific/function_stubs.h"
 #include "../specific/output.h"
 #include "delstuff.h"
+#include "effect2.h"
 
 HAIR_STRUCT hairs[2][7];
 static long hair_wind = 0;

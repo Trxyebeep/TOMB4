@@ -11,6 +11,7 @@
 #include "../specific/function_stubs.h"
 #include "sphere.h"
 #include "camera.h"
+#include "effect2.h"
 
 BOX_INFO* boxes;
 ushort* overlap;

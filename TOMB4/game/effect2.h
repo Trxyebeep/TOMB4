@@ -31,3 +31,15 @@ void SetupSplash(SPLASH_SETUP* setup);
 void UpdateSplashes();
 
 extern DYNAMIC dynamics[MAX_DYNAMICS * 2];
+extern SPLASH_STRUCT splashes[4];
+extern RIPPLE_STRUCT ripples[16];
+extern SPLASH_SETUP splash_setup;
+extern SPARKS spark[256];
+extern long wibble;
+extern long SplashCount;
+extern long KillEverythingFlag;
+extern long SmokeCountL;
+extern long SmokeCountR;
+extern long SmokeWeapon;
+extern long SmokeWindX;
+extern long SmokeWindZ;

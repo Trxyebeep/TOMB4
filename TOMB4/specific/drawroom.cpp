@@ -8,6 +8,7 @@
 #include "lighting.h"
 #include "../game/camera.h"
 #include "../game/draw.h"
+#include "../game/effect2.h"
 
 void ProjectVerts(long nVerts, D3DTLVERTEX* v, short* clip)
 {
