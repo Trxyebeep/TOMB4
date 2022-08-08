@@ -12,6 +12,7 @@
 #include "../specific/3dmath.h"
 #include "debris.h"
 #include "box.h"
+#include "croc.h"
 
 void InitialiseMapper(short item_number)
 {
