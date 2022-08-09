@@ -352,19 +352,6 @@
 #define Scarabs	ARRAY_(0x0080ED00, SCARAB_STRUCT, [128])
 #define Map	ARRAY_(0x006734A8, MAP_STRUCT, [255])
 
-/*VonCroy stuff*/
-#define bVoncroyCutScene	VAR_U_(0x007FE288, char)
-#define actualCameraPos	VAR_U_(0x0080ECF0, PHD_VECTOR)
-#define actualCameraTarget	VAR_U_(0x0080ECE0, PHD_VECTOR)
-#define actualFOV	VAR_U_(0x0080ECD8, long)
-#define actualRoomNumber	VAR_U_(0x0080ECD4, long)
-
-#define VonCroyCutIndices	ARRAY_(0x004AD4D4, uchar, [68])				//indices for VonCroyCutscenes depending on lara.locationPad
-#define VonCroyCutscenes	ARRAY_(0x004AD518, VonCroyCutData, [15])
-#define VonCroyCutFlags	ARRAY_(0x007FE2A0, uchar, [64])					//flags cuts played
-#define VonCroyCutTracks	ARRAY_(0x004AD458, short, [62])
-
-
 /*Bink bs*/
 #define BinkSurfaceType	VAR_U_(0x007E6E00, long)
 #define BinkSurface	VAR_U_(0x007E6E04, LPDIRECTDRAWSURFACEX)

@@ -34,6 +34,7 @@
 #include "draw.h"
 #include "larafire.h"
 #include "rope.h"
+#include "voncroy.h"
 
 short* OutsideRoomOffsets;
 char* OutsideRoomTable;
