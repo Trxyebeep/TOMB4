@@ -11,6 +11,7 @@
 #include "d3dmatrix.h"
 #include "dxsound.h"
 #include "../game/control.h"
+#include "cmdline.h"
 
 void ShowBinkFrame()
 {

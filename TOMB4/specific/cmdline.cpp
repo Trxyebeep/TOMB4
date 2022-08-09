@@ -15,6 +15,16 @@ char ASCIIToANSITable[7][2] =
 	{'¢', 'ó'}
 };
 
+bool start_setup = 0;
+bool fmvs_disabled = 0;
+
+static long nDDDevice = 0;
+static long nD3DDevice = 0;
+static bool Filter = 1;
+static bool VolumetricFx = 0;
+static bool BumpMap = 0;
+static bool TextLow = 0;
+
 void CLSetup(char* cmd)
 {
 	Log(2, "CLSetup");
@@ -160,12 +170,12 @@ void InitResolution(HWND dlg, HWND hwnd, bool resetvms)
 	if (software)
 	{
 		EnableWindow(GetDlgItem(dlg, 1029), 0);
-		volumetric_fx = 0;
+		VolumetricFx = 0;
 	}
 	else
 		EnableWindow(GetDlgItem(dlg, 1029), 1);
 
-	SendMessage(GetDlgItem(dlg, 1029), BM_SETCHECK, volumetric_fx, 0);
+	SendMessage(GetDlgItem(dlg, 1029), BM_SETCHECK, VolumetricFx, 0);
 
 	if (software)
 	{
@@ -240,7 +250,7 @@ void InitDDDevice(HWND dlg, HWND hwnd)
 	}
 
 	nDDDevice = App.DXInfo.nDDInfo - 1;
-	SendMessage(hwnd, 0x14E, nDDDevice, 0);
+	SendMessage(hwnd, CB_SETCURSEL, nDDDevice, 0);
 	InitD3DDevice(dlg, GetDlgItem(dlg, 1003));
 }
 
@@ -447,9 +457,9 @@ BOOL CALLBACK DXSetupDlgProc(HWND dlg, UINT message, WPARAM wParam, LPARAM lPara
 			if (((wParam >> 16) & 0xFFFF) == BN_CLICKED)
 			{
 				if (SendMessage(GetDlgItem(dlg, 1029), BM_GETCHECK, 0, 0))
-					volumetric_fx = 1;
+					VolumetricFx = 1;
 				else
-					volumetric_fx = 0;
+					VolumetricFx = 0;
 
 				InitResolution(dlg, GetDlgItem(dlg, 1004), 0);
 			}
