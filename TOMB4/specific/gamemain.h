@@ -10,3 +10,9 @@ void init_water_table();
 bool GameInitialise();
 long S_SaveGame(long slot_num);
 long S_LoadGame(long slot_num);
+
+extern WATERTAB WaterTable[22][64];
+extern THREAD MainThread;
+extern float vert_wibble_table[32];
+extern long SaveCounter;
+extern short FPCW;

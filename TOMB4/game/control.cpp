@@ -35,6 +35,7 @@
 #include "larafire.h"
 #include "rope.h"
 #include "voncroy.h"
+#include "../specific/gamemain.h"
 #ifdef CUTSEQ_SKIPPER
 #include "../specific/dxshell.h"
 #endif

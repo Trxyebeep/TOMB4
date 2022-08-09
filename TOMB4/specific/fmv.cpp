@@ -12,6 +12,7 @@
 #include "dxsound.h"
 #include "../game/control.h"
 #include "cmdline.h"
+#include "gamemain.h"
 
 void ShowBinkFrame()
 {

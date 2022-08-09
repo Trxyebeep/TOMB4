@@ -15,6 +15,13 @@
 #endif
 #include "dxshell.h"
 
+WATERTAB WaterTable[22][64];
+THREAD MainThread;
+float vert_wibble_table[32];
+long SaveCounter;
+short FPCW;
+
+static float unused_vert_wibble_table[256];
 static uchar water_abs[4] = { 4, 8, 12, 16 };
 static short water_shimmer[4] = { 31, 63, 95, 127 };
 static short water_choppy[4] = { 16, 53, 90, 127 };

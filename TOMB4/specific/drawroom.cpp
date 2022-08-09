@@ -9,6 +9,7 @@
 #include "../game/camera.h"
 #include "../game/draw.h"
 #include "../game/effect2.h"
+#include "gamemain.h"
 
 void ProjectVerts(long nVerts, D3DTLVERTEX* v, short* clip)
 {
