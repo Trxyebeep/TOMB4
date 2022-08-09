@@ -9,15 +9,16 @@
 #include "effects.h"
 #include "rope.h"
 #include "../specific/audio.h"
-#ifdef GENERAL_FIXES
-#include "newinv.h"
-#include "../tomb4/tomb4.h"
-#endif
 #include "lara.h"
 #include "larasurf.h"
 #include "../specific/3dmath.h"
 #include "spotcam.h"
 #include "camera.h"
+#ifdef GENERAL_FIXES
+#include "newinv.h"
+#include "../specific/dxshell.h"
+#include "../tomb4/tomb4.h"
+#endif
 
 void LaraCheatGetStuff()
 {

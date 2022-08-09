@@ -26,6 +26,7 @@
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
+#include "../specific/dxshell.h"
 
 short CreditGroups[18] =
 {

@@ -35,6 +35,9 @@
 #include "larafire.h"
 #include "rope.h"
 #include "voncroy.h"
+#ifdef CUTSEQ_SKIPPER
+#include "../specific/dxshell.h"
+#endif
 
 short* OutsideRoomOffsets;
 char* OutsideRoomTable;

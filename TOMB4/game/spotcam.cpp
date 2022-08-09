@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "switch.h"
 #ifdef GENERAL_FIXES
+#include "../specific/dxshell.h"
 #include "../tomb4/tomb4.h"
 #endif
 

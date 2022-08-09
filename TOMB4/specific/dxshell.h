@@ -34,3 +34,9 @@ HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR
 const char* DXGetErrorString(HRESULT hr);
 void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance);
 
+extern DXPTR* G_dxptr;
+extern DXINFO* G_dxinfo;
+extern LPDIRECTDRAWX G_ddraw;
+extern LPDIRECT3DX G_d3d;
+extern HWND G_hwnd;
+extern char keymap[256];

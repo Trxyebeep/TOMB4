@@ -214,11 +214,6 @@
 #define SequenceResults	ARRAY_(0x007F5720, uchar, [3][3][3])
 #define Sequences	ARRAY_(0x007F573C, uchar, [3])
 #define KeyTriggerActive	VAR_U_(0x004BF3F8, char)
-#define G_dxptr	VAR_U_(0x007544F4, DXPTR*)
-#define G_dxinfo	VAR_U_(0x00754120, DXINFO*)
-#define G_ddraw	VAR_U_(0x0075411C, LPDIRECTDRAWX)
-#define G_d3d	VAR_U_(0x007541A4, LPDIRECT3DX)
-#define G_hwnd	VAR_U_(0x00754118, HWND)
 #define joy_fire	VAR_U_(0x0053589C, long)
 #define joy_x	VAR_U_(0x005358A0, long)
 #define joy_y	VAR_U_(0x005358A4, long)
@@ -272,8 +267,6 @@
 
 
 
-#define keymap	ARRAY_(0x007542EC, char, [256])
-#define keymap2	ARRAY_(0x007543EC, char, [256])
 #define Lightning	ARRAY_(0x007FFB20, LIGHTNING_STRUCT, [16])
 #define w2v_matrix	ARRAY_(0x00753CC8, long, [12])
 #define dels_handy_train_map	ARRAY_(0x004AFF9C, short, [512])
