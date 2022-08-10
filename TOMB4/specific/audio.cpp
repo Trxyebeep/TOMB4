@@ -121,10 +121,24 @@ const char* TrackFileNames[112] =
 	"103_a3_out_night.wav"
 };
 
+#pragma warning(push)
+#pragma warning(disable : 4838)	//long -> char truncation bullshit
+#pragma warning(disable : 4309)
+static char source_wav_format[50] =
+{
+	2, 0, 2, 0, 68, 172, 0, 0, 71, 173, 0, 0, 0, 8, 4, 0, 32, 0, 244, 7, 7, 0, 0, 1, 0, 0, 0,
+	2, 0, 255, 0, 0, 0, 0, 192, 0, 64, 0, 240, 0, 0, 0, 204, 1, 48, 255, 136, 1, 24, 255
+};
+#pragma warning(pop)
+
 HACMDRIVER hACMDriver;
 uchar* wav_file_buffer = 0;
 uchar* ADPCMBuffer = 0;
 bool acm_ready = 0;
+
+long XATrack = -1;
+long XAFlag = 7;
+static long XAReqTrack = 0;
 
 static LPDIRECTSOUNDBUFFER DSBuffer = 0;
 static LPDIRECTSOUNDNOTIFY DSNotify = 0;

@@ -5,6 +5,11 @@
 #include "../specific/function_stubs.h"
 #include "camera.h"
 
+SAMPLE_INFO* sample_infos;
+SoundSlot LaSlot[32];
+short* sample_lut;
+long sound_active = 0;
+
 void GetPanVolume(SoundSlot* slot)
 {
 	long dx, dy, dz, radius, distance, nPan, nVolume;
