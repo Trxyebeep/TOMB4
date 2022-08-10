@@ -35,7 +35,7 @@ bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 		return 1;
 
 	lastSPC = nSamplesPerSec;
-	pcfxFormat.wFormatTag = 1;
+	pcfxFormat.wFormatTag = WAVE_FORMAT_PCM;
 	pcfxFormat.nChannels = 2;
 	pcfxFormat.nSamplesPerSec = nSamplesPerSec;
 	pcfxFormat.nAvgBytesPerSec = 4 * nSamplesPerSec;
