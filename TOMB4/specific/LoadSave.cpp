@@ -813,9 +813,9 @@ void DoOptions()
 #endif
 
 		if (Gameflow->Language == GERMAN)
-			keyboard_buttons = GermanKeyboard;
+			keyboard_buttons = (char**)GermanKeyboard;
 		else
-			keyboard_buttons = KeyboardButtons;
+			keyboard_buttons = (char**)KeyboardButtons;
 
 		small_font = 1;
 		PrintString(phd_centerx >> 2, textY, selection & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Control_Method), 0);

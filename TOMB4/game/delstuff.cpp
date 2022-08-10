@@ -11,6 +11,7 @@
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
+#include "../specific/input.h"
 
 short* GLaraShadowframe;
 long lara_matrices[180];

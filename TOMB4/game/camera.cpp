@@ -8,6 +8,7 @@
 #include "sound.h"
 #include "deltapak.h"
 #include "draw.h"
+#include "../specific/input.h"
 #ifdef GENERAL_FIXES
 #include "effect2.h"
 #include "../tomb4/tomb4.h"

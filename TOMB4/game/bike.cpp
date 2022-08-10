@@ -22,6 +22,7 @@
 #include "debris.h"
 #include "lara.h"
 #include "jeep.h"
+#include "../specific/input.h"
 
 static ITEM_INFO* GlobalBikeItem;
 static long bikefspeed = 0;

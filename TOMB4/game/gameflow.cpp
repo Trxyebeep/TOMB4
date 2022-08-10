@@ -27,6 +27,7 @@
 #include "../tomb4/tomb4.h"
 #endif
 #include "../specific/dxshell.h"
+#include "../specific/input.h"
 
 short CreditGroups[18] =
 {

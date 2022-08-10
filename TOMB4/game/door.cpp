@@ -10,6 +10,7 @@
 #include "items.h"
 #include "sphere.h"
 #include "box.h"
+#include "../specific/input.h"
 
 #ifdef GENERAL_FIXES
 static PHD_VECTOR CrowbarDoorPos = { -412, 0, 140 };
