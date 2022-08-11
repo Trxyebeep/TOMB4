@@ -7,6 +7,7 @@
 long stash_font_height;
 long smol_font_height;
 #endif
+#include "../specific/texture.h"
 
 long small_font;
 
