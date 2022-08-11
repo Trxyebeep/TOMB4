@@ -1,6 +1,11 @@
 #include "../tomb4/pch.h"
 #include "function_stubs.h"
 
+PHD_VECTOR CamPos;
+PHD_VECTOR CamRot;
+
+long nPolyType;
+
 char* malloc_buffer;
 char* malloc_ptr;
 long malloc_size;

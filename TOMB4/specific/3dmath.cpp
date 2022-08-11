@@ -3,6 +3,7 @@
 #include "d3dmatrix.h"
 #include "../game/spotcam.h"
 #include "../game/control.h"
+#include "function_stubs.h"
 
 float one = 33554432.0F;
 float mone = 2048.0F;
