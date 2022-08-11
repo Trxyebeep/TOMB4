@@ -7,6 +7,7 @@
 #include "../game/control.h"
 #include "../game/camera.h"
 #include "LoadSave.h"
+#include "winmain.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #include "../game/spotcam.h"

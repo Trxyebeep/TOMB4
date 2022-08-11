@@ -24,6 +24,7 @@
 #include "../game/effect2.h"
 #include "../game/effects.h"
 #include "../game/sound.h"
+#include "winmain.h"
 
 unsigned int __stdcall LoadLevel(void* name)
 {

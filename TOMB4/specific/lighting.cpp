@@ -11,6 +11,7 @@
 #include "../game/camera.h"
 #include "function_table.h"
 #include "../game/draw.h"
+#include "winmain.h"
 
 long StaticMeshShade;
 long MaxRoomLights;

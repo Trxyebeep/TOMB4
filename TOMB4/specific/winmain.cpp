@@ -23,6 +23,10 @@ static COMMANDLINES commandlines[] =
 	{ "NOFMV", 0, &CLNoFMV }
 };
 
+WINAPP App;
+char* cutseqpakPtr;
+long resChangeCounter;
+
 bool WinRunCheck(LPSTR WindowName, LPSTR ClassName, HANDLE* mutex)
 {
 	HWND window;

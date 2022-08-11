@@ -2,6 +2,7 @@
 #include "texture.h"
 #include "dxshell.h"
 #include "function_stubs.h"
+#include "winmain.h"
 
 TEXTURE* Textures;
 long nTextures;

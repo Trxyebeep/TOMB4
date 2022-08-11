@@ -4,6 +4,7 @@
 #include "dxshell.h"
 #include "polyinsert.h"
 #include "3dmath.h"
+#include "winmain.h"
 
 void (*AddQuadSorted)(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
 void (*AddTriSorted)(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);

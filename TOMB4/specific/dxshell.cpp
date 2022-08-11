@@ -1,6 +1,7 @@
 #include "../tomb4/pch.h"
 #include "dxshell.h"
 #include "function_stubs.h"
+#include "winmain.h"
 
 long DDSCL_FLAGS[11] =	// for DXSetCooperativeLevel logging
 {

@@ -5,6 +5,7 @@
 #include "audio.h"
 #include "../game/sound.h"
 #include "LoadSave.h"
+#include "winmain.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)	//long -> char truncation bullshit
