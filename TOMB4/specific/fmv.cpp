@@ -13,6 +13,7 @@
 #include "../game/control.h"
 #include "cmdline.h"
 #include "gamemain.h"
+#include "LoadSave.h"
 
 void ShowBinkFrame()
 {

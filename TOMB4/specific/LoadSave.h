@@ -32,3 +32,10 @@ void DoSlider(long x, long y, long width, long height, long pos, long clr1, long
 void CheckKeyConflicts();
 long S_PauseMenu();
 long GetSaveLoadFiles();
+
+extern long sfx_frequencies[3];
+extern long SoundQuality;
+extern long MusicVolume;
+extern long SFXVolume;
+extern long ControlMethod;
+extern char MonoScreenOn;

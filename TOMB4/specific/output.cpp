@@ -19,6 +19,7 @@
 #include "../game/delstuff.h"
 #include "../game/camera.h"
 #include "gamemain.h"
+#include "LoadSave.h"
 #ifdef GENERAL_FIXES
 #include "../game/text.h"
 #include "../game/gameflow.h"

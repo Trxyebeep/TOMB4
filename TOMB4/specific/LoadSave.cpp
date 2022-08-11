@@ -29,6 +29,18 @@
 static long MonoScreenX[4] = { 0, 256, 512, 640 };
 static long MonoScreenY[3] = { 0, 256, 480 };
 
+long sfx_frequencies[3] = { 11025, 22050, 44100 };
+long SoundQuality = 1;
+long MusicVolume = 40;
+long SFXVolume = 80;
+long ControlMethod;
+char MonoScreenOn;
+
+static MONOSCREEN_STRUCT MonoScreen[5];
+static SAVEFILE_INFO SaveGames[15];
+static float loadbar_pos;
+static long loadbar_maxpos;
+
 #ifdef IMPROVED_BARS
 static GouraudBarColourSet healthBarColourSet =
 {

@@ -4,6 +4,7 @@
 #include "function_stubs.h"
 #include "dxshell.h"
 #include "../game/control.h"
+#include "LoadSave.h"
 
 const char* TrackFileNames[112] =
 {
