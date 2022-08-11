@@ -34,5 +34,11 @@ void CalcColorSplit(D3DCOLOR s, D3DCOLOR* r);
 void AddPrelitMMX(long prelight, D3DCOLOR* color);
 void CalcColorSplitMMX(D3DCOLOR s, D3DCOLOR* d);
 
+extern D3DTLBUMPVERTEX XYUVClipperBuffer[20];
+extern D3DTLBUMPVERTEX zClipperBuffer[20];
+
 extern FOGBULB_STRUCT FogBulbs[20];
 extern long NumLevelFogBulbs;
+
+extern SORTLIST* SortList[16384];
+extern long SortCount;
