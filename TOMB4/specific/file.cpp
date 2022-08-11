@@ -26,6 +26,10 @@
 #include "../game/sound.h"
 #include "winmain.h"
 
+TEXTURESTRUCT* textinfo;
+SPRITESTRUCT* spriteinfo;
+THREAD LevelLoadingThread;
+
 unsigned int __stdcall LoadLevel(void* name)
 {
 	OBJECT_INFO* obj;
@@ -214,6 +218,7 @@ bool FindCDDrive()
 	ulong drives, type;
 	char path[14];
 	char root[5];
+	static char cd_drive;
 
 	strcpy(path, "c:\\script.dat");
 	drives = GetLogicalDrives();

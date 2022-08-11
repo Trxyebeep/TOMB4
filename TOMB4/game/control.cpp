@@ -88,6 +88,8 @@ static long ClosestDist;
 static long number_los_rooms = 0;
 static short los_rooms[20];
 
+static short cdtrack = -1;
+
 #ifdef GENERAL_FIXES
 char DeathMenuActive;
 

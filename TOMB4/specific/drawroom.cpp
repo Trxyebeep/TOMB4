@@ -13,6 +13,20 @@
 #include "texture.h"
 #include "3dmath.h"
 #include "winmain.h"
+#include "file.h"
+
+MESH_DATA** mesh_vtxbuf;
+TEXTUREBUCKET Bucket[20];
+float clip_left;
+float clip_top;
+float clip_right;
+float clip_bottom;
+long bWaterEffect;
+long num_level_meshes;
+
+long water_color_R = 128;
+long water_color_G = 224;
+long water_color_B = 255;
 
 void ProjectVerts(long nVerts, D3DTLVERTEX* v, short* clip)
 {

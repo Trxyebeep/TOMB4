@@ -41,6 +41,8 @@ void LaraCheatGetStuff()
 
 void LaraCheatyBits()
 {
+	static short cheat_hit_points;
+
 #ifdef GENERAL_FIXES
 	if (!tomb4.cheats)
 		return;

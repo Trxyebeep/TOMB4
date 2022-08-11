@@ -546,6 +546,7 @@ long CollideStaticObjects(COLL_INFO* coll, long x, long y, long z, short room_nu
 void UpdateLaraRoom(ITEM_INFO* item, long height)
 {
 	FLOOR_INFO* floor;
+	static MAP_STRUCT Map[255];
 	long x, y, z;
 	short room_number;
 

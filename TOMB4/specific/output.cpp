@@ -27,9 +27,11 @@
 #include "../game/spotcam.h"
 #include "../game/effect2.h"
 #endif
+#include "file.h"
 
 D3DTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];
+long GlobalAlpha = 0xFF000000;
 
 void phd_PutPolygons(short* objptr, long clip)	//whore
 {

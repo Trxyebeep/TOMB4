@@ -80,6 +80,10 @@ long linput;
 long dbinput;
 long inputBusy;
 
+static long joy_x;
+static long joy_y;
+static long joy_fire;
+
 #ifdef GENERAL_FIXES
 short ammo_change_timer = 0;
 char ammo_change_buf[12];

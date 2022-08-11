@@ -40,5 +40,9 @@ extern D3DTLBUMPVERTEX zClipperBuffer[20];
 extern FOGBULB_STRUCT FogBulbs[20];
 extern long NumLevelFogBulbs;
 
+extern long nPolys;
+extern long nClippedPolys;
+extern long DrawPrimitiveCnt;
+
 extern SORTLIST* SortList[16384];
 extern long SortCount;

@@ -28,6 +28,10 @@ static long NumFXFogBulbs;
 static long NumActiveFogBulbs;
 static long NumFogBulbsInRange;
 
+long nPolys;
+long nClippedPolys;
+long DrawPrimitiveCnt;
+
 SORTLIST* SortList[16384];
 long SortCount;
 
