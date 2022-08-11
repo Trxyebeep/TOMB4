@@ -10,6 +10,7 @@
 #include "../specific/3dmath.h"
 #include "../tomb4/tomb4.h"
 #include "../specific/function_stubs.h"
+#include "../specific/gamemain.h"
 
 #define PRINT_HEIGHT_CORRECTION 128 // The maximum difference between the footprint and the floor
 #endif

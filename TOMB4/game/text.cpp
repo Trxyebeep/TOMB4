@@ -5,6 +5,7 @@
 #include "../specific/texture.h"
 #include "../specific/3dmath.h"
 #include "../specific/function_stubs.h"
+#include "../specific/gamemain.h"
 
 #ifdef GENERAL_FIXES
 long stash_font_height;

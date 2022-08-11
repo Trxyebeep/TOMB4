@@ -15,8 +15,10 @@
 #endif
 #include "dxshell.h"
 
+LPDIRECT3DVERTEXBUFFER DestVB;
 WATERTAB WaterTable[22][64];
 THREAD MainThread;
+short* clipflags;
 float vert_wibble_table[32];
 long SaveCounter;
 short FPCW;

@@ -14,6 +14,7 @@
 #include "texture.h"
 #include "3dmath.h"
 #include "winmain.h"
+#include "gamemain.h"
 
 D3DTLBUMPVERTEX XYUVClipperBuffer[20];
 D3DTLBUMPVERTEX zClipperBuffer[20];
