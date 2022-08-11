@@ -28,6 +28,7 @@
 #endif
 #include "../specific/dxshell.h"
 #include "../specific/input.h"
+#include "../specific/3dmath.h"
 
 short CreditGroups[18] =
 {

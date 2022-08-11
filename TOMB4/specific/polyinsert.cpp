@@ -12,6 +12,7 @@
 #include "../game/camera.h"
 #include "../game/effects.h"
 #include "texture.h"
+#include "3dmath.h"
 
 D3DTLBUMPVERTEX XYUVClipperBuffer[20];
 D3DTLBUMPVERTEX zClipperBuffer[20];

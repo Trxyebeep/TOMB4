@@ -5,6 +5,7 @@
 #include "newinv.h"
 #include "spotcam.h"
 #include "control.h"
+#include "../specific/3dmath.h"
 #ifdef ENEMY_BARS
 #include "../tomb4/tomb4.h"
 #include "objects.h"

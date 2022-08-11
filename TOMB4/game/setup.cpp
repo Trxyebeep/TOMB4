@@ -58,6 +58,7 @@
 #include "guide.h"
 #include "control.h"
 #include "camera.h"
+#include "../specific/3dmath.h"
 
 void ObjectObjects()
 {

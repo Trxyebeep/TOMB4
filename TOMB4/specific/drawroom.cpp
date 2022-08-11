@@ -11,6 +11,7 @@
 #include "../game/effect2.h"
 #include "gamemain.h"
 #include "texture.h"
+#include "3dmath.h"
 
 void ProjectVerts(long nVerts, D3DTLVERTEX* v, short* clip)
 {

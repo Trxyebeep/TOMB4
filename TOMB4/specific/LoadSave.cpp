@@ -19,12 +19,13 @@
 #include "function_stubs.h"
 #include "texture.h"
 #include "../game/newinv.h"
+#include "../game/camera.h"
+#include "3dmath.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #include "../game/control.h"
 #include "../tomb4/troyestuff.h"
 #endif
-#include "../game/camera.h"
 
 static long MonoScreenX[4] = { 0, 256, 512, 640 };
 static long MonoScreenY[3] = { 0, 256, 480 };

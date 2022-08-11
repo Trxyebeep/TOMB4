@@ -1,5 +1,6 @@
 #include "../tomb4/pch.h"
 #include "clipping.h"
+#include "3dmath.h"
 
 #define VertClip(result, v1, v2)\
 {\
