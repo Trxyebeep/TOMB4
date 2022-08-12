@@ -12,6 +12,7 @@
 #include "lara_states.h"
 #include "people.h"
 #include "camera.h"
+#include "effects.h"
 
 void TriggerDemigodMissile(PHD_3DPOS* pos, short room_number, short type)
 {

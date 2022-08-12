@@ -4,6 +4,7 @@
 #include "../specific/function_stubs.h"
 #include "tomb4fx.h"
 #include "../specific/3dmath.h"
+#include "draw.h"
 
 DEBRIS_STRUCT debris[256];
 long next_debris;

@@ -8,6 +8,8 @@
 #include "objects.h"
 #include "control.h"
 #include "lara_states.h"
+#include "../specific/input.h"
+#include "../specific/function_stubs.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif

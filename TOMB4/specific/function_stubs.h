@@ -16,6 +16,9 @@ void* game_malloc(long size);
 #define ClearFakeDevice	( (HRESULT(__cdecl*)(LPDIRECT3DDEVICEX, long, D3DRECT*, long, long, float, long)) 0x00494D20 )
 #define CreateFakeD3D	( (HRESULT(__cdecl*)()) 0x00494B50 )
 
+extern PHD_VECTOR CamPos;
+extern PHD_VECTOR CamRot;
+extern long nPolyType;
 extern char* malloc_buffer;
 extern char* malloc_ptr;
 extern long malloc_size;

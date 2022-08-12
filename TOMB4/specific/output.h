@@ -23,3 +23,5 @@ void S_OutputPolyList();
 void CalcVertsColorSplitMMX(long nVerts, D3DTLVERTEX* v);
 void StashSkinVertices(long node);
 void SkinVerticesToScratch(long node);
+
+extern long GlobalAlpha;

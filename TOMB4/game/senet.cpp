@@ -12,6 +12,7 @@
 #include "draw.h"
 #include "../specific/3dmath.h"
 #include "../specific/output.h"
+#include "../specific/input.h"
 
 static short GameStixBounds[12] = { -256, 256, -200, 200, -256, 256, -1820, 1820, -5460, 5460, 0, 0 };
 static PHD_VECTOR GameStixPos = { 0, 0, -100 };

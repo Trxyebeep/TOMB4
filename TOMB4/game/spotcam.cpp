@@ -6,8 +6,10 @@
 #include "camera.h"
 #include "switch.h"
 #ifdef GENERAL_FIXES
+#include "../specific/dxshell.h"
 #include "../tomb4/tomb4.h"
 #endif
+#include "../specific/input.h"
 
 SPOTCAM SpotCam[128];
 long bTrackCamInit = 0;

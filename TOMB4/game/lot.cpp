@@ -1,6 +1,7 @@
 #include "../tomb4/pch.h"
 #include "lot.h"
 #include "../specific/function_stubs.h"
+#include "box.h"
 
 void InitialiseLOTarray(long allocmem)
 {

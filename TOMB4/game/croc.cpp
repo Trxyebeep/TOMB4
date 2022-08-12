@@ -15,7 +15,10 @@
 #include "tomb4fx.h"
 #include "effect2.h"
 
+LOCUST_STRUCT Locusts[64];
+
 static BITE_INFO croc_bite = { 0, -100, 500, 9 };
+static long next_locust = 0;
 
 void InitialiseCroc(short item_number)
 {

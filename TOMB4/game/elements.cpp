@@ -11,6 +11,7 @@
 #include "../specific/function_stubs.h"
 #include "tomb4fx.h"
 #include "effect2.h"
+#include "../specific/input.h"
 
 short ElementPuzzleBounds[12] = { 0, 0, -64, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 

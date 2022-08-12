@@ -8,6 +8,7 @@
 #include "../specific/function_stubs.h"
 #include "effect2.h"
 #include "camera.h"
+#include "../specific/input.h"
 
 static PISTOL_DEF PistolTable[4] =
 {

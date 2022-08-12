@@ -13,3 +13,6 @@ void InitDDDevice(HWND dlg, HWND hwnd);
 char* MapASCIIToANSI(char* s, char* d);
 BOOL CALLBACK DXSetupDlgProc(HWND dlg, UINT message, WPARAM wParam, LPARAM lParam);
 bool DXSetupDialog();
+
+extern bool start_setup;
+extern bool fmvs_disabled;

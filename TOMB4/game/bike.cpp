@@ -22,6 +22,12 @@
 #include "debris.h"
 #include "lara.h"
 #include "jeep.h"
+#include "../specific/input.h"
+
+static ITEM_INFO* GlobalBikeItem;
+static long bikefspeed = 0;
+static short broomies[22];
+static char dont_exit_bike = 0;
 
 void InitialiseBike(short item_number)
 {

@@ -2,6 +2,10 @@
 #include "texture.h"
 #include "dxshell.h"
 #include "function_stubs.h"
+#include "winmain.h"
+
+TEXTURE* Textures;
+long nTextures;
 
 LPDIRECTDRAWSURFACEX CreateTexturePage(long w, long h, long MipMapCount, long* pSrc, rgbfunc RGBM, long format)
 {

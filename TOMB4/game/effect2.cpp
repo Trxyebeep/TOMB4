@@ -17,8 +17,23 @@
 #include "sound.h"
 
 DYNAMIC dynamics[MAX_DYNAMICS * 2];
+SPLASH_STRUCT splashes[4];
+RIPPLE_STRUCT ripples[16];
+SPLASH_SETUP splash_setup;
+SPARKS spark[256];
+long wibble = 0;
+long SplashCount = 0;
+long KillEverythingFlag = 0;
+long SmokeCountL;
+long SmokeCountR;
+long SmokeWeapon;
+long SmokeWindX;
+long SmokeWindZ;
 
+static SP_DYNAMIC spark_dynamics[8];
+static long DeadlyBounds[6];
 static long number_dynamics;
+static long next_spark = 0;
 
 void ControlSmokeEmitter(short item_number)
 {

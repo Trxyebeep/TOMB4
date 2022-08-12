@@ -13,6 +13,7 @@
 #include "spotcam.h"
 #include "../specific/function_stubs.h"
 #include "camera.h"
+#include "voncroy.h"
 
 long CheckSumValid(char* buffer)
 {

@@ -25,6 +25,8 @@
 #include "box.h"
 #include "switch.h"
 #include "camera.h"
+#include "draw.h"
+#include "../specific/input.h"
 
 void InitialiseJeep(short item_number)
 {

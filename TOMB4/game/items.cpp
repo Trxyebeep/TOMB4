@@ -4,6 +4,11 @@
 #include "objects.h"
 #include "../specific/function_stubs.h"
 #include "control.h"
+#include "effects.h"
+
+short next_fx_active;
+
+static short next_fx_free;
 
 void InitialiseItemArray(short num)
 {
