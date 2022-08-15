@@ -2474,8 +2474,8 @@ void ControlObelisk(short item_number)
 				d.y = item->pos.y_pos;
 				d.z = item->pos.z_pos + ((rad * phd_cos(item->pos.y_rot + 0x4000)) >> W2V_SHIFT);
 
-				if (ABS(s.x - lara_item->pos.x_pos) < 20480 && ABS(s.y - lara_item->pos.y_pos) < 20480 && ABS(s.z - lara_item->pos.z_pos) < 20480 &&
-					ABS(d.x - lara_item->pos.x_pos) < 20480 && ABS(d.y - lara_item->pos.y_pos) < 20480 && ABS(d.z - lara_item->pos.z_pos) < 20480)
+				if (abs(s.x - lara_item->pos.x_pos) < 20480 && abs(s.y - lara_item->pos.y_pos) < 20480 && abs(s.z - lara_item->pos.z_pos) < 20480 &&
+					abs(d.x - lara_item->pos.x_pos) < 20480 && abs(d.y - lara_item->pos.y_pos) < 20480 && abs(d.z - lara_item->pos.z_pos) < 20480)
 				{
 					if (!(GlobalCounter & 3))
 						TriggerLightning(&s, &d, (GetRandomControl() & 0x1F) + 32, RGBA(r, g, b, 24), 1, 32, 5);
@@ -2498,8 +2498,8 @@ void ControlObelisk(short item_number)
 				d.y = (GetRandomControl() & 0x3FF) + s.y - 512;
 				d.z = (GetRandomControl() & 0x3FF) + s.z - 512;
 
-				if (ABS(s.x - lara_item->pos.x_pos) < 20480 && ABS(s.y - lara_item->pos.y_pos) < 20480 && ABS(s.z - lara_item->pos.z_pos) < 20480 &&
-					ABS(d.x - lara_item->pos.x_pos) < 20480 && ABS(d.y - lara_item->pos.y_pos) < 20480 && ABS(d.z - lara_item->pos.z_pos) < 20480)
+				if (abs(s.x - lara_item->pos.x_pos) < 20480 && abs(s.y - lara_item->pos.y_pos) < 20480 && abs(s.z - lara_item->pos.z_pos) < 20480 &&
+					abs(d.x - lara_item->pos.x_pos) < 20480 && abs(d.y - lara_item->pos.y_pos) < 20480 && abs(d.z - lara_item->pos.z_pos) < 20480)
 				{
 					if (item->item_flags[2] != NO_ITEM)
 					{
