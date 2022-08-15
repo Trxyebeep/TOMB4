@@ -101,6 +101,7 @@
 #include "../game/skeleton.h"
 #include "../game/scorpion.h"
 #include "../game/guide.h"
+#include "../game/horse.h"
 
 HINSTANCE hinstance = NULL;
 
@@ -221,6 +222,7 @@ void inject_all(bool replace)
 	inject_skelly(replace);
 	inject_scorpion(replace);
 	inject_guide(replace);
+	inject_horse(replace);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

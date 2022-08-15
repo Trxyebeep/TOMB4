@@ -529,10 +529,10 @@ x for functions decompiled but not injected, for one reason or another.
 
 		game/horse.cpp
 
-0x00408080		InitialiseHorseman
-0x004080E0		HorsemanControl
-0x00408E00		TriggerHorsemanRicochets
-0x00409010		InitialiseHorse
+0x00408080	+	InitialiseHorseman
+0x004080E0	+	HorsemanControl
+0x00408E00	+	TriggerHorsemanRicochets
+0x00409010	+	InitialiseHorse
 
 
 		game/init.cpp
