@@ -58,6 +58,7 @@
 #include "guide.h"
 #include "control.h"
 #include "camera.h"
+#include "horse.h"
 #include "../specific/3dmath.h"
 
 void ObjectObjects()
@@ -387,7 +388,7 @@ void ObjectObjects()
 
 	obj = &objects[OBELISK];
 	obj->initialise = InitialiseObelisk;
-//	obj->control = ControlObelisk;
+	obj->control = ControlObelisk;
 	obj->collision = ObjectCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
@@ -1190,8 +1191,8 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseHorseman;
-//		obj->control = HorsemanControl;
+		obj->initialise = InitialiseHorseman;
+		obj->control = HorsemanControl;
 		obj->collision = CreatureCollision;
 		obj->shadow_size = 128;
 		obj->hit_points = 25;
@@ -1620,7 +1621,7 @@ void BaddyObjects()
 
 	if (obj->loaded)
 	{
-//		obj->initialise = InitialiseHorse;
+		obj->initialise = InitialiseHorse;
 		obj->collision = ObjectCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;

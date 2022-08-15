@@ -16,6 +16,7 @@
 #include "collide.h"
 #include "delstuff.h"
 #include "switch.h"
+#include "deltapak.h"
 #include "camera.h"
 #include "../specific/input.h"
 
@@ -2431,6 +2432,154 @@ void TrapDoorControl(short item_number)
 		CloseTrapDoor(item);
 }
 
+void ControlObelisk(short item_number)
+{
+	ITEM_INFO* item;
+	ITEM_INFO* pulley;
+	ITEM_INFO* pyramid;
+	ITEM_INFO* disc;
+	PHD_VECTOR s;
+	PHD_VECTOR d;
+	long stop, rad;
+	short r, g, b;
+
+	item = &items[item_number];
+
+	if (TriggerActive(item))
+	{
+		if (item->item_flags[3] > 346)
+			return;
+
+		item->item_flags[3]++;
+		r = (GetRandomControl() & 0x1F) + 224;
+		g = r - (GetRandomControl() & 0x1F) - 32;
+		b = g - (GetRandomControl() & 0x1F) - 128;
+
+		if (!(GlobalCounter & 1))
+		{
+			rad = 0x2000;
+
+			if (item->item_flags[3] >= 256 || GetRandomControl() & 1)
+			{
+				if (item->item_flags[3] < 256 && !(GlobalCounter & 3))
+				{
+					SoundEffect(SFX_ELEC_ONE_SHOT, &item->pos, SFX_DEFAULT);
+					rad = (GetRandomControl() & 0xFFF) + 3456;
+				}
+
+				s.x = item->pos.x_pos + ((3456 * phd_sin(item->pos.y_rot + 0x4000)) >> W2V_SHIFT);
+				s.y = item->pos.y_pos - 256;
+				s.z = item->pos.z_pos + ((3456 * phd_cos(item->pos.y_rot + 0x4000)) >> W2V_SHIFT);
+
+				d.x = item->pos.x_pos + ((rad * phd_sin(item->pos.y_rot + 0x4000)) >> W2V_SHIFT);
+				d.y = item->pos.y_pos;
+				d.z = item->pos.z_pos + ((rad * phd_cos(item->pos.y_rot + 0x4000)) >> W2V_SHIFT);
+
+				if (abs(s.x - lara_item->pos.x_pos) < 20480 && abs(s.y - lara_item->pos.y_pos) < 20480 && abs(s.z - lara_item->pos.z_pos) < 20480 &&
+					abs(d.x - lara_item->pos.x_pos) < 20480 && abs(d.y - lara_item->pos.y_pos) < 20480 && abs(d.z - lara_item->pos.z_pos) < 20480)
+				{
+					if (!(GlobalCounter & 3))
+						TriggerLightning(&s, &d, (GetRandomControl() & 0x1F) + 32, RGBA(r, g, b, 24), 1, 32, 5);
+
+					TriggerLightningGlow(s.x, s.y, s.z, RGBA(r, g, b, 48));
+				}
+			}
+		}
+
+		if (item->item_flags[3] >= 256 && item->trigger_flags == 2)
+		{
+			s.x = item->pos.x_pos + ((0x2000 * phd_sin(item->pos.y_rot + 0x4000)) >> W2V_SHIFT);
+			s.y = item->pos.y_pos;
+			s.z = item->pos.z_pos + ((0x2000 * phd_cos(item->pos.y_rot + 0x4000)) >> W2V_SHIFT);
+			SoundEffect(SFX_ELEC_ARCING_LOOP, (PHD_3DPOS*)&s, SFX_DEFAULT);
+
+			if (GlobalCounter & 1)
+			{
+				d.x = (GetRandomControl() & 0x3FF) + s.x - 512;
+				d.y = (GetRandomControl() & 0x3FF) + s.y - 512;
+				d.z = (GetRandomControl() & 0x3FF) + s.z - 512;
+
+				if (abs(s.x - lara_item->pos.x_pos) < 20480 && abs(s.y - lara_item->pos.y_pos) < 20480 && abs(s.z - lara_item->pos.z_pos) < 20480 &&
+					abs(d.x - lara_item->pos.x_pos) < 20480 && abs(d.y - lara_item->pos.y_pos) < 20480 && abs(d.z - lara_item->pos.z_pos) < 20480)
+				{
+					if (item->item_flags[2] != NO_ITEM)
+					{
+						pyramid = &items[item->item_flags[2]];
+						ExplodeItemNode(pyramid, 0, 0, 128);
+						KillItem(item->item_flags[2]);
+						TriggerExplosionSparks(s.x, s.y, s.z, 3, -2, 0, pyramid->room_number);
+						TriggerExplosionSparks(s.x, s.y, s.z, 3, -1, 0, pyramid->room_number);
+						item->item_flags[2] = NO_ITEM;
+
+						disc = find_a_fucking_item(PUZZLE_ITEM1_COMBO1);
+						disc->status = ITEM_INACTIVE;	//hmm
+						SoundEffect(SFX_EXPLOSION1, &disc->pos, SFX_DEFAULT);
+						SoundEffect(SFX_EXPLOSION2, &disc->pos, SFX_DEFAULT);
+					}
+
+					TriggerLightning(&s, &d, (GetRandomControl() & 0xF) + 16, RGBA(r, g, b, 24), 3, 24, 3);
+					TriggerLightningGlow(s.x, s.y, s.z, RGBA(r, g, b, 64));
+				}
+			}
+		}
+	}
+	else
+	{
+		AnimateItem(item);
+		stop = 0;
+
+		if (item->anim_number == objects[item->object_number].anim_index + 2)	//done going counter-clockwise
+		{
+			item->pos.y_rot -= 0x4000;
+
+			if (input & IN_ACTION)
+			{
+				item->anim_number = objects[item->object_number].anim_index + 1;
+				item->frame_number = anims[item->anim_number].frame_base;
+			}
+			else
+				stop = 1;
+		}
+
+		if (item->anim_number == objects[item->object_number].anim_index + 6)	//done going clockwise
+		{
+			item->pos.y_rot += 0x4000;
+
+			if (input & IN_ACTION)
+			{
+				item->anim_number = objects[item->object_number].anim_index + 5;
+				item->frame_number = anims[item->anim_number].frame_base;
+			}
+			else
+				stop = 1;
+		}
+
+		if (stop)
+		{
+			item->anim_number = objects[item->object_number].anim_index + 3;
+			item->frame_number = anims[item->anim_number].frame_base;
+		}
+
+		if (item->trigger_flags == 2)
+		{
+			for (int i = 0; i < level_items; i++)
+			{
+				pulley = &items[i];
+
+				if (pulley->object_number == PULLEY)
+				{
+					if (item->pos.y_rot == -0x4000 && items[item->item_flags[0]].pos.y_rot == 0x4000 && !items[item->item_flags[1]].pos.y_rot)
+						pulley->item_flags[1] = 0;
+					else
+						pulley->item_flags[1] = 1;
+
+					break;
+				}
+			}
+		}
+	}
+}
+
 void inject_traps(bool replace)
 {
 	INJECT(0x004142F0, FlameEmitterControl, replace);
@@ -2483,4 +2632,5 @@ void inject_traps(bool replace)
 	INJECT(0x00413750, OpenTrapDoor, replace);
 	INJECT(0x004135A0, CloseTrapDoor, replace);
 	INJECT(0x004136C0, TrapDoorControl, replace);
+	INJECT(0x004174A0, ControlObelisk, replace);
 }

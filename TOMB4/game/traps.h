@@ -55,3 +55,4 @@ void FloorTrapDoorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void OpenTrapDoor(ITEM_INFO* item);
 void CloseTrapDoor(ITEM_INFO* item);
 void TrapDoorControl(short item_number);
+void ControlObelisk(short item_number);

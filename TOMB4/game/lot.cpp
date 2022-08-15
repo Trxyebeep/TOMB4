@@ -1,6 +1,7 @@
 #include "../tomb4/pch.h"
 #include "lot.h"
 #include "../specific/function_stubs.h"
+#include "objects.h"
 #include "box.h"
 
 void InitialiseLOTarray(long allocmem)
@@ -107,10 +108,117 @@ void CreateZone(ITEM_INFO* item)
 	}
 }
 
+void InitialiseSlot(short item_number, long slot)
+{
+	ITEM_INFO* item;
+	CREATURE_INFO* creature;
+
+	creature = &baddie_slots[slot];
+	item = &items[item_number];
+	item->data = creature;
+	creature->item_num = item_number;
+	creature->mood = BORED_MOOD;
+	creature->joint_rotation[0] = 0;
+	creature->joint_rotation[1] = 0;
+	creature->joint_rotation[2] = 0;
+	creature->joint_rotation[3] = 0;
+	creature->alerted = 0;
+	creature->head_left = 0;
+	creature->head_right = 0;
+	creature->reached_goal = 0;
+	creature->hurt_by_lara = 0;
+	creature->patrol2 = 0;
+	creature->jump_ahead = 0;
+	creature->monkey_ahead = 0;
+	creature->LOT.can_jump = 0;
+	creature->LOT.can_monkey = 0;
+	creature->LOT.is_jumping = 0;
+	creature->LOT.is_monkeying = 0;
+	creature->maximum_turn = 182;
+	creature->flags = 0;
+	creature->enemy = 0;
+	creature->LOT.step = 256;
+	creature->LOT.drop = -512;
+	creature->LOT.block_mask = 0x4000;
+	creature->LOT.fly = 0;
+	creature->LOT.zone = BASIC_ZONE;
+
+	switch (item->object_number)
+	{
+	case ENEMY_JEEP:
+	case VON_CROY:
+	case RAGHEAD:
+	case SUPER_RAGHEAD:
+		creature->LOT.step = 1024;
+		creature->LOT.drop = -1024;
+		creature->LOT.can_jump = 1;
+		creature->LOT.can_monkey = 1;
+		creature->LOT.zone = HUMAN_ZONE;
+		break;
+
+	case GUIDE:
+	case MUMMY:
+	case SPHINX:
+	case HORSEMAN:
+	case SCORPION:
+	case TROOPS:
+	case KNIGHTS_TEMPLAR:
+	case MUTANT:
+	case WILD_BOAR:
+	case DEMIGOD1:
+	case DEMIGOD2:
+	case DEMIGOD3:
+	case FUCKED_UP_DOG:
+		creature->LOT.step = 256;
+		creature->LOT.drop = -512;
+		creature->LOT.zone = BASIC_ZONE;
+		break;
+
+	case SKELETON:
+	case SETHA:
+		creature->LOT.step = 256;
+		creature->LOT.drop = -512;
+		creature->LOT.can_jump = 1;
+		creature->LOT.zone = SKELLY_ZONE;
+		break;
+
+	case CROCODILE:
+		creature->LOT.step = 20480;
+		creature->LOT.drop = -20480;
+		creature->LOT.fly = 32;
+		creature->LOT.zone = CROC_ZONE;
+		break;
+
+	case BAT:
+		creature->LOT.step = 20480;
+		creature->LOT.drop = -20480;
+		creature->LOT.fly = 16;
+		creature->LOT.zone = FLYER_ZONE;
+		break;
+
+	case HARPY:
+	case BIG_BEETLE:
+	case HAMMERHEAD:
+		creature->LOT.step = 20480;
+		creature->LOT.drop = -20480;
+		creature->LOT.fly = 32;
+		creature->LOT.zone = FLYER_ZONE;
+		break;
+	}
+
+	ClearLOT(&creature->LOT);
+
+	if (item_number != lara.item_number)
+		CreateZone(item);
+
+	slots_used++;
+}
+
 void inject_lot(bool replace)
 {
 	INJECT(0x00455200, InitialiseLOTarray, replace);
 	INJECT(0x00455270, DisableBaddieAI, replace);
 	INJECT(0x004557B0, ClearLOT, replace);
 	INJECT(0x004556A0, CreateZone, replace);
+	INJECT(0x00455470, InitialiseSlot, replace);
 }
