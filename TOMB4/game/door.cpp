@@ -9,6 +9,8 @@
 #include "sound.h"
 #include "items.h"
 #include "sphere.h"
+#include "box.h"
+#include "../specific/input.h"
 
 #ifdef GENERAL_FIXES
 static PHD_VECTOR CrowbarDoorPos = { -412, 0, 140 };
@@ -203,7 +205,7 @@ void DoorCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 
 				if (GLOBAL_inventoryitemchosen != CROWBAR_ITEM)
 				{
-					item->pos.y_rot ^= 32768;
+					item->pos.y_rot ^= 0x8000;
 					return;
 				}
 			}

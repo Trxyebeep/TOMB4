@@ -21,10 +21,54 @@
 #include "health.h"
 #include "items.h"
 #include "effect2.h"
+#include "camera.h"
+#include "effects.h"
 #ifdef FOOTPRINTS
 #include "footprnt.h"
 #endif
-#include "camera.h"
+
+static BITE_INFO EnemyBites[2] =
+{
+	{0, -40, 272, 7},
+	{0, -20, 180, 11}
+};
+
+STATIC_INFO static_objects[NUMBER_STATIC_OBJECTS];
+
+long* IMptr;
+long IM_rate;
+long IM_frac;
+long IMstack[indices_count * 64];
+
+long current_room;
+short no_rotation[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+long outside;
+
+short SkyPos;
+short SkyPos2;
+
+ushort LightningRGB[3];
+ushort LightningRGBs[3];
+short LightningCount;
+short dLightningRand;
+
+static short LightningRand;
+static short LightningSFXDelay = 0;
+
+static long outside_top;
+static long outside_left;
+static long outside_right;
+static long outside_bottom;
+
+static long draw_room_list[128];
+static long room_list_start = 0;
+static long room_list_end = 0;
+static long number_draw_rooms;
+static short draw_rooms[100];
+static short ClipRoomNum;
+
+static long camera_underwater;
 
 void InitInterpolate(long frac, long rate)
 {
@@ -132,7 +176,7 @@ void gar_RotYXZsuperpack(short** pprot, long skip)
 	{
 		prot = (ushort*)*pprot;
 
-		if (*prot & 0xC000)
+		if (prot[0] & 0xC000)
 			*pprot += 1;
 		else
 			*pprot += 2;
@@ -142,19 +186,23 @@ void gar_RotYXZsuperpack(short** pprot, long skip)
 
 	prot = (ushort*)*pprot;
 
-	if (*prot >> W2V_SHIFT)
+	switch (prot[0] >> 14)
 	{
-		if ((*prot >> W2V_SHIFT) == 1)
-			phd_RotX((short)((*prot & 4095) << 4));
-		else if ((*prot >> W2V_SHIFT) == 2)
-			phd_RotY((short)((*prot & 4095) << 4));
-		else
-			phd_RotZ((short)((*prot & 4095) << 4));
-	}
-	else
-	{
-		phd_RotYXZpack(((ushort) * *pprot << (W2V_SHIFT + 2)) + (ushort)(*pprot)[1]);
+	case 0:
+		phd_RotYXZpack((prot[0] << 16) + prot[1]);
 		++*pprot;
+		break;
+		
+	case 1:
+		phd_RotX(short((prot[0] & 0xFFF) << 4));
+		break;
+
+	case 2:
+		phd_RotY(short((prot[0] & 0xFFF) << 4));
+		break;
+
+	default:
+		phd_RotZ(short((prot[0] & 0xFFF) << 4));
 	}
 
 	++*pprot;

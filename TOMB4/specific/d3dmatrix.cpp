@@ -1,6 +1,8 @@
 #include "../tomb4/pch.h"
 #include "d3dmatrix.h"
 #include "dxshell.h"
+#include "3dmath.h"
+#include "winmain.h"
 
 D3DMATRIX D3DMView;
 

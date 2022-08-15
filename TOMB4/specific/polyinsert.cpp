@@ -11,16 +11,33 @@
 #include "../game/newinv.h"
 #include "../game/camera.h"
 #include "../game/effects.h"
+#include "texture.h"
+#include "3dmath.h"
+#include "winmain.h"
+#include "gamemain.h"
+
+D3DTLBUMPVERTEX XYUVClipperBuffer[20];
+D3DTLBUMPVERTEX zClipperBuffer[20];
 
 FOGBULB_STRUCT FogBulbs[20];
 long NumLevelFogBulbs;
 
 static FOGBULB_STRUCT* ActiveFogBulbs[5];
 static FOGBULB_STRUCT FXFogBulbs[5];
-
 static long NumFXFogBulbs;
 static long NumActiveFogBulbs;
 static long NumFogBulbsInRange;
+
+long nPolys;
+long nClippedPolys;
+long DrawPrimitiveCnt;
+
+SORTLIST* SortList[16384];
+long SortCount;
+
+static char SortBuffer[655360];
+static SORTLIST** pSortList;
+static char* pSortBuffer;
 
 static long rgb80h = 0x808080;
 static long rgbmask = 0xFFFFFFFF;

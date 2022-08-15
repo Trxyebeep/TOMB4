@@ -7,6 +7,7 @@
 #include "control.h"
 #include "items.h"
 #include "camera.h"
+#include "draw.h"
 
 void DrawTrainObjects()
 {

@@ -7,6 +7,7 @@
 #include "../specific/3dmath.h"
 #include "control.h"
 #include "../specific/output.h"
+#include "effect2.h"
 
 static BITE_INFO beetle_bite = { 0, 0, 0, 12 };
 

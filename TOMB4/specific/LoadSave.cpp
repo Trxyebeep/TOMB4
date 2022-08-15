@@ -19,15 +19,28 @@
 #include "function_stubs.h"
 #include "texture.h"
 #include "../game/newinv.h"
+#include "../game/camera.h"
+#include "3dmath.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #include "../game/control.h"
 #include "../tomb4/troyestuff.h"
 #endif
-#include "../game/camera.h"
 
 static long MonoScreenX[4] = { 0, 256, 512, 640 };
 static long MonoScreenY[3] = { 0, 256, 480 };
+
+long sfx_frequencies[3] = { 11025, 22050, 44100 };
+long SoundQuality = 1;
+long MusicVolume = 40;
+long SFXVolume = 80;
+long ControlMethod;
+char MonoScreenOn;
+
+static MONOSCREEN_STRUCT MonoScreen[5];
+static SAVEFILE_INFO SaveGames[15];
+static float loadbar_pos;
+static long loadbar_maxpos;
 
 #ifdef IMPROVED_BARS
 static GouraudBarColourSet healthBarColourSet =
@@ -813,9 +826,9 @@ void DoOptions()
 #endif
 
 		if (Gameflow->Language == GERMAN)
-			keyboard_buttons = GermanKeyboard;
+			keyboard_buttons = (char**)GermanKeyboard;
 		else
-			keyboard_buttons = KeyboardButtons;
+			keyboard_buttons = (char**)KeyboardButtons;
 
 		small_font = 1;
 		PrintString(phd_centerx >> 2, textY, selection & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Control_Method), 0);

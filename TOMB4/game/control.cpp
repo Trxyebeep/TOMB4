@@ -34,6 +34,11 @@
 #include "draw.h"
 #include "larafire.h"
 #include "rope.h"
+#include "voncroy.h"
+#include "../specific/gamemain.h"
+#ifdef CUTSEQ_SKIPPER
+#include "../specific/dxshell.h"
+#endif
 
 short* OutsideRoomOffsets;
 char* OutsideRoomTable;
@@ -82,6 +87,8 @@ static long ClosestDist;
 
 static long number_los_rooms = 0;
 static short los_rooms[20];
+
+static short cdtrack = -1;
 
 #ifdef GENERAL_FIXES
 char DeathMenuActive;

@@ -14,12 +14,16 @@
 #include "../game/rope.h"
 #include "../game/tomb4fx.h"
 #include "../game/camera.h"
+#include "../game/effect2.h"
+#include "gamemain.h"
 
 #ifdef SMOOTH_SHADOWS
 #include "../tomb4/tomb4.h"
 
 #define CIRCUMFERENCE_POINTS 32 // Number of points in the circumference
 #endif
+#include "texture.h"
+#include "file.h"
 
 #define LINE_POINTS	4	//number of points in each grid line
 #define POINT_HEIGHT_CORRECTION	196	//if the difference between the floor below Lara and the floor height below the point is greater than this value, point height is corrected to lara's floor level.
@@ -183,6 +187,8 @@ uchar SplashLinks[347]
 	0, 0, 0, 0
 };
 
+static WATER_DUST uwdust[256];
+
 #ifdef SMOOTH_SHADOWS
 static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 {
@@ -311,9 +317,14 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 
 		if (item->after_death)
 		{
-			v[0].color = 0x80000000 - (item->after_death << 24);
-			v[1].color = v[0].color;
-			v[2].color = v[0].color;
+			if (tomb4.shadow_mode == 3)
+				v[2].color = 0xFF000000 - (item->after_death << 24);
+			else
+			{
+				v[0].color = 0x80000000 - (item->after_death << 24);
+				v[1].color = v[0].color;
+				v[2].color = v[0].color;
+			}
 		}
 
 		v[0].specular = 0xFF000000;

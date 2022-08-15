@@ -17,6 +17,7 @@
 #include "items.h"
 #include "flmtorch.h"
 #include "camera.h"
+#include "../specific/input.h"
 
 static short HoldStates[] =
 {

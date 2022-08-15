@@ -1,10 +1,17 @@
 #include "../tomb4/pch.h"
 #include "registry.h"
 #include "LoadSave.h"
+#include "cmdline.h"
+#include "input.h"
+#include "winmain.h"
+
+static HKEY phkResult;
+static DWORD dwDisposition;
+static bool REG_Setup;
 
 bool REG_OpenKey(LPCSTR lpSubKey)
 {
-	return RegCreateKeyEx(HKEY_CURRENT_USER, lpSubKey, 0, lpClass, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, 0, &phkResult, &dwDisposition) == ERROR_SUCCESS;
+	return RegCreateKeyEx(HKEY_CURRENT_USER, lpSubKey, 0, (CHAR*)"", REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, 0, &phkResult, &dwDisposition) == ERROR_SUCCESS;
 }
 
 bool OpenRegistry(LPCSTR SubKeyName)

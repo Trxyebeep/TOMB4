@@ -9,15 +9,17 @@
 #include "effects.h"
 #include "rope.h"
 #include "../specific/audio.h"
-#ifdef GENERAL_FIXES
-#include "newinv.h"
-#include "../tomb4/tomb4.h"
-#endif
 #include "lara.h"
 #include "larasurf.h"
 #include "../specific/3dmath.h"
 #include "spotcam.h"
 #include "camera.h"
+#ifdef GENERAL_FIXES
+#include "newinv.h"
+#include "../specific/dxshell.h"
+#include "../tomb4/tomb4.h"
+#endif
+#include "../specific/input.h"
 
 void LaraCheatGetStuff()
 {
@@ -39,6 +41,8 @@ void LaraCheatGetStuff()
 
 void LaraCheatyBits()
 {
+	static short cheat_hit_points;
+
 #ifdef GENERAL_FIXES
 	if (!tomb4.cheats)
 		return;

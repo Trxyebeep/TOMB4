@@ -19,6 +19,16 @@
 #include "../game/control.h"
 #include "../game/camera.h"
 #include "polyinsert.h"
+#include "../game/box.h"
+#include "../game/draw.h"
+#include "../game/effect2.h"
+#include "../game/effects.h"
+#include "../game/sound.h"
+#include "winmain.h"
+
+TEXTURESTRUCT* textinfo;
+SPRITESTRUCT* spriteinfo;
+THREAD LevelLoadingThread;
 
 unsigned int __stdcall LoadLevel(void* name)
 {
@@ -208,6 +218,7 @@ bool FindCDDrive()
 	ulong drives, type;
 	char path[14];
 	char root[5];
+	static char cd_drive;
 
 	strcpy(path, "c:\\script.dat");
 	drives = GetLogicalDrives();
@@ -721,7 +732,7 @@ bool LoadObjects()
 
 	Log(2, "LoadObjects");
 	memset(objects, 0, sizeof(objects));
-	memset(static_objects, 0, sizeof(static_objects));
+	memset(static_objects, 0, sizeof(STATIC_INFO) * NUMBER_STATIC_OBJECTS);
 
 	size = *(long*)FileData;
 	FileData += sizeof(long);

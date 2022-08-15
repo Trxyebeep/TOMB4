@@ -20,7 +20,10 @@
 #include "../specific/dxsound.h"
 #include "camera.h"
 
+FX_INFO* effects;
+OBJECT_VECTOR* sound_effects;
 long GlobalFogOff = 0;
+long number_sound_effects;
 
 long FogTableColor[28] =
 {

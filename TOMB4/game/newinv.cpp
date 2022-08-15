@@ -16,10 +16,12 @@
 #include "health.h"
 #include "gameflow.h"
 #include "control.h"
+#include "camera.h"
+#include "../specific/dxshell.h"
+#include "../specific/gamemain.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
-#include "camera.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)	//long -> char truncation bullshit

@@ -12,6 +12,7 @@
 #include "../specific/specificfx.h"
 #include "effect2.h"
 #include "sphere.h"
+#include "effects.h"
 
 NODEOFFSET_INFO NodeOffsets[16] =
 {

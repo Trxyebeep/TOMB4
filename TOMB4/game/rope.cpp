@@ -6,6 +6,7 @@
 #include "control.h"
 #include "lara_states.h"
 #include "lara.h"
+#include "../specific/input.h"
 
 static PENDULUM NullPendulum = { {0, 0, 0}, {0, 0, 0}, 0, 0 };
 

@@ -17,6 +17,9 @@
 #include "winmain.h"
 #include "../game/tomb4fx.h"
 #include "../game/delstuff.h"
+#include "../game/camera.h"
+#include "gamemain.h"
+#include "LoadSave.h"
 #ifdef GENERAL_FIXES
 #include "../game/text.h"
 #include "../game/gameflow.h"
@@ -24,10 +27,11 @@
 #include "../game/spotcam.h"
 #include "../game/effect2.h"
 #endif
-#include "../game/camera.h"
+#include "file.h"
 
 D3DTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];
+long GlobalAlpha = 0xFF000000;
 
 void phd_PutPolygons(short* objptr, long clip)	//whore
 {

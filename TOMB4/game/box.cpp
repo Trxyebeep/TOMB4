@@ -11,6 +11,12 @@
 #include "../specific/function_stubs.h"
 #include "sphere.h"
 #include "camera.h"
+#include "effect2.h"
+
+BOX_INFO* boxes;
+ushort* overlap;
+short* ground_zone[5][2];
+long num_boxes;
 
 void CreatureDie(short item_number, long explode)
 {
@@ -948,7 +954,6 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 	if (floor->box == 2047 || !LOT->is_jumping &&
 		(zone[item->box_number] != zone[floor->box] || height - box_height > LOT->step || height - box_height < LOT->drop))
 	{
-		//
 		wx = item->pos.x_pos >> 10;
 		wz = item->pos.z_pos >> 10;
 

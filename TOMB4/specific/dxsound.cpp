@@ -3,6 +3,19 @@
 #include "dxshell.h"
 #include "function_stubs.h"
 #include "audio.h"
+#include "../game/sound.h"
+#include "LoadSave.h"
+#include "winmain.h"
+
+#pragma warning(push)
+#pragma warning(disable : 4838)	//long -> char truncation bullshit
+#pragma warning(disable : 4309)
+static char source_pcm_format[50] =
+{
+	2, 0, 1, 0, 34, 86, 0, 0, 147, 43, 0, 0, 0, 2, 4, 0, 32, 0, 244, 3, 7, 0, 0, 1, 0, 0, 0, 2, 0, 255, 0, 0,
+	0, 0, 192, 0, 64, 0, 240, 0, 0, 0, 204, 1, 48, 255, 136, 1, 24, 255
+};
+#pragma warning(pop)
 
 char* samples_buffer;
 
@@ -24,7 +37,7 @@ bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 		return 1;
 
 	lastSPC = nSamplesPerSec;
-	pcfxFormat.wFormatTag = 1;
+	pcfxFormat.wFormatTag = WAVE_FORMAT_PCM;
 	pcfxFormat.nChannels = 2;
 	pcfxFormat.nSamplesPerSec = nSamplesPerSec;
 	pcfxFormat.nAvgBytesPerSec = 4 * nSamplesPerSec;
