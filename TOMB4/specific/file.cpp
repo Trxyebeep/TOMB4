@@ -27,6 +27,7 @@
 #include "winmain.h"
 #include "../game/lara.h"
 #include "output.h"
+#include "../game/gameflow.h"
 
 TEXTURESTRUCT* textinfo;
 SPRITESTRUCT* spriteinfo;

@@ -21,10 +21,11 @@
 #include "delstuff.h"
 #include "camera.h"
 #include "../specific/input.h"
+#include "debris.h"
+#include "gameflow.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
-#include "debris.h"
 
 void(*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 {

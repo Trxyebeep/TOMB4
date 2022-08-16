@@ -62,6 +62,7 @@
 #include "../specific/3dmath.h"
 #include "lara.h"
 #include "deltapak.h"
+#include "gameflow.h"
 
 void ObjectObjects()
 {

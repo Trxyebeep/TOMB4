@@ -4,6 +4,7 @@
 #include "../specific/dxsound.h"
 #include "../specific/function_stubs.h"
 #include "camera.h"
+#include "gameflow.h"
 
 SAMPLE_INFO* sample_infos;
 SoundSlot LaSlot[32];

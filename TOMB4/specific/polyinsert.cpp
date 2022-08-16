@@ -15,6 +15,7 @@
 #include "3dmath.h"
 #include "winmain.h"
 #include "gamemain.h"
+#include "../game/gameflow.h"
 
 D3DTLBUMPVERTEX XYUVClipperBuffer[20];
 D3DTLBUMPVERTEX zClipperBuffer[20];

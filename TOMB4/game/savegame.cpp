@@ -20,6 +20,7 @@
 #include "senet.h"
 #include "switch.h"
 #include "rope.h"
+#include "gameflow.h"
 
 SAVEGAME_INFO savegame;
 

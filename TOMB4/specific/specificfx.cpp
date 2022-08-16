@@ -25,6 +25,7 @@
 #include "texture.h"
 #include "file.h"
 #include "../game/lara.h"
+#include "../game/gameflow.h"
 
 #define LINE_POINTS	4	//number of points in each grid line
 #define POINT_HEIGHT_CORRECTION	196	//if the difference between the floor below Lara and the floor height below the point is greater than this value, point height is corrected to lara's floor level.

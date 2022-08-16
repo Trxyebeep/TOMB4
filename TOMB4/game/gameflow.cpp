@@ -107,6 +107,57 @@ const char* CreditsTable[]
 #endif
 };
 
+GAMEFLOW* Gameflow;
+PHD_VECTOR gfLoadCam;
+PHD_VECTOR gfLoadTarget;
+uchar gfLoadRoom = 255;
+PHD_VECTOR gfLensFlare;
+CVECTOR gfLensFlareColour;
+CVECTOR gfFog = { 0, 0, 0, 0 };
+CVECTOR gfLayer1Col;
+CVECTOR gfLayer2Col;
+ushort* gfStringOffset;
+ushort* gfFilenameOffset;
+uchar* gfScriptFile;
+uchar* gfLanguageFile;
+char* gfStringWad;
+char* gfFilenameWad;
+long gfMirrorZPlane;
+long gfStatus = 0;
+ushort gfLevelFlags;
+uchar gfCurrentLevel;
+uchar gfLevelComplete;
+uchar gfGameMode = 1;
+uchar gfMirrorRoom;
+uchar gfNumMips = 0;
+uchar gfRequiredStartPos;
+uchar gfMips[8];
+uchar gfLevelNames[40];
+char gfUVRotate;
+char gfLayer1Vel;
+char gfLayer2Vel;
+
+ulong GameTimer;
+uchar bDoCredits = 0;
+char DEL_playingamefmv = 0;
+char skipped_level = 0;
+char Chris_Menu = 0;
+char title_controls_locked_out;
+
+static ushort* gfScriptOffset;
+static uchar* gfScriptWad = 0;
+static char* gfExtensions = 0;
+static long nFrames = 1;
+static uchar gfLegend;
+static uchar gfLegendTime = 0;
+static uchar gfInitialiseGame = 1;
+static uchar gfResetHubDest;
+static uchar gfCutNumber = 0;
+static uchar gfResidentCut[4];
+
+static char fmv_to_play[2] = { 0, 0 };
+static char num_fmvs = 0;
+
 void DoGameflow()
 {
 	uchar* gf;
@@ -343,13 +394,13 @@ void DoGameflow()
 			break;
 
 		case CMD_CAMERA:
-			load_cam.x = (gf[3] << 24) | (gf[2] << 16) | (gf[1] << 8) | gf[0];
-			load_cam.y = (gf[7] << 24) | (gf[6] << 16) | (gf[5] << 8) | gf[4];
-			load_cam.z = (gf[11] << 24) | (gf[10] << 16) | (gf[9] << 8) | gf[8];
-			load_target.x = (gf[15] << 24) | (gf[14] << 16) | (gf[13] << 8) | gf[12];
-			load_target.y = (gf[19] << 24) | (gf[18] << 16) | (gf[17] << 8) | gf[16];
-			load_target.z = (gf[23] << 24) | (gf[22] << 16) | (gf[21] << 8) | gf[20];
-			load_roomnum = gf[24];
+			gfLoadCam.x = (gf[3] << 24) | (gf[2] << 16) | (gf[1] << 8) | gf[0];
+			gfLoadCam.y = (gf[7] << 24) | (gf[6] << 16) | (gf[5] << 8) | gf[4];
+			gfLoadCam.z = (gf[11] << 24) | (gf[10] << 16) | (gf[9] << 8) | gf[8];
+			gfLoadTarget.x = (gf[15] << 24) | (gf[14] << 16) | (gf[13] << 8) | gf[12];
+			gfLoadTarget.y = (gf[19] << 24) | (gf[18] << 16) | (gf[17] << 8) | gf[16];
+			gfLoadTarget.z = (gf[23] << 24) | (gf[22] << 16) | (gf[21] << 8) | gf[20];
+			gfLoadRoom = gf[24];
 			gf += 25;
 			break;
 

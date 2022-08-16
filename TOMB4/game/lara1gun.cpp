@@ -22,6 +22,7 @@
 #include "../specific/input.h"
 #include "lara.h"
 #include "savegame.h"
+#include "gameflow.h"
 
 void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item)
 {

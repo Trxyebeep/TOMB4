@@ -493,21 +493,21 @@ void RenderLoadPic(long unused)
 {
 	short poisoned;
 
-	camera.pos.y = load_cam.y;
-	camera.pos.x = load_cam.x;
-	camera.pos.z = load_cam.z;
+	camera.pos.y = gfLoadCam.y;
+	camera.pos.x = gfLoadCam.x;
+	camera.pos.z = gfLoadCam.z;
 	lara_item->pos.x_pos = camera.pos.x;
 	lara_item->pos.y_pos = camera.pos.y;
 	lara_item->pos.z_pos = camera.pos.z;
-	camera.target.x = load_target.x;
-	camera.target.y = load_target.y;
-	camera.target.z = load_target.z;
-	camera.pos.room_number = load_roomnum;
+	camera.target.x = gfLoadTarget.x;
+	camera.target.y = gfLoadTarget.y;
+	camera.target.z = gfLoadTarget.z;
+	camera.pos.room_number = gfLoadRoom;
 #ifdef GENERAL_FIXES
-	camera.underwater = room[load_roomnum].flags & ROOM_UNDERWATER;
+	camera.underwater = room[gfLoadRoom].flags & ROOM_UNDERWATER;
 #endif
 
-	if (load_roomnum == 255)
+	if (gfLoadRoom == 255)
 		return;
 
 	KillActiveBaddies((ITEM_INFO*)0xABCDEF);

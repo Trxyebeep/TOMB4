@@ -8,6 +8,7 @@
 #include "../specific/3dmath.h"
 #include "camera.h"
 #include "tomb4fx.h"
+#include "gameflow.h"
 
 void ControlPulseLight(short item_number)
 {

@@ -9,14 +9,15 @@
 #include "items.h"
 #include "control.h"
 #include "collide.h"
-#ifdef GENERAL_FIXES
-#include "draw.h"
-#endif
 #include "lara_states.h"
 #include "sound.h"
 #include "larafire.h"
 #include "lara.h"
 #include "debris.h"
+#include "gameflow.h"
+#ifdef GENERAL_FIXES
+#include "draw.h"
+#endif
 
 void DrawFlareInAir(ITEM_INFO* item)
 {

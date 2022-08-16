@@ -9,6 +9,7 @@
 #include "camera.h"
 #include "draw.h"
 #include "lara.h"
+#include "gameflow.h"
 
 static short dels_handy_train_map[256] =	//test me
 {

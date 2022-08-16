@@ -21,6 +21,7 @@
 #include "lara.h"
 #include "savegame.h"
 #include "lot.h"
+#include "gameflow.h"
 
 WEAPON_INFO weapons[9] =
 {

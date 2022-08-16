@@ -9,6 +9,43 @@ void DoTitle(uchar Name, uchar Audio);
 void LoadGameflow();
 long DoCredits();
 
+extern GAMEFLOW* Gameflow;
+extern PHD_VECTOR gfLoadCam;
+extern PHD_VECTOR gfLoadTarget;
+extern uchar gfLoadRoom;
+extern PHD_VECTOR gfLensFlare;
+extern CVECTOR gfLensFlareColour;
+extern CVECTOR gfFog;
+extern CVECTOR gfLayer1Col;
+extern CVECTOR gfLayer2Col;
+extern ushort* gfStringOffset;
+extern ushort* gfFilenameOffset;
+extern uchar* gfScriptFile;
+extern uchar* gfLanguageFile;
+extern char* gfStringWad;
+extern char* gfFilenameWad;
+extern long gfMirrorZPlane;
+extern long gfStatus;
+extern ushort gfLevelFlags;
+extern uchar gfCurrentLevel;
+extern uchar gfLevelComplete;
+extern uchar gfGameMode;
+extern uchar gfMirrorRoom;
+extern uchar gfNumMips;
+extern uchar gfRequiredStartPos;
+extern uchar gfMips[8];
+extern uchar gfLevelNames[40];
+extern char gfUVRotate;
+extern char gfLayer1Vel;
+extern char gfLayer2Vel;
+
+extern ulong GameTimer;
+extern uchar bDoCredits;
+extern char DEL_playingamefmv;
+extern char skipped_level;
+extern char Chris_Menu;
+extern char title_controls_locked_out;
+
 enum gf_commands
 {
 	CMD_FMV = 0x80,

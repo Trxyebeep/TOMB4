@@ -27,6 +27,7 @@
 #include "footprnt.h"
 #endif
 #include "lara.h"
+#include "gameflow.h"
 
 static BITE_INFO EnemyBites[2] =
 {

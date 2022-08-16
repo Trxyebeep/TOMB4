@@ -2,6 +2,7 @@
 #include "laraskin.h"
 #include "objects.h"
 #include "delstuff.h"
+#include "gameflow.h"
 
 static uchar SkinJoints[14][4] =
 {

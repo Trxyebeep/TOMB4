@@ -14,6 +14,7 @@
 #include "sphere.h"
 #include "effects.h"
 #include "lara.h"
+#include "gameflow.h"
 
 NODEOFFSET_INFO NodeOffsets[16] =
 {

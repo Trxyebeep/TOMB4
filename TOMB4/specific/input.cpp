@@ -8,12 +8,13 @@
 #include "../game/camera.h"
 #include "LoadSave.h"
 #include "winmain.h"
+#include "../game/lara.h"
+#include "../game/savegame.h"
+#include "../game/gameflow.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #include "../game/spotcam.h"
 #endif
-#include "../game/lara.h"
-#include "../game/savegame.h"
 
 const char* KeyboardButtons[272] =
 {

@@ -10,6 +10,7 @@
 #include "delstuff.h"
 #include "effect2.h"
 #include "lara.h"
+#include "gameflow.h"
 
 HAIR_STRUCT hairs[2][7];
 static long hair_wind = 0;

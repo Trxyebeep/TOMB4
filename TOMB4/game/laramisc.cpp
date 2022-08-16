@@ -21,6 +21,7 @@
 #endif
 #include "../specific/input.h"
 #include "savegame.h"
+#include "gameflow.h"
 
 COLL_INFO mycoll;
 
