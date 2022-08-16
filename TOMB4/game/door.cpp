@@ -13,6 +13,7 @@
 #include "../specific/input.h"
 #include "lara.h"
 #include "switch.h"
+#include "lot.h"
 
 #ifdef GENERAL_FIXES
 static PHD_VECTOR CrowbarDoorPos = { -412, 0, 140 };

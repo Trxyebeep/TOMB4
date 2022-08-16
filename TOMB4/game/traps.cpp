@@ -80,6 +80,8 @@ static PHD_VECTOR CeilingTrapDoorPos = { 0, 1056, -480 };
 static short FloorTrapDoorBounds[12] = { -256, 256, 0, 0, -1024, -256, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short CeilingTrapDoorBounds[12] = { -256, 256, 0, 900, -768, -256, -1820, 1820, -5460, 5460, -1820, 1820 };
 
+char LibraryTab[8];
+
 void FlameEmitterControl(short item_number)
 {
 	ITEM_INFO* item;

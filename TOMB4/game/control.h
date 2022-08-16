@@ -69,6 +69,7 @@ extern uchar IsAtmospherePlaying;
 extern char cd_flags[128];
 
 extern ulong FmvSceneTriggered;
+extern ulong CutSceneTriggered;
 extern long SetDebounce;
 extern long framecount;
 extern long reset_flag;
@@ -83,6 +84,7 @@ extern short YSoff1;
 extern short YSoff2;
 extern short ZSoff1;
 extern short ZSoff2;
+extern short FXType;
 extern char PoisonFlag;
 extern char TriggerTimer;
 extern char LaserSightActive;

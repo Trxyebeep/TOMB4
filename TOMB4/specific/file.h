@@ -31,3 +31,6 @@ bool Decompress(char* pDest, char* pCompressed, long compressedSize, long size);
 extern TEXTURESTRUCT* textinfo;
 extern SPRITESTRUCT* spriteinfo;
 extern THREAD LevelLoadingThread;
+
+extern TEXTURESTRUCT* AnimatingWaterfalls[3];
+extern long AnimatingWaterfallsV[3];

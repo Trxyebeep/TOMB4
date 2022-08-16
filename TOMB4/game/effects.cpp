@@ -21,6 +21,7 @@
 #include "camera.h"
 #include "lara.h"
 #include "savegame.h"
+#include "pickup.h"
 
 FX_INFO* effects;
 OBJECT_VECTOR* sound_effects;

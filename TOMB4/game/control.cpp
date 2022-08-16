@@ -75,6 +75,7 @@ uchar IsAtmospherePlaying;
 char cd_flags[128];
 
 ulong FmvSceneTriggered;
+ulong CutSceneTriggered;
 long SetDebounce;
 long framecount = 0;
 long reset_flag = 0;
@@ -89,6 +90,7 @@ short YSoff1;
 short YSoff2;
 short ZSoff1;
 short ZSoff2;
+short FXType;
 char PoisonFlag;
 char TriggerTimer = 0;
 char LaserSightActive = 0;

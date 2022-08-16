@@ -56,3 +56,5 @@ void OpenTrapDoor(ITEM_INFO* item);
 void CloseTrapDoor(ITEM_INFO* item);
 void TrapDoorControl(short item_number);
 void ControlObelisk(short item_number);
+
+extern char LibraryTab[8];

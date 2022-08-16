@@ -26,10 +26,14 @@
 #include "../game/sound.h"
 #include "winmain.h"
 #include "../game/lara.h"
+#include "output.h"
 
 TEXTURESTRUCT* textinfo;
 SPRITESTRUCT* spriteinfo;
 THREAD LevelLoadingThread;
+
+TEXTURESTRUCT* AnimatingWaterfalls[3];
+long AnimatingWaterfallsV[3];
 
 unsigned int __stdcall LoadLevel(void* name)
 {

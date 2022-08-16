@@ -7,6 +7,10 @@
 #include "lara.h"
 #include "control.h"
 
+CREATURE_INFO* baddie_slots;
+
+static long slots_used = 0;
+
 void InitialiseLOTarray(long allocmem)
 {
 	CREATURE_INFO* creature;

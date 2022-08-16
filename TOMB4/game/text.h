@@ -15,4 +15,5 @@ extern long smol_font_height;
 #endif
 
 extern long small_font;
+extern long font_height;
 extern long GnFrameCounter;

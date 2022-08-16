@@ -8,8 +8,10 @@
 #include "lara.h"
 
 short next_fx_active;
+short next_item_active;
 
 static short next_fx_free;
+static short next_item_free;
 
 void InitialiseItemArray(short num)
 {

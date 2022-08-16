@@ -17,3 +17,4 @@ void PuzzleHoleCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll);
 
 extern uchar NumRPickups;
 extern uchar RPickups[16];
+extern char KeyTriggerActive;

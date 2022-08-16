@@ -188,7 +188,15 @@ uchar SplashLinks[347]
 	0, 0, 0, 0
 };
 
+MESH_DATA* targetMeshP;
+long DoFade;
+
+static MESH_DATA* binocsMeshP;
 static WATER_DUST uwdust[256];
+static long FadeVal;
+static long FadeStep;
+static long FadeCnt;
+static long FadeEnd;
 
 #ifdef SMOOTH_SHADOWS
 static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)

@@ -9,6 +9,7 @@
 #include "people.h"
 #include "lara.h"
 #include "control.h"
+#include "lot.h"
 
 static BITE_INFO troop_gun = { 0, 300, 64, 7 };
 

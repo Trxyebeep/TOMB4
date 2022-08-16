@@ -10,9 +10,56 @@
 #include "draw.h"
 #include "lara.h"
 
+static short dels_handy_train_map[256] =	//test me
+{
+	36, 0, 36, 0, 36, 0, 37, 0, 38, 0, 39, 0, 36, 0, 37,
+	0, 38, 0, 38, 0, 38, 0, 39, 0, 37, 0, 38, 0, 39, 0,
+	36, 0, 36, 0, 36, 0, 36, 0, 36, 0, 37, 0, 39, 0, 36,
+	0, 36, 0, 37, 0, 38, 0, 38, 0, 39, 0, 36, 0, 36, 0,
+	37, 0, 39, 0, 36, 0, 36, 0, 36, 0, 37, 0, 38, 0, 39,
+	0, 36, 0, 37, 0, 38, 0, 38, 0, 38, 0, 39, 0, 37, 0,
+	38, 0, 39, 0, 36, 0, 36, 0, 36, 0, 36, 0, 36, 0, 37,
+	0, 39, 0, 36, 0, 36, 0, 37, 0, 38, 0, 38, 0, 39, 0,
+	36, 0, 36, 0, 37, 0, 39, 0, 38, 0, 37, 0, 36, 0, 39,
+	0, 37, 0, 36, 0, 36, 0, 36, 0, 39, 0, 38, 0, 38, 0,
+	38, 0, 38, 0, 37, 0, 36, 0, 39, 0, 38, 0, 38, 0, 37,
+	0, 39, 0, 38, 0, 38, 0, 38, 0, 38, 0, 38, 0, 38, 0,
+	37, 0, 36, 0, 36, 0, 36, 0, 39, 0, 38, 0, 38, 0, 37,
+	0, 36, 0, 39, 0, 37, 0, 36, 0, 36, 0, 36, 0, 39, 0,
+	38, 0, 38, 0, 38, 0, 38, 0, 37, 0, 36, 0, 39, 0, 38,
+	0, 38, 0, 37, 0, 39, 0, 38, 0, 38, 0, 38, 0, 38, 0,
+	38, 0, 38, 0, 37, 0, 36, 0, 36, 0, 36, 0, 39, 0, 38, 0
+};
+
+static char dels_handy_train_map2[256] =	//and me
+{
+	22, 0, 0, 16, -1, -1, 0, 0, -1, -1, 0, 0, 20,
+	0, 0, 244, -1, -1, 0, 0, -1, -1, 0, 0, -1, -1,
+	0, 0, 20, 0, 0, 16, -1, -1, 0, 0, -1, -1, 0, 0,
+	-1, -1, 0, 0, -1, -1, 0, 0, -1, -1, 0, 0, 20,
+	0, 0, 244, -1, -1, 0, 0, -1, -1, 0, 0, -1, -1,
+	0, 0, 20, 0, 0, 16, -1, -1, 0, 0, 23, 0, 0, 244, -1,
+	-1, 0, 0, 20, 0, 0, 244, -1, -1, 0, 0, -1, -1,
+	0, 0, 20, 0, 0, 16, -1, -1, 0, 0, -1, -1, 0, 0,
+	20, 0, 0, 16, 23, 0, 0, 248, -1, -1, 0, 0, -1, -1,
+	0, 0, -1, -1, 0, 0, 22, 0, 0, 16, -1, -1, 0, 0,
+	-1, -1, 0, 0, 20, 0, 0, 244, -1, -1, 0, 0, -1,
+	-1, 0, 0, -1, -1, 0, 0, 20, 0, 0, 16, -1, -1, 0,
+	0, -1, -1, 0, 0, -1, -1, 0, 0, -1, -1, 0, 0, -1,
+	-1, 0, 0, 20, 0, 0, 244, -1, -1, 0, 0, -1, -1,
+	0, 0, -1, -1, 0, 0, 20, 0, 0, 16, -1, -1, 0, 0,
+	23, 0, 0, 244, -1, -1, 0, 0, 20, 0, 0, 244, -1, -1,
+	0, 0, -1, -1, 0, 0, 20, 0, 0, 16, -1, -1, 0, 0,
+	-1, -1, 0, 0, 20, 0, 0, 16, 23, 0, 0, 248, -1, -1,
+	0, 0, -1, -1, 0, 0, -1, -1, 0, 0
+};
+
+long trainmappos;
+
 void DrawTrainObjects()
 {
 	short* obj;
+	char* obj2;
 	long x, x2;
 
 	trainmappos = (trainmappos + 32 * gfUVRotate) % 0x60000;
@@ -23,7 +70,7 @@ void DrawTrainObjects()
 
 	for (int i = 0; i < 8; i++)
 	{
-		phd_PutPolygons_train(meshes[static_objects[*obj].mesh_number], x);
+		phd_PutPolygons_train(meshes[static_objects[obj[0]].mesh_number], x);
 		obj++;
 		x += 6144;
 	}
@@ -31,7 +78,7 @@ void DrawTrainObjects()
 	phd_PopMatrix();
 	phd_PushMatrix();
 	phd_TranslateAbs(x + lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, 47168);
-	phd_PutPolygons_train(meshes[static_objects[*obj].mesh_number], 0);
+	phd_PutPolygons_train(meshes[static_objects[obj[0]].mesh_number], 0);
 	phd_PopMatrix();
 	obj = &dels_handy_train_map[32 - ((trainmappos / 6144 - lara_item->pos.x_pos / 6144 + 8) & 0x1F)];
 	x = trainmappos % 6144 - 24576;
@@ -42,7 +89,7 @@ void DrawTrainObjects()
 
 	for (int i = 0; i < 8; i++)
 	{
-		phd_PutPolygons_train(meshes[static_objects[*obj].mesh_number], -x);
+		phd_PutPolygons_train(meshes[static_objects[obj[0]].mesh_number], -x);
 		obj++;
 		x += 6144;
 	}
@@ -51,28 +98,28 @@ void DrawTrainObjects()
 	phd_PushMatrix();
 	phd_TranslateAbs(x2 + lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, 58304);
 	phd_RotY(32760);
-	phd_PutPolygons_train(meshes[static_objects[*obj].mesh_number], 0);
+	phd_PutPolygons_train(meshes[static_objects[obj[0]].mesh_number], 0);
 	phd_PopMatrix();
-	obj = &dels_handy_train_map[192 - 2 * ((trainmappos / 6144 - lara_item->pos.x_pos / 6144 + 8) & 0x1F)];
+	obj2 = &dels_handy_train_map2[32 - ((trainmappos / 6144 - lara_item->pos.x_pos / 6144 + 8) & 0x1F)];
 	x = trainmappos % 6144 - 24576;
 	phd_PushMatrix();
 
 	for (int i = 0; i < 8; i++)
 	{
-		if (*obj != NO_ITEM)
+		if (obj2[0] != -1)
 		{
-			phd_TranslateAbs(lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, obj[1] + 52224);
-			phd_PutPolygons_train(meshes[static_objects[*obj].mesh_number], x);
+			phd_TranslateAbs(lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, obj2[1] + 52224);
+			phd_PutPolygons_train(meshes[static_objects[obj2[0]].mesh_number], x);
 		}
 
-		obj += 2;
+		obj2 += 2;
 		x += 6144;
 	}
 
-	if (*obj != NO_ITEM)
+	if (obj2[0] != -1)
 	{
-		phd_TranslateAbs(x + lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, obj[1] + 52224);
-		phd_PutPolygons_train(meshes[static_objects[*obj].mesh_number], 0);
+		phd_TranslateAbs(x + lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, obj2[1] + 52224);
+		phd_PutPolygons_train(meshes[static_objects[obj2[0]].mesh_number], 0);
 	}
 
 	phd_PopMatrix();

@@ -42,3 +42,6 @@ void DrawBlood();
 void S_DrawSmokeSparks();
 void DoUwEffect();
 void DrawLightning();
+
+extern MESH_DATA* targetMeshP;
+extern long DoFade;

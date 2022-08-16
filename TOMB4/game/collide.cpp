@@ -20,6 +20,8 @@ static short StarGateBounds[24] =
 	384, 512, -1024, 0, -96, 96
 };
 
+short GlobalCollisionBounds[6];
+
 void ShiftItem(ITEM_INFO* item, COLL_INFO* coll)
 {
 	item->pos.x_pos += coll->shift.x;

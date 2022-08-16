@@ -37,6 +37,9 @@ short SkinClip[40][12];
 long GlobalAlpha = 0xFF000000;
 long GlobalAmbient;
 
+float AnimatingTexturesV[16][8][3];
+static short AnimatingTexturesVOffset;
+
 void phd_PutPolygons(short* objptr, long clip)	//whore
 {
 	MESH_DATA* mesh;

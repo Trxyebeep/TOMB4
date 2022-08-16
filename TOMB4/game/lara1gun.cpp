@@ -749,7 +749,12 @@ void undraw_shotgun(long weapon_type)
 		lara.right_arm.frame_number = 0;
 		lara.left_arm.frame_number = 0;
 	}
-	else if (item->current_anim_state == 3 && anims[item->anim_number].frame_base == item->frame_number - 21)
+	else if (item->current_anim_state == 3 &&
+#ifdef GENERAL_FIXES
+		anims[item->anim_number].frame_base == item->frame_number - (weapon_type == WEAPON_GRENADE ? 16 : 21))
+#else
+	 anims[item->anim_number].frame_base == item->frame_number - 21)
+#endif
 			undraw_shotgun_meshes(weapon_type);
 
 	lara.right_arm.frame_base = anims[item->anim_number].frame_ptr;
