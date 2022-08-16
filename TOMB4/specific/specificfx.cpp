@@ -9,7 +9,6 @@
 #include "function_stubs.h"
 #include "drawroom.h"
 #include "winmain.h"
-#include "mmx.h"
 #include "../game/debris.h"
 #include "../game/rope.h"
 #include "../game/tomb4fx.h"
@@ -1468,9 +1467,15 @@ void OutputSky()
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 	SortPolyList(SortCount, SortList);
 	RestoreFPCW(FPCW);
+
+#ifdef GENERAL_FIXES
+	DrawSortList();
+#else
 	MMXSetPerspecLimit(0);
 	DrawSortList();
 	MMXSetPerspecLimit(0.6F);
+#endif
+
 	MungeFPCW(&FPCW);
 	InitBuckets();
 	InitialiseSortList();

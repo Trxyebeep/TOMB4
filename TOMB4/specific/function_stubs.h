@@ -11,10 +11,7 @@ long GetRandomDraw();
 void SeedRandomDraw(long seed);
 void init_game_malloc();
 void* game_malloc(long size);
-
-#define Log	( (void(__cdecl*)(ulong, const char*, ...)) 0x0049C750 )//wrong place, idk where it goes
-#define ClearFakeDevice	( (HRESULT(__cdecl*)(LPDIRECT3DDEVICEX, long, D3DRECT*, long, long, float, long)) 0x00494D20 )
-#define CreateFakeD3D	( (HRESULT(__cdecl*)()) 0x00494B50 )
+void Log(ulong type, const char* s, ...);
 
 extern PHD_VECTOR CamPos;
 extern PHD_VECTOR CamRot;
