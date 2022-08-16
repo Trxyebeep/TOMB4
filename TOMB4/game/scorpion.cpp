@@ -9,6 +9,7 @@
 #include "../specific/function_stubs.h"
 #include "effects.h"
 #include "lara.h"
+#include "deltapak.h"
 
 static BITE_INFO stinger{ 0, 0, 0, 8 };		//for the big one
 static BITE_INFO pincer{ 0, 0, 0, 23 };

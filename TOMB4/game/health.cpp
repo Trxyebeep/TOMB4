@@ -18,6 +18,7 @@
 #include "../specific/input.h"
 #endif
 #include "lara.h"
+#include "deltapak.h"
 
 long FlashIt()
 {

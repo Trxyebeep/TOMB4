@@ -97,3 +97,8 @@ void special3_end();
 void special3_control();
 void special1_init();
 void special1_end();
+
+extern long cutseq_trig;
+extern long cutseq_num;
+extern long GLOBAL_playing_cutseq;
+extern long GLOBAL_cutseq_frame;

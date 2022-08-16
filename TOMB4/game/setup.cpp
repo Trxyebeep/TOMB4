@@ -61,6 +61,7 @@
 #include "horse.h"
 #include "../specific/3dmath.h"
 #include "lara.h"
+#include "deltapak.h"
 
 void ObjectObjects()
 {

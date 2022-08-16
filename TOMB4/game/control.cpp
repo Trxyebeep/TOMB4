@@ -40,6 +40,7 @@
 #include "../specific/dxshell.h"
 #endif
 #include "lara.h"
+#include "deltapak.h"
 
 ITEM_INFO* items;
 
