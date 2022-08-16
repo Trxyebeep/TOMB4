@@ -5,6 +5,7 @@
 #include "../specific/function_stubs.h"
 #include "effects.h"
 #include "lara.h"
+#include "control.h"
 
 static BITE_INFO bat_bite = { 0, 16, 45, 4 };
 

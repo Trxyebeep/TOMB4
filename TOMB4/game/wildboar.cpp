@@ -5,6 +5,7 @@
 #include "effects.h"
 #include "../specific/function_stubs.h"
 #include "lara.h"
+#include "control.h"
 
 static BITE_INFO wildboar_bite = { 0, 0, 0, 14 };
 

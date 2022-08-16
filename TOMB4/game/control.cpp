@@ -41,6 +41,8 @@
 #endif
 #include "lara.h"
 
+ITEM_INFO* items;
+
 short* OutsideRoomOffsets;
 char* OutsideRoomTable;
 short IsRoomOutsideNo;
@@ -73,6 +75,7 @@ long SetDebounce;
 long framecount = 0;
 long reset_flag = 0;
 long WeaponDelay = 0;
+ushort GlobalCounter = 0;
 short XSoff1;
 short XSoff2;
 short YSoff1;

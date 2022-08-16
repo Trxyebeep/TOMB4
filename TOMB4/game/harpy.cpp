@@ -10,6 +10,7 @@
 #include "people.h"
 #include "effects.h"
 #include "lara.h"
+#include "control.h"
 
 static BITE_INFO right_hand = { 0, 128, 0, 2 };
 static BITE_INFO left_hand = { 0, 128, 0, 4 };

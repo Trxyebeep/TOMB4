@@ -5,7 +5,6 @@
 #define VAR_U_(address, type)			(*(type*)(address))
 #define ARRAY_(address, type, length)	(*(type(*)length)(address))
 
-#define GlobalCounter	VAR_U_(0x004BF3FA, short)
 #define gfCurrentLevel	VAR_U_(0x007FD290, char)
 #define gfLevelComplete	VAR_U_(0x007FD2B0, char)
 #define cutseq_trig	VAR_U_(0x004BFC7C, long)
@@ -15,7 +14,6 @@
 #define GLOBAL_lastinvitem	VAR_U_(0x004AE064, long)
 #define Gameflow	VAR_U_(0x007FD278, GAMEFLOW*)
 #define gfGameMode	VAR_U_(0x004AF451, char)
-#define items	VAR_U_(0x007FE28C, ITEM_INFO*)
 #define GotLaraSpheres	VAR_U_(0x007F6EDE, char)
 #define NumLaraSpheres	VAR_U_(0x007F7100, long)
 #define next_item_active	VAR_U_(0x007FD20A, short)

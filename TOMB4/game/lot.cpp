@@ -5,6 +5,7 @@
 #include "box.h"
 #include "camera.h"
 #include "lara.h"
+#include "control.h"
 
 void InitialiseLOTarray(long allocmem)
 {

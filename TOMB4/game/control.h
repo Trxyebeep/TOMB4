@@ -38,6 +38,8 @@ void AnimateItem(ITEM_INFO* item);
 long RayBoxIntersect(PHD_VECTOR* min, PHD_VECTOR* max, PHD_VECTOR* mid, PHD_VECTOR* dir, PHD_VECTOR* Coord);
 long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS* ItemPos, PHD_VECTOR* Coord, short item_number);
 
+extern ITEM_INFO* items;
+
 extern short* OutsideRoomOffsets;
 extern char* OutsideRoomTable;
 extern short IsRoomOutsideNo;
@@ -70,6 +72,7 @@ extern long SetDebounce;
 extern long framecount;
 extern long reset_flag;
 extern long WeaponDelay;
+extern ushort GlobalCounter;
 extern short XSoff1;
 extern short XSoff2;
 extern short YSoff1;

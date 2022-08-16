@@ -16,6 +16,7 @@
 #include "../specific/input.h"
 #include "laramisc.h"
 #include "lara.h"
+#include "control.h"
 
 static short FireBounds[12] = { 0, 0, 0, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 

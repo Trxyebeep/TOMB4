@@ -6,6 +6,7 @@
 #include "../specific/3dmath.h"
 #include "effects.h"
 #include "lara.h"
+#include "control.h"
 
 static BITE_INFO left_hand = { 0, 0, 0, 11 };
 static BITE_INFO right_hand = { 0, 0, 0, 14 };
