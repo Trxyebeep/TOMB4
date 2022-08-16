@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_objects(bool replace);
 
@@ -263,3 +263,5 @@ enum static_types
 	SHATTER0, SHATTER1, SHATTER2, SHATTER3, SHATTER4, SHATTER5, SHATTER6, SHATTER7, SHATTER8, SHATTER9,
 	NUMBER_STATIC_OBJECTS
 };
+
+extern OBJECT_INFO objects[NUMBER_OBJECTS];

@@ -21,6 +21,7 @@
 #include "switch.h"
 #include "rope.h"
 #include "gameflow.h"
+#include "../specific/file.h"
 
 SAVEGAME_INFO savegame;
 

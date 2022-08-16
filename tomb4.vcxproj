@@ -247,7 +247,6 @@
     <ClInclude Include="TOMB4\game\wraith.h" />
     <ClInclude Include="TOMB4\global\math_tbls.h" />
     <ClInclude Include="TOMB4\global\types.h" />
-    <ClInclude Include="TOMB4\global\vars.h" />
     <ClInclude Include="TOMB4\specific\3dmath.h" />
     <ClInclude Include="TOMB4\specific\audio.h" />
     <ClInclude Include="TOMB4\specific\clipping.h" />

@@ -40,9 +40,6 @@
     <ClInclude Include="TOMB4\global\types.h">
       <Filter>TOMB4\global</Filter>
     </ClInclude>
-    <ClInclude Include="TOMB4\global\vars.h">
-      <Filter>TOMB4\global</Filter>
-    </ClInclude>
     <ClInclude Include="TOMB4\game\ahmet.h">
       <Filter>TOMB4\game</Filter>
     </ClInclude>

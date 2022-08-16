@@ -11,6 +11,7 @@
 #include "sound.h"
 #include "lara_states.h"
 #include "lara.h"
+#include "../specific/file.h"
 
 static short StarGateBounds[24] =
 {

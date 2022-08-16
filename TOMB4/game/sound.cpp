@@ -5,6 +5,7 @@
 #include "../specific/function_stubs.h"
 #include "camera.h"
 #include "gameflow.h"
+#include "control.h"
 
 SAMPLE_INFO* sample_infos;
 SoundSlot LaSlot[32];

@@ -20,6 +20,11 @@
 #include "../game/camera.h"
 #include "gamemain.h"
 #include "LoadSave.h"
+#include "file.h"
+#include "../game/lara.h"
+#include "../game/deltapak.h"
+#include "../game/health.h"
+#include "../game/control.h"
 #ifdef GENERAL_FIXES
 #include "../game/text.h"
 #include "../game/gameflow.h"
@@ -27,10 +32,6 @@
 #include "../game/spotcam.h"
 #include "../game/effect2.h"
 #endif
-#include "file.h"
-#include "../game/lara.h"
-#include "../game/deltapak.h"
-#include "../game/health.h"
 
 D3DTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];

@@ -14,6 +14,7 @@
 #include "3dmath.h"
 #include "winmain.h"
 #include "file.h"
+#include "../game/control.h"
 
 MESH_DATA** mesh_vtxbuf;
 TEXTUREBUCKET Bucket[20];

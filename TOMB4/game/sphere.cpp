@@ -3,6 +3,8 @@
 #include "../specific/3dmath.h"
 #include "draw.h"
 #include "lara.h"
+#include "objects.h"
+#include "control.h"
 
 SPHERE Slist[34];
 char GotLaraSpheres;

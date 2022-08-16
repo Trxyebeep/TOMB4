@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_control(bool replace);
 
@@ -39,6 +39,12 @@ long RayBoxIntersect(PHD_VECTOR* min, PHD_VECTOR* max, PHD_VECTOR* mid, PHD_VECT
 long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS* ItemPos, PHD_VECTOR* Coord, short item_number);
 
 extern ITEM_INFO* items;
+extern ANIM_STRUCT* anims;
+extern ROOM_INFO* room;
+extern short** meshes;
+extern long* bones;
+extern long level_items;
+extern short number_rooms;
 
 extern short* OutsideRoomOffsets;
 extern char* OutsideRoomTable;

@@ -43,8 +43,15 @@
 #include "../specific/dxshell.h"
 #endif
 #include "savegame.h"
+#include "../specific/file.h"
 
 ITEM_INFO* items;
+ANIM_STRUCT* anims;
+ROOM_INFO* room;
+short** meshes;
+long* bones;
+long level_items;
+short number_rooms;
 
 short* OutsideRoomOffsets;
 char* OutsideRoomTable;

@@ -22,6 +22,7 @@
 #include "../specific/input.h"
 #include "savegame.h"
 #include "gameflow.h"
+#include "../specific/file.h"
 
 COLL_INFO mycoll;
 

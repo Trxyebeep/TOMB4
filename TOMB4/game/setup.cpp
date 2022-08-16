@@ -63,6 +63,7 @@
 #include "lara.h"
 #include "deltapak.h"
 #include "gameflow.h"
+#include "../specific/file.h"
 
 void ObjectObjects()
 {

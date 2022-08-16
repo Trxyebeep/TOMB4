@@ -12,6 +12,7 @@
 #include "lara.h"
 #include "savegame.h"
 #include "gameflow.h"
+#include "control.h"
 
 static PISTOL_DEF PistolTable[4] =
 {
