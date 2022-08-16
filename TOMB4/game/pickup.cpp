@@ -21,6 +21,7 @@ static short CrowbarPickUpBounds[12] = { -256, 256, -100, 100, 200, 512, -1820, 
 static short PlinthPickUpBounds[12] = { -256, 256, -640, 640, -511, 0, -1820, 1820, -5460, 5460, 0, 0 };
 static short PickUpBounds[12] = { -256, 256, -200, 200, -256, 256, -1820, 1820, 0, 0, 0, 0 };
 static short PickUpBoundsUW[12] = { -512, 512, -512, 512, -512, 512, -8190, 8190, -8190, 8190, -8190, 8190 };
+static short PuzzleBounds[12] = { 0, 0, -256, 256, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 static PHD_VECTOR  SarcophagusPos = { 0, 0, -300 };
 static PHD_VECTOR KeyHolePosition = { 0, 0, 362 };
 static PHD_VECTOR HiddenPickUpPosition = { 0, 0, -690 };
@@ -632,6 +633,138 @@ void PickUpCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	item->pos.z_rot = rotz;
 }
 
+void PuzzleHoleCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
+{
+	ITEM_INFO* item;
+	PHD_VECTOR pos;
+	short* bounds;
+	long PuzzleType, hole, puzzle;
+	short yrot;
+
+	PuzzleType = 0;
+	item = &items[item_num];
+
+	if (item->trigger_flags < 0)
+		PuzzleType = 1;
+	else if (item->trigger_flags > 1024)
+		PuzzleType = 2;
+	else if (item->trigger_flags && item->trigger_flags != 999)
+		PuzzleType = 3;
+
+	if (((input & IN_ACTION || GLOBAL_inventoryitemchosen != NO_ITEM) &&
+		(!BinocularRange && lara.gun_status == LG_NO_ARMS && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH)) ||
+		(lara.IsMoving && lara.GeneralPtr == (void*)item_num))
+	{
+		bounds = GetBoundsAccurate(item);
+		yrot = item->pos.y_rot;
+		PuzzleBounds[0] = bounds[0] - 256;
+		PuzzleBounds[1] = bounds[1] + 256;
+		PuzzleBounds[4] = bounds[4] - 256;
+		PuzzleBounds[5] = bounds[5] + 256;
+
+		if (PuzzleType == 2)
+		{
+			PuzzleBounds[0] -= 1024;
+			PuzzleBounds[1] += 1024;
+			PuzzleBounds[4] -= 1024;
+			PuzzleBounds[5] += 1024;
+			item->pos.y_rot = l->pos.y_rot;
+		}
+
+		if (TestLaraPosition(PuzzleBounds, item, l))
+		{
+			pos.x = 0;
+			pos.y = 0;
+			pos.z = 0;
+			hole = item->object_number - PUZZLE_HOLE1;
+			puzzle = GLOBAL_inventoryitemchosen - PUZZLE_ITEM1;
+
+			if (!lara.IsMoving)
+			{
+				if (GLOBAL_inventoryitemchosen == NO_ITEM)
+				{
+					if (have_i_got_object(short(hole + PUZZLE_ITEM1)))
+						GLOBAL_enterinventory = hole + PUZZLE_ITEM1;
+
+					item->pos.y_rot = yrot;
+					return;
+				}
+				
+				if (puzzle != hole)
+				{
+					item->pos.y_rot = yrot;
+					return;
+				}
+			}
+
+			pos.z = bounds[4] - 100;
+
+			if ((PuzzleType == 2 && item->trigger_flags != 1036) || MoveLaraPosition(&pos, item, l))
+			{
+				remove_inventory_item(short(hole + PUZZLE_ITEM1));
+
+				if (PuzzleType == 1)
+				{
+					l->anim_number = -item->trigger_flags;
+					l->current_anim_state = AS_CONTROLLED;
+
+					if (l->anim_number != 423)
+						PuzzleDone(item, item_num);
+				}
+				else if (PuzzleType == 2)
+				{
+					cutseq_num = item->trigger_flags - 1024;
+					PuzzleDone(item, item_num);
+				}
+				else
+				{
+					l->anim_number = ANIM_USEPUZZLE;
+					l->current_anim_state = AS_USEPUZZLE;
+					item->item_flags[0] = 1;
+				}
+
+				l->frame_number = anims[l->anim_number].frame_base;
+				lara.IsMoving = 0;
+				lara.head_x_rot = 0;
+				lara.head_y_rot = 0;
+				lara.torso_x_rot = 0;
+				lara.torso_y_rot = 0;
+				lara.gun_status = LG_HANDS_BUSY;
+				item->flags |= IFL_TRIGGERED;
+			}
+
+			lara.GeneralPtr = (void*)item_num;
+			GLOBAL_inventoryitemchosen = NO_ITEM;
+		}
+		else if (lara.IsMoving && lara.GeneralPtr == (void*)item_num)
+		{
+			lara.IsMoving = 0;
+			lara.gun_status = LG_NO_ARMS;
+		}
+
+		item->pos.y_rot = yrot;
+	}
+	else
+	{
+		if (lara.GeneralPtr == (void*)item_num && l->current_anim_state == AS_USEPUZZLE &&
+			l->frame_number == anims[ANIM_USEPUZZLE].frame_base + 80 && item->item_flags[0])
+		{
+			if (PuzzleType == 3)
+				l->item_flags[0] = item->trigger_flags;
+			else
+				l->item_flags[0] = 0;
+
+			PuzzleDone(item, item_num);
+			item->item_flags[0] = 0;
+		}
+		else if (lara.GeneralPtr == (void*)item_num && l->current_anim_state == AS_CONTROLLED &&
+			l->anim_number == 423 && l->frame_number == anims[423].frame_base + 180)
+			PuzzleDone(item, item_num);
+		else if (l->current_anim_state != AS_CONTROLLED && PuzzleType != 2)
+			ObjectCollision(item_num, l, coll);
+	}
+}
+
 void inject_pickup(bool replace)
 {
 	INJECT(0x004587E0, SarcophagusCollision, replace);
@@ -644,4 +777,5 @@ void inject_pickup(bool replace)
 	INJECT(0x00458780, PickupTrigger, replace);
 	INJECT(0x00457650, RegeneratePickups, replace);
 	INJECT(0x00457720, PickUpCollision, replace);
+	INJECT(0x004582A0, PuzzleHoleCollision, replace);
 }
