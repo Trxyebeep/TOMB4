@@ -36,11 +36,12 @@
 #include "rope.h"
 #include "voncroy.h"
 #include "../specific/gamemain.h"
+#include "lara.h"
+#include "deltapak.h"
+#include "health.h"
 #ifdef CUTSEQ_SKIPPER
 #include "../specific/dxshell.h"
 #endif
-#include "lara.h"
-#include "deltapak.h"
 
 ITEM_INFO* items;
 
@@ -76,6 +77,9 @@ long SetDebounce;
 long framecount = 0;
 long reset_flag = 0;
 long WeaponDelay = 0;
+long LaserSightX;
+long LaserSightY;
+long LaserSightZ;
 ushort GlobalCounter = 0;
 short XSoff1;
 short XSoff2;

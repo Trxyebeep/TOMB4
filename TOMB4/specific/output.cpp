@@ -30,6 +30,7 @@
 #include "file.h"
 #include "../game/lara.h"
 #include "../game/deltapak.h"
+#include "../game/health.h"
 
 D3DTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];

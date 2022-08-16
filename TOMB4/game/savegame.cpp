@@ -15,6 +15,7 @@
 #include "camera.h"
 #include "voncroy.h"
 #include "lara.h"
+#include "newinv.h"
 
 long CheckSumValid(char* buffer)
 {

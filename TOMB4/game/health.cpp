@@ -20,6 +20,15 @@
 #include "lara.h"
 #include "deltapak.h"
 
+DISPLAYPU pickups[8];
+short PickupX;
+short CurrentPickup;
+
+long health_bar_timer = 0;
+
+static short PickupY;
+static short PickupVel;
+
 long FlashIt()
 {
 	static long flash_state = 0;

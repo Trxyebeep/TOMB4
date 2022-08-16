@@ -29,6 +29,8 @@
 #include "../specific/input.h"
 #include "laramisc.h"
 
+static char dont_exit_jeep = 0;
+
 void InitialiseJeep(short item_number)
 {
 	ITEM_INFO* item;

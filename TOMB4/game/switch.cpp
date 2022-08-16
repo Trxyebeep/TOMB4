@@ -12,6 +12,7 @@
 #include "camera.h"
 #include "../specific/input.h"
 #include "lara.h"
+#include "newinv.h"
 
 #ifdef GENERAL_FIXES
 static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 0 };
