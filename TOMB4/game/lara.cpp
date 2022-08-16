@@ -25,8 +25,6 @@
 #include "../tomb4/tomb4.h"
 #endif
 
-
-
 void(*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 {
 	lara_as_walk,

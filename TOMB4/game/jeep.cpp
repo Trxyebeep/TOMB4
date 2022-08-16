@@ -27,6 +27,7 @@
 #include "camera.h"
 #include "draw.h"
 #include "../specific/input.h"
+#include "laramisc.h"
 
 void InitialiseJeep(short item_number)
 {

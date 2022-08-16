@@ -21,6 +21,10 @@
 #endif
 #include "../specific/input.h"
 
+COLL_INFO mycoll;
+
+static COLL_INFO* lara_coll = &mycoll;
+
 void LaraCheatGetStuff()
 {
 	lara.num_flares = -1;

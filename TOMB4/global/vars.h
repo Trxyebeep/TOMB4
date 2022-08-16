@@ -7,8 +7,6 @@
 
 #define lara	VAR_U_(0x0080DFE0, LARA_INFO)
 #define lara_item	VAR_U_(0x0080E13C, ITEM_INFO*)
-#define mycoll	VAR_U_(0x0080DEC0, COLL_INFO)
-#define lara_coll	VAR_U_(0x004AD9C4, COLL_INFO*)
 #define GlobalCounter	VAR_U_(0x004BF3FA, short)
 #define gfCurrentLevel	VAR_U_(0x007FD290, char)
 #define gfLevelComplete	VAR_U_(0x007FD2B0, char)
