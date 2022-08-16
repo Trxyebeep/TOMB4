@@ -12,6 +12,6 @@ short* FindPlinth(ITEM_INFO* item);
 long KeyTrigger(short item_num);
 long PickupTrigger(short item_num);
 void RegeneratePickups();
+void PickUpCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 
-#define PickUpCollision	( (void(__cdecl*)(short, ITEM_INFO*, COLL_INFO*)) 0x00457720 )
 #define PuzzleHoleCollision	( (void(__cdecl*)(short, ITEM_INFO*, COLL_INFO*)) 0x004582A0 )
