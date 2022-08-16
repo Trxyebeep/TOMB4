@@ -5,8 +5,6 @@
 #define VAR_U_(address, type)			(*(type*)(address))
 #define ARRAY_(address, type, length)	(*(type(*)length)(address))
 
-#define lara	VAR_U_(0x0080DFE0, LARA_INFO)
-#define lara_item	VAR_U_(0x0080E13C, ITEM_INFO*)
 #define GlobalCounter	VAR_U_(0x004BF3FA, short)
 #define gfCurrentLevel	VAR_U_(0x007FD290, char)
 #define gfLevelComplete	VAR_U_(0x007FD2B0, char)
@@ -32,7 +30,6 @@
 #define savegame	VAR_U_(0x007F76C0, SAVEGAME_INFO)
 #define room	VAR_U_(0x00533A64, ROOM_INFO*)
 #define GlobalAmbient	VAR_U_(0x005C047C, long)
-#define DashTimer	VAR_U_(0x0080E13A, short)
 #define font_height	VAR_U_(0x007F5050, long)
 #define current_item    VAR_U_(0x005B74B0, ITEM_INFO*)
 #define level_items	VAR_U_(0x004BF68C, long)

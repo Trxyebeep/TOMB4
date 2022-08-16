@@ -20,6 +20,7 @@
 #include "../specific/3dmath.h"
 #include "camera.h"
 #include "../specific/input.h"
+#include "lara.h"
 
 void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item)
 {

@@ -12,6 +12,7 @@
 #include "../tomb4/tomb4.h"
 #include "../game/spotcam.h"
 #endif
+#include "../game/lara.h"
 
 const char* KeyboardButtons[272] =
 {

@@ -13,6 +13,7 @@
 #include "effect2.h"
 #include "../tomb4/tomb4.h"
 #endif
+#include "lara.h"
 
 CAMERA_INFO camera;
 

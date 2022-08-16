@@ -14,6 +14,7 @@
 #include "sound.h"
 #include "tomb4fx.h"
 #include "effect2.h"
+#include "lara.h"
 
 LOCUST_STRUCT Locusts[64];
 

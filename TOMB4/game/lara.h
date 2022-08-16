@@ -3,9 +3,6 @@
 
 void inject_lara(bool replace);
 
-extern void (*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll);
-extern void (*lara_collision_routines[118])(ITEM_INFO* item, COLL_INFO* coll);
-
 void lara_void_func(ITEM_INFO* item, COLL_INFO* coll);
 void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll);
 void SetCornerAnim(ITEM_INFO* item, COLL_INFO* coll, short rot, short flip);
@@ -172,3 +169,10 @@ long TestWall(ITEM_INFO* item, long front, long right, long down);
 void LaraCollideStop(ITEM_INFO* item, COLL_INFO* coll);
 void SnapLaraToEdgeOfBlock(ITEM_INFO* item, COLL_INFO* coll, short angle);
 long LaraHangTest(ITEM_INFO* item, COLL_INFO* coll);
+
+extern void (*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll);
+extern void (*lara_collision_routines[118])(ITEM_INFO* item, COLL_INFO* coll);
+
+extern LARA_INFO lara;
+extern ITEM_INFO* lara_item;
+extern short DashTimer;

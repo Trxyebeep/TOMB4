@@ -3,6 +3,7 @@
 #include "box.h"
 #include "sound.h"
 #include "control.h"
+#include "lara.h"
 
 void InitialiseLaraDouble(short item_number)
 {

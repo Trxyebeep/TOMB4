@@ -9,6 +9,7 @@
 #include "items.h"
 #include "traps.h"
 #include "senet.h"
+#include "lara.h"
 
 void InitialiseWraith(short item_number)
 {

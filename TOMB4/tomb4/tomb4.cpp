@@ -2,6 +2,7 @@
 #include "tomb4.h"
 #include "../specific/registry.h"
 #include "libs/discordRPC/discord_rpc.h"
+#include "../game/lara.h"
 
 tomb4_options tomb4;
 

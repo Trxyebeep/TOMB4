@@ -8,6 +8,7 @@
 #include "items.h"
 #include "camera.h"
 #include "draw.h"
+#include "lara.h"
 
 void DrawTrainObjects()
 {

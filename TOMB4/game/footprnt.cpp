@@ -15,6 +15,7 @@
 
 #define PRINT_HEIGHT_CORRECTION 128 // The maximum difference between the footprint and the floor
 #endif
+#include "lara.h"
 
 static char footsounds[14] = { 0, 5, 3, 2, 1, 9, 9, 4, 6, 5, 3, 9, 4, 6 };
 

@@ -7,6 +7,7 @@
 #include "../specific/3dmath.h"
 #include "../specific/function_stubs.h"
 #include "people.h"
+#include "lara.h"
 
 static BITE_INFO troop_gun = { 0, 300, 64, 7 };
 

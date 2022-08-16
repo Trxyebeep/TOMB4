@@ -17,6 +17,7 @@
 #ifdef GENERAL_FIXES
 #include "../specific/input.h"
 #endif
+#include "lara.h"
 
 long FlashIt()
 {

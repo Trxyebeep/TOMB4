@@ -19,6 +19,7 @@
 #include "deltapak.h"
 #include "camera.h"
 #include "../specific/input.h"
+#include "lara.h"
 
 short SPxzoffs[8] = { 0, 0, 0x200, 0, 0, 0, -0x200, 0 };
 short SPyoffs[8] = { -0x400, 0, -0x200, 0, 0, 0, -0x200, 0 };

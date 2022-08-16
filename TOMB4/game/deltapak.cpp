@@ -20,6 +20,7 @@
 #include "spotcam.h"
 #include "camera.h"
 #include "../specific/winmain.h"
+#include "lara.h"
 
 short frig_shadow_bbox[6] = { -165, 150, -777, 1, -87, 78 };
 short frig_jeep_shadow_bbox[6] = { -600, 600, -777, 1, -600, 600 };

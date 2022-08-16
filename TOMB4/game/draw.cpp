@@ -26,6 +26,7 @@
 #ifdef FOOTPRINTS
 #include "footprnt.h"
 #endif
+#include "lara.h"
 
 static BITE_INFO EnemyBites[2] =
 {

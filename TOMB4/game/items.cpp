@@ -5,6 +5,7 @@
 #include "../specific/function_stubs.h"
 #include "control.h"
 #include "effects.h"
+#include "lara.h"
 
 short next_fx_active;
 

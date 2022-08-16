@@ -12,6 +12,7 @@
 #include "function_table.h"
 #include "../game/draw.h"
 #include "winmain.h"
+#include "../game/lara.h"
 
 long StaticMeshShade;
 long MaxRoomLights;

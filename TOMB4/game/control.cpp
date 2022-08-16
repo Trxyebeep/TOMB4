@@ -39,6 +39,7 @@
 #ifdef CUTSEQ_SKIPPER
 #include "../specific/dxshell.h"
 #endif
+#include "lara.h"
 
 short* OutsideRoomOffsets;
 char* OutsideRoomTable;

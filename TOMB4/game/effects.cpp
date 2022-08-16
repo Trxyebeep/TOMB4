@@ -19,6 +19,7 @@
 #include "../specific/3dmath.h"
 #include "../specific/dxsound.h"
 #include "camera.h"
+#include "lara.h"
 
 FX_INFO* effects;
 OBJECT_VECTOR* sound_effects;

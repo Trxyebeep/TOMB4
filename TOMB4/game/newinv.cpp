@@ -22,6 +22,7 @@
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
+#include "lara.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)	//long -> char truncation bullshit

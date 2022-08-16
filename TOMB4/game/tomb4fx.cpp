@@ -13,6 +13,7 @@
 #include "effect2.h"
 #include "sphere.h"
 #include "effects.h"
+#include "lara.h"
 
 NODEOFFSET_INFO NodeOffsets[16] =
 {

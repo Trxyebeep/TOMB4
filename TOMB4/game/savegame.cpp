@@ -14,6 +14,7 @@
 #include "../specific/function_stubs.h"
 #include "camera.h"
 #include "voncroy.h"
+#include "lara.h"
 
 long CheckSumValid(char* buffer)
 {

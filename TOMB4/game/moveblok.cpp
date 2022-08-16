@@ -16,6 +16,7 @@
 #include "../specific/output.h"
 #include "box.h"
 #include "../specific/input.h"
+#include "lara.h"
 
 static short MovingBlockBounds[12] = { 0, 0, -256, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 

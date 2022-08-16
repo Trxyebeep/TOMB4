@@ -5,6 +5,7 @@
 #include "../specific/function_stubs.h"
 #include "effects.h"
 #include "../specific/3dmath.h"
+#include "lara.h"
 
 static BITE_INFO dog_bite = { 0, 0, 100, 3 };
 static char DeathAnims[4] = { 20, 21, 22, 21 };

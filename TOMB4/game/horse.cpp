@@ -10,6 +10,7 @@
 #include "sound.h"
 #include "sphere.h"
 #include "effects.h"
+#include "lara.h"
 
 static BITE_INFO horseman_axe = { 0, 0, 0, 6 };
 static BITE_INFO horseman_lfoot = { 0, 0, 0, 14 };

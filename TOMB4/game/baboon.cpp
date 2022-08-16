@@ -10,6 +10,7 @@
 #include "switch.h"
 #include "../specific/3dmath.h"
 #include "effects.h"
+#include "lara.h"
 
 static BITE_INFO baboon_hit = { 10, 10, 11, 4 };
 

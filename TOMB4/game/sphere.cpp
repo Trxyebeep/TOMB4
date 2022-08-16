@@ -2,6 +2,7 @@
 #include "sphere.h"
 #include "../specific/3dmath.h"
 #include "draw.h"
+#include "lara.h"
 
 long GetSpheres(ITEM_INFO* item, SPHERE* ptr, long WorldSpace)
 {

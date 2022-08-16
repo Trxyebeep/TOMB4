@@ -28,6 +28,7 @@
 #include "../game/effect2.h"
 #endif
 #include "file.h"
+#include "../game/lara.h"
 
 D3DTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];

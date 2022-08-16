@@ -8,6 +8,7 @@
 #include "sound.h"
 #include "../specific/function_stubs.h"
 #include "../specific/3dmath.h"
+#include "lara.h"
 
 ITEM_INFO* TriggerClockworkBeetle(long flag)
 {

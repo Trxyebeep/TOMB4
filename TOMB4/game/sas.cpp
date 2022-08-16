@@ -14,6 +14,7 @@
 #include "../specific/3dmath.h"
 #include "people.h"
 #include "../specific/input.h"
+#include "lara.h"
 
 static short DragSASBounds[12] = { -256, 256, -100, 100, -512, -460, -1820, 1820, -5460, 5460, 0, 0 };
 static PHD_VECTOR DragSASPos = { 0, 0, -460 };

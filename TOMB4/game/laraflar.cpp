@@ -15,6 +15,7 @@
 #include "lara_states.h"
 #include "sound.h"
 #include "larafire.h"
+#include "lara.h"
 
 void DrawFlareInAir(ITEM_INFO* item)
 {

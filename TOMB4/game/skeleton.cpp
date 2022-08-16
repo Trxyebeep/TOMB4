@@ -14,6 +14,7 @@
 #include "sound.h"
 #include "sphere.h"
 #include "debris.h"
+#include "lara.h"
 
 static BITE_INFO skelly_hit = { 180, 0, 0, 16 };
 

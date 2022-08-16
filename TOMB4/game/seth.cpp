@@ -12,6 +12,7 @@
 #include "people.h"
 #include "effects.h"
 #include "lara_states.h"
+#include "lara.h"
 
 static BITE_INFO left_hand = { 0, 220, 50, 17 };
 static BITE_INFO right_hand = { 0, 220, 50, 13 };

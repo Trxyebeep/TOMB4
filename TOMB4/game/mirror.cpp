@@ -5,6 +5,7 @@
 #include "tomb4fx.h"
 #include "../specific/3dmath.h"
 #include "hair.h"
+#include "lara.h"
 
 void Draw_Mirror_Lara()
 {

@@ -25,6 +25,7 @@
 #include "../game/effects.h"
 #include "../game/sound.h"
 #include "winmain.h"
+#include "../game/lara.h"
 
 TEXTURESTRUCT* textinfo;
 SPRITESTRUCT* spriteinfo;

@@ -12,6 +12,7 @@
 #include "items.h"
 #include "lot.h"
 #include "effects.h"
+#include "lara.h"
 
 static BITE_INFO guide_hit = { 0, 20, 200, 18 };
 static BITE_INFO guide_lighter = { 30, 80, 50, 15 };
