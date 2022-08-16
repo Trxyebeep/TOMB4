@@ -13,6 +13,7 @@ long smol_font_height;
 #endif
 
 long small_font;
+long GnFrameCounter;
 
 static CVECTOR FontShades[10][32];
 static uchar ScaleFlag;

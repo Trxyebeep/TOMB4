@@ -24,6 +24,7 @@
 #include "jeep.h"
 #include "../specific/input.h"
 #include "newinv.h"
+#include "savegame.h"
 
 static ITEM_INFO* GlobalBikeItem;
 static long bikefspeed = 0;

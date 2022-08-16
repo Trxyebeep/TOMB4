@@ -31,3 +31,5 @@ extern long BinocularOn;
 extern long BinocularRange;
 extern long ExittingBinos;
 extern long LaserSight;
+
+extern SHATTER_ITEM ShatterItem;

@@ -16,6 +16,7 @@
 #include "sound.h"
 #include "larafire.h"
 #include "lara.h"
+#include "debris.h"
 
 void DrawFlareInAir(ITEM_INFO* item)
 {

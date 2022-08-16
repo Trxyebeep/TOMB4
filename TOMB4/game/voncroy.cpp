@@ -16,6 +16,7 @@
 #include "spotcam.h"
 #include "../specific/input.h"
 #include "lara.h"
+#include "savegame.h"
 
 static BITE_INFO voncroy_hit = { 0, 35, 130, 18 };
 

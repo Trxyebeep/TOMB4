@@ -49,6 +49,11 @@ static short CrowbarBounds[12] = { -256, 256, 0, 0, -512, -256, -1820, 1820, -54
 static short CrowbarBounds2[12] = { -256, 256, 0, 0, 256, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short CogSwitchBounds[12] = { -512, 512, 0, 0, -1536, -512, -1820, 1820, -5460, 5460, -1820, 1820 };
 
+uchar CurrentSequence;
+uchar Sequences[3];
+uchar SequenceUsed[6];
+uchar SequenceResults[3][3][3];
+
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
 	ITEM_INFO* item;

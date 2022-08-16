@@ -48,6 +48,7 @@ extern MESH_INFO* SmashedMesh[16];
 extern short SmashedMeshRoom[16];
 extern short SmashedMeshCount;
 
+extern long flipmap[10];
 extern long flip_stats[10];
 extern long flip_status;
 extern long flipeffect;
@@ -84,6 +85,7 @@ extern short ZSoff1;
 extern short ZSoff2;
 extern char PoisonFlag;
 extern char TriggerTimer;
+extern char LaserSightActive;
 
 #ifdef GENERAL_FIXES
 extern char DeathMenuActive;

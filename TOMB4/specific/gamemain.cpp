@@ -14,6 +14,7 @@
 #include "../tomb4/tomb4.h"
 #endif
 #include "dxshell.h"
+#include "../game/savegame.h"
 
 LPDIRECT3DVERTEXBUFFER DestVB;
 WATERTAB WaterTable[22][64];

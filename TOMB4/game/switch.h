@@ -20,3 +20,8 @@ void CrowbarSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void FullBlockSwitchControl(short item_number);
 void CogSwitchControl(short item_number);
 void CogSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
+
+extern uchar CurrentSequence;
+extern uchar Sequences[3];
+extern uchar SequenceUsed[6];
+extern uchar SequenceResults[3][3][3];

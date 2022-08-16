@@ -25,3 +25,4 @@ void StashSkinVertices(long node);
 void SkinVerticesToScratch(long node);
 
 extern long GlobalAlpha;
+extern long GlobalAmbient;

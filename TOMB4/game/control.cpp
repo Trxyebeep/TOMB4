@@ -42,6 +42,7 @@
 #ifdef CUTSEQ_SKIPPER
 #include "../specific/dxshell.h"
 #endif
+#include "savegame.h"
 
 ITEM_INFO* items;
 
@@ -53,6 +54,7 @@ MESH_INFO* SmashedMesh[16];
 short SmashedMeshRoom[16];
 short SmashedMeshCount = 0;
 
+long flipmap[10];
 long flip_stats[10];
 long flip_status;
 long flipeffect = -1;
@@ -89,6 +91,7 @@ short ZSoff1;
 short ZSoff2;
 char PoisonFlag;
 char TriggerTimer = 0;
+char LaserSightActive = 0;
 
 static PHD_VECTOR ClosestCoord;
 static long ClosestItem;

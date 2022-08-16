@@ -15,6 +15,14 @@
 #include "../specific/input.h"
 #include "lara.h"
 
+long SenetTargetX;
+long SenetTargetZ;
+short senet_item[6];
+char piece_moving = -1;
+char last_throw = 0;
+char senet_board[17];
+char senet_piece[6];
+
 static short GameStixBounds[12] = { -256, 256, -200, 200, -256, 256, -1820, 1820, -5460, 5460, 0, 0 };
 static PHD_VECTOR GameStixPos = { 0, 0, -100 };
 

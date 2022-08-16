@@ -19,5 +19,6 @@ void InitObjectLighting(ITEM_INFO* item);
 void ClearObjectLighting();
 void CalcAmbientLight(ITEM_INFO* item);
 
+extern ITEM_INFO* current_item;
 extern long StaticMeshShade;
 extern long MaxRoomLights;

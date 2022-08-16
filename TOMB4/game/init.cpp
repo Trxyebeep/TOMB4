@@ -14,6 +14,8 @@
 #include "box.h"
 #include "croc.h"
 #include "effect2.h"
+#include "tomb4fx.h"
+#include "pickup.h"
 
 void InitialiseMapper(short item_number)
 {

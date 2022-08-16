@@ -29,6 +29,7 @@
 #include "../specific/input.h"
 #include "laramisc.h"
 
+static short jroomies[22];
 static char dont_exit_jeep = 0;
 
 void InitialiseJeep(short item_number)

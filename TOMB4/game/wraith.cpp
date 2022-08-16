@@ -11,6 +11,8 @@
 #include "senet.h"
 #include "lara.h"
 
+static short WraithSpeed = 64;
+
 void InitialiseWraith(short item_number)
 {
 	ITEM_INFO* item;

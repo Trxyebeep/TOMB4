@@ -10,6 +10,10 @@
 
 static PENDULUM NullPendulum = { {0, 0, 0}, {0, 0, 0}, 0, 0 };
 
+ROPE_STRUCT RopeList[5];
+PENDULUM CurrentPendulum;
+long nRope = 0;
+
 void DrawRopeList()
 {
 	for (int i = 0; i < nRope; i++)

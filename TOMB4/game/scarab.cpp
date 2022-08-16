@@ -10,6 +10,8 @@
 #include "effect2.h"
 #include "lara.h"
 
+SCARAB_STRUCT Scarabs[128];
+
 static BITE_INFO beetle_bite = { 0, 0, 0, 12 };
 
 void InitialiseScarab(short item_number)

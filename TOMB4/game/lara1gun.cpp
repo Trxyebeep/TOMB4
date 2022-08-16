@@ -21,6 +21,7 @@
 #include "camera.h"
 #include "../specific/input.h"
 #include "lara.h"
+#include "savegame.h"
 
 void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item)
 {

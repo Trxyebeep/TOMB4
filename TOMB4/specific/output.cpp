@@ -35,6 +35,7 @@
 D3DTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];
 long GlobalAlpha = 0xFF000000;
+long GlobalAmbient;
 
 void phd_PutPolygons(short* objptr, long clip)	//whore
 {

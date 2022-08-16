@@ -19,6 +19,7 @@
 #include "camera.h"
 #include "../specific/input.h"
 #include "lara.h"
+#include "savegame.h"
 
 static short HoldStates[] =
 {

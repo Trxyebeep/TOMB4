@@ -13,6 +13,7 @@
 #include "../game/spotcam.h"
 #endif
 #include "../game/lara.h"
+#include "../game/savegame.h"
 
 const char* KeyboardButtons[272] =
 {

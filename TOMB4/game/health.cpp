@@ -19,6 +19,7 @@
 #endif
 #include "lara.h"
 #include "deltapak.h"
+#include "savegame.h"
 
 DISPLAYPU pickups[8];
 short PickupX;

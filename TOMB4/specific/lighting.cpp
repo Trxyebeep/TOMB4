@@ -14,6 +14,7 @@
 #include "winmain.h"
 #include "../game/lara.h"
 
+ITEM_INFO* current_item;
 long StaticMeshShade;
 long MaxRoomLights;
 

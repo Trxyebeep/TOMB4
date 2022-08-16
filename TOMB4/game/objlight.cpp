@@ -7,6 +7,7 @@
 #include "sphere.h"
 #include "../specific/3dmath.h"
 #include "camera.h"
+#include "tomb4fx.h"
 
 void ControlPulseLight(short item_number)
 {
