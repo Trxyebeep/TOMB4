@@ -10,6 +10,8 @@
 #include "../tomb4/tomb4.h"
 #endif
 #include "../specific/input.h"
+#include "lara.h"
+#include "gameflow.h"
 
 SPOTCAM SpotCam[128];
 long bTrackCamInit = 0;

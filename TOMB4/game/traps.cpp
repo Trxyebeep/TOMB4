@@ -19,6 +19,7 @@
 #include "deltapak.h"
 #include "camera.h"
 #include "../specific/input.h"
+#include "lara.h"
 
 short SPxzoffs[8] = { 0, 0, 0x200, 0, 0, 0, -0x200, 0 };
 short SPyoffs[8] = { -0x400, 0, -0x200, 0, 0, 0, -0x200, 0 };
@@ -78,6 +79,8 @@ static PHD_VECTOR FloorTrapDoorPos = { 0, 0, -655 };
 static PHD_VECTOR CeilingTrapDoorPos = { 0, 1056, -480 };
 static short FloorTrapDoorBounds[12] = { -256, 256, 0, 0, -1024, -256, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short CeilingTrapDoorBounds[12] = { -256, 256, 0, 900, -768, -256, -1820, 1820, -5460, 5460, -1820, 1820 };
+
+char LibraryTab[8];
 
 void FlameEmitterControl(short item_number)
 {

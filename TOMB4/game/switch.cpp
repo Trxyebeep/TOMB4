@@ -11,6 +11,8 @@
 #include "../specific/3dmath.h"
 #include "camera.h"
 #include "../specific/input.h"
+#include "lara.h"
+#include "newinv.h"
 
 #ifdef GENERAL_FIXES
 static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 0 };
@@ -46,6 +48,12 @@ static short JumpSwitchBounds[12] = { -128, 128, -256, 256, 384, 512, -1820, 182
 static short CrowbarBounds[12] = { -256, 256, 0, 0, -512, -256, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short CrowbarBounds2[12] = { -256, 256, 0, 0, 256, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short CogSwitchBounds[12] = { -512, 512, 0, 0, -1536, -512, -1820, 1820, -5460, 5460, -1820, 1820 };
+
+PHD_VECTOR OldPickupPos;
+uchar CurrentSequence;
+uchar Sequences[3];
+uchar SequenceUsed[6];
+uchar SequenceResults[3][3][3];
 
 void FullBlockSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {

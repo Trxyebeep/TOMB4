@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_output(bool replace);
 
@@ -25,3 +25,6 @@ void StashSkinVertices(long node);
 void SkinVerticesToScratch(long node);
 
 extern long GlobalAlpha;
+extern long GlobalAmbient;
+
+extern float AnimatingTexturesV[16][8][3];

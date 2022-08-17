@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_newinv(bool replace);
 
@@ -64,6 +64,9 @@ void draw_current_object_list(long ringnum);
 long S_CallInventory2();
 
 extern INVOBJ inventry_objects_list[];
+extern long GLOBAL_enterinventory;
+extern long GLOBAL_inventoryitemchosen;
+extern long GLOBAL_lastinvitem;
 extern long InventoryActive;
 
 enum ring_types

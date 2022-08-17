@@ -16,6 +16,9 @@
 #include "../game/gameflow.h"
 #include "dxsound.h"
 #include "gamemain.h"
+#ifdef GENERAL_FIXES
+#include "fmv.h"
+#endif
 
 static COMMANDLINES commandlines[] =
 {
@@ -473,15 +476,19 @@ void ClearSurfaces()
 
 	if (App.dx.Flags & 0x80)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
+#ifndef GENERAL_FIXES
 	else
 		ClearFakeDevice(App.dx.lpD3DDevice, 1, &r, D3DCLEAR_TARGET, 0, 1.0F, 0);
+#endif
 
 	S_DumpScreen();
 
 	if (App.dx.Flags & 0x80)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
+#ifndef GENERAL_FIXES
 	else
 		ClearFakeDevice(App.dx.lpD3DDevice, 1, &r, D3DCLEAR_TARGET, 0, 1.0F, 0);
+#endif
 
 	S_DumpScreen();
 }
@@ -570,6 +577,17 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
 		LoadSettings();
 	}
+
+#ifdef GENERAL_FIXES
+	if (!fmvs_disabled)
+	{
+		if (!LoadBinkStuff())
+		{
+			MessageBox(0, "Failed to load Bink, disabling FMVs.", "Tomb Raider IV", 0);
+			fmvs_disabled = 1;
+		}
+	}
+#endif
 
 	SetWindowPos(App.hWnd, 0, App.dx.rScreen.left, App.dx.rScreen.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 	desktop = GetDesktopWindow();

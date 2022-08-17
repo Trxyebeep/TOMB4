@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_larafire(bool replace);
 
@@ -14,3 +14,5 @@ long WeaponObject(long weapon_type);
 long WeaponObjectMesh(long weapon_type);
 void DoProperDetection(short item_number, long x, long y, long z, long xv, long yv, long zv);
 void LaraGun();
+
+extern WEAPON_INFO weapons[9];

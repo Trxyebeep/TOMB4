@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_scarab(bool replace);
 
@@ -11,3 +11,5 @@ void TriggerScarab(short item_number);
 void UpdateScarabs();
 void DrawScarabs();
 void InitialiseScarabGenerator(short item_number);
+
+extern SCARAB_STRUCT Scarabs[128];

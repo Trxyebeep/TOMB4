@@ -15,6 +15,8 @@
 #include "croc.h"
 #include "draw.h"
 #include "sound.h"
+#include "lara.h"
+#include "gameflow.h"
 
 DYNAMIC dynamics[MAX_DYNAMICS * 2];
 SPLASH_STRUCT splashes[4];

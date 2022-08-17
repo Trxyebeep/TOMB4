@@ -21,11 +21,11 @@
 #include "delstuff.h"
 #include "camera.h"
 #include "../specific/input.h"
+#include "debris.h"
+#include "gameflow.h"
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
-
-
 
 void(*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 {
@@ -270,6 +270,10 @@ void(*lara_collision_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 	lara_void_func,
 	lara_void_func
 };
+
+LARA_INFO lara;
+ITEM_INFO* lara_item;
+short DashTimer;
 
 static short LeftClimbTab[4] = { 512, 1024, 2048, 256 };
 static short RightClimbTab[4] = { 2048, 256, 512, 1024 };

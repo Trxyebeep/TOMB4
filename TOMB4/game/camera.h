@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_camera(bool replace);
 
@@ -31,3 +31,5 @@ extern long BinocularOn;
 extern long BinocularRange;
 extern long ExittingBinos;
 extern long LaserSight;
+
+extern SHATTER_ITEM ShatterItem;

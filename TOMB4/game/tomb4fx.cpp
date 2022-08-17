@@ -13,6 +13,8 @@
 #include "effect2.h"
 #include "sphere.h"
 #include "effects.h"
+#include "lara.h"
+#include "gameflow.h"
 
 NODEOFFSET_INFO NodeOffsets[16] =
 {
@@ -35,7 +37,39 @@ NODEOFFSET_INFO NodeOffsets[16] =
 	{ 0, 0, 0, 0, 0 }
 };
 
+LIGHTNING_STRUCT Lightning[16];
+GUNSHELL_STRUCT Gunshells[24];
+DRIP_STRUCT Drips[32];
+SMOKE_SPARKS smoke_spark[32];
+BUBBLE_STRUCT Bubbles[40];
+SHOCKWAVE_STRUCT ShockWaves[16];
+FIRE_SPARKS fire_spark[20];
+BLOOD_STRUCT blood[32];
+GUNFLASH_STRUCT Gunflashes[4];
+FIRE_LIST fires[32];
+long next_fire_spark = 1;
+long next_smoke_spark = 0;
+long next_gunshell = 0;
+long next_bubble = 0;
+long next_drip = 0;
+long next_blood = 0;
+short FlashFadeR = 0;
+short FlashFadeG = 0;
+short FlashFadeB = 0;
+short FlashFader = 0;
+short ScreenFade = 0;
+short dScreenFade = 0;
+short ScreenFadeBack = 0;
+short ScreenFadedOut = 0;
+short ScreenFading = 0;
+short FadeScreenHeight = 0;
+short DestFadeScreenHeight = 0;
+short FadeClipSpeed = 0;
+short ScreenFadeSpeed = 8;
+char scratchpad[1024];
+
 static PHD_VECTOR NodeVectors[16];
+
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments)
 {

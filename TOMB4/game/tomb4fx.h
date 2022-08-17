@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_tomb4fx(bool replace);
 
@@ -53,4 +53,34 @@ void SetScreenFadeOut(short speed, short back);
 void SetScreenFadeIn(short speed);
 void Fade();
 
-extern NODEOFFSET_INFO NodeOffsets[];
+extern NODEOFFSET_INFO NodeOffsets[16];
+extern LIGHTNING_STRUCT Lightning[16];
+extern GUNSHELL_STRUCT Gunshells[24];
+extern DRIP_STRUCT Drips[32];
+extern SMOKE_SPARKS smoke_spark[32];
+extern BUBBLE_STRUCT Bubbles[40];
+extern SHOCKWAVE_STRUCT ShockWaves[16];
+extern FIRE_SPARKS fire_spark[20];
+extern BLOOD_STRUCT blood[32];
+extern GUNFLASH_STRUCT Gunflashes[4];
+extern FIRE_LIST fires[32];
+extern long next_fire_spark;
+extern long next_smoke_spark;
+extern long next_gunshell;
+extern long next_bubble;
+extern long next_drip;
+extern long next_blood;
+extern short FlashFadeR;
+extern short FlashFadeG;
+extern short FlashFadeB;
+extern short FlashFader;
+extern short ScreenFade;
+extern short dScreenFade;
+extern short ScreenFadeBack;
+extern short ScreenFadedOut;
+extern short ScreenFading;
+extern short FadeScreenHeight;
+extern short DestFadeScreenHeight;
+extern short FadeClipSpeed;
+extern short ScreenFadeSpeed;
+extern char scratchpad[1024];

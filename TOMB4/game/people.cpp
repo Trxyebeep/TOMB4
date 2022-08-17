@@ -9,6 +9,7 @@
 #include "objects.h"
 #include "box.h"
 #include "../specific/3dmath.h"
+#include "lara.h"
 
 short GunShot(long x, long y, long z, short speed, short yrot, short room_number)
 {

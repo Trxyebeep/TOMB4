@@ -20,6 +20,11 @@
 #include "../game/camera.h"
 #include "gamemain.h"
 #include "LoadSave.h"
+#include "file.h"
+#include "../game/lara.h"
+#include "../game/deltapak.h"
+#include "../game/health.h"
+#include "../game/control.h"
 #ifdef GENERAL_FIXES
 #include "../game/text.h"
 #include "../game/gameflow.h"
@@ -27,11 +32,14 @@
 #include "../game/spotcam.h"
 #include "../game/effect2.h"
 #endif
-#include "file.h"
 
 D3DTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];
 long GlobalAlpha = 0xFF000000;
+long GlobalAmbient;
+
+float AnimatingTexturesV[16][8][3];
+static short AnimatingTexturesVOffset;
 
 void phd_PutPolygons(short* objptr, long clip)	//whore
 {
@@ -486,21 +494,21 @@ void RenderLoadPic(long unused)
 {
 	short poisoned;
 
-	camera.pos.y = load_cam.y;
-	camera.pos.x = load_cam.x;
-	camera.pos.z = load_cam.z;
+	camera.pos.y = gfLoadCam.y;
+	camera.pos.x = gfLoadCam.x;
+	camera.pos.z = gfLoadCam.z;
 	lara_item->pos.x_pos = camera.pos.x;
 	lara_item->pos.y_pos = camera.pos.y;
 	lara_item->pos.z_pos = camera.pos.z;
-	camera.target.x = load_target.x;
-	camera.target.y = load_target.y;
-	camera.target.z = load_target.z;
-	camera.pos.room_number = load_roomnum;
+	camera.target.x = gfLoadTarget.x;
+	camera.target.y = gfLoadTarget.y;
+	camera.target.z = gfLoadTarget.z;
+	camera.pos.room_number = gfLoadRoom;
 #ifdef GENERAL_FIXES
-	camera.underwater = room[load_roomnum].flags & ROOM_UNDERWATER;
+	camera.underwater = room[gfLoadRoom].flags & ROOM_UNDERWATER;
 #endif
 
-	if (load_roomnum == 255)
+	if (gfLoadRoom == 255)
 		return;
 
 	KillActiveBaddies((ITEM_INFO*)0xABCDEF);
@@ -585,8 +593,10 @@ void S_InitialisePolyList()
 	
 	if (App.dx.Flags & 0x80)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &rect, D3DCLEAR_TARGET, col, 1.0F, 0));
+#ifndef GENERAL_FIXES
 	else
 		ClearFakeDevice(App.dx.lpD3DDevice, 1, &rect, D3DCLEAR_TARGET, col, 1.0F, 0);
+#endif
 
 	_BeginScene();
 	InitBuckets();

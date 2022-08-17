@@ -26,6 +26,8 @@
 #ifdef FOOTPRINTS
 #include "footprnt.h"
 #endif
+#include "lara.h"
+#include "gameflow.h"
 
 static BITE_INFO EnemyBites[2] =
 {
@@ -65,7 +67,7 @@ static long draw_room_list[128];
 static long room_list_start = 0;
 static long room_list_end = 0;
 static long number_draw_rooms;
-static short draw_rooms[100];
+static short draw_rooms[200];
 static short ClipRoomNum;
 
 static long camera_underwater;

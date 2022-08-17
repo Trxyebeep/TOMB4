@@ -12,7 +12,9 @@
 #include "function_table.h"
 #include "../game/draw.h"
 #include "winmain.h"
+#include "../game/lara.h"
 
+ITEM_INFO* current_item;
 long StaticMeshShade;
 long MaxRoomLights;
 

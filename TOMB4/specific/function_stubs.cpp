@@ -84,6 +84,11 @@ void* game_malloc(long size)
 	}
 }
 
+void Log(ulong type, const char* s, ...)
+{
+	//not empty originally, obv
+}
+
 void inject_funcstubs(bool replace)
 {
 	INJECT(0x00490E80, other_log, replace);

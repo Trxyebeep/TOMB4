@@ -22,6 +22,8 @@
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
+#include "lara.h"
+#include "savegame.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)	//long -> char truncation bullshit
@@ -315,6 +317,9 @@ static short options_table[NUM_INVOBJ] =
 
 static short optmessages[9] = { TXT_USE, TXT_CHOOSE_AMMO, TXT_COMBINE, TXT_SEPERATE, TXT_EQUIP, TXT_COMBINE_WITH, TXT_LOAD_GAME, TXT_SAVE_GAME, TXT_EXAMINE };
 
+long GLOBAL_enterinventory = NO_ITEM;
+long GLOBAL_inventoryitemchosen = NO_ITEM;
+long GLOBAL_lastinvitem = NO_ITEM;
 long InventoryActive = 0;
 
 static RINGME* rings[2];

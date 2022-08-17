@@ -10,6 +10,8 @@
 #include "items.h"
 #include "sound.h"
 #include "lara_states.h"
+#include "lara.h"
+#include "../specific/file.h"
 
 static short StarGateBounds[24] =
 {
@@ -18,6 +20,8 @@ static short StarGateBounds[24] =
 	-512, -384, -1024, 0, -96, 96,
 	384, 512, -1024, 0, -96, 96
 };
+
+short GlobalCollisionBounds[6];
 
 void ShiftItem(ITEM_INFO* item, COLL_INFO* coll)
 {

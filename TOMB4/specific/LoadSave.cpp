@@ -26,6 +26,7 @@
 #include "../game/control.h"
 #include "../tomb4/troyestuff.h"
 #endif
+#include "../game/lara.h"
 
 static long MonoScreenX[4] = { 0, 256, 512, 640 };
 static long MonoScreenY[3] = { 0, 256, 480 };

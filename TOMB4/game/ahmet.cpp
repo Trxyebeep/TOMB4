@@ -17,6 +17,7 @@
 #include "../specific/3dmath.h"
 #include "people.h"
 #include "effects.h"
+#include "lara.h"
 
 short ScalesBounds[12] = { -1408, -640, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static BITE_INFO ahmet_bite = { 0, 0, 0, 11 };

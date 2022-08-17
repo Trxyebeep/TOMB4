@@ -10,6 +10,7 @@
 #include "debris.h"
 #include "sound.h"
 #include "control.h"
+#include "lara.h"
 
 static BITE_INFO templar_hit{ 0, 0, 0, 11 };
 

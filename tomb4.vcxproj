@@ -247,7 +247,6 @@
     <ClInclude Include="TOMB4\game\wraith.h" />
     <ClInclude Include="TOMB4\global\math_tbls.h" />
     <ClInclude Include="TOMB4\global\types.h" />
-    <ClInclude Include="TOMB4\global\vars.h" />
     <ClInclude Include="TOMB4\specific\3dmath.h" />
     <ClInclude Include="TOMB4\specific\audio.h" />
     <ClInclude Include="TOMB4\specific\clipping.h" />
@@ -264,7 +263,6 @@
     <ClInclude Include="TOMB4\specific\input.h" />
     <ClInclude Include="TOMB4\specific\lighting.h" />
     <ClInclude Include="TOMB4\specific\LoadSave.h" />
-    <ClInclude Include="TOMB4\specific\mmx.h" />
     <ClInclude Include="TOMB4\specific\output.h" />
     <ClInclude Include="TOMB4\specific\polyinsert.h" />
     <ClInclude Include="TOMB4\specific\registry.h" />
@@ -377,7 +375,6 @@
     <ClCompile Include="TOMB4\specific\input.cpp" />
     <ClCompile Include="TOMB4\specific\lighting.cpp" />
     <ClCompile Include="TOMB4\specific\LoadSave.cpp" />
-    <ClCompile Include="TOMB4\specific\mmx.cpp" />
     <ClCompile Include="TOMB4\specific\output.cpp" />
     <ClCompile Include="TOMB4\specific\polyinsert.cpp" />
     <ClCompile Include="TOMB4\specific\registry.cpp" />

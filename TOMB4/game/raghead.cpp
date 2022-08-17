@@ -12,6 +12,8 @@
 #include "people.h"
 #include "lara_states.h"
 #include "effects.h"
+#include "lara.h"
+#include "gameflow.h"
 
 static BITE_INFO raghead_fire = { 0, -16, 200, 11 };
 static BITE_INFO raghead_blade = { 0, 0, 0, 15 };

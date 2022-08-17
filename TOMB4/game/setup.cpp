@@ -60,6 +60,10 @@
 #include "camera.h"
 #include "horse.h"
 #include "../specific/3dmath.h"
+#include "lara.h"
+#include "deltapak.h"
+#include "gameflow.h"
+#include "../specific/file.h"
 
 void ObjectObjects()
 {
@@ -318,7 +322,7 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 		obj->control = ControlAnimatingSlots;
-	//	obj->collision = PuzzleHoleCollision;
+		obj->collision = PuzzleHoleCollision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -2098,9 +2102,9 @@ void SetupGame()
 
 void inject_setup(bool replace)
 {
-	INJECT(0x0045E1F0, ObjectObjects, 0);
-	INJECT(0x0045DC10, TrapObjects, 0);
-	INJECT(0x0045C1E0, BaddyObjects, 0);
+	INJECT(0x0045E1F0, ObjectObjects, replace);
+	INJECT(0x0045DC10, TrapObjects, replace);
+	INJECT(0x0045C1E0, BaddyObjects, replace);
 	INJECT(0x0045ED30, BuildOutsideTable, replace);
 	INJECT(0x0045F1C0, reset_cutseq_vars, replace);
 	INJECT(0x0045F1A0, ClearFootPrints, replace);

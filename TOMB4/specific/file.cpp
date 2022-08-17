@@ -25,10 +25,33 @@
 #include "../game/effects.h"
 #include "../game/sound.h"
 #include "winmain.h"
+#include "../game/lara.h"
+#include "output.h"
+#include "../game/gameflow.h"
 
 TEXTURESTRUCT* textinfo;
 SPRITESTRUCT* spriteinfo;
 THREAD LevelLoadingThread;
+
+TEXTURESTRUCT* AnimatingWaterfalls[3];
+long AnimatingWaterfallsV[3];
+
+CHANGE_STRUCT* changes;
+RANGE_STRUCT* ranges;
+AIOBJECT* AIObjects;
+short* aranges;
+short* frames;
+short* commands;
+short* floor_data;
+short* mesh_base;
+long nAnimUVRanges;
+long number_cameras;
+short nAIObjects;
+
+static FILE* level_fp;
+static char* FileData;
+static char* CompressedData;
+static long num_items;
 
 unsigned int __stdcall LoadLevel(void* name)
 {

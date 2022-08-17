@@ -1,4 +1,6 @@
 #pragma once
+#include "math_tbls.h"
+
 #pragma pack(push, 1)
 
 /*typedefs*/
@@ -48,6 +50,25 @@ do \
 #define SetCutPlayed(num)	(CutSceneTriggered |= 1 << (num))
 #define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
 #define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
+
+#define NO_HEIGHT	-32512
+#define NO_ITEM	-1
+#define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
+#define WINDOW_STYLE	(WS_OVERLAPPED | WS_BORDER | WS_CAPTION)
+#define W2V_SHIFT	14
+#define MAX_SAMPLES	370
+
+#ifdef GENERAL_FIXES
+#define MAX_DYNAMICS	64
+#else
+#define MAX_DYNAMICS	32
+#endif
+
+#ifdef GENERAL_FIXES
+#define MALLOC_SIZE	15000000	//15MB
+#else
+#define MALLOC_SIZE	5000000		//5MB
+#endif
 
 /********************DX defs********************/
 #define LPDIRECTDRAWX			LPDIRECTDRAW4

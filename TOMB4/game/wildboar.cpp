@@ -4,6 +4,9 @@
 #include "objects.h"
 #include "effects.h"
 #include "../specific/function_stubs.h"
+#include "lara.h"
+#include "control.h"
+#include "lot.h"
 
 static BITE_INFO wildboar_bite = { 0, 0, 0, 14 };
 

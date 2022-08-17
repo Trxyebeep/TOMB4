@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_file(bool replace);
 
@@ -31,3 +31,18 @@ bool Decompress(char* pDest, char* pCompressed, long compressedSize, long size);
 extern TEXTURESTRUCT* textinfo;
 extern SPRITESTRUCT* spriteinfo;
 extern THREAD LevelLoadingThread;
+
+extern TEXTURESTRUCT* AnimatingWaterfalls[3];
+extern long AnimatingWaterfallsV[3];
+
+extern CHANGE_STRUCT* changes;
+extern RANGE_STRUCT* ranges;
+extern AIOBJECT* AIObjects;
+extern short* aranges;
+extern short* frames;
+extern short* commands;
+extern short* floor_data;
+extern short* mesh_base;
+extern long nAnimUVRanges;
+extern long number_cameras;
+extern short nAIObjects;

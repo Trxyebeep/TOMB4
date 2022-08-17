@@ -8,6 +8,7 @@
 #include "../specific/3dmath.h"
 #include "../specific/function_stubs.h"
 #include "effects.h"
+#include "lara.h"
 
 static BITE_INFO sphinx_bite = { 0, 0, 0, 6 };
 

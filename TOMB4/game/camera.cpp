@@ -13,6 +13,8 @@
 #include "effect2.h"
 #include "../tomb4/tomb4.h"
 #endif
+#include "lara.h"
+#include "savegame.h"
 
 CAMERA_INFO camera;
 
@@ -30,6 +32,8 @@ long BinocularOn = 0;
 long BinocularRange = 0;
 long ExittingBinos = 0;
 long LaserSight = 0;
+
+SHATTER_ITEM ShatterItem;
 
 static OLD_CAMERA old_cam;
 static GAME_VECTOR last_target;

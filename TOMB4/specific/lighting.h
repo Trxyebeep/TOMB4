@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_lighting(bool replace);
 
@@ -19,5 +19,6 @@ void InitObjectLighting(ITEM_INFO* item);
 void ClearObjectLighting();
 void CalcAmbientLight(ITEM_INFO* item);
 
+extern ITEM_INFO* current_item;
 extern long StaticMeshShade;
 extern long MaxRoomLights;

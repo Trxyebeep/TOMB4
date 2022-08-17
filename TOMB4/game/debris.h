@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_debris(bool replace);
 
@@ -11,3 +11,4 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 extern DEBRIS_STRUCT debris[256];
 extern long next_debris;
 extern short DebrisFlags;
+extern char tsv_buffer[16384];

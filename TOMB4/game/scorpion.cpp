@@ -8,6 +8,9 @@
 #include "items.h"
 #include "../specific/function_stubs.h"
 #include "effects.h"
+#include "lara.h"
+#include "deltapak.h"
+#include "gameflow.h"
 
 static BITE_INFO stinger{ 0, 0, 0, 8 };		//for the big one
 static BITE_INFO pincer{ 0, 0, 0, 23 };
@@ -438,7 +441,7 @@ void SmlscorpControl(short item_number)
 
 					if (item->current_anim_state == 5)
 					{
-						if (gfCurrentLevel > 3u)
+						if (gfCurrentLevel > 3)
 							lara.dpoisoned += 512;
 
 						CreatureEffectT(item, &s_stinger, 3, item->pos.y_rot + 0x8000, DoBloodSplat);

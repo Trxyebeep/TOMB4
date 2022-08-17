@@ -15,6 +15,62 @@
 #include "gamemain.h"
 #include "LoadSave.h"
 
+static void (__stdcall* BinkCopyToBuffer)(BINK_STRUCT*, LPVOID, LONG, long, long, long, long);
+static void(__stdcall* BinkOpenDirectSound)(ulong);
+static void (__stdcall* BinkSetSoundSystem)(LPVOID, LPDIRECTSOUND);
+static LPVOID (__stdcall* BinkOpen)(char*, ulong);
+static long (__stdcall* BinkDDSurfaceType)(LPDIRECTDRAWSURFACEX);
+static long (__stdcall* BinkDoFrame)(BINK_STRUCT*);
+static void (__stdcall* BinkNextFrame)(BINK_STRUCT*);
+static long (__stdcall* BinkWait)(BINK_STRUCT*);
+static void (__stdcall* BinkClose)(BINK_STRUCT*);
+
+static BINK_STRUCT* Bink;
+static LPDIRECTDRAWSURFACEX BinkSurface;
+static long BinkSurfaceType;
+
+#ifdef GENERAL_FIXES
+#define GET_DLL_PROC(dll, proc, n) \
+{ \
+	*(FARPROC *)&(proc) = GetProcAddress((dll), n); \
+	if(!proc) throw #proc; \
+}
+
+bool LoadBinkStuff()
+{
+	static HMODULE hBinkW32;
+
+	hBinkW32 = LoadLibrary("binkw32.dll");
+
+	if (!hBinkW32)
+		return 0;
+
+	try
+	{	
+		//ugh
+		GET_DLL_PROC(hBinkW32, BinkCopyToBuffer, "_BinkCopyToBuffer@28");
+		GET_DLL_PROC(hBinkW32, BinkOpenDirectSound, "_BinkOpenDirectSound@4");
+		GET_DLL_PROC(hBinkW32, BinkSetSoundSystem, "_BinkSetSoundSystem@8");
+		GET_DLL_PROC(hBinkW32, BinkOpen, "_BinkOpen@8");
+		GET_DLL_PROC(hBinkW32, BinkDDSurfaceType, "_BinkDDSurfaceType@4");
+		GET_DLL_PROC(hBinkW32, BinkDoFrame, "_BinkDoFrame@4");
+		GET_DLL_PROC(hBinkW32, BinkNextFrame, "_BinkNextFrame@4");
+		GET_DLL_PROC(hBinkW32, BinkWait, "_BinkWait@4");
+		GET_DLL_PROC(hBinkW32, BinkClose, "_BinkClose@4");
+		//end of ugh
+	}
+	catch (LPCTSTR name)
+	{
+		name = "warning C4101: 'name': unreferenced local variable.... ok!";
+		FreeLibrary(hBinkW32);
+		hBinkW32 = 0;
+		return 0;
+	}
+
+	return 1;
+}
+#endif
+
 void ShowBinkFrame()
 {
 	DDSURFACEDESCX surf;

@@ -3,6 +3,7 @@
 #include "objects.h"
 #include "../specific/function_stubs.h"
 #include "control.h"
+#include "lara.h"
 
 void InitialiseJeanYves(short item_number)
 {

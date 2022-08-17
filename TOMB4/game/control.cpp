@@ -36,9 +36,22 @@
 #include "rope.h"
 #include "voncroy.h"
 #include "../specific/gamemain.h"
+#include "lara.h"
+#include "deltapak.h"
+#include "health.h"
 #ifdef CUTSEQ_SKIPPER
 #include "../specific/dxshell.h"
 #endif
+#include "savegame.h"
+#include "../specific/file.h"
+
+ITEM_INFO* items;
+ANIM_STRUCT* anims;
+ROOM_INFO* room;
+short** meshes;
+long* bones;
+long level_items;
+short number_rooms;
 
 short* OutsideRoomOffsets;
 char* OutsideRoomTable;
@@ -48,6 +61,7 @@ MESH_INFO* SmashedMesh[16];
 short SmashedMeshRoom[16];
 short SmashedMeshCount = 0;
 
+long flipmap[10];
 long flip_stats[10];
 long flip_status;
 long flipeffect = -1;
@@ -68,18 +82,25 @@ uchar IsAtmospherePlaying;
 char cd_flags[128];
 
 ulong FmvSceneTriggered;
+ulong CutSceneTriggered;
 long SetDebounce;
 long framecount = 0;
 long reset_flag = 0;
 long WeaponDelay = 0;
+long LaserSightX;
+long LaserSightY;
+long LaserSightZ;
+ushort GlobalCounter = 0;
 short XSoff1;
 short XSoff2;
 short YSoff1;
 short YSoff2;
 short ZSoff1;
 short ZSoff2;
+short FXType;
 char PoisonFlag;
 char TriggerTimer = 0;
+char LaserSightActive = 0;
 
 static PHD_VECTOR ClosestCoord;
 static long ClosestItem;

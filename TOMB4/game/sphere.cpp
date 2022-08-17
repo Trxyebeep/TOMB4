@@ -2,6 +2,15 @@
 #include "sphere.h"
 #include "../specific/3dmath.h"
 #include "draw.h"
+#include "lara.h"
+#include "objects.h"
+#include "control.h"
+
+SPHERE Slist[34];
+char GotLaraSpheres;
+
+static SPHERE LaraSpheres[15];
+static long NumLaraSpheres;
 
 long GetSpheres(ITEM_INFO* item, SPHERE* ptr, long WorldSpace)
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_specificfx(bool replace);
 
@@ -42,3 +42,6 @@ void DrawBlood();
 void S_DrawSmokeSparks();
 void DoUwEffect();
 void DrawLightning();
+
+extern MESH_DATA* targetMeshP;
+extern long DoFade;

@@ -27,6 +27,11 @@
 #include "camera.h"
 #include "draw.h"
 #include "../specific/input.h"
+#include "laramisc.h"
+#include "../specific/file.h"
+
+static short jroomies[22];
+static char dont_exit_jeep = 0;
 
 void InitialiseJeep(short item_number)
 {

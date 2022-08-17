@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_control(bool replace);
 
@@ -38,6 +38,14 @@ void AnimateItem(ITEM_INFO* item);
 long RayBoxIntersect(PHD_VECTOR* min, PHD_VECTOR* max, PHD_VECTOR* mid, PHD_VECTOR* dir, PHD_VECTOR* Coord);
 long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS* ItemPos, PHD_VECTOR* Coord, short item_number);
 
+extern ITEM_INFO* items;
+extern ANIM_STRUCT* anims;
+extern ROOM_INFO* room;
+extern short** meshes;
+extern long* bones;
+extern long level_items;
+extern short number_rooms;
+
 extern short* OutsideRoomOffsets;
 extern char* OutsideRoomTable;
 extern short IsRoomOutsideNo;
@@ -46,6 +54,7 @@ extern MESH_INFO* SmashedMesh[16];
 extern short SmashedMeshRoom[16];
 extern short SmashedMeshCount;
 
+extern long flipmap[10];
 extern long flip_stats[10];
 extern long flip_status;
 extern long flipeffect;
@@ -66,18 +75,25 @@ extern uchar IsAtmospherePlaying;
 extern char cd_flags[128];
 
 extern ulong FmvSceneTriggered;
+extern ulong CutSceneTriggered;
 extern long SetDebounce;
 extern long framecount;
 extern long reset_flag;
 extern long WeaponDelay;
+extern long LaserSightX;
+extern long LaserSightY;
+extern long LaserSightZ;
+extern ushort GlobalCounter;
 extern short XSoff1;
 extern short XSoff2;
 extern short YSoff1;
 extern short YSoff2;
 extern short ZSoff1;
 extern short ZSoff2;
+extern short FXType;
 extern char PoisonFlag;
 extern char TriggerTimer;
+extern char LaserSightActive;
 
 #ifdef GENERAL_FIXES
 extern char DeathMenuActive;

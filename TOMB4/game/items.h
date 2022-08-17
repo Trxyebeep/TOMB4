@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_items(bool replace);
 
@@ -17,3 +17,4 @@ void KillEffect(short fx_num);
 void EffectNewRoom(short fx_num, short room_num);
 
 extern short next_fx_active;
+extern short next_item_active;

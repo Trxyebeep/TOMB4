@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 extern tomb4_options tomb4;
 void init_tomb4_stuff();

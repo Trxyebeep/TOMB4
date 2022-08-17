@@ -9,7 +9,6 @@
 #include "function_stubs.h"
 #include "drawroom.h"
 #include "winmain.h"
-#include "mmx.h"
 #include "../game/debris.h"
 #include "../game/rope.h"
 #include "../game/tomb4fx.h"
@@ -24,6 +23,8 @@
 #endif
 #include "texture.h"
 #include "file.h"
+#include "../game/lara.h"
+#include "../game/gameflow.h"
 
 #define LINE_POINTS	4	//number of points in each grid line
 #define POINT_HEIGHT_CORRECTION	196	//if the difference between the floor below Lara and the floor height below the point is greater than this value, point height is corrected to lara's floor level.
@@ -187,7 +188,15 @@ uchar SplashLinks[347]
 	0, 0, 0, 0
 };
 
+MESH_DATA* targetMeshP;
+long DoFade;
+
+static MESH_DATA* binocsMeshP;
 static WATER_DUST uwdust[256];
+static long FadeVal;
+static long FadeStep;
+static long FadeCnt;
+static long FadeEnd;
 
 #ifdef SMOOTH_SHADOWS
 static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
@@ -1458,9 +1467,15 @@ void OutputSky()
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
 	SortPolyList(SortCount, SortList);
 	RestoreFPCW(FPCW);
+
+#ifdef GENERAL_FIXES
+	DrawSortList();
+#else
 	MMXSetPerspecLimit(0);
 	DrawSortList();
 	MMXSetPerspecLimit(0.6F);
+#endif
+
 	MungeFPCW(&FPCW);
 	InitBuckets();
 	InitialiseSortList();

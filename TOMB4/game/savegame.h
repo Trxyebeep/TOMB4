@@ -1,5 +1,5 @@
 #pragma once
-#include "../global/vars.h"
+#include "../global/types.h"
 
 void inject_savegame(bool replace);
 
@@ -18,3 +18,5 @@ void sgRestoreGame();
 long OpenSaveGame(uchar current_level, long saving);
 void SaveLevelData(long FullSave);
 void RestoreLevelData(long FullSave);
+
+extern SAVEGAME_INFO savegame;

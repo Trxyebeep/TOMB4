@@ -12,6 +12,8 @@
 #include "sphere.h"
 #include "camera.h"
 #include "effect2.h"
+#include "lara.h"
+#include "../specific/file.h"
 
 BOX_INFO* boxes;
 ushort* overlap;

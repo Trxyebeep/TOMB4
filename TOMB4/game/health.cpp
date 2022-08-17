@@ -17,6 +17,19 @@
 #ifdef GENERAL_FIXES
 #include "../specific/input.h"
 #endif
+#include "lara.h"
+#include "deltapak.h"
+#include "savegame.h"
+#include "gameflow.h"
+
+DISPLAYPU pickups[8];
+short PickupX;
+short CurrentPickup;
+
+long health_bar_timer = 0;
+
+static short PickupY;
+static short PickupVel;
 
 long FlashIt()
 {

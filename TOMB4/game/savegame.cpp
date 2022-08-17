@@ -14,6 +14,19 @@
 #include "../specific/function_stubs.h"
 #include "camera.h"
 #include "voncroy.h"
+#include "lara.h"
+#include "newinv.h"
+#include "scarab.h"
+#include "senet.h"
+#include "switch.h"
+#include "rope.h"
+#include "gameflow.h"
+#include "../specific/file.h"
+
+SAVEGAME_INFO savegame;
+
+static char* SGpoint = 0;
+static long SGcount = 0;
 
 long CheckSumValid(char* buffer)
 {

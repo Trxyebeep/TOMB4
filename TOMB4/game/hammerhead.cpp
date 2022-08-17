@@ -5,6 +5,7 @@
 #include "../specific/3dmath.h"
 #include "effects.h"
 #include "control.h"
+#include "lara.h"
 
 static BITE_INFO hammerhead_bite = { 0, 0, 0, 12 };
 

@@ -13,6 +13,8 @@
 #ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
 #endif
+#include "lara.h"
+#include "gameflow.h"
 
 short* GLaraShadowframe;
 long lara_matrices[180];

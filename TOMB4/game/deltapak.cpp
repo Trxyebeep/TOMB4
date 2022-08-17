@@ -20,36 +20,97 @@
 #include "spotcam.h"
 #include "camera.h"
 #include "../specific/winmain.h"
+#include "lara.h"
+#include "gameflow.h"
 
-short frig_shadow_bbox[6] = { -165, 150, -777, 1, -87, 78 };
-short frig_jeep_shadow_bbox[6] = { -600, 600, -777, 1, -600, 600 };
-short troop_chat_ranges4[14] = { 485, 587, 558, 625, 639, 652, 661, 721, 729, 793, 805, 872, -1, -1 };
-short lara_chat_ranges6[4] = { 257, 345, -1, -1 };
-short voncroy_chat_ranges6[4] = { 6, 209, -1, -1 };
-short lara_chat_ranges7[4] = { 675, 877, -1, -1 };
-short voncroy_chat_ranges7[4] = { 396, 654, -1, -1 };
-short lara_chat_ranges8[4] = { 592, 688, -1, -1 };
-short voncroy_chat_ranges8[6] = { 160, 273, 323, 446, -1, -1 };
-short lara_chat_ranges9[18] = { 149, 276, 297, 348, 844, 957, 1180, 1217, 1249, 1277, 2231, 2251, 2714, 2786, 3019, 3037, -1, -1 };
-short voncroy_chat_ranges9[22] = { 12, 24, 30, 145, 361, 528, 539, 556, 564, 577, 581, 765, 781, 839, 985, 1136, 1921, 2084, 2464, 2645, -1, -1 };
-short lara_chat_ranges10[18] = { 283, 296, 305, 603, 1244, 1312, 1759, 1795, 1806, 1848, 1878, 1912, 1925, 1947, 1960, 2000, -1, -1 };
-short voncroy_chat_ranges10[16] = { 963, 1056, 1069, 1137, 1153, 1204, 1339, 1739, 2027, 2193, 2200, 2333, 2368, 2406, -1, -1 };
-short lara_chat_ranges11[12] = { 1216, 1232, 1241, 1323, 1337, 1393, 1678, 1706, 1927, 1954, -1, -1 };
-short captain_chat_ranges11[12] = { 1141, 1181, 1509, 1666, 1758, 1914, 1964, 2016, 2194, 2261, -1, -1 };
-short lara_chat_ranges15[10] = { 684, 715, 1314, 1372, 1392, 1417, 1792, 1824, -1, -1 };
-short voncroy_chat_ranges15[10] = { 290, 317, 330, 375, 388, 673, 729, 1301, -1, -1 };
-short lara_chat_ranges16[10] = { 386, 419, 430, 489, 1021, 1058, 1072, 1175, -1, -1 };
-short jeanyves_chat_ranges16[18] = { 97, 136, 174, 197, 214, 308, 329, 372, 511, 672, 684, 781, 812, 845, 863, 988, -1, -1 };
-short voncroy_chat_ranges16[10] = { 1614, 1641, 1657, 1726, 1741, 1760, 1775, 1974, -1, -1 };
-short jeanyves_chat_ranges17[24] = { 45, 86, 122, 196, 258, 370, 398, 445, 467, 490, 518, 537, 547, 564, 579, 619, 641, 650, 668, 714, 733, 788, -1, -1 };
-short jeanyves_chat_ranges18[14] = { 47, 59, 75, 113, 123, 250, 331, 419, 437, 570, 592, 652, -1, -1 };
-short jeanyves_chat_ranges19[20] = { 224, 251, 288, 304, 328, 472, 502, 794, 1028, 1042, 1067, 1182, 1206, 1294, 1330, 1386, 1402, 1427, -1, -1 };
-short jeanyves_chat_ranges20[28] = { 150, 158, 174, 187, 208, 312, 334, 418, 437, 457, 479, 525, 547, 623, 640, 662, 751, 811, 828, 859, 879, 894, 908, 942, 955, 962, -1, -1 };
-short lara_chat_ranges24[16] = { 91, 122, 139, 172, 504, 552, 565, 637, 648, 678, 1596, 1616, 1774, 1821, -1, -1 };
-short troop_chat_ranges24[16] = { 209, 490, 701, 975, 1146, 1583, 1654, 1768, 1839, 1879, 1893, 1930, 1940, 2160, -1, -1 };
-short lara_chat_ranges25[14] = { 476, 578, 976, 1018, 1028, 1069, 1317, 1340, 2065, 2178, 2835, 2865, -1, -1 };
-short troop_chat_ranges25[26] = { 289, 363, 378, 449, 596, 604, 635, 744, 764, 780, 811, 959, 1088, 1157, 1191, 1313, 1360, 2046, 2227, 2295, 2330, 2821, 2877, 3322, -1, -1 };
-short troop_chat_ranges26[4] = { 108, 432, -1, -1 };
+static short frig_shadow_bbox[6] = { -165, 150, -777, 1, -87, 78 };
+static short frig_jeep_shadow_bbox[6] = { -600, 600, -777, 1, -600, 600 };
+static short troop_chat_ranges4[14] = { 485, 587, 558, 625, 639, 652, 661, 721, 729, 793, 805, 872, -1, -1 };
+static short lara_chat_ranges6[4] = { 257, 345, -1, -1 };
+static short voncroy_chat_ranges6[4] = { 6, 209, -1, -1 };
+static short lara_chat_ranges7[4] = { 675, 877, -1, -1 };
+static short voncroy_chat_ranges7[4] = { 396, 654, -1, -1 };
+static short lara_chat_ranges8[4] = { 592, 688, -1, -1 };
+static short voncroy_chat_ranges8[6] = { 160, 273, 323, 446, -1, -1 };
+static short lara_chat_ranges9[18] = { 149, 276, 297, 348, 844, 957, 1180, 1217, 1249, 1277, 2231, 2251, 2714, 2786, 3019, 3037, -1, -1 };
+static short voncroy_chat_ranges9[22] = { 12, 24, 30, 145, 361, 528, 539, 556, 564, 577, 581, 765, 781, 839, 985, 1136, 1921, 2084, 2464, 2645, -1, -1 };
+static short lara_chat_ranges10[18] = { 283, 296, 305, 603, 1244, 1312, 1759, 1795, 1806, 1848, 1878, 1912, 1925, 1947, 1960, 2000, -1, -1 };
+static short voncroy_chat_ranges10[16] = { 963, 1056, 1069, 1137, 1153, 1204, 1339, 1739, 2027, 2193, 2200, 2333, 2368, 2406, -1, -1 };
+static short lara_chat_ranges11[12] = { 1216, 1232, 1241, 1323, 1337, 1393, 1678, 1706, 1927, 1954, -1, -1 };
+static short captain_chat_ranges11[12] = { 1141, 1181, 1509, 1666, 1758, 1914, 1964, 2016, 2194, 2261, -1, -1 };
+static short lara_chat_ranges15[10] = { 684, 715, 1314, 1372, 1392, 1417, 1792, 1824, -1, -1 };
+static short voncroy_chat_ranges15[10] = { 290, 317, 330, 375, 388, 673, 729, 1301, -1, -1 };
+static short lara_chat_ranges16[10] = { 386, 419, 430, 489, 1021, 1058, 1072, 1175, -1, -1 };
+static short jeanyves_chat_ranges16[18] = { 97, 136, 174, 197, 214, 308, 329, 372, 511, 672, 684, 781, 812, 845, 863, 988, -1, -1 };
+static short voncroy_chat_ranges16[10] = { 1614, 1641, 1657, 1726, 1741, 1760, 1775, 1974, -1, -1 };
+static short jeanyves_chat_ranges17[24] = { 45, 86, 122, 196, 258, 370, 398, 445, 467, 490, 518, 537, 547, 564, 579, 619, 641, 650, 668, 714, 733, 788, -1, -1 };
+static short jeanyves_chat_ranges18[14] = { 47, 59, 75, 113, 123, 250, 331, 419, 437, 570, 592, 652, -1, -1 };
+static short jeanyves_chat_ranges19[20] = { 224, 251, 288, 304, 328, 472, 502, 794, 1028, 1042, 1067, 1182, 1206, 1294, 1330, 1386, 1402, 1427, -1, -1 };
+static short jeanyves_chat_ranges20[28] = { 150, 158, 174, 187, 208, 312, 334, 418, 437, 457, 479, 525, 547, 623, 640, 662, 751, 811, 828, 859, 879, 894, 908, 942, 955, 962, -1, -1 };
+static short lara_chat_ranges24[16] = { 91, 122, 139, 172, 504, 552, 565, 637, 648, 678, 1596, 1616, 1774, 1821, -1, -1 };
+static short troop_chat_ranges24[16] = { 209, 490, 701, 975, 1146, 1583, 1654, 1768, 1839, 1879, 1893, 1930, 1940, 2160, -1, -1 };
+static short lara_chat_ranges25[14] = { 476, 578, 976, 1018, 1028, 1069, 1317, 1340, 2065, 2178, 2835, 2865, -1, -1 };
+static short troop_chat_ranges25[26] = { 289, 363, 378, 449, 596, 604, 635, 744, 764, 780, 811, 959, 1088, 1157, 1191, 1313, 1360, 2046, 2227, 2295, 2330, 2821, 2877, 3322, -1, -1 };
+static short troop_chat_ranges26[4] = { 108, 432, -1, -1 };
+
+static CUTSEQ_ROUTINES cutseq_control_routines[31] =
+{
+	{0, 0, 0},
+	{do_spade_meshswap, 0, 0},
+	{0, 0, do_spade_meshswap},
+	{0, third_cutseq_control, 0},
+	{fourth_cutseq_init, fourth_cutseq_control, fourth_cutseq_end},
+	{0, fifth_cutseq_control, fifth_cutseq_end},
+	{sixth_cutseq_init, sixth_cutseq_control, sixth_cutseq_end},
+	{seventh_cutseq_init, seventh_control, 0},
+	{seventh_cutseq_init, eighth_control, 0},
+	{ninth_cutseq_init, ninth_control, 0},
+	{tenth_cutseq_init, tenth_cutseq_control, tenth_cutseq_end},
+	{eleventh_cutseq_init, eleventh_cutseq_control, 0},
+	{twelth_cutseq_init, 0, twelth_cutseq_end},
+	{0, 0, thirteen_end},
+	{0, fourteen_control, fourteen_end},
+	{fifteen_init, fifteen_control, fifteen_end},
+	{sixteen_init, sixteen_control, sixteen_end},
+	{nineteen_init, seventeen_control, seventeen_end},
+	{eighteen_init, eighteen_control, eighteen_end},
+	{nineteen_init, nineteen_control, nineteen_end},
+	{nineteen_init, twenty_control, twenty_end},
+	{twentyone_init, 0, twentyone_end},
+	{twentytwo_init, 0, twentytwo_end},
+	{twentythree_init, twentythree_control, twentythree_end},
+	{twentyfour_init, twentyfour_control, twentyfour_end},
+	{twentyfive_init, twentyfive_control, twentyfive_end},
+	{twentyfive_init, twentysix_control, twentyfive_end},
+	{twentyseven_init, twentyseven_control, twentyseven_end},
+	{special1_init, 0, special1_end},
+	{special2_init, 0, special2_end},
+	{special2_init, special3_control, special3_end}
+};
+
+long cutseq_trig = 0;
+long cutseq_num = 0;
+long GLOBAL_playing_cutseq = 0;
+long GLOBAL_cutseq_frame;
+
+static NEW_CUTSCENE* GLOBAL_cutme;
+static ITEM_INFO* horus_item_thing;
+static PACKNODE* camera_pnodes;
+static PACKNODE* actor_pnodes[10];
+static ITEM_INFO duff_item[10];
+static char* GLOBAL_resident_depack_buffers;	//useless
+static camera_type GLOBAL_oldcamtype;
+static ulong cutseq_meshbits[10];
+static ulong cutseq_meshswapbits[10];
+static long GLOBAL_numcutseq_frames;
+static long lastcamnum;
+static long numnailed;
+static short old_lara_holster;
+static short temp_rotation_buffer[160];
+static char cutseq_busy_timeout = 0;
+static char lara_chat_cnt = 0;
+static char actor_chat_cnt = 0;
+static char old_status_flags[16];
 
 void handle_cutseq_triggering(long name)
 {

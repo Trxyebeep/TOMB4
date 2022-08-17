@@ -12,6 +12,7 @@
 #include "sound.h"
 #include "people.h"
 #include "newinv.h"
+#include "control.h"
 
 static BITE_INFO AGOffsets = { 0, 0, 0, 8 };
 

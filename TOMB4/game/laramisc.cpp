@@ -20,6 +20,13 @@
 #include "../tomb4/tomb4.h"
 #endif
 #include "../specific/input.h"
+#include "savegame.h"
+#include "gameflow.h"
+#include "../specific/file.h"
+
+COLL_INFO mycoll;
+
+static COLL_INFO* lara_coll = &mycoll;
 
 void LaraCheatGetStuff()
 {
