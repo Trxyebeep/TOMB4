@@ -426,7 +426,7 @@
     </Library>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Desktop\Lara13.ico" />
+    <Image Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

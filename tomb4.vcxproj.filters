@@ -716,6 +716,6 @@
     </Library>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Desktop\Lara13.ico" />
+    <Image Include="icon.ico" />
   </ItemGroup>
 </Project>
