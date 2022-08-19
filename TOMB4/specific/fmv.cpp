@@ -193,9 +193,3 @@ long PlayFmvNow(long num)
 	App.fmv = 0;
 	return 0;
 }
-
-void inject_fmv(bool replace)
-{
-	INJECT(0x0049C350, ShowBinkFrame, replace);
-	INJECT(0x0049C3E0, PlayFmvNow, replace);
-}

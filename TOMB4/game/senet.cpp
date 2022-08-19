@@ -565,18 +565,3 @@ void DrawGodHead(ITEM_INFO* item)
 	phd_bottom = phd_winheight;
 	phd_PopMatrix();
 }
-
-void inject_senet(bool replace)
-{
-	INJECT(0x0040F3B0, InitialiseSenet, replace);
-	INJECT(0x0040F4D0, MakeMove, replace);
-	INJECT(0x0040F480, SenetControl, replace);
-	INJECT(0x0040F320, CheckSenetWinner, replace);
-	INJECT(0x0040F600, InitialiseGameStix, replace);
-	INJECT(0x0040FC60, ThrowSticks, replace);
-	INJECT(0x0040F630, GameStixControl, replace);
-	INJECT(0x0040FF40, GameStixCollision, replace);
-	INJECT(0x0040FBD0, ShockwaveExplosion, replace);
-	INJECT(0x0040FCF0, ControlGodHead, replace);
-	INJECT(0x0040FDD0, DrawGodHead, replace);
-}

@@ -1464,18 +1464,3 @@ void CalculateCamera()
 		camera.flags = 0;
 	}
 }
-
-void inject_camera(bool replace)
-{
-	INJECT(0x00442E70, InitialiseCamera, replace);
-	INJECT(0x00442F40, MoveCamera, replace);
-	INJECT(0x004451C0, mgLOS, replace);
-	INJECT(0x00444E00, CameraCollisionBounds, replace);
-	INJECT(0x00445890, LaraTorch, replace);
-	INJECT(0x004435E0, ChaseCamera, replace);
-	INJECT(0x00443A50, CombatCamera, replace);
-	INJECT(0x00443ED0, LookCamera, replace);
-	INJECT(0x004447F0, FixedCamera, replace);
-	INJECT(0x00445310, BinocularCamera, replace);
-	INJECT(0x00444890, CalculateCamera, replace);
-}

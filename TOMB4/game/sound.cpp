@@ -371,13 +371,3 @@ void SayNo()
 
 	SoundEffect(fx, 0, SFX_ALWAYS);
 }
-
-void inject_sound(bool replace)
-{
-	INJECT(0x0045F7F0, GetPanVolume, replace);
-	INJECT(0x0045FA10, StopSoundEffect, replace);
-	INJECT(0x0045FAA0, SOUND_Init, replace);
-	INJECT(0x0045FA70, SOUND_Stop, replace);
-	INJECT(0x0045F1F0, SoundEffect, replace);
-	INJECT(0x0045FAD0, SayNo, replace);
-}

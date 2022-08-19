@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_jeep(bool replace);
-
 void InitialiseJeep(short item_number);
 void DrawJeepExtras(ITEM_INFO* item);
 void JeepExplode(ITEM_INFO* item);

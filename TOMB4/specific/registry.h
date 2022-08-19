@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_registry(bool replace);
-
 bool REG_OpenKey(LPCSTR lpSubKey);
 bool OpenRegistry(LPCSTR SubKeyName);
 void REG_CloseKey();

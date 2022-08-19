@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_lara1gun(bool replace);
-
 void DoGrenadeDamageOnBaddie(ITEM_INFO* baddie, ITEM_INFO* item);
 void FireCrossbow(PHD_3DPOS* pos);
 void draw_shotgun_meshes(long weapon_type);

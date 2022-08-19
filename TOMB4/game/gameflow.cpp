@@ -1121,12 +1121,3 @@ long DoCredits()
 
 	return num_drawn;
 }
-
-void inject_gameflow(bool replace)
-{
-	INJECT(0x00451770, DoGameflow, replace);
-	INJECT(0x00452710, DoLevel, replace);
-	INJECT(0x00451E30, DoTitle, replace);
-	INJECT(0x00451510, LoadGameflow, replace);
-	INJECT(0x00452B80, DoCredits, replace);
-}

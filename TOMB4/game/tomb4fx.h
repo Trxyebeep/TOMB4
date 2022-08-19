@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_tomb4fx(bool replace);
-
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments);
 long ExplodingDeath2(short item_number, long mesh_bits, short Flags);
 void DrawGunshells();

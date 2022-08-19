@@ -602,11 +602,3 @@ void InitialiseHorse(short item_number)
 	item->goal_anim_state = 1;
 	item->current_anim_state = 1;
 }
-
-void inject_horse(bool replace)
-{
-	INJECT(0x00408080, InitialiseHorseman, replace);
-	INJECT(0x004080E0, HorsemanControl, replace);
-	INJECT(0x00408E00, TriggerHorsemanRicochets, replace);
-	INJECT(0x00409010, InitialiseHorse, replace);
-}

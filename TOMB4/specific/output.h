@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_output(bool replace);
-
 void phd_PutPolygons(short* objptr, long clip);
 void phd_PutPolygons_train(short* objptr, long x);
 void ProjectTrainVerts(short nVerts, D3DTLVERTEX* v, short* clip, long x);

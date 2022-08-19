@@ -1166,22 +1166,3 @@ void RestoreLevelData(long FullSave)
 		}
 	}
 }
-
-void inject_savegame(bool replace)
-{
-	INJECT(0x0045A0E0, CheckSumValid, replace);
-	INJECT(0x0045A100, sgInitialiseHub, replace);
-	INJECT(0x0045A1B0, SaveLaraData, replace);
-	INJECT(0x0045B000, WriteSG, replace);
-	INJECT(0x0045BD80, ReadSG, replace);
-	INJECT(0x0045A470, SaveHubData, replace);
-	INJECT(0x0045B080, RestoreLaraData, replace);
-	INJECT(0x0045BDF0, sgRestoreLevel, replace);
-	INJECT(0x0045A340, CreateCheckSum, replace);
-	INJECT(0x0045BDC0, sgSaveLevel, replace);
-	INJECT(0x0045A2E0, sgSaveGame, replace);
-	INJECT(0x0045B040, sgRestoreGame, replace);
-	INJECT(0x0045A370, OpenSaveGame, replace);
-	INJECT(0x0045A4B0, SaveLevelData, replace);
-	INJECT(0x0045B230, RestoreLevelData, replace);
-}

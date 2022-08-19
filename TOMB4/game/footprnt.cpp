@@ -157,8 +157,3 @@ void S_DrawFootPrints()
 	}
 }
 #endif
-
-void inject_footprint(bool replace)
-{
-	INJECT(0x00437D50, AddFootPrint, replace);
-}

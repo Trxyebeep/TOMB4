@@ -264,9 +264,3 @@ void DogControl(short item_number)
 	CreatureJoint(item, 2, head_x);
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_dog(bool replace)
-{
-	INJECT(0x00405820, InitialiseDog, replace);
-	INJECT(0x004058B0, DogControl, replace);
-}

@@ -646,10 +646,3 @@ void SkeletonControl(short item_number)
 
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_skelly(bool replace)
-{
-	INJECT(0x004115E0, TriggerRiseEffect, replace);
-	INJECT(0x004117E0, InitialiseSkeleton, replace);
-	INJECT(0x004118D0, SkeletonControl, replace);
-}

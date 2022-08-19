@@ -548,24 +548,3 @@ void RopeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		}
 	}
 }
-
-void inject_rope(bool replace)
-{
-	INJECT(0x00459410, DrawRopeList, replace);
-	INJECT(0x00459F90, ProjectRopePoints, replace);
-	INJECT(0x00459450, Normalise, replace);
-	INJECT(0x00458A00, vMul, replace);
-	INJECT(0x00458A40, mDotProduct, replace);
-	INJECT(0x00458A70, mCrossProduct, replace);
-	INJECT(0x00458AD0, phd_GetMatrixAngles, replace);
-	INJECT(0x00459060, GetRopePos, replace);
-	INJECT(0x00458B90, AlignLaraToRope, replace);
-	INJECT(0x00459510, ModelRigid, replace);
-	INJECT(0x00459640, ModelRigidRope, replace);
-	INJECT(0x00459740, SetPendulumPoint, replace);
-	INJECT(0x004597D0, SetPendulumVelocity, replace);
-	INJECT(0x00459890, CalculateRope, replace);
-	INJECT(0x004592E0, RopeNodeCollision, replace);
-	INJECT(0x004593B0, RopeControl, replace);
-	INJECT(0x00459100, RopeCollision, replace);
-}

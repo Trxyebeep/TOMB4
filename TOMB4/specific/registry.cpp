@@ -271,18 +271,3 @@ bool REG_KeyWasCreated()
 	return dwDisposition == REG_CREATED_NEW_KEY;
 }
 #endif
-
-void inject_registry(bool replace)
-{
-	INJECT(0x00484B00, REG_OpenKey, replace);
-	INJECT(0x00484C70, OpenRegistry, replace);
-	INJECT(0x00484B30, REG_CloseKey, replace);
-	INJECT(0x00484CC0, CloseRegistry, replace);
-	INJECT(0x00484B40, REG_WriteLong, replace);
-	INJECT(0x00484B60, REG_WriteBool, replace);
-	INJECT(0x00484B90, REG_ReadLong, replace);
-	INJECT(0x00484BF0, REG_ReadBool, replace);
-	INJECT(0x00484CD0, LoadSettings, replace);
-	INJECT(0x004853F0, SaveSettings, replace);
-	INJECT(0x00485190, SaveSetup, replace);
-}

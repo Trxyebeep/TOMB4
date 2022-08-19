@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_newinv(bool replace);
-
 long LoadGame();
 long SaveGame();
 void init_new_inventry();

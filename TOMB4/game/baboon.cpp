@@ -455,12 +455,3 @@ void ExplodeBaboon(ITEM_INFO* item)
 	FlashFadeB = 0;
 	FlashFader = 32;
 }
-
-void inject_baboon(bool replace)
-{
-	INJECT(0x00401DB0, InitialiseBaboon, replace);
-	INJECT(0x00401E50, BaboonControl, replace);
-	INJECT(0x004027E0, FindCrowbarSwitch, replace);
-	INJECT(0x00402850, ReTriggerBaboon, replace);
-	INJECT(0x00402970, ExplodeBaboon, replace);
-}

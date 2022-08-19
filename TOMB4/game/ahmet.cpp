@@ -470,13 +470,3 @@ void AhmetControl(short item_number)
 	TestTriggers(trigger_index, 1, 0);
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_ahmet(bool replace)
-{
-	INJECT(0x00401AC0, ScalesCollision, replace);
-	INJECT(0x00401990, ReTriggerAhmet, replace);
-	INJECT(0x004017E0, ScalesControl, replace);
-	INJECT(0x00401730, ExplodeAhmet, replace);
-	INJECT(0x00401000, InitialiseAhmet, replace);
-	INJECT(0x00401080, AhmetControl, replace);
-}

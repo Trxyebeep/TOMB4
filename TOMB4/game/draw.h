@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_draw(bool replace);
-
 void InitInterpolate(long frac, long rate);
 void phd_PopMatrix_I();
 void phd_PushMatrix_I();

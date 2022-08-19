@@ -8,6 +8,18 @@
 #define PCH_H
 
 // add headers that you want to pre-compile here
-#include "framework.h"
+#define DIRECTINPUT_VERSION 0x0800
+#define DIRECTSOUND_VERSION	0x0500
+#include <windows.h>
+#include <windowsx.h>
+#include <d3d.h>
+#include <d3dtypes.h>
+#include <cmath>
+#include <stdio.h>
+#include <process.h>
+#include <dinput.h>
+#include <dsound.h>
+#include <mmreg.h>
+#include <MSAcm.h>
 
 #endif //PCH_H

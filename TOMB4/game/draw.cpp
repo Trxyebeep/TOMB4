@@ -1667,38 +1667,3 @@ void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds)
 		}
 	}
 }
-
-void inject_draw(bool replace)
-{
-	INJECT(0x00450520, InitInterpolate, replace);
-	INJECT(0x00450560, phd_PopMatrix_I, replace);
-	INJECT(0x00450590, phd_PushMatrix_I, replace);
-	INJECT(0x004505C0, phd_RotY_I, replace);
-	INJECT(0x004505F0, phd_RotX_I, replace);
-	INJECT(0x00450620, phd_RotZ_I, replace);
-	INJECT(0x00450650, phd_TranslateRel_I, replace);
-	INJECT(0x00450690, phd_TranslateRel_ID, replace);
-	INJECT(0x004506E0, phd_RotYXZ_I, replace);
-	INJECT(0x00450720, gar_RotYXZsuperpack_I, replace);
-	INJECT(0x00450760, gar_RotYXZsuperpack, replace);
-	INJECT(0x00450810, phd_PutPolygons_I, replace);
-	INJECT(0x00450840, InterpolateMatrix, replace);
-	INJECT(0x00450AB0, InterpolateArmMatrix, replace);
-	INJECT(0x0044F2D0, S_InsertRoom, replace);
-	INJECT(0x00450BB0, CalculateObjectLighting, replace);
-	INJECT(0x00450CB0, CalculateObjectLightingLara, replace);
-	INJECT(0x0044FF60, DrawAnimatingItem, replace);
-	INJECT(0x0044EC10, DrawRooms, replace);
-	INJECT(0x00451240, RenderIt, replace);
-	INJECT(0x0044EBA0, DrawPhaseGame, replace);
-	INJECT(0x0044F5D0, GetRoomBounds, replace);
-	INJECT(0x0044F790, SetRoomBounds, replace);
-	INJECT(0x0044FB10, DrawEffect, replace);
-	INJECT(0x0044F330, PrintObjects, replace);
-	INJECT(0x00450DC0, GetFrames, replace);
-	INJECT(0x00450E60, GetBoundsAccurate, replace);
-	INJECT(0x00450EE0, GetBestFrame, replace);
-	INJECT(0x00451180, UpdateSkyLightning, replace);
-	INJECT(0x00450F10, mRotBoundingBoxNoPersp, replace);
-	INJECT(0x0044FC00, calc_animating_item_clip_window, replace);
-}

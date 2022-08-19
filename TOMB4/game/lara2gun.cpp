@@ -505,16 +505,3 @@ void PistolHandler(long weapon_type)
 			TriggerDynamic(pos.x, pos.y, pos.z, 10, r, g, b);
 	}
 }
-
-void inject_lara2gun(bool replace)
-{
-	INJECT(0x0042BB70, undraw_pistol_mesh_left, replace);
-	INJECT(0x0042BBB0, undraw_pistol_mesh_right, replace);
-	INJECT(0x0042B7C0, set_arm_info, replace);
-	INJECT(0x0042BAB0, ready_pistols, replace);
-	INJECT(0x0042BB20, draw_pistol_meshes, replace);
-	INJECT(0x0042B720, draw_pistols, replace);
-	INJECT(0x0042B840, undraw_pistols, replace);
-	INJECT(0x0042BE40, AnimatePistols, replace);
-	INJECT(0x0042BBF0, PistolHandler, replace);
-}

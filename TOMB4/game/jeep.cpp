@@ -2049,28 +2049,3 @@ void EnemyJeepControl(short item_number)
 
 	SoundEffect(SFX_JEEP_MOVE, &item->pos, (item->item_flags[0] << 10) + (SFX_SETPITCH | 0x1000000));
 }
-
-void inject_jeep(bool replace)
-{
-	INJECT(0x00466F40, InitialiseJeep, replace);
-	INJECT(0x004671B0, GetOnJeep, replace);
-	INJECT(0x00467330, DrawJeepExtras, replace);
-	INJECT(0x00467920, TriggerExhaustSmoke, replace);
-	INJECT(0x00467AC0, JeepExplode, replace);
-	INJECT(0x00467B90, JeepCheckGetOut, replace);
-	INJECT(0x00467C60, DoDynamics, replace);
-	INJECT(0x00469770, CanGetOff, replace);
-	INJECT(0x00466FA0, JeepCollision, replace);
-	INJECT(0x00468AE0, GetCollisionAnim, replace);
-	INJECT(0x00468B80, DoShift, replace);
-	INJECT(0x00468E00, AnimateJeep, replace);
-	INJECT(0x00469870, UserControl, replace);
-	INJECT(0x004687E0, JeepBaddieCollision, replace);
-	INJECT(0x004684D0, JeepCollideStaticObjects, replace);
-	INJECT(0x00467CF0, JeepDynamics, replace);
-	INJECT(0x00467380, JeepControl, replace);
-	INJECT(0x0046A620, JeepStart, replace);
-	INJECT(0x0046A4D0, JeepFireGrenade, replace);
-	INJECT(0x00469B90, InitialiseEnemyJeep, replace);
-	INJECT(0x00469C20, EnemyJeepControl, replace);
-}

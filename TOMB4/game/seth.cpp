@@ -700,14 +700,3 @@ void SethControl(short item_number)
 
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_seth(bool replace)
-{
-	INJECT(0x004103B0, TriggerSethMissileFlame, replace);
-	INJECT(0x00410070, TriggerSethMissile, replace);
-	INJECT(0x00410130, TriggerSethSparks, replace);
-	INJECT(0x00410220, TriggerSethFlame, replace);
-	INJECT(0x00410530, DoSethEffects, replace);
-	INJECT(0x00410C30, InitialiseSeth, replace);
-	INJECT(0x00410C90, SethControl, replace);
-}

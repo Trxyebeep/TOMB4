@@ -819,19 +819,3 @@ void CrocgodControl(short item_number)
 	CreatureJoint(item, 3, neck);
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_croc(bool replace)
-{
-	INJECT(0x00402D90, InitialiseCroc, replace);
-	INJECT(0x00402E30, CrocControl, replace);
-	INJECT(0x004035D0, GetFreeLocust, replace);
-	INJECT(0x00403640, TriggerLocust, replace);
-	INJECT(0x004037B0, InitialiseLocustEmitter, replace);
-	INJECT(0x00403810, ControlLocustEmitter, replace);
-	INJECT(0x00403C10, DrawLocusts, replace);
-	INJECT(0x00403870, UpdateLocusts, replace);
-	INJECT(0x00403C90, TriggerCrocgodMissile, replace);
-	INJECT(0x00403D30, TriggerCrocgodMissileFlame, replace);
-	INJECT(0x00403ED0, InitialiseCrocgod, replace);
-	INJECT(0x00403F30, CrocgodControl, replace);
-}

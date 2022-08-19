@@ -618,12 +618,3 @@ void CalculateSpotCams()
 		bCheckTrigger = 0;
 	}
 }
-
-void inject_spotcam(bool replace)
-{
-	INJECT(0x00460B50, SetSplineData, replace);
-	INJECT(0x00460420, InitialiseSpotCam, replace);
-	INJECT(0x004602B0, InitSpotCamSequences, replace);
-	INJECT(0x00460320, Spline, replace);
-	INJECT(0x00460C70, CalculateSpotCams, replace);
-}

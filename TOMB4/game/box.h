@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_box(bool replace);
-
 void CreatureDie(short item_number, long explode);
 void InitialiseCreature(short item_number);
 long CreatureActive(short item_number);

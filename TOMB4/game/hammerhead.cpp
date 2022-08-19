@@ -115,9 +115,3 @@ void HammerheadControl(short item_number)
 		}
 	}
 }
-
-void inject_hammerhead(bool replace)
-{
-	INJECT(0x00407000, InitialiseHammerhead, replace);
-	INJECT(0x00407060, HammerheadControl, replace);
-}

@@ -557,13 +557,3 @@ void SasControl(short item_number)
 	CreatureJoint(item, 2, head);
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_sas(bool replace)
-{
-	INJECT(0x0040DA00, InitialiseInjuredSas, replace);
-	INJECT(0x0040DA70, InjuredSasControl, replace);
-	INJECT(0x0040DCD0, DragSASCollision, replace);
-	INJECT(0x0040DAF0, SasFireGrenade, replace);
-	INJECT(0x0040D040, InitialiseSas, replace);
-	INJECT(0x0040D0A0, SasControl, replace);
-}

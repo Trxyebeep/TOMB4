@@ -1555,26 +1555,3 @@ void BikeControl(short item_number)
 
 	BikeCheckGetOff();
 }
-
-void inject_bike(bool replace)
-{
-	INJECT(0x00464610, InitialiseBike, replace);
-	INJECT(0x00464C20, DrawBikeExtras, replace);
-	INJECT(0x00464850, TriggerBikeBeam, replace);
-	INJECT(0x004648F0, GetOnBike, replace);
-	INJECT(0x00464A30, DrawBikeBeam, replace);
-	INJECT(0x00465220, TriggerExhaustSmoke, replace);
-	INJECT(0x004668E0, CanGetOff, replace);
-	INJECT(0x004653D0, BikeExplode, replace);
-	INJECT(0x004664B0, AnimateBike, replace);
-	INJECT(0x00466E90, BikeStart, replace);
-	INJECT(0x00465660, TestHeight, replace);
-	INJECT(0x004654A0, BikeCheckGetOff, replace);
-	INJECT(0x00465770, DoDynamics, replace);
-	INJECT(0x00464680, BikeCollision, replace);
-	INJECT(0x00466290, BikeBaddieCollision, replace);
-	INJECT(0x00465F80, BikeCollideStaticObjects, replace);
-	INJECT(0x00466AB0, UserControl, replace);
-	INJECT(0x004657E0, BikeDynamics, replace);
-	INJECT(0x00464C70, BikeControl, replace);
-}

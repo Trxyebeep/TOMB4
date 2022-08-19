@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_sound(bool replace);
-
 void GetPanVolume(SoundSlot* slot);
 void StopSoundEffect(long sfx);
 void SOUND_Init();

@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_lighting(bool replace);
-
 void S_CalculateStaticMeshLight(long x, long y, long z, long shade, ROOM_INFO* r);
 void InitItemDynamicLighting(ITEM_INFO* item);
 void InitDynamicLighting();

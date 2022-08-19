@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_file(bool replace);
-
 unsigned int __stdcall LoadLevel(void* name);
 long S_LoadLevelFile(long num);
 void FreeLevel();

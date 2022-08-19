@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_baboon(bool replace);
-
 void InitialiseBaboon(short item_number);
 void BaboonControl(short item_number);
 void FindCrowbarSwitch(ITEM_INFO* item, short switch_index);

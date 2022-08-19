@@ -1322,22 +1322,3 @@ void ControlGrenade(short item_number)
 			item->item_flags[1] = 16;
 	}
 }
-
-void inject_lara1gun(bool replace)
-{
-	INJECT(0x0042B600, DoGrenadeDamageOnBaddie, replace);
-	INJECT(0x0042A270, FireCrossbow, replace);
-	INJECT(0x00428E40, draw_shotgun_meshes, replace);
-	INJECT(0x00428E70, undraw_shotgun_meshes, replace);
-	INJECT(0x00428EA0, ready_shotgun, replace);
-	INJECT(0x00429260, FireShotgun, replace);
-	INJECT(0x00429480, FireGrenade, replace);
-	INJECT(0x0042B100, AnimateShotgun, replace);
-	INJECT(0x00428F10, RifleHandler, replace);
-	INJECT(0x0042A490, CrossbowHitSwitchType78, replace);
-	INJECT(0x0042B430, TriggerUnderwaterExplosion, replace);
-	INJECT(0x0042AE50, draw_shotgun, replace);
-	INJECT(0x0042AFE0, undraw_shotgun, replace);
-	INJECT(0x0042A850, ControlCrossbow, replace);
-	INJECT(0x00429710, ControlGrenade, replace);
-}

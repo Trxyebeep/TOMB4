@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_gamemain(bool replace);
-
 void GameClose();
 unsigned int __stdcall GameMain(void* ptr);
 ushort GetRandom(WATERTAB* wt, long lp);

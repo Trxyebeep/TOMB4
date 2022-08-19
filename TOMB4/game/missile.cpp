@@ -119,9 +119,3 @@ void ControlBodyPart(short fx_number)
 	if (room_number != fx->room_number)
 		EffectNewRoom(fx_number, room_number);
 }
-
-void inject_missile(bool replace)
-{
-	INJECT(0x00409180, ExplodeFX, replace);
-	INJECT(0x00409200, ControlBodyPart, replace);
-}

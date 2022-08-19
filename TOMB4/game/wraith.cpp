@@ -461,11 +461,3 @@ void WraithControl(short item_number)
 	else
 		TriggerDynamic(wraith[0].pos.x, wraith[0].pos.y, wraith[0].pos.z, 16, wraith[1].r, wraith[1].g, wraith[1].b);
 }
-
-void inject_wraith(bool replace)
-{
-	INJECT(0x0041C2E0, InitialiseWraith, replace);
-	INJECT(0x0041C360, TriggerWraithFlame, replace);
-	INJECT(0x0041C4C0, TriggerWraithEffect, replace);
-	INJECT(0x0041C6E0, WraithControl, replace);
-}

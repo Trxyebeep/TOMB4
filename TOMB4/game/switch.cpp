@@ -949,24 +949,3 @@ void CogSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	ObjectCollision(item_number, l, coll);
 }
-
-void inject_switch(bool replace)
-{
-	INJECT(0x00463180, FullBlockSwitchCollision, replace);
-	INJECT(0x00461B10, SwitchTrigger, replace);
-	INJECT(0x00461BD0, GetSwitchTrigger, replace);
-	INJECT(0x00461CA0, TestTriggersAtXYZ, replace);
-	INJECT(0x00461CF0, SwitchControl, replace);
-	INJECT(0x00461D60, SwitchCollision, replace);
-	INJECT(0x00461FF0, SwitchCollision2, replace);
-	INJECT(0x00462100, UnderwaterSwitchCollision, replace);
-	INJECT(0x004622C0, PulleyCollision, replace);
-	INJECT(0x004624C0, TurnSwitchControl, replace);
-	INJECT(0x00462720, TurnSwitchCollision, replace);
-	INJECT(0x00462AE0, RailSwitchCollision, replace);
-	INJECT(0x00462CB0, JumpSwitchCollision, replace);
-	INJECT(0x00462DB0, CrowbarSwitchCollision, replace);
-	INJECT(0x00463080, FullBlockSwitchControl, replace);
-	INJECT(0x004632F0, CogSwitchControl, replace);
-	INJECT(0x00463400, CogSwitchCollision, replace);
-}

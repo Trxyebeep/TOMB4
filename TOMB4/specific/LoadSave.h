@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_loadsave(bool replace);
-
 void S_DrawHealthBar(long pos);
 void S_DrawAirBar(long pos);
 void S_DrawDashBar(long pos);

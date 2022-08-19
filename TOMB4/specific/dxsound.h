@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_dxsound(bool replace);
-
 bool DXChangeOutputFormat(long nSamplesPerSec, bool force);
 void DSChangeVolume(long num, long volume);
 void DSAdjustPitch(long num, long pitch);

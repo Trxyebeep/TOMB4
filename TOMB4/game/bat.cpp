@@ -155,9 +155,3 @@ void BatControl(short item_number)
 
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_bat(bool replace)
-{
-	INJECT(0x00402A10, InitialiseBat, replace);
-	INJECT(0x00402A70, BatControl, replace);
-}

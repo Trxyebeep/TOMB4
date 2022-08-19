@@ -253,14 +253,3 @@ long S_LoadGame(long slot_num)
 
 	return 0;
 }
-
-void inject_gamemain(bool replace)
-{
-	INJECT(0x004770C0, GameClose, replace);
-	INJECT(0x00476EC0, GameMain, replace);
-	INJECT(0x004773F0, GetRandom, replace);
-	INJECT(0x00477180, init_water_table, replace);
-	INJECT(0x00476FA0, GameInitialise, replace);
-	INJECT(0x00477430, S_SaveGame, replace);
-	INJECT(0x00477600, S_LoadGame, replace);
-}

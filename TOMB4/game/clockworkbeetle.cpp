@@ -326,9 +326,3 @@ void ControlClockworkBeetle(short item_number)
 		}
 	}
 }
-
-void inject_clockwork(bool replace)
-{
-	INJECT(0x004458F0, TriggerClockworkBeetle, replace);
-	INJECT(0x00445AD0, ControlClockworkBeetle, replace);
-}

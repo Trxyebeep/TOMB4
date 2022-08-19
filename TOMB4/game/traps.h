@@ -4,8 +4,6 @@
 extern short SPxzoffs[8];
 extern short SPyoffs[8];
 
-void inject_traps(bool replace);
-
 void FlameEmitterControl(short item_number);
 void TwoBlockPlatformFloor(ITEM_INFO* item, long x, long y, long z, long* height);
 void TwoBlockPlatformCeiling(ITEM_INFO* item, long x, long y, long z, long* height);

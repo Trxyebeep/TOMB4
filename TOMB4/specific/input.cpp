@@ -754,10 +754,3 @@ long ReadJoystick(long& x, long& y)
 	y = (joystick.dwYpos << 5) / (caps.wYmax - caps.wYmin) - 16;
 	return joystick.dwButtons;
 }
-
-void inject_input(bool replace)
-{
-	INJECT(0x004776C0, Key, replace);
-	INJECT(0x004778B0, S_UpdateInput, replace);
-	INJECT(0x004777E0, ReadJoystick, replace);
-}

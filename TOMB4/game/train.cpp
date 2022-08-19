@@ -194,11 +194,3 @@ void TrainJeepControl(short item_number)
 	if (item->item_flags[0] > 400)
 		KillItem(item_number);
 }
-
-void inject_train(bool replace)
-{
-	INJECT(0x004640A0, DrawTrainObjects, replace);
-	INJECT(0x00464030, DrawTrainFloor, replace);
-	INJECT(0x004644B0, InitialiseTrainJeep, replace);
-	INJECT(0x00464520, TrainJeepControl, replace);
-}

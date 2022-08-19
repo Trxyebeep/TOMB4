@@ -547,14 +547,3 @@ void HarpyControl(short item_number)
 	CreatureJoint(item, 2, torso_x);
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_harpy(bool replace)
-{
-	INJECT(0x00407290, TriggerHarpyMissileFlame, replace);
-	INJECT(0x00407700, TriggerHarpyMissile, replace);
-	INJECT(0x004077B0, TriggerHarpySparks, replace);
-	INJECT(0x004078A0, TriggerHarpyFlame, replace);
-	INJECT(0x004073F0, DoHarpyEffects, replace);
-	INJECT(0x00407A30, InitialiseHarpy, replace);
-	INJECT(0x00407A90, HarpyControl, replace);
-}

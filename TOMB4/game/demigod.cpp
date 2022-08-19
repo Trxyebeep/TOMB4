@@ -660,13 +660,3 @@ void DemigodControl(short item_number)
 	CreatureJoint(item, 3, head);
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_demigod(bool replace)
-{
-	INJECT(0x00404770, TriggerDemigodMissile, replace);
-	INJECT(0x00404840, TriggerDemigodMissileFlame, replace);
-	INJECT(0x00404A00, TriggerHammerSmoke, replace);
-	INJECT(0x00404BD0, DoDemigodEffects, replace);
-	INJECT(0x00404E00, InitialiseDemigod, replace);
-	INJECT(0x00404EA0, DemigodControl, replace);
-}

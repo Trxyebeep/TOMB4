@@ -28,9 +28,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TOMB4\tomb4\framework.h">
-      <Filter>TOMB4\tomb4</Filter>
-    </ClInclude>
     <ClInclude Include="TOMB4\tomb4\pch.h">
       <Filter>TOMB4\tomb4</Filter>
     </ClInclude>
@@ -376,9 +373,6 @@
     <ClCompile Include="TOMB4\tomb4\pch.cpp">
       <Filter>TOMB4\tomb4</Filter>
     </ClCompile>
-    <ClCompile Include="TOMB4\tomb4\dllmain.cpp">
-      <Filter>TOMB4\tomb4</Filter>
-    </ClCompile>
     <ClCompile Include="TOMB4\game\ahmet.cpp">
       <Filter>TOMB4\game</Filter>
     </ClCompile>
@@ -711,11 +705,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="TOMB4\global\progress.txt">
-      <Filter>TOMB4\global</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="tomb4.rc" />
   </ItemGroup>
   <ItemGroup>
@@ -725,5 +714,8 @@
     <Library Include="TOMB4\tomb4\libs\discordRPC\discord-rpcd.lib">
       <Filter>TOMB4\tomb4\libs\discordRPC</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Desktop\Lara13.ico" />
   </ItemGroup>
 </Project>

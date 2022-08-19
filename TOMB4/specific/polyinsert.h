@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_polyinsert(bool replace);
-
 void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, short type);
 void DrawSortList();
 void CreateFogPos(FOGBULB_STRUCT* FogBulb);

@@ -138,9 +138,3 @@ void FreeTextures()
 	free(Textures);
 	Textures = 0;
 }
-
-void inject_texture(bool replace)
-{
-	INJECT(0x0048E2F0, CreateTexturePage, replace);
-	INJECT(0x0048E6E0, FreeTextures, replace);
-}
