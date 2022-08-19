@@ -10,60 +10,59 @@
 #include "draw.h"
 #include "lara.h"
 #include "gameflow.h"
+#include "objects.h"
 
-static short dels_handy_train_map[256] =	//test me
+static short dels_handy_train_map[128] =
 {
-	36, 0, 36, 0, 36, 0, 37, 0, 38, 0, 39, 0, 36, 0, 37,
-	0, 38, 0, 38, 0, 38, 0, 39, 0, 37, 0, 38, 0, 39, 0,
-	36, 0, 36, 0, 36, 0, 36, 0, 36, 0, 37, 0, 39, 0, 36,
-	0, 36, 0, 37, 0, 38, 0, 38, 0, 39, 0, 36, 0, 36, 0,
-	37, 0, 39, 0, 36, 0, 36, 0, 36, 0, 37, 0, 38, 0, 39,
-	0, 36, 0, 37, 0, 38, 0, 38, 0, 38, 0, 39, 0, 37, 0,
-	38, 0, 39, 0, 36, 0, 36, 0, 36, 0, 36, 0, 36, 0, 37,
-	0, 39, 0, 36, 0, 36, 0, 37, 0, 38, 0, 38, 0, 39, 0,
-	36, 0, 36, 0, 37, 0, 39, 0, 38, 0, 37, 0, 36, 0, 39,
-	0, 37, 0, 36, 0, 36, 0, 36, 0, 39, 0, 38, 0, 38, 0,
-	38, 0, 38, 0, 37, 0, 36, 0, 39, 0, 38, 0, 38, 0, 37,
-	0, 39, 0, 38, 0, 38, 0, 38, 0, 38, 0, 38, 0, 38, 0,
-	37, 0, 36, 0, 36, 0, 36, 0, 39, 0, 38, 0, 38, 0, 37,
-	0, 36, 0, 39, 0, 37, 0, 36, 0, 36, 0, 36, 0, 39, 0,
-	38, 0, 38, 0, 38, 0, 38, 0, 37, 0, 36, 0, 39, 0, 38,
-	0, 38, 0, 37, 0, 39, 0, 38, 0, 38, 0, 38, 0, 38, 0,
-	38, 0, 38, 0, 37, 0, 36, 0, 36, 0, 36, 0, 39, 0, 38, 0
+	//36: ARCHITECTURE6
+	//37: ARCHITECTURE7
+	//38: ARCHITECTURE8
+	//39: ARCHITECTURE9
+	36, 36, 36, 37, 38, 39, 36, 37, 38, 38, 38, 39, 37,
+	38, 39, 36, 36, 36, 36, 36, 37, 39, 36, 36, 37, 38,
+	38, 39, 36, 36, 37, 39, 36, 36, 36, 37, 38, 39, 36,
+	37, 38, 38, 38, 39, 37, 38, 39, 36, 36, 36, 36, 36,
+	37, 39, 36, 36, 37, 38, 38, 39, 36, 36, 37, 39, 38,
+	37, 36, 39, 37, 36, 36, 36, 39, 38, 38, 38, 38, 37,
+	36, 39, 38, 38, 37, 39, 38, 38, 38, 38, 38, 38, 37,
+	36, 36, 36, 39, 38, 38, 37, 36, 39, 37, 36, 36, 36,
+	39, 38, 38, 38, 38, 37, 36, 39, 38, 38, 37, 39, 38,
+	38, 38, 38, 38, 38, 37, 36, 36, 36, 39, 38
 };
 
-static char dels_handy_train_map2[256] =	//and me
+static TRAIN_STATIC dels_handy_train_map2[64] =
 {
-	22, 0, 0, 16, -1, -1, 0, 0, -1, -1, 0, 0, 20,
-	0, 0, -12, -1, -1, 0, 0, -1, -1, 0, 0, -1, -1,
-	0, 0, 20, 0, 0, 16, -1, -1, 0, 0, -1, -1, 0, 0,
-	-1, -1, 0, 0, -1, -1, 0, 0, -1, -1, 0, 0, 20,
-	0, 0, -12, -1, -1, 0, 0, -1, -1, 0, 0, -1, -1,
-	0, 0, 20, 0, 0, 16, -1, -1, 0, 0, 23, 0, 0, -12, -1,
-	-1, 0, 0, 20, 0, 0, -12, -1, -1, 0, 0, -1, -1,
-	0, 0, 20, 0, 0, 16, -1, -1, 0, 0, -1, -1, 0, 0,
-	20, 0, 0, 16, 23, 0, 0, -8, -1, -1, 0, 0, -1, -1,
-	0, 0, -1, -1, 0, 0, 22, 0, 0, 16, -1, -1, 0, 0,
-	-1, -1, 0, 0, 20, 0, 0, -12, -1, -1, 0, 0, -1,
-	-1, 0, 0, -1, -1, 0, 0, 20, 0, 0, 16, -1, -1, 0,
-	0, -1, -1, 0, 0, -1, -1, 0, 0, -1, -1, 0, 0, -1,
-	-1, 0, 0, 20, 0, 0, -12, -1, -1, 0, 0, -1, -1,
-	0, 0, -1, -1, 0, 0, 20, 0, 0, 16, -1, -1, 0, 0,
-	23, 0, 0, -12, -1, -1, 0, 0, 20, 0, 0, -12, -1, -1,
-	0, 0, -1, -1, 0, 0, 20, 0, 0, 16, -1, -1, 0, 0,
-	-1, -1, 0, 0, 20, 0, 0, 16, 23, 0, 0, -8, -1, -1,
-	0, 0, -1, -1, 0, 0, -1, -1, 0, 0
+	{ROCK2, 4096}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK0, -3072}, {NO_ITEM, 0}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK0, 4096}, {NO_ITEM, 0}, {NO_ITEM, 0}, {NO_ITEM, 0}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK0, -3072}, {NO_ITEM, 0}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK0, 4096}, {NO_ITEM, 0},
+	{ROCK3, -3072}, {NO_ITEM, 0},
+	{ROCK0, -3072}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK0, 4096}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK0, 4096},
+	{ROCK3, -2048}, {NO_ITEM, 0}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK2, 4096}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK0, -3072}, {NO_ITEM, 0}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK0, 4096}, {NO_ITEM, 0}, {NO_ITEM, 0}, {NO_ITEM, 0}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK0, -3072}, {NO_ITEM, 0}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK0, 4096}, {NO_ITEM, 0},
+	{ROCK3, -3072}, {NO_ITEM, 0},
+	{ROCK0, -3072}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK0, 4096}, {NO_ITEM, 0}, {NO_ITEM, 0},
+	{ROCK0, 4096},
+	{ROCK3, -2048}, {NO_ITEM, 0}, {NO_ITEM, 0}, {NO_ITEM, 0}
 };
 
 long trainmappos;
 
 void DrawTrainObjects()
 {
+	TRAIN_STATIC* p;
 	short* obj;
-	char* obj2;
 	long x, x2;
 
-	trainmappos = (trainmappos + 32 * gfUVRotate) % 0x60000;
+	trainmappos = (trainmappos + (gfUVRotate << 5)) % 0x60000;
 	obj= &dels_handy_train_map[96 - ((trainmappos / 6144 - lara_item->pos.x_pos / 6144) & 0x1F)];
 	x = trainmappos % 6144 - 24576;
 	phd_PushMatrix();
@@ -77,10 +76,12 @@ void DrawTrainObjects()
 	}
 
 	phd_PopMatrix();
+
 	phd_PushMatrix();
 	phd_TranslateAbs(x + lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, 47168);
 	phd_PutPolygons_train(meshes[static_objects[obj[0]].mesh_number], 0);
 	phd_PopMatrix();
+
 	obj = &dels_handy_train_map[32 - ((trainmappos / 6144 - lara_item->pos.x_pos / 6144 + 8) & 0x1F)];
 	x = trainmappos % 6144 - 24576;
 	phd_PushMatrix();
@@ -96,31 +97,33 @@ void DrawTrainObjects()
 	}
 
 	phd_PopMatrix();
+
 	phd_PushMatrix();
 	phd_TranslateAbs(x2 + lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, 58304);
 	phd_RotY(32760);
 	phd_PutPolygons_train(meshes[static_objects[obj[0]].mesh_number], 0);
 	phd_PopMatrix();
-	obj2 = &dels_handy_train_map2[32 - ((trainmappos / 6144 - lara_item->pos.x_pos / 6144 + 8) & 0x1F)];
+
+	p = &dels_handy_train_map2[32 - ((trainmappos / 6144 - lara_item->pos.x_pos / 6144 + 8) & 0x1F)];
 	x = trainmappos % 6144 - 24576;
 	phd_PushMatrix();
 
 	for (int i = 0; i < 8; i++)
 	{
-		if (obj2[0] != -1)
+		if (p->type != NO_ITEM)
 		{
-			phd_TranslateAbs(lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, obj2[1] + 52224);
-			phd_PutPolygons_train(meshes[static_objects[obj2[0]].mesh_number], x);
+			phd_TranslateAbs(lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, p->zoff + 52224);
+			phd_PutPolygons_train(meshes[static_objects[p->type].mesh_number], x);
 		}
 
-		obj2 += 2;
+		p++;
 		x += 6144;
 	}
 
-	if (obj2[0] != -1)
+	if (p->type != NO_ITEM)
 	{
-		phd_TranslateAbs(x + lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, obj2[1] + 52224);
-		phd_PutPolygons_train(meshes[static_objects[obj2[0]].mesh_number], 0);
+		phd_TranslateAbs(x + lara_item->pos.x_pos - lara_item->pos.x_pos % 6144, 256, p->zoff + 52224);
+		phd_PutPolygons_train(meshes[static_objects[p->type].mesh_number], 0);
 	}
 
 	phd_PopMatrix();
