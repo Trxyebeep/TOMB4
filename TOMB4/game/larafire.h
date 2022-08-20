@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_larafire(bool replace);
-
 void InitialiseNewWeapon();
 void LaraTargetInfo(WEAPON_INFO* winfo);
 short* get_current_ammo_pointer(long weapon_type);

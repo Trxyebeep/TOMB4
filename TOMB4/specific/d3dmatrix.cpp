@@ -104,13 +104,3 @@ void S_InitD3DMatrix()
 	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_WORLD, &D3DMWorld));
 	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_PROJECTION, &D3DMProjection));
 }
-
-void inject_d3dmatrix(bool replace)
-{
-	INJECT(0x00490DD0, D3DIdentityMatrix, replace);
-	INJECT(0x00490C30, SetD3DMatrix, replace);
-	INJECT(0x00490B30, SetD3DViewMatrix, replace);
-	INJECT(0x00490E10, D3DTransform, replace);
-	INJECT(0x00490D50, D3DNormalise, replace);
-	INJECT(0x00490CF0, S_InitD3DMatrix, replace);
-}

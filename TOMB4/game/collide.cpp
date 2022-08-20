@@ -1582,32 +1582,3 @@ void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number
 		return;
 	}
 }
-
-void inject_collide(bool replace)
-{
-	INJECT(0x00446F70, ShiftItem, replace);
-	INJECT(0x00448DA0, GetCollidedObjects, replace);
-	INJECT(0x00448840, GenericDeadlyBoundingBoxCollision, replace);
-	INJECT(0x004485A0, GenericSphereBoxCollision, replace);
-	INJECT(0x00447470, CreatureCollision, replace);
-	INJECT(0x00446CF0, FindGridShift, replace);
-	INJECT(0x00447010, GetTiltType, replace);
-	INJECT(0x00446D20, CollideStaticObjects, replace);
-	INJECT(0x00446FB0, UpdateLaraRoom, replace);
-	INJECT(0x004471B0, LaraBaddieCollision, replace);
-	INJECT(0x004475F0, ObjectCollision, replace);
-	INJECT(0x00447660, ObjectCollisionNoBigPush, replace);
-	INJECT(0x004476D0, TrapCollision, replace);
-	INJECT(0x00447750, ItemPushLara, replace);
-	INJECT(0x00447B00, TestBoundsCollide, replace);
-	INJECT(0x00447BE0, TestBoundsCollideStatic, replace);
-	INJECT(0x00447CE0, ItemPushLaraStatic, replace);
-	INJECT(0x00447F30, TestLaraPosition, replace);
-	INJECT(0x00448070, AlignLaraPosition, replace);
-	INJECT(0x00448140, Move3DPosTo3DPos, replace);
-	INJECT(0x004483E0, MoveLaraPosition, replace);
-	INJECT(0x004489A0, TestBoundsCollide2, replace);
-	INJECT(0x00448A80, StargateCollision, replace);
-	INJECT(0x00448CC0, CogCollision, replace);
-	INJECT(0x00446170, GetCollisionInfo, replace);
-}

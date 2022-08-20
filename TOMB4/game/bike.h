@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_bike(bool replace);
-
 void InitialiseBike(short item_number);
 void DrawBikeExtras(ITEM_INFO* item);
 void TriggerBikeBeam(ITEM_INFO* item);

@@ -1436,20 +1436,3 @@ void LaraGun()
 		break;
 	}
 }
-
-void inject_larafire(bool replace)
-{
-	INJECT(0x0042DDC0, CheckForHoldingState, replace);
-	INJECT(0x0042DDF0, InitialiseNewWeapon, replace);
-	INJECT(0x0042E4A0, find_target_point, replace);
-	INJECT(0x0042DF30, LaraTargetInfo, replace);
-	INJECT(0x0042F480, get_current_ammo_pointer, replace);
-	INJECT(0x0042E630, FireWeapon, replace);
-	INJECT(0x0042E560, AimWeapon, replace);
-	INJECT(0x0042E0D0, LaraGetNewTarget, replace);
-	INJECT(0x0042E920, HitTarget, replace);
-	INJECT(0x0042EA70, WeaponObject, replace);
-	INJECT(0x0042EAC0, WeaponObjectMesh, replace);
-	INJECT(0x0042EB30, DoProperDetection, replace);
-	INJECT(0x0042D840, LaraGun, replace);
-}

@@ -201,10 +201,3 @@ void AutogunControl(short item_number)
 		}
 	}
 }
-
-void inject_sentry(bool replace)
-{
-	INJECT(0x0043F5C0, TriggerAutogunFlamethrower, replace);
-	INJECT(0x0043F7A0, InitialiseAutogun, replace);
-	INJECT(0x0043F7E0, AutogunControl, replace);
-}

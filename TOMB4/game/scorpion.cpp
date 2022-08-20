@@ -459,11 +459,3 @@ void SmlscorpControl(short item_number)
 
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_scorpion(bool replace)
-{
-	INJECT(0x0040E780, InitialiseScorpion, replace);
-	INJECT(0x0040E800, ScorpionControl, replace);
-	INJECT(0x0040EFD0, InitialiseSmlscorp, replace);
-	INJECT(0x0040F030, SmlscorpControl, replace);
-}

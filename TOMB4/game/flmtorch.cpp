@@ -351,12 +351,3 @@ void FlameTorchControl(short item_number)
 		TorchItem = item;
 	}
 }
-
-void inject_flmtorch(bool replace)
-{
-	INJECT(0x0041F390, TriggerTorchFlame, replace);
-	INJECT(0x0041F510, FireCollision, replace);
-	INJECT(0x0041F7C0, DoFlameTorch, replace);
-	INJECT(0x0041FAF0, GetFlameTorch, replace);
-	INJECT(0x0041FB80, FlameTorchControl, replace);
-}

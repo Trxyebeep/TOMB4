@@ -88,15 +88,3 @@ void Log(ulong type, const char* s, ...)
 {
 	//not empty originally, obv
 }
-
-void inject_funcstubs(bool replace)
-{
-	INJECT(0x00490E80, other_log, replace);
-	INJECT(0x00490EC0, S_ExitSystem, replace);
-	INJECT(0x00490EE0, GetRandomControl, replace);
-	INJECT(0x00490F20, SeedRandomControl, replace);
-	INJECT(0x00490F00, GetRandomDraw, replace);
-	INJECT(0x00490F30, SeedRandomDraw, replace);
-	INJECT(0x00490F40, init_game_malloc, replace);
-	INJECT(0x00490F80, game_malloc, replace);
-}

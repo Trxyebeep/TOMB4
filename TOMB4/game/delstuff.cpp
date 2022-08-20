@@ -1103,13 +1103,3 @@ void CalcLaraMatrices(long flag)
 
 	Rich_CalcLaraMatrices_Normal(frame, bone, flag);
 }
-
-void inject_delstuff(bool replace)
-{
-	INJECT(0x0041D140, DrawLara, replace);
-	INJECT(0x0041D9A0, GetLaraJointPos, replace);
-	INJECT(0x0041F260, SetLaraUnderwaterNodes, replace);
-	INJECT(0x0041DAF0, Rich_CalcLaraMatrices_Normal, replace);
-	INJECT(0x0041E630, Rich_CalcLaraMatrices_Interpolated, replace);
-	INJECT(0x0041D010, CalcLaraMatrices, replace);
-}

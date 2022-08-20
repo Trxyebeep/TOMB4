@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_effect2(bool replace);
-
 void ControlSmokeEmitter(short item_number);
 void TriggerExplosionSmokeEnd(long x, long y, long z, long uw);
 void TriggerExplosionSmoke(long x, long y, long z, long uw);

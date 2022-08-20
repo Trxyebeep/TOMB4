@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_d3dmatrix(bool replace);
-
 D3DMATRIX* D3DIdentityMatrix(D3DMATRIX* mx);
 void SetD3DMatrix(D3DMATRIX* mx, long* imx);
 void SetD3DViewMatrix();

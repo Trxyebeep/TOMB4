@@ -2334,29 +2334,3 @@ long GetSaveLoadFiles()
 	SaveCounter++;
 	return nSaves;
 }
-
-void inject_loadsave(bool replace)
-{
-	INJECT(0x0047D460, S_DrawHealthBar, replace);
-	INJECT(0x0047D420, S_DrawAirBar, replace);
-	INJECT(0x0047D3E0, S_DrawDashBar, replace);
-	INJECT(0x0047D4B0, S_InitLoadBar, replace);
-	INJECT(0x0047D4D0, S_LoadBar, replace);
-	INJECT(0x0047CE10, DoBar, replace);
-	INJECT(0x0047B170, DoOptions, replace);
-	INJECT(0x0047CD20, S_LoadSave, replace);
-	INJECT(0x0047C6B0, DoStatScreen, replace);
-	INJECT(0x0047CA20, S_DisplayPauseMenu, replace);
-	INJECT(0x0047A880, DoLoadSave, replace);
-	INJECT(0x0047A220, S_DrawTile, replace);
-	INJECT(0x0047A500, S_DisplayMonoScreen, replace);
-	INJECT(0x00479F20, CreateMonoScreen, replace);
-	INJECT(0x00479F40, FreeMonoScreen, replace);
-	INJECT(0x00479BE0, RGBM_Mono, replace);
-	INJECT(0x004797C0, MemBltSurf, replace);
-	INJECT(0x00479C10, ConvertSurfaceToTextures, replace);
-	INJECT(0x0047AB80, DoSlider, replace);
-	INJECT(0x0047B130, CheckKeyConflicts, replace);
-	INJECT(0x0047CC60, S_PauseMenu, replace);
-	INJECT(0x0047A6F0, GetSaveLoadFiles, replace);
-}

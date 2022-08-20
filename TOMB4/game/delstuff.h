@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_delstuff(bool replace);
-
 void DrawLara(ITEM_INFO* item, long mirror);
 void GetLaraJointPos(PHD_VECTOR* pos, long node);
 void SetLaraUnderwaterNodes();

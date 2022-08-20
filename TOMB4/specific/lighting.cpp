@@ -766,22 +766,3 @@ void CalcAmbientLight(ITEM_INFO* item)
 	}
 }
 #pragma warning(pop)
-
-void inject_lighting(bool replace)
-{
-	INJECT(0x00478520, S_CalculateStaticMeshLight, replace);
-	INJECT(0x004793B0, InitItemDynamicLighting, replace);
-	INJECT(0x004790F0, InitDynamicLighting, replace);
-	INJECT(0x00478B50, SetupLight, replace);
-	INJECT(0x00479760, ClearDynamicLighting, replace);
-	INJECT(0x00478440, ApplyMatrix, replace);
-	INJECT(0x004784B0, ApplyTransposeMatrix, replace);
-	INJECT(0x00478010, MallocD3DLights, replace);
-	INJECT(0x00478070, CreateD3DLights, replace);
-	INJECT(0x004782D0, FreeD3DLights, replace);
-	INJECT(0x00478750, CreateLightList, replace);
-	INJECT(0x004786A0, FadeLightList, replace);
-	INJECT(0x00478E80, InitObjectLighting, replace);
-	INJECT(0x00479080, ClearObjectLighting, replace);
-	INJECT(0x00478570, CalcAmbientLight, replace);
-}

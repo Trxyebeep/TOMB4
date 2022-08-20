@@ -256,14 +256,3 @@ void AddDisplayPickup(short object_number)
 
 	DEL_picked_up_object(object_number);
 }
-
-void inject_health(bool replace)
-{
-	INJECT(0x00452C70, FlashIt, replace);
-	INJECT(0x00452CA0, DrawGameInfo, replace);
-	INJECT(0x00452DE0, DrawHealthBar, replace);
-	INJECT(0x00452EA0, DrawAirBar, replace);
-	INJECT(0x00452F40, InitialisePickUpDisplay, replace);
-	INJECT(0x00452F80, DrawPickups, replace);
-	INJECT(0x00453030, AddDisplayPickup, replace);
-}

@@ -143,10 +143,3 @@ void ControlDeathSlide(short item_number)
 		RemoveActiveItem(item_number);
 	}
 }
-
-void inject_deathslide(bool replace)
-{
-	INJECT(0x00404380, InitialiseDeathSlide, replace);
-	INJECT(0x004043D0, DeathSlideCollision, replace);
-	INJECT(0x004044B0, ControlDeathSlide, replace);
-}

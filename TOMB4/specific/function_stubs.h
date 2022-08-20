@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_funcstubs(bool replace);
-
 void other_log(char* format, ...);
 void S_ExitSystem(const char* string);
 long GetRandomControl();

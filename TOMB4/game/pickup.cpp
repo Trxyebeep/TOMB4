@@ -770,18 +770,3 @@ void PuzzleHoleCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 			ObjectCollision(item_num, l, coll);
 	}
 }
-
-void inject_pickup(bool replace)
-{
-	INJECT(0x004587E0, SarcophagusCollision, replace);
-	INJECT(0x00458090, KeyHoleCollision, replace);
-	INJECT(0x00458260, PuzzleDoneCollision, replace);
-	INJECT(0x00458690, PuzzleDone, replace);
-	INJECT(0x00457610, AnimatingPickUp, replace);
-	INJECT(0x00457F30, FindPlinth, replace);
-	INJECT(0x00458710, KeyTrigger, replace);
-	INJECT(0x00458780, PickupTrigger, replace);
-	INJECT(0x00457650, RegeneratePickups, replace);
-	INJECT(0x00457720, PickUpCollision, replace);
-	INJECT(0x004582A0, PuzzleHoleCollision, replace);
-}

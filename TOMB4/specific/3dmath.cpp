@@ -665,26 +665,3 @@ void phd_LookAt(long sx, long sy, long sz, long tx, long ty, long tz, short roll
 	phd_GenerateW2V(&viewPos);
 	S_InitD3DMatrix();
 }
-
-void inject_3dmath(bool replace)
-{
-	INJECT(0x004902B0, phd_PushMatrix, replace);
-	INJECT(0x00490310, phd_PushUnitMatrix, replace);
-	INJECT(0x00490350, phd_TranslateRel, replace);
-	INJECT(0x00490400, phd_RotX, replace);
-	INJECT(0x004904B0, phd_RotY, replace);
-	INJECT(0x00490560, phd_RotZ, replace);
-	INJECT(0x00490610, phd_RotYXZpack, replace);
-	INJECT(0x00490820, phd_RotYXZ, replace);
-	INJECT(0x00490A10, phd_TranslateAbs, replace);
-	INJECT(0x00490A90, phd_GetVectorAngles, replace);
-	INJECT(0x0048FD40, mGetAngle, replace);
-	INJECT(0x0048F9D0, AlterFOV, replace);
-	INJECT(0x00490210, phd_atan, replace);
-	INJECT(0x00490280, phd_sqrt, replace);
-	INJECT(0x0048FB60, ScaleCurrentMatrix, replace);
-	INJECT(0x0048FA90, SetupZRange, replace);
-	INJECT(0x0048FC10, InitWindow, replace);
-	INJECT(0x0048FDC0, phd_GenerateW2V, replace);
-	INJECT(0x00490110, phd_LookAt, replace);
-}

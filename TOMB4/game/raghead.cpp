@@ -944,9 +944,3 @@ void RagheadControl(short item_number)
 		}
 	}
 }
-
-void inject_raghead(bool replace)
-{
-	INJECT(0x0040B3C0, InitialiseRaghead, replace);
-	INJECT(0x0040B600, RagheadControl, replace);
-}

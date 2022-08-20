@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_objects(bool replace);
-
 void ControlMapper(short item_number);
 void ControlLightningConductor(short item_number);
 void BridgeFlatFloor(ITEM_INFO* item, long x, long y, long z, long* height);

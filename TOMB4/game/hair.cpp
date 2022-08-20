@@ -884,11 +884,3 @@ void DrawHair()
 			break;
 	}
 }
-
-void inject_hair(bool replace)
-{
-	INJECT(0x0041FDD0, InitialiseHair, replace);
-	INJECT(0x0041FE50, HairControl, replace);
-	INJECT(0x00420870, GetCorrectStashPoints, replace);
-	INJECT(0x00420920, DrawHair, replace);
-}

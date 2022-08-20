@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_text(bool replace);
-
 void InitFont();
 void UpdatePulseColour();
 long GetStringLength(const char* string, short* top, short* bottom);

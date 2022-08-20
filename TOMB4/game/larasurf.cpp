@@ -390,21 +390,3 @@ void LaraSurfaceCollision(ITEM_INFO* item, COLL_INFO* coll)
 		lara.water_status = LW_UNDERWATER;
 	}
 }
-
-void inject_larasurf(bool replace)
-{
-	INJECT(0x00431C10, lara_as_surfswim, replace);
-	INJECT(0x00431C80, lara_as_surfback, replace);
-	INJECT(0x00431CE0, lara_as_surfleft, replace);
-	INJECT(0x00431D40, lara_as_surfright, replace);
-	INJECT(0x00431DA0, lara_as_surftread, replace);
-	INJECT(0x00431E60, lara_col_surfswim, replace);
-	INJECT(0x004322B0, lara_col_surfback, replace);
-	INJECT(0x004322E0, lara_col_surfleft, replace);
-	INJECT(0x00432310, lara_col_surfright, replace);
-	INJECT(0x00432340, lara_col_surftread, replace);
-	INJECT(0x00431AA0, LaraSurface, replace);
-	INJECT(0x00431E90, LaraTestWaterClimbOut, replace);
-	INJECT(0x004321B0, LaraTestWaterStepOut, replace);
-	INJECT(0x004320B0, LaraSurfaceCollision, replace);
-}

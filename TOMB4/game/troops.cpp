@@ -376,9 +376,3 @@ void TroopControl(short item_number)
 	CreatureJoint(item, 2, head);
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_troops(bool replace)
-{
-	INJECT(0x004183B0, InitialiseTroop, replace);
-	INJECT(0x00418430, TroopControl, replace);
-}

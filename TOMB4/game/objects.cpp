@@ -895,28 +895,3 @@ void EarthQuake(short item_number)
 		}
 	}
 }
-
-void inject_objects(bool replace)
-{
-	INJECT(0x00456580, ControlMapper, replace);
-	INJECT(0x00456CD0, ControlLightningConductor, replace);
-	INJECT(0x00455EA0, BridgeFlatFloor, replace);
-	INJECT(0x00455ED0, BridgeFlatCeiling, replace);
-	INJECT(0x00455EF0, GetOffset, replace);
-	INJECT(0x00455F30, BridgeTilt1Floor, replace);
-	INJECT(0x00455F80, BridgeTilt1Ceiling, replace);
-	INJECT(0x00455FC0, BridgeTilt2Floor, replace);
-	INJECT(0x00456010, BridgeTilt2Ceiling, replace);
-	INJECT(0x004570F0, StatuePlinthCollision, replace);
-	INJECT(0x00456780, TriggerRopeFlame, replace);
-	INJECT(0x00456AC0, ControlBurningRope, replace);
-	INJECT(0x00456910, BurningRopeCollision, replace);
-	INJECT(0x004564E0, ControlWaterfall, replace);
-	INJECT(0x00456420, AnimateWaterfalls, replace);
-	INJECT(0x00456360, ControlTriggerTriggerer, replace);
-	INJECT(0x00456120, PoleCollision, replace);
-	INJECT(0x00456050, ControlAnimatingSlots, replace);
-	INJECT(0x00455DF0, SmashObjectControl, replace);
-	INJECT(0x00455CF0, SmashObject, replace);
-	INJECT(0x00455AE0, EarthQuake, replace);
-}

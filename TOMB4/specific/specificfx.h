@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_specificfx(bool replace);
-
 void DrawTrainStrips();
 void S_PrintShadow(short size, short* box, ITEM_INFO* item);
 void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr);

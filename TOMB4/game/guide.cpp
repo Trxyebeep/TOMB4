@@ -648,9 +648,3 @@ void GuideControl(short item_number)
 	CreatureJoint(item, 3, torso_x);
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_guide(bool replace)
-{
-	INJECT(0x00405F20, InitialiseGuide, replace);
-	INJECT(0x00405FA0, GuideControl, replace);
-}

@@ -729,16 +729,3 @@ void DrawPlanetEffect(ITEM_INFO* item)
 
 	phd_PopMatrix();
 }
-
-void inject_moveblok(bool replace)
-{
-	INJECT(0x004094A0, ClearMovableBlockSplitters, replace);
-	INJECT(0x00409460, InitialiseMovingBlock, replace);
-	INJECT(0x00409B80, TestBlockPush, replace);
-	INJECT(0x00409D20, TestBlockPull, replace);
-	INJECT(0x004096D0, MovableBlock, replace);
-	INJECT(0x0040A040, MovableBlockCollision, replace);
-	INJECT(0x0040A3C0, InitialisePlanetEffect, replace);
-	INJECT(0x0040A4C0, ControlPlanetEffect, replace);
-	INJECT(0x0040A7F0, DrawPlanetEffect, replace);
-}

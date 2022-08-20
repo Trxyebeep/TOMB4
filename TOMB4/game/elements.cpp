@@ -223,10 +223,3 @@ void ControlElementPuzzle(short item_number)
 		}
 	}
 }
-
-void inject_elements(bool replace)
-{
-	INJECT(0x00454B60, ElementPuzzleCollision, replace);
-	INJECT(0x00454EF0, InitialiseElementPuzzle, replace);
-	INJECT(0x00454F50, ControlElementPuzzle, replace);
-}

@@ -558,12 +558,3 @@ void PrintString(ushort x, ushort y, uchar col, const char* string, ushort flags
 
 	ScaleFlag = 0;
 }
-
-void inject_text(bool replace)
-{
-	INJECT(0x00463650, InitFont, replace);
-	INJECT(0x00463930, UpdatePulseColour, replace);
-	INJECT(0x004639E0, GetStringLength, replace);
-	INJECT(0x00463DE0, DrawChar, replace);
-	INJECT(0x00463B50, PrintString, replace);
-}

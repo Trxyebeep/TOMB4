@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_savegame(bool replace);
-
 long CheckSumValid(char* buffer);
 void sgInitialiseHub(long dont_save_lara);
 void SaveLaraData();

@@ -2098,37 +2098,3 @@ void CalcColorSplitMMX(D3DCOLOR s, D3DCOLOR* d)
 	d[0] |= GlobalAlpha;
 }
 #pragma warning(pop)
-
-void inject_polyinsert(bool replace)
-{
-	INJECT(0x004812D0, HWR_DrawSortList, replace);
-	INJECT(0x00480A50, DrawSortList, replace);
-	INJECT(0x00481B50, CreateFogPos, replace);
-	INJECT(0x004818C0, ControlFXBulb, replace);
-	INJECT(0x004819B0, CreateFXBulbs, replace);
-	INJECT(0x004818A0, ClearFXFogBulbs, replace);
-	INJECT(0x004819F0, TriggerFXFogBulb, replace);
-	INJECT(0x00481AD0, IsVolumetric, replace);
-	INJECT(0x00481D20, DistCompare, replace);
-	INJECT(0x00481DF0, InitialiseFogBulbs, replace);
-	INJECT(0x00481E60, OmniEffect, replace);
-	INJECT(0x004820C0, OmniFog, replace);
-	INJECT(0x00483C80, AddTriClippedSorted, replace);
-	INJECT(0x004842A0, AddQuadClippedSorted, replace);
-	INJECT(0x00484850, AddLineClippedSorted, replace);
-	INJECT(0x00481860, InitialiseSortList, replace);
-	INJECT(0x00481760, DoSort, replace);
-	INJECT(0x00481810, SortPolyList, replace);
-	INJECT(0x00481AE0, mD3DTransform, replace);
-	INJECT(0x00482E40, AddClippedPoly, replace);
-	INJECT(0x00482910, AddTriClippedZBuffer, replace);
-	INJECT(0x00482390, AddQuadClippedZBuffer, replace);
-	INJECT(0x00482F90, SubdivideEdge, replace);
-	INJECT(0x00483520, SubdivideQuad, replace);
-	INJECT(0x004831C0, SubdivideTri, replace);
-	INJECT(0x00483A40, AddTriSubdivide, replace);
-	INJECT(0x00483B50, AddQuadSubdivide, replace);
-	INJECT(0x00484A20, CalcColorSplit, replace);
-	INJECT(0x004849A0, AddPrelitMMX, replace);
-	INJECT(0x00484920, CalcColorSplitMMX, replace);
-}

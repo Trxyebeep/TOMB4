@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_gameflow(bool replace);
-
 void DoGameflow();
 void DoLevel(uchar Name, uchar Audio);
 void DoTitle(uchar Name, uchar Audio);

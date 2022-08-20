@@ -1416,27 +1416,3 @@ void SkinVerticesToScratch(long node)
 		vns++;
 	}
 }
-
-void inject_output(bool replace)
-{
-	INJECT(0x0047DA60, phd_PutPolygons, replace);
-	INJECT(0x00480310, phd_PutPolygons_train, replace);
-	INJECT(0x00480220, ProjectTrainVerts, replace);
-	INJECT(0x0047D900, PrelightVerts, replace);
-	INJECT(0x0047F950, _InsertRoom, replace);
-	INJECT(0x00480570, RenderLoadPic, replace);
-	INJECT(0x0047D5B0, S_InitialisePolyList, replace);
-	INJECT(0x0047E8B0, phd_PutPolygonsPickup, replace);
-	INJECT(0x0047F620, phd_PutPolygonSkyMesh, replace);
-	INJECT(0x0047F970, S_DrawPickup, replace);
-	INJECT(0x0047FCF0, S_GetObjectBounds, replace);
-	INJECT(0x00480700, DDCopyBitmap, replace);
-	INJECT(0x00480850, _LoadBitmap, replace);
-	INJECT(0x004808E0, do_boot_screen, replace);
-	INJECT(0x00480070, S_AnimateTextures, replace);
-	INJECT(0x0047FCA0, S_DumpScreen, replace);
-	INJECT(0x0047FA10, S_OutputPolyList, replace);
-	INJECT(0x0047D810, CalcVertsColorSplitMMX, replace);
-	INJECT(0x0047D6B0, StashSkinVertices, replace);
-	INJECT(0x0047D760, SkinVerticesToScratch, replace);
-}

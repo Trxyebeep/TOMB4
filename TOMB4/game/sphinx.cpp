@@ -194,9 +194,3 @@ void SphinxControl(short item_number)
 	item->item_flags[3] = (short)item->pos.z_pos;
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_sphinx(bool replace)
-{
-	INJECT(0x00412A60, InitialiseSphinx, replace);
-	INJECT(0x00412AC0, SphinxControl, replace);
-}

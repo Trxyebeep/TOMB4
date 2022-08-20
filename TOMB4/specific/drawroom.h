@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_drawroom(bool replace);
-
 void ProjectVerts(long nVerts, D3DTLVERTEX* v, short* clip);
 void ProjectWaterVerts(long nVerts, D3DTLVERTEX* v, short* clip);
 void ProjectShoreVerts(long nVerts, D3DTLVERTEX* v, short* clip);

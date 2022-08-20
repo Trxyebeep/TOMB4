@@ -170,13 +170,3 @@ long ShotLara(ITEM_INFO* item, AI_INFO* info, BITE_INFO* gun, short extra_rotati
 
 	return targetable;
 }
-
-void inject_people(bool replace)
-{
-	INJECT(0x0040B050, GunShot, replace);
-	INJECT(0x0040B060, GunHit, replace);
-	INJECT(0x0040B120, GunMiss, replace);
-	INJECT(0x0040AEB0, TargetVisible, replace);
-	INJECT(0x0040AF80, Targetable, replace);
-	INJECT(0x0040B1D0, ShotLara, replace);
-}

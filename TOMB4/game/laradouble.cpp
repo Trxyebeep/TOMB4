@@ -26,9 +26,3 @@ void LaraDoubleControl(short item_number)
 	item->hit_points = 1000;
 	AnimateItem(item);
 }
-
-void inject_laradouble(bool replace)
-{
-	INJECT(0x00405EA0, InitialiseLaraDouble, replace);
-	INJECT(0x00405EB0, LaraDoubleControl, replace);
-}

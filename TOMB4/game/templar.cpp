@@ -194,9 +194,3 @@ void TemplarControl(short item_number)
 	CreatureJoint(item, 2, head);
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_templar(bool replace)
-{
-	INJECT(0x00413020, InitialiseTemplar, replace);
-	INJECT(0x00413090, TemplarControl, replace);
-}

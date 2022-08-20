@@ -146,16 +146,3 @@ void InitialiseFunctionTable()
 
 	AddLineSorted = AddLineClippedSorted;
 }
-
-void inject_functbl(bool replace)
-{
-	INJECT(0x00476E80, SetFogColor, replace);
-	INJECT(0x00476B30, HWInitialise, replace);
-	INJECT(0x00476990, _NVisible, replace);
-	INJECT(0x004769D0, _Visible, replace);
-	INJECT(0x00476A10, SetCullCW, replace);
-	INJECT(0x00476A20, SetCullCCW, replace);
-	INJECT(0x00476AC0, HWBeginScene, replace);
-	INJECT(0x00476B10, HWEndScene, replace);
-	INJECT(0x00476A30, InitialiseFunctionTable, replace);
-}

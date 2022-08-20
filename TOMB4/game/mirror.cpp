@@ -100,8 +100,3 @@ void Draw_Mirror_Lara()
 		hair++;
 	}
 }
-
-void inject_mirror(bool replace)
-{
-	INJECT(0x00455800, Draw_Mirror_Lara, replace);
-}

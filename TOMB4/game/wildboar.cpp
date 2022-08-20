@@ -179,9 +179,3 @@ void WildboarControl(short item_number)
 	CreatureJoint(item, 3, headY);
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_wildboar(bool replace)
-{
-	INJECT(0x0041BF00, InitialiseWildboar, replace);
-	INJECT(0x0041BF60, WildboarControl, replace);
-}

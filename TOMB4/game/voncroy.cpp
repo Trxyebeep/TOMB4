@@ -2087,14 +2087,3 @@ void VoncroyControl(short item_number)
 		}
 	}
 }
-
-void inject_voncroy(bool replace)
-{
-	INJECT(0x00418D00, SetCutSceneCamera, replace);
-	INJECT(0x00418F10, ClearCutSceneCamera, replace);
-	INJECT(0x00418FA0, GetAIEnemy, replace);
-	INJECT(0x00419070, DoVonCroyCutscene, replace);
-	INJECT(0x00419560, InitialiseVoncroy, replace);
-	INJECT(0x0041AF00, VoncroyRaceControl, replace);
-	INJECT(0x004195E0, VoncroyControl, replace);
-}

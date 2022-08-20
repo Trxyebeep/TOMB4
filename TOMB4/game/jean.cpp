@@ -47,9 +47,3 @@ void JeanYvesControl(short item_number)
 
 	AnimateItem(item);
 }
-
-void inject_jean(bool replace)
-{
-	INJECT(0x00409060, InitialiseJeanYves, replace);
-	INJECT(0x004090B0, JeanYvesControl, replace);
-}

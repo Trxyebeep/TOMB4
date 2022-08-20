@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_scarab(bool replace);
-
 void InitialiseScarab(short item_number);
 void ScarabControl(short item_number);
 long GetFreeScarab();

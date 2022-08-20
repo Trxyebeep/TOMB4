@@ -525,16 +525,3 @@ void SequenceDoorControl(short item_number)
 
 	AnimateItem(item);
 }
-
-void inject_door(bool replace)
-{
-	INJECT(0x0044DF60, ShutThatDoor, replace);
-	INJECT(0x0044DFC0, OpenThatDoor, replace);
-	INJECT(0x0044E010, DoorControl, replace);
-	INJECT(0x0044E1C0, DoorCollision, replace);
-	INJECT(0x0044E420, PushPullKickDoorControl, replace);
-	INJECT(0x0044E480, PushPullKickDoorCollision, replace);
-	INJECT(0x0044E660, DoubleDoorCollision, replace);
-	INJECT(0x0044E7C0, UnderwaterDoorCollision, replace);
-	INJECT(0x0044E930, SequenceDoorControl, replace);
-}

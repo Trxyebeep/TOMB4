@@ -2257,6 +2257,12 @@ struct NODEOFFSET_INFO
 	uchar GotIt;
 };
 
+struct TRAIN_STATIC
+{
+	short type;
+	short zoff;
+};
+
 #ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {

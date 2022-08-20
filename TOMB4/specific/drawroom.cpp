@@ -1079,21 +1079,3 @@ void CreateVertexNormals(ROOM_INFO* r)
 		r->vnormals[i] = n1;
 	}
 }
-
-void inject_drawroom(bool replace)
-{
-	INJECT(0x00471E00, ProjectVerts, replace);
-	INJECT(0x00471F40, ProjectWaterVerts, replace);
-	INJECT(0x00472190, ProjectShoreVerts, replace);
-	INJECT(0x00471420, ProcessRoomData, replace);
-	INJECT(0x004724C0, PrelightVertsNonMMX, replace);
-	INJECT(0x00472400, PrelightVertsMMX, replace);
-	INJECT(0x00472650, InsertRoom, replace);
-	INJECT(0x00472EE0, CalcTriFaceNormal, replace);
-	INJECT(0x00471040, ProcessMeshData, replace);
-	INJECT(0x004728B0, InitBuckets, replace);
-	INJECT(0x004729E0, DrawBucket, replace);
-	INJECT(0x004728D0, FindBucket, replace);
-	INJECT(0x00472C10, DrawBuckets, replace);
-	INJECT(0x00472F50, CreateVertexNormals, replace);
-}

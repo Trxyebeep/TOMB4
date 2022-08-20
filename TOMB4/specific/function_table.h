@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_functbl(bool replace);
-
 void SetFogColor(long r, long g, long b);
 void HWInitialise();
 bool _NVisible(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2);

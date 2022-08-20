@@ -594,33 +594,3 @@ void InitialiseEffects()
 	for (int i = 0; i < 64; i++)
 		Locusts[i].On = 0;
 }
-
-void inject_init(bool replace)
-{
-	INJECT(0x004537D0, InitialiseMapper, replace);
-	INJECT(0x00453800, InitialiseLightningConductor, replace);
-	INJECT(0x00453A30, InitialiseDoor, replace);
-	INJECT(0x00453070, InitialiseTrapDoor, replace);
-	INJECT(0x004530A0, InitialiseFallingBlock2, replace);
-	INJECT(0x004530D0, InitialiseFlameEmitter, replace);
-	INJECT(0x00453170, InitialiseFlameEmitter2, replace);
-	INJECT(0x00453230, InitialiseFlameEmitter3, replace);
-	INJECT(0x004532A0, InitialiseJobySpike, replace);
-	INJECT(0x00453340, InitialiseTwoBlockPlatform, replace);
-	INJECT(0x00453370, InitialiseSlicerDicer, replace);
-	INJECT(0x00453400, InitialiseScaledSpike, replace);
-	INJECT(0x004534E0, InitialiseRaisingBlock, replace);
-	INJECT(0x004535C0, InitialiseBurningFloor, replace);
-	INJECT(0x004535F0, InitialiseSethBlade, replace);
-	INJECT(0x00453650, InitialiseObelisk, replace);
-	INJECT(0x00453710, InitialiseMineHelicopter, replace);
-	INJECT(0x00453740, InitialiseSmashObject, replace);
-	INJECT(0x00453870, InitialiseStatuePlinth, replace);
-	INJECT(0x00453980, InitialiseSmokeEmitter, replace);
-	INJECT(0x00453E40, InitialisePulley, replace);
-	INJECT(0x00453E90, InitialisePickUp, replace);
-	INJECT(0x00453F60, CreateRope, replace);
-	INJECT(0x00454070, InitialiseRope, replace);
-	INJECT(0x00453F30, init_all_ropes, replace);
-	INJECT(0x004538A0, InitialiseEffects, replace);
-}

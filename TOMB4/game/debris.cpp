@@ -446,11 +446,3 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 		nQuads--;
 	}
 }
-
-void inject_debris(bool replace)
-{
-	INJECT(0x004332C0, UpdateDebris, replace);
-	INJECT(0x004330A0, TriggerDebris, replace);
-	INJECT(0x00433020, GetFreeDebris, replace);
-	INJECT(0x00433410, ShatterObject, replace);
-}

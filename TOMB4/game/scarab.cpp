@@ -389,15 +389,3 @@ void InitialiseScarabGenerator(short item_number)
 			item->pos.z_pos += 512;
 	}
 }
-
-void inject_scarab(bool replace)
-{
-	INJECT(0x0040DE90, InitialiseScarab, replace);
-	INJECT(0x0040DEF0, ScarabControl, replace);
-	INJECT(0x0040E250, GetFreeScarab, replace);
-	INJECT(0x0040E2A0, ClearScarabs, replace);
-	INJECT(0x0040E2D0, TriggerScarab, replace);
-	INJECT(0x0040E3C0, UpdateScarabs, replace);
-	INJECT(0x0040E630, DrawScarabs, replace);
-	INJECT(0x0040E6B0, InitialiseScarabGenerator, replace);
-}

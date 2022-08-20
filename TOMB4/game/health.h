@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_health(bool replace);
-
 long FlashIt();
 void DrawGameInfo(long timed);
 void DrawHealthBar(long flash_state);

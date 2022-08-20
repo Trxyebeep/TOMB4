@@ -1684,36 +1684,3 @@ const char* DXGetErrorString(HRESULT hr)
 
 	return "Undefined Error";
 }
-
-void inject_dxshell(bool replace)
-{
-	INJECT(0x00492240, DXBitMask2ShiftCnt, replace);
-	INJECT(0x004944D0, DXReadKeyboard, replace);
-	INJECT(0x00491C30, DXAttempt, replace);
-	INJECT(0x00491E50, AddStruct, replace);
-	INJECT(0x00491EA0, DXDDCreate, replace);
-	INJECT(0x00491F60, DXD3DCreate, replace);
-	INJECT(0x00492BE0, DXSetCooperativeLevel, replace);
-	INJECT(0x00491FC0, DXEnumDirectDraw, replace);
-	INJECT(0x00491CC0, DXEnumDirectSound, replace);
-	INJECT(0x00491C60, DXGetInfo, replace);
-	INJECT(0x00491D60, DXFreeInfo, replace);
-	INJECT(0x00492280, DXEnumDisplayModes, replace);
-	INJECT(0x004923A0, BPPToDDBD, replace);
-	INJECT(0x00492920, DXEnumTextureFormats, replace);
-	INJECT(0x00492AD0, DXEnumZBufferFormats, replace);
-	INJECT(0x00492B40, DXCreateSurface, replace);
-	INJECT(0x00492B90, DXSetVideoMode, replace);
-	INJECT(0x004930D0, DXCreateD3DDevice, replace);
-	INJECT(0x00493E70, DXCreateViewport, replace);
-	INJECT(0x00493F60, DXShowFrame, replace);
-	INJECT(0x00494030, DXMove, replace);
-	INJECT(0x00494270, DXInitKeyboard, replace);
-	INJECT(0x00494080, DXSaveScreen, replace);
-	INJECT(0x00493C00, DXClose, replace);
-	INJECT(0x00493130, DXCreate, replace);
-	INJECT(0x004939E0, DXChangeVideoMode, replace);
-	INJECT(0x00493A50, DXToggleFullScreen, replace);
-	INJECT(0x00492430, DXEnumDirect3D, replace);
-	INJECT(0x00490FF0, DXGetErrorString, replace);
-}

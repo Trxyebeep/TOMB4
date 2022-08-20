@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_croc(bool replace);
-
 void InitialiseCroc(short item_number);
 void CrocControl(short item_number);
 long GetFreeLocust();

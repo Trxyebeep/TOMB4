@@ -595,20 +595,3 @@ void S_StartSyncedAudio(long track)
 	S_CDStop();
 	S_CDPlay(track, 2);
 }
-
-void inject_audio(bool replace)
-{
-	INJECT(0x0046DE50, OpenStreamFile, replace);
-	INJECT(0x0046E0F0, GetADPCMData, replace);
-	INJECT(0x0046D7B0, ACMSetVolume, replace);
-	INJECT(0x0046E180, ACMEmulateCDPlay, replace);
-	INJECT(0x0046D800, ACMEnumCallBack, replace);
-	INJECT(0x0046D890, ACMSetupNotifications, replace);
-	INJECT(0x0046DF50, FillADPCMBuffer, replace);
-	INJECT(0x0046E340, ACMHandleNotifications, replace);
-	INJECT(0x0046D9C0, ACMInit, replace);
-	INJECT(0x0046DD00, ACMClose, replace);
-	INJECT(0x0046D610, S_CDPlay, replace);
-	INJECT(0x0046D6B0, S_CDStop, replace);
-	INJECT(0x0046D790, S_StartSyncedAudio, replace);
-}

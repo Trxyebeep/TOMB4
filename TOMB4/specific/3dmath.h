@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_3dmath(bool replace);
-
 void phd_PushMatrix();
 void phd_PushUnitMatrix();
 long phd_TranslateRel(long x, long y, long z);

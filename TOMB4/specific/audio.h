@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void inject_audio(bool replace);
-
 void OpenStreamFile(char* name);
 void GetADPCMData();
 void ACMSetVolume();

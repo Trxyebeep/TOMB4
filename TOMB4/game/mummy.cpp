@@ -236,9 +236,3 @@ void MummyControl(short item_number)
 	CreatureJoint(item, 2, head);
 	CreatureAnimation(item_number, angle, 0);
 }
-
-void inject_mummy(bool replace)
-{
-	INJECT(0x0040A930, InitialiseMummy, replace);
-	INJECT(0x0040A9D0, MummyControl, replace);
-}

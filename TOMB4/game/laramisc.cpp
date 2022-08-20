@@ -706,15 +706,3 @@ void LaraControl(short item_number)
 
 	savegame.Game.Distance += phd_sqrt(SQUARE(l->pos.x_pos - oldx) + SQUARE(l->pos.y_pos - oldy) + SQUARE(l->pos.z_pos - oldz));
 }
-
-void inject_laramisc(bool replace)
-{
-	INJECT(0x004301F0, LaraCheatGetStuff, replace);
-	INJECT(0x00430A50, LaraCheatyBits, replace);
-	INJECT(0x004309B0, LaraCheat, replace);
-	INJECT(0x00430EB0, InitialiseLaraLoad, replace);
-	INJECT(0x00430EE0, InitialiseLaraAnims, replace);
-	INJECT(0x00430140, LaraInitialiseMeshes, replace);
-	INJECT(0x00430B60, AnimateLara, replace);
-	INJECT(0x00430250, LaraControl, replace);
-}
