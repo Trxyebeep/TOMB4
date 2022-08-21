@@ -133,21 +133,15 @@ void DrawBikeBeam(ITEM_INFO* item)
 	long* bone;
 	short* frm[2];
 	short* rot;
-	long rate, bounds, r, g, b;
-#ifdef GENERAL_FIXES
+	long frac, rate, bounds, r, g, b;
 	short* rot2;
-	long frac;
-#endif
 
 	bike = (BIKEINFO*)item->data;
 
 	if (!bike->light_intensity)
 		return;
 
-#ifdef GENERAL_FIXES
-	frac = 
-#endif
-		GetFrames(item, frm, &rate);
+	frac = GetFrames(item, frm, &rate);
 	phd_PushMatrix();
 	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
@@ -162,7 +156,6 @@ void DrawBikeBeam(ITEM_INFO* item)
 		meshpp += 2;
 		bone = &bones[obj->bone_index];
 
-#ifdef GENERAL_FIXES
 		if (frac)
 		{
 			InitInterpolate(frac, rate);
@@ -205,7 +198,6 @@ void DrawBikeBeam(ITEM_INFO* item)
 			}
 		}
 		else
-#endif
 		{
 			phd_TranslateRel(frm[0][6], frm[0][7], frm[0][8]);
 			rot = frm[0] + 9;
@@ -1392,9 +1384,7 @@ void BikeControl(short item_number)
 
 	driving = -1;
 	killed = 0;
-#ifdef GENERAL_FIXES
 	pitch = 0;
-#endif
 	item = &items[lara.vehicle];
 	bike = (BIKEINFO*)item->data;
 	hitWall = BikeDynamics(item);

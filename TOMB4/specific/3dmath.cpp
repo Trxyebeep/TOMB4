@@ -402,27 +402,16 @@ ulong mGetAngle(long x, long z, long x1, long z1)
 
 void AlterFOV(short fov)
 {
-	CurrentFov = fov;
-	fov /= 2;
-
-#ifdef TR2MAIN_WIDESCREEN	//by Arsunt
 	long fov_width;
 
+	CurrentFov = fov;
+	fov /= 2;
 	fov_width = phd_winheight * 320 / 240;
 	LfAspectCorrection = 1.0F; // must always be 1.0 for unstretched view
 	phd_persp = (fov_width / 2) * phd_cos(fov) / phd_sin(fov);
-#else
-	phd_persp = ((phd_winwidth / 2) * phd_cos(fov)) / phd_sin(fov);
-#endif
-
 	f_persp = (float)phd_persp;
 	f_oneopersp = one / f_persp;
 	f_perspoznear = f_persp / f_znear;
-
-#ifndef TR2MAIN_WIDESCREEN
-	LfAspectCorrection = (4.0F / 3.0F) / (float(phd_winwidth) / float(phd_winheight));
-#endif
-
 	f_mpersp = f_persp;
 	f_moneopersp = mone / f_persp;
 	f_mperspoznear = f_persp / f_mznear;
@@ -649,13 +638,7 @@ void phd_LookAt(long sx, long sy, long sz, long tx, long ty, long tz, short roll
 	dx = sx - tx;
 	dy = sy - ty;
 	dz = sz - tz;
-
-#ifdef GENERAL_FIXES
 	val = phd_sqrt(SQUARE(dx) + SQUARE(dz));
-#else
-	val = (long)sqrt(SQUARE(dx) + SQUARE(dz));
-#endif
-
 	CamRot.x = (mGetAngle(0, 0, val, dy) >> 4) & 0xFFF;
 	CamRot.y = (mGetAngle(sz, sx, tz, tx) >> 4) & 0xFFF;
 	CamRot.z = 0;

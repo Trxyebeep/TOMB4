@@ -143,11 +143,9 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 	rotation = frame + 9;
 	gar_RotYXZsuperpack(&rotation, 0);
 
-#ifdef GENERAL_FIXES	//fix crash if exploding inactive enemies.. eg: mummies before they wake up
 	if (!item->data)
 		extra_rotation = no_rotation;
 	else
-#endif
 		extra_rotation = (short*)item->data;
 
 	bone = &bones[obj->bone_index];
@@ -1295,13 +1293,8 @@ void SetGunFlash(short weapon)
 	{
 	case WEAPON_REVOLVER:
 		pos.x = 0;
-#ifdef GENERAL_FIXES
 		pos.y = 190;
 		pos.z = 50;
-#else
-		pos.y = 215;
-		pos.z = 65;
-#endif
 		break;
 
 	case WEAPON_UZI:
@@ -2073,9 +2066,7 @@ void S_DrawSparks()
 	float perspz;
 	long x, y, z, smallest_size;
 
-#ifdef GENERAL_FIXES
 	smallest_size = 0;
-#endif
 
 	for (int i = 0; i < 16; i++)
 		NodeOffsets[i].GotIt = 0;

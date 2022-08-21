@@ -57,18 +57,8 @@ do \
 #define WINDOW_STYLE	(WS_OVERLAPPED | WS_BORDER | WS_CAPTION)
 #define W2V_SHIFT	14
 #define MAX_SAMPLES	370
-
-#ifdef GENERAL_FIXES
 #define MAX_DYNAMICS	64
-#else
-#define MAX_DYNAMICS	32
-#endif
-
-#ifdef GENERAL_FIXES
 #define MALLOC_SIZE	15000000	//15MB
-#else
-#define MALLOC_SIZE	5000000		//5MB
-#endif
 
 /********************DX defs********************/
 #define LPDIRECTDRAWX			LPDIRECTDRAW4
@@ -86,15 +76,8 @@ do \
 #define TEXGUID					IID_IDirect3DTexture2
 #define DDGUID					IID_IDirectDraw4
 #define D3DGUID					IID_IDirect3D3
-
-#if (DIRECTINPUT_VERSION >= 0x800)
 #define DIGUID					IID_IDirectInput8
 #define DIDGUID					IID_IDirectInputDevice8
-#else
-#define DIGUID					IID_IDirectInput2
-#define DIDGUID					IID_IDirectInputDevice2
-#endif
-
 #define DSNGUID					IID_IDirectSoundNotify
 /***********************************************/
 
@@ -2263,7 +2246,6 @@ struct TRAIN_STATIC
 	short zoff;
 };
 
-#ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {
 	uchar abLeftRed[5];
@@ -2273,9 +2255,7 @@ struct GouraudBarColourSet
 	uchar abRightGreen[5];
 	uchar abRightBlue[5];
 };
-#endif
 
-#ifdef GENERAL_FIXES
 struct COLOR_BIT_MASKS
 {
 	ulong dwRBitMask;
@@ -2315,5 +2295,4 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool hpbar_inv;
 	bool static_lighting;
 };
-#endif
 #pragma pack(pop)

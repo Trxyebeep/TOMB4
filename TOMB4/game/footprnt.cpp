@@ -3,19 +3,18 @@
 #include "delstuff.h"
 #include "control.h"
 #include "sound.h"
-#ifdef FOOTPRINTS
 #include "objects.h"
 #include "../specific/specificfx.h"
 #include "../specific/function_table.h"
 #include "../specific/3dmath.h"
-#include "../tomb4/tomb4.h"
 #include "../specific/function_stubs.h"
 #include "../specific/gamemain.h"
 #include "../specific/file.h"
+#include "lara.h"
+#include "../tomb4/tomb4.h"
 
 #define PRINT_HEIGHT_CORRECTION 128 // The maximum difference between the footprint and the floor
-#endif
-#include "lara.h"
+
 
 static char footsounds[14] = { 0, 5, 3, 2, 1, 9, 9, 4, 6, 5, 3, 9, 4, 6 };
 
@@ -56,7 +55,6 @@ void AddFootPrint(ITEM_INFO* item)
 	}
 }
 
-#ifdef FOOTPRINTS
 static void ProjectTriPoints(PHD_VECTOR* pos, long& x, long& y, long& z)
 {
 	x = (phd_mxptr[M00] * pos->x + phd_mxptr[M01] * pos->y + phd_mxptr[M02] * pos->z + phd_mxptr[M03]) >> W2V_SHIFT;
@@ -156,4 +154,3 @@ void S_DrawFootPrints()
 		}
 	}
 }
-#endif

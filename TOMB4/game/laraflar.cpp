@@ -15,24 +15,16 @@
 #include "lara.h"
 #include "debris.h"
 #include "gameflow.h"
-#ifdef GENERAL_FIXES
 #include "draw.h"
-#endif
 
 void DrawFlareInAir(ITEM_INFO* item)
 {
-#ifdef GENERAL_FIXES
 	short* bounds;
-#endif
+
+	bounds = GetBoundsAccurate(item);
 
 	phd_PushMatrix();
-#ifdef GENERAL_FIXES
-	bounds = GetBoundsAccurate(item);
 	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos - bounds[3], item->pos.z_pos);
-#else
-	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-#endif
-
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
 	phd_PutPolygons_train(meshes[objects[FLARE_ITEM].mesh_index], 0);
 	phd_PopMatrix();

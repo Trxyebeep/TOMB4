@@ -10,11 +10,9 @@
 #include "lara_states.h"
 #include "../specific/input.h"
 #include "../specific/function_stubs.h"
-#ifdef GENERAL_FIXES
-#include "../tomb4/tomb4.h"
-#endif
 #include "lara.h"
 #include "gameflow.h"
+#include "../tomb4/tomb4.h"
 
 short* GLaraShadowframe;
 long lara_matrices[180];
@@ -120,9 +118,7 @@ void DrawLara(ITEM_INFO* item, long mirror)
 	if (lara.vehicle == NO_ITEM)
 		S_PrintShadow(obj->shadow_size, GLaraShadowframe, item);
 
-#ifdef GENERAL_FIXES
 	if (tomb4.look_transparency)
-#endif
 	{
 		if (input & IN_LOOK)
 		{
@@ -240,11 +236,7 @@ void DrawLara(ITEM_INFO* item, long mirror)
 			else
 				xRot = phd_atan(cos, sin);
 
-#ifdef GENERAL_FIXES	//fixes wrong elbows when they are stretched
 			phd_RotX(short(-xRot >> 1));
-#else
-			phd_RotX(-(short)xRot >> 1);
-#endif
 			phd_PutPolygons(*meshpp, -1);
 			phd_PopMatrix();
 		}

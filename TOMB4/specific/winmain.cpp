@@ -16,9 +16,7 @@
 #include "../game/gameflow.h"
 #include "dxsound.h"
 #include "gamemain.h"
-#ifdef GENERAL_FIXES
 #include "fmv.h"
-#endif
 
 static COMMANDLINES commandlines[] =
 {
@@ -191,57 +189,6 @@ void WinDisplayString(long x, long y, char* string, ...)
 	va_start(list, string);
 	vsprintf(buf, string, list);
 	PrintString((ushort)x, (ushort)y, 6, buf, 0);
-}
-
-long CheckMMXTechnology()
-{
-#ifdef GENERAL_FIXES	//original works but is dodgy as fuck
-	return 0;
-#else
-	ulong _edx;
-	long mmx;
-
-	mmx = 1;
-
-	__try
-	{
-		__asm
-		{
-			pusha
-			mov eax, 1
-			cpuid
-			mov _edx, edx
-			popa
-		}
-
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		mmx = 0;
-	}
-
-	if (!mmx)
-		mmx = 0;
-
-	if (_edx & 0x800000)
-	{
-		__try
-		{
-			__asm
-			{
-				emms
-			}
-		}
-		__except (EXCEPTION_EXECUTE_HANDLER)
-		{
-			mmx = 0;
-		}
-	}
-	else
-		mmx = 0;
-
-	return mmx;
-#endif
 }
 
 void WinProcMsg()
@@ -476,19 +423,11 @@ void ClearSurfaces()
 
 	if (App.dx.Flags & 0x80)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
-#ifndef GENERAL_FIXES
-	else
-		ClearFakeDevice(App.dx.lpD3DDevice, 1, &r, D3DCLEAR_TARGET, 0, 1.0F, 0);
-#endif
 
 	S_DumpScreen();
 
 	if (App.dx.Flags & 0x80)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
-#ifndef GENERAL_FIXES
-	else
-		ClearFakeDevice(App.dx.lpD3DDevice, 1, &r, D3DCLEAR_TARGET, 0, 1.0F, 0);
-#endif
 
 	S_DumpScreen();
 }
@@ -502,32 +441,14 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	DEVMODE devmode;
 	char* buf;
 	long size;
-#ifndef NO_CD
-	bool drive;
-#endif
 
 	start_setup = 0;
-	App.mmx = CheckMMXTechnology();
+	App.mmx = 0;
 	App.SetupComplete = 0;
 	App.AutoTarget = 0;
 
 	if (WinRunCheck((char*)"Tomb Raider - The Last Revelation", (char*)"MainGameWindow", &App.mutex))
 		return 0;
-
-#ifndef NO_CD
-	if (!FindCDDrive())
-	{
-		drive = 0;
-
-		while (!drive)
-		{
-			if (MessageBox(0, "Tomb Raider - The Last Revelation CD", "Tomb Raider", MB_RETRYCANCEL | MB_ICONQUESTION) == IDCANCEL)
-				return 0;
-
-			drive = FindCDDrive();
-		}
-	}
-#endif
 
 	LoadGameflow();
 	WinProcessCommandLine(lpCmdLine);
@@ -578,7 +499,6 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 		LoadSettings();
 	}
 
-#ifdef GENERAL_FIXES
 	if (!fmvs_disabled)
 	{
 		if (!LoadBinkStuff())
@@ -587,7 +507,6 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 			fmvs_disabled = 1;
 		}
 	}
-#endif
 
 	SetWindowPos(App.hWnd, 0, App.dx.rScreen.left, App.dx.rScreen.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 	desktop = GetDesktopWindow();
@@ -605,13 +524,11 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 		return 0;
 	}
 
-#ifdef GENERAL_FIXES	//remove the border in fullscreen
-	if (G_dxptr->Flags & 1)
+	if (G_dxptr->Flags & 1)	//remove the border in fullscreen
 	{
 		SetWindowLongPtr(App.hWnd, GWL_STYLE, WS_POPUP);
 		SetWindowPos(App.hWnd, 0, App.dx.rScreen.left, App.dx.rScreen.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 	}
-#endif
 
 	UpdateWindow(App.hWnd);
 	ShowWindow(App.hWnd, nShowCmd);
@@ -661,49 +578,4 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	devmode.dmFields = DM_BITSPERPEL;
 	ChangeDisplaySettings(&devmode, 0);
 	return 0;
-}
-
-long MungeFPCW(short* fpcw)
-{
-#ifdef GENERAL_FIXES
-	return 0;
-#else
-	long ret;
-	short cw, temp;
-
-	ret = 0;
-
-	__asm
-	{
-		fstcw cw
-	}
-
-	if (cw & 0x300 || (cw & 0x3F) != 0x3F || cw & 0xC00)
-	{
-		__asm
-		{
-			mov ax, cw
-			and ax, not 0x300
-			or ax, 0x3F
-			and ax, not 0xC00
-			mov temp, ax
-			fldcw temp
-		}
-
-		ret = 1;
-	}
-
-	*fpcw = cw;
-	return ret;
-#endif
-}
-
-void RestoreFPCW(short fpcw)
-{
-#ifndef GENERAL_FIXES
-	__asm
-	{
-		fldcw fpcw
-	}
-#endif
 }

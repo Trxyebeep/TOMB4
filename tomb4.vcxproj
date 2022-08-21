@@ -90,7 +90,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;DISCORD_RPC;IMPROVED_BARS;ENEMY_BARS;TR2MAIN_WIDESCREEN;NO_CD;AMMO_COUNTER;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -101,7 +101,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalOptions>/SECTION:.text,RWE /IGNORE:4099 /pdbaltpath:%_PDB% %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/IGNORE:4099 /pdbaltpath:%_PDB% %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>winmm.lib;dxguid.lib;ddraw.lib;Dsound.lib;Msacm32.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -111,7 +111,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;GENERAL_FIXES;CUTSEQ_SKIPPER;_CRT_SECURE_NO_WARNINGS;FOOTPRINTS;SMOOTH_SHADOWS;DISCORD_RPC;IMPROVED_BARS;ENEMY_BARS;TR2MAIN_WIDESCREEN;NO_CD;AMMO_COUNTER;NDEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;TOMB4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>../tomb4/pch.h</PrecompiledHeaderFile>
@@ -124,7 +124,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalOptions>/SECTION:.text,RWE /IGNORE:4099 /pdbaltpath:%_PDB% %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/IGNORE:4099 /pdbaltpath:%_PDB% %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>winmm.lib;dxguid.lib;ddraw.lib;Dsound.lib;Msacm32.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

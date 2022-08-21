@@ -211,21 +211,13 @@ void BridgeFlatCeiling(ITEM_INFO* item, long x, long y, long z, long* height)
 long GetOffset(ITEM_INFO* item, long x, long z)
 {
 	if (!item->pos.y_rot)
-#ifdef GENERAL_FIXES // Fixes bridge bug
 		return ~x & 0x3FF;
-#else
-		return -x & 0x3FF;
-#endif
 	else if (item->pos.y_rot == -0x8000)
 		return x & 0x3FF;
 	else if (item->pos.y_rot == 0x4000)
 		return z & 0x3FF;
 	else
-#ifdef GENERAL_FIXES
 		return ~z & 0x3FF;
-#else
-		return -z & 0x3FF;
-#endif
 }
 
 void BridgeTilt1Floor(ITEM_INFO* item, long x, long y, long z, long* height)
@@ -316,10 +308,8 @@ void StatuePlinthCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 			l->anim_number = ANIM_PLINTHHI;
 			l->frame_number = anims[ANIM_PLINTHHI].frame_base;
 			l->current_anim_state = AS_CONTROLLED;
-#ifdef GENERAL_FIXES
 			lara.gun_status = LG_HANDS_BUSY;
 			GLOBAL_inventoryitemchosen = NO_ITEM;
-#endif
 			return;
 		}
 	}
@@ -330,10 +320,8 @@ void StatuePlinthCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 			l->anim_number = ANIM_PLINTHHI;
 			l->frame_number = anims[ANIM_PLINTHHI].frame_base;
 			l->current_anim_state = AS_CONTROLLED;
-#ifdef GENERAL_FIXES
 			lara.gun_status = LG_HANDS_BUSY;
 			GLOBAL_inventoryitemchosen = NO_ITEM;
-#endif
 			return;
 		}
 	}

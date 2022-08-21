@@ -19,11 +19,9 @@
 #include "camera.h"
 #include "../specific/dxshell.h"
 #include "../specific/gamemain.h"
-#ifdef GENERAL_FIXES
-#include "../tomb4/tomb4.h"
-#endif
 #include "lara.h"
 #include "savegame.h"
+#include "../tomb4/tomb4.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)	//long -> char truncation bullshit
@@ -404,11 +402,7 @@ static char use_the_bitch;
 
 long LoadGame()
 {
-#ifdef GENERAL_FIXES
 	if (S_LoadSave(IN_LOAD, 1, 1) < 0)
-#else
-	if (S_LoadSave(IN_LOAD, 1) < 0)
-#endif
 		return -1;
 	else
 		return 1;
@@ -418,12 +412,7 @@ long SaveGame()
 {
 	long Save;
 
-	Save = 
-#ifdef GENERAL_FIXES
-		S_LoadSave(IN_SAVE, 1, 1);
-#else
-		S_LoadSave(IN_SAVE, 1);
-#endif
+	Save = S_LoadSave(IN_SAVE, 1, 1);
 	input = 0;
 	dbinput = 0;
 
@@ -704,11 +693,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 			compass += lara_item->pos.y_rot;
 			phd_RotY((short)(compass - 0x8000));
 
-#ifdef GENERAL_FIXES
 			if (lara_item->pos.y_rot > -48 && lara_item->pos.y_rot <= 48 && tomb4.cheats)
-#else
-			if (lara_item->pos.y_rot > -48 && lara_item->pos.y_rot <= 48)
-#endif
 			{
 				shade = 96;
 
@@ -760,13 +745,11 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 					}
 				}
 
-#ifdef GENERAL_FIXES
 				if (rings[RING_INVENTORY]->current_object_list[rings[RING_INVENTORY]->curobjinlist].invitem == INV_MEMCARD_SAVE_ITEM)
 				{
 					if (keymap[DIK_H] && keymap[DIK_E] && keymap[DIK_A] && keymap[DIK_L])
 						lara_item->hit_points = 1000;
 				}
-#endif
 			}
 		}
 
@@ -785,11 +768,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 				else
 					shade <<= 1;
 
-#ifdef GENERAL_FIXES
-				GlobalAlpha = shade << 24;	//idiots
-#else
-				GlobalAlpha = shade << 25;
-#endif
+				GlobalAlpha = shade << 24;
 				phd_PutPolygonsPickup(*meshpp, (float)xoffset, (float)yoffset, pcbright);
 				GlobalAlpha = alpha;
 			}
@@ -2781,10 +2760,8 @@ void draw_current_object_list(long ringnum)
 				}
 			}
 
-#ifdef GENERAL_FIXES
 			if (tomb4.hpbar_inv && (objme->object_number == SMALLMEDI_ITEM || objme->object_number == BIGMEDI_ITEM))
 				S_DrawHealthBar(lara_item->hit_points / 10);
-#endif
 
 			if (nummeup)
 			{

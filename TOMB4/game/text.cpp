@@ -7,11 +7,8 @@
 #include "../specific/function_stubs.h"
 #include "../specific/gamemain.h"
 
-#ifdef GENERAL_FIXES
 long stash_font_height;
 long smol_font_height;
-#endif
-
 long small_font;
 long font_height;
 long GnFrameCounter;
@@ -273,10 +270,8 @@ void InitFont()
 	}
 
 	font_height = short(float(3.0F * phd_winymax / 40.0F));
-#ifdef GENERAL_FIXES
 	stash_font_height = font_height;
 	smol_font_height = short(float(7.0F * phd_winymax / 120.0F));
-#endif
 }
 
 void UpdatePulseColour()

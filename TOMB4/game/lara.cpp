@@ -23,9 +23,7 @@
 #include "../specific/input.h"
 #include "debris.h"
 #include "gameflow.h"
-#ifdef GENERAL_FIXES
 #include "../tomb4/tomb4.h"
-#endif
 
 void(*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =
 {
@@ -278,7 +276,6 @@ short DashTimer;
 static short LeftClimbTab[4] = { 512, 1024, 2048, 256 };
 static short RightClimbTab[4] = { 2048, 256, 512, 1024 };
 
-#ifdef GENERAL_FIXES
 static void TiltHer(ITEM_INFO* item, long rad, long height)
 {
 	FLOOR_INFO* floor;
@@ -371,7 +368,6 @@ static void TiltHer(ITEM_INFO* item, long rad, long height)
 	else if (item->pos.z_rot < -8192)
 		item->pos.z_rot = -8192;
 }
-#endif
 
 void lara_void_func(ITEM_INFO* item, COLL_INFO* coll)
 {
@@ -444,13 +440,11 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 		item->pos.z_rot -= 182;
 	else item->pos.z_rot = 0;
 
-#ifdef GENERAL_FIXES
 	if (item->pos.x_rot < -182)
 		item->pos.x_rot += 182;
 	else if (item->pos.x_rot > 182)
 		item->pos.x_rot -= 182;
 	else item->pos.x_rot = 0;
-#endif
 
 	if (lara.turn_rate < -364)
 		lara.turn_rate += 364;
@@ -477,11 +471,7 @@ void SetCornerAnim(ITEM_INFO* item, COLL_INFO* coll, short rot, short flip)
 	coll->enable_spaz = 0;
 	coll->enable_baddie_push = 0;
 
-#ifdef GENERAL_FIXES
 	if (lara_item->hit_points > 0)
-#else
-	if (input & IN_ACTION && lara_item->hit_points > 0)
-#endif
 	{
 		if (flip)
 		{
@@ -587,16 +577,12 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
 	item->fallspeed = 0;
 	item->gravity_status = 0;
 
-#ifdef GENERAL_FIXES
 	if (tomb4.fix_climb_up_delay)
 		flag = item->anim_number == ANIM_GRABLEDGE;
 	else
 		flag = (item->anim_number == ANIM_GRABLEDGE && item->frame_number == anims[ANIM_GRABLEDGE].frame_base + 21);
 
 	if (flag)
-#else
-	if (item->anim_number == ANIM_GRABLEDGE && item->frame_number == anims[ANIM_GRABLEDGE].frame_base + 21)
-#endif
 	{
 		if (input & IN_LEFT || input & IN_LSTEP)
 		{
@@ -644,16 +630,12 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
 	lara.move_angle = item->pos.y_rot;
 	LaraHangTest(item, coll);
 
-#ifdef GENERAL_FIXES
 	if (tomb4.fix_climb_up_delay)
 		flag = item->anim_number == ANIM_GRABLEDGE;
 	else
 		flag = (item->anim_number == ANIM_GRABLEDGE && item->frame_number == anims[ANIM_GRABLEDGE].frame_base + 21);
 
 	if (flag)
-#else
-	if (item->anim_number == ANIM_GRABLEDGE && item->frame_number == anims[ANIM_GRABLEDGE].frame_base + 21)
-#endif
 	{
 		if (input & IN_FORWARD)
 		{
@@ -680,14 +662,8 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll)
 					coll->front_floor - coll->left_ceiling2 >= -256 &&
 					coll->front_floor - coll->right_ceiling2 >= -256)
 				{
-#ifndef GENERAL_FIXES
-					if (input & IN_DUCK)
-#endif
-					{
-						item->goal_anim_state = AS_HANG2DUCK;
-						item->required_anim_state = AS_DUCK;
-					}
-
+					item->goal_anim_state = AS_HANG2DUCK;
+					item->required_anim_state = AS_DUCK;
 					return;
 				}
 			}
@@ -1024,10 +1000,7 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 	coll->slopes_are_walls = 1;
 	coll->slopes_are_pits = 1;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
-
-#ifdef GENERAL_FIXES
 	TiltHer(item, 140, 400);
-#endif
 
 	if (LaraFallen(item, coll))
 		lara.gun_status = LG_NO_ARMS;
@@ -1042,16 +1015,12 @@ void lara_col_all4s(ITEM_INFO* item, COLL_INFO* coll)
 
 		if ((input & IN_DUCK || lara.keep_ducked) && (!(input & (IN_FLARE | IN_DRAW)) || input & IN_FORWARD) && lara.water_status != LW_WADE)
 		{
-#ifdef GENERAL_FIXES
 			if (tomb4.flexible_crawling)
 				collided = (item->anim_number == ANIM_ALL4S || item->anim_number == ANIM_ALL4S2 || item->anim_number == 266 || item->anim_number == 268);
 			else
 				collided = (item->anim_number == ANIM_ALL4S || item->anim_number == ANIM_ALL4S2);
 
 			if (collided)
-#else
-			if (item->anim_number == ANIM_ALL4S || item->anim_number == ANIM_ALL4S2)
-#endif
 			{
 				if (input & IN_FORWARD)
 				{
@@ -1187,10 +1156,7 @@ void lara_col_crawl(ITEM_INFO* item, COLL_INFO* coll)
 	coll->slopes_are_walls = 1;
 	coll->facing = lara.move_angle;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
-
-#ifdef GENERAL_FIXES
 	TiltHer(item, 140, 400);
-#endif
 
 	if (LaraDeflectEdgeDuck(item, coll))
 	{
@@ -1266,10 +1232,7 @@ void lara_as_all4turnr(ITEM_INFO* item, COLL_INFO* coll)
 void lara_col_all4turnlr(ITEM_INFO* item, COLL_INFO* coll)
 {
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
-
-#ifdef GENERAL_FIXES
 	TiltHer(item, 140, 400);
-#endif
 
 	if (!TestLaraSlide(item, coll) && coll->mid_floor != NO_HEIGHT && coll->mid_floor > -256)
 		item->pos.y_pos += coll->mid_floor;
@@ -1326,10 +1289,7 @@ void lara_col_crawlb(ITEM_INFO* item, COLL_INFO* coll)
 	lara.move_angle = item->pos.y_rot + 32768;
 	coll->facing = lara.move_angle;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
-
-#ifdef GENERAL_FIXES
 	TiltHer(item, 140, 400);
-#endif
 
 	if (LaraDeflectEdgeDuck(item, coll))
 	{
@@ -1712,11 +1672,7 @@ void lara_col_hang2(ITEM_INFO* item, COLL_INFO* coll)
 				else
 					item->goal_anim_state = AS_NULL;
 			}
-#ifdef GENERAL_FIXES
-			else if (input & (IN_FORWARD) &&	//fuck off
-#else
-			else if (input & (IN_FORWARD | IN_DUCK) &&
-#endif
+			else if (input & (IN_FORWARD) &&
 				coll->front_floor > -850 && coll->front_floor < -650 &&
 				coll->front_floor - coll->front_ceiling >= 0 && coll->left_floor2 - coll->left_ceiling2 >= 0 &&
 				coll->right_floor2 - coll->right_ceiling2 >= 0 && !coll->hit_static)

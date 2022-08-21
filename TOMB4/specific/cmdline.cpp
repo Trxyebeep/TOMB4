@@ -114,23 +114,9 @@ void InitResolution(HWND dlg, HWND hwnd, bool resetvms)
 
 	n = 0;
 
-#ifdef GENERAL_FIXES
 	SendMessage(GetDlgItem(dlg, 1010), BM_SETCHECK, 1, 0);
 	SendMessage(GetDlgItem(dlg, 1011), BM_SETCHECK, 0, 0);
 	EnableWindow(GetDlgItem(dlg, 1011), 0);
-#else
-	if (nD3DDevice)
-	{
-		SendMessage(GetDlgItem(dlg, 1010), BM_SETCHECK, 1, 0);
-		SendMessage(GetDlgItem(dlg, 1011), BM_SETCHECK, 0, 0);
-	}
-	else
-	{
-		SendMessage(GetDlgItem(dlg, 1010), BM_SETCHECK, 0, 0);
-		SendMessage(GetDlgItem(dlg, 1011), BM_SETCHECK, 1, 0);
-	}
-#endif
-
 	software = SendMessage(GetDlgItem(dlg, 1011), BM_GETCHECK, 0, 0);
 
 	if (resetvms)

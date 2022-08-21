@@ -31,10 +31,8 @@ void undraw_pistol_mesh_left(long weapon_type)
 
 		if (weapon_type == WEAPON_PISTOLS)
 			lara.holster = LARA_HOLSTERS_PISTOLS;
-#ifdef GENERAL_FIXES
 		else if (weapon_type == WEAPON_UZI)
 			lara.holster = LARA_HOLSTERS_UZIS;
-#endif
 	}
 }
 
@@ -45,12 +43,10 @@ void undraw_pistol_mesh_right(long weapon_type)
 
 	if (weapon_type == WEAPON_PISTOLS)
 		lara.holster = LARA_HOLSTERS_PISTOLS;
-#ifdef GENERAL_FIXES
 	else if (weapon_type == WEAPON_UZI)
 		lara.holster = LARA_HOLSTERS_UZIS;
 	else if (weapon_type == WEAPON_REVOLVER)
 		lara.holster = LARA_HOLSTERS_SIXSHOOTER;
-#endif
 }
 
 static void set_arm_info(LARA_ARM* arm, long frame)

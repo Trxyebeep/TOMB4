@@ -21,12 +21,10 @@
 #include "../game/newinv.h"
 #include "../game/camera.h"
 #include "3dmath.h"
-#ifdef GENERAL_FIXES
-#include "../tomb4/tomb4.h"
 #include "../game/control.h"
-#include "../tomb4/troyestuff.h"
-#endif
 #include "../game/lara.h"
+#include "../tomb4/tomb4.h"
+#include "../tomb4/troyestuff.h"
 
 static long MonoScreenX[4] = { 0, 256, 512, 640 };
 static long MonoScreenY[3] = { 0, 256, 480 };
@@ -43,7 +41,6 @@ static SAVEFILE_INFO SaveGames[15];
 static float loadbar_pos;
 static long loadbar_maxpos;
 
-#ifdef IMPROVED_BARS
 static GouraudBarColourSet healthBarColourSet =
 {
 	{ 64, 96, 128, 96, 64 },
@@ -452,15 +449,13 @@ static void S_DrawHealthBar2(long pos)
 	else
 		DoBar(245, font_height + 48, 150, 12, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000);
 }
-#endif
 
 void S_DrawHealthBar(long pos)
 {
+	long x, y;
+
 	if (!gfCurrentLevel)
 		return;
-
-#ifdef GENERAL_FIXES
-	long x, y;
 
 	if (BinocularRange)
 	{
@@ -479,7 +474,6 @@ void S_DrawHealthBar(long pos)
 		y = font_height >> 2;
 	}
 
-#ifdef IMPROVED_BARS
 	if (tomb4.bar_mode == 2)
 	{
 		if (lara.poisoned)
@@ -490,29 +484,20 @@ void S_DrawHealthBar(long pos)
 	else if (tomb4.bar_mode == 3)
 		S_DrawGouraudBar(x, y, 150, 12, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
 	else
-#endif
 	{
 		if (lara.poisoned)
 			DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFFFFFF00);	//yellow
 		else
 			DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFFFF0000);	//red
 	}
-#else
-
-	if (lara.poisoned)
-		DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFFFF00);	//yellow
-	else
-		DoBar(font_height >> 2, font_height >> 2, 150, 12, pos, 0xFF000000, 0xFFFF0000);	//red
-#endif
 }
 
 void S_DrawAirBar(long pos)
 {
+	long x, y;
+
 	if (!gfCurrentLevel)
 		return;
-
-#ifdef GENERAL_FIXES
-	long x, y;
 
 	if (tomb4.bars_pos == 1)//original
 	{
@@ -538,26 +523,20 @@ void S_DrawAirBar(long pos)
 			y = (font_height >> 2) + (font_height / 3);
 	}
 
-#ifdef IMPROVED_BARS
 	if (tomb4.bar_mode == 2)
 		S_DoTR5Bar(x, y, 150, 12, pos, 0x0000A0, 0x0050A0);
 	else if (tomb4.bar_mode == 3)
 		S_DrawGouraudBar(x, y, 150, 12, pos, &airBarColourSet);
 	else
-#endif
 		DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFF0000FF);	//blue
-#else
-	DoBar(490 - (font_height >> 2), (font_height >> 2) + (font_height >> 1), 150, 12, pos, 0xFF000000, 0xFF0000FF);	//blue
-#endif
 }
 
 void S_DrawDashBar(long pos)
 {
+	long x, y;
+
 	if (!gfCurrentLevel)
 		return;
-
-#ifdef GENERAL_FIXES
-	long x, y;
 
 	if (tomb4.bars_pos == 1)//original
 	{
@@ -583,17 +562,12 @@ void S_DrawDashBar(long pos)
 			y = (font_height >> 2) + (font_height / 3) + (font_height / 3);
 	}
 
-#ifdef IMPROVED_BARS
 	if (tomb4.bar_mode == 2)
 		S_DoTR5Bar(x, y, 150, 12, pos, 0xA0A000, 0x00A000);
 	else if (tomb4.bar_mode == 3)
 		S_DrawGouraudBar(x, y, 150, 12, pos, &dashBarColourSet);
 	else
-#endif
 		DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFF00FF00);	//green
-#else
-	DoBar(490 - (font_height >> 2), font_height >> 2, 150, 12, pos, 0xFF000000, 0xFF00FF00);
-#endif
 }
 
 void S_InitLoadBar(long maxpos)
@@ -614,7 +588,6 @@ void S_LoadBar()
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 		loadbar_pos += 100 / loadbar_maxpos;
 
-#ifdef IMPROVED_BARS
 		if (tomb4.tr5_loadbar)
 		{
 			if (tomb4.bar_mode == 3)
@@ -633,14 +606,9 @@ void S_LoadBar()
 			else
 				DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
 		}
-#else
-		DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
-#endif
 
 		SortPolyList(SortCount, SortList);
-		RestoreFPCW(FPCW);
 		DrawSortList();
-		MungeFPCW(&FPCW);
 		S_DumpScreen();
 	}
 }
@@ -649,19 +617,9 @@ void DoBar(long x, long y, long width, long height, long pos, long clr1, long cl
 {
 	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
-	static float wat = 0;
 	long x2, sx, sy;
 
-#ifdef GENERAL_FIXES
 	nPolyType = 6;
-#else
-	nPolyType = 4;
-#endif
-	wat += 0.0099999998F;
-
-	if (wat > 0.99000001F)
-		wat = 0;
-
 	clipflags[0] = 0;
 	clipflags[1] = 0;
 	clipflags[2] = 0;
@@ -818,13 +776,11 @@ void DoOptions()
 
 	if (menu)	//controls menu
 	{
-#ifdef GENERAL_FIXES	//excuse me let me just 
 		if (menu == 200)
 		{
 			TroyeMenu(textY, menu, selection);
 			return;
 		}
-#endif
 
 		if (Gameflow->Language == GERMAN)
 			keyboard_buttons = (char**)GermanKeyboard;
@@ -1117,11 +1073,7 @@ void DoOptions()
 	}
 	else	//'main' menu
 	{
-#ifdef GENERAL_FIXES	//1 more option
 		num = 6;
-#else
-		num = 5;
-#endif
 		textY = 3 * font_height;
 		PrintString(phd_centerx, textY, 6, SCRIPT_TEXT(TXT_Options), FF_CENTER);
 		PrintString(phd_centerx, textY + font_height + (font_height >> 1), selection & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Control_Configuration), FF_CENTER);
@@ -1155,10 +1107,8 @@ void DoOptions()
 			strcpy(quality_text, SCRIPT_TEXT(TXT_Manual));
 
 		PrintString(phd_centerx + (phd_centerx >> 2), textY + 6 * font_height, selection & 0x10 ? 1 : 6, quality_text, 0);
-
-#ifdef GENERAL_FIXES	//yay!
 		PrintString(phd_centerx, (font_height >> 1) + textY + 7 * font_height, selection & 0x20 ? 1 : 2, "tomb4 options", FF_CENTER);
-#endif
+
 		if (dbinput & IN_FORWARD)
 		{
 			SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
@@ -1177,14 +1127,12 @@ void DoOptions()
 			menu = 1;
 		}
 
-#ifdef GENERAL_FIXES
 		if (dbinput & IN_SELECT && selection & 0x20)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			selection = 1;
 			menu = 200;
 		}
-#endif
 
 		if (!selection)
 			selection = 1;
@@ -1484,11 +1432,7 @@ long DoLoadSave(long LoadSave)
 }
 #pragma warning(pop)
 
-#ifdef GENERAL_FIXES
 long S_LoadSave(long load_or_save, long mono, long inv_active)
-#else
-long S_LoadSave(long load_or_save, long mono)
-#endif
 {
 	long fade, ret;
 
@@ -1499,9 +1443,7 @@ long S_LoadSave(long load_or_save, long mono)
 
 	GetSaveLoadFiles();
 
-#ifdef GENERAL_FIXES
 	if (!inv_active)
-#endif
 		InventoryActive = 1;
 
 	while (1)
@@ -1533,10 +1475,8 @@ long S_LoadSave(long load_or_save, long mono)
 			fade = ret + 1;
 			S_LoadGame(ret);
 
-#ifdef GENERAL_FIXES
 			if (!DeathMenuActive)
 				SetFade(0, 255);
-#endif
 
 			ret = -1;
 		}
@@ -1562,9 +1502,7 @@ long S_LoadSave(long load_or_save, long mono)
 	if (!mono)
 		FreeMonoScreen();
 
-#ifdef GENERAL_FIXES
 	if (!inv_active)
-#endif
 		InventoryActive = 0;
 
 	return ret;
@@ -1641,49 +1579,23 @@ void S_DisplayMonoScreen()
 	long y[4];
 	ulong col;
 
-#ifdef GENERAL_FIXES
 	x[0] = phd_winxmin;
 	y[0] = phd_winymin;
 	x[1] = phd_winxmin + phd_winwidth;
 	y[1] = phd_winymin + phd_winheight;
-#else
-	for (int i = 0; i < 3; i++)
-	{
-		x[i] = phd_winxmin + phd_winwidth * MonoScreenX[i] / 640;
-		y[i] = phd_winymin + phd_winheight * MonoScreenY[i] / 480;
-	}
 
-	x[3] = phd_winxmin + phd_winwidth * MonoScreenX[3] / 640;
-#endif
-	RestoreFPCW(FPCW);
-
-#ifdef GENERAL_FIXES
 	if (tomb4.inv_bg_mode == 1 || tomb4.inv_bg_mode == 3)
 		col = 0xFFFFFFFF;
 	else
 		col = 0xFFFFFF80;
-#else
-	col = 0xFFFFFFFF;
-#endif
 
 	S_DrawTile(x[0], y[0], x[1] - x[0], y[1] - y[0], MonoScreen[0].tex, 0, 0, 256, 256, col, col, col, col);
-#ifndef GENERAL_FIXES
-	S_DrawTile(x[1], y[0], x[2] - x[1], y[1] - y[0], MonoScreen[1].tex, 0, 0, 256, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
-	S_DrawTile(x[2], y[0], x[3] - x[2], y[1] - y[0], MonoScreen[2].tex, 0, 0, 128, 256, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
-	S_DrawTile(x[0], y[1], x[1] - x[0], y[2] - y[1], MonoScreen[3].tex, 0, 0, 256, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
-	S_DrawTile(x[1], y[1], x[2] - x[1], y[2] - y[1], MonoScreen[4].tex, 0, 0, 256, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
-	S_DrawTile(x[2], y[1], x[3] - x[2], y[2] - y[1], MonoScreen[2].tex, 128, 0, 128, 224, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
-#endif
 }
 
 void CreateMonoScreen()
 {
 	MonoScreenOn = 1;
-#ifdef GENERAL_FIXES
 	ConvertSurfaceToTextures(App.dx.lpBackBuffer);
-#else
-	ConvertSurfaceToTextures(App.dx.lpPrimaryBuffer);
-#endif
 }
 
 void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever stupid fuck that wrote this
@@ -1696,40 +1608,6 @@ void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
 
-#ifndef GENERAL_FIXES
-	if (MonoScreen[1].surface)
-	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[1].surface, MonoScreen[1].surface->Release());
-		MonoScreen[1].surface = 0;
-	}
-	else
-		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
-
-	if (MonoScreen[2].surface)
-	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[2].surface, MonoScreen[2].surface->Release());
-		MonoScreen[2].surface = 0;
-	}
-	else
-		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
-
-	if (MonoScreen[3].surface)
-	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[3].surface, MonoScreen[3].surface->Release());
-		MonoScreen[3].surface = 0;
-	}
-	else
-		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
-
-	if (MonoScreen[4].surface)
-	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[4].surface, MonoScreen[4].surface->Release());
-		MonoScreen[4].surface = 0;
-	}
-	else
-		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
-#endif
-
 	if (MonoScreen[0].tex)
 	{
 		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[0].tex, MonoScreen[0].tex->Release());
@@ -1738,56 +1616,20 @@ void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
 
-#ifndef GENERAL_FIXES
-	if (MonoScreen[1].tex)
-	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[1].tex, MonoScreen[1].tex->Release());
-		MonoScreen[1].tex = 0;
-	}
-	else
-		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
-
-	if (MonoScreen[2].tex)
-	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[2].tex, MonoScreen[2].tex->Release());
-		MonoScreen[2].tex = 0;
-	}
-	else
-		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
-
-	if (MonoScreen[3].tex)
-	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[3].tex, MonoScreen[3].tex->Release());
-		MonoScreen[3].tex = 0;
-	}
-	else
-		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
-
-	if (MonoScreen[4].tex)
-	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[4].tex, MonoScreen[4].tex->Release());
-		MonoScreen[4].tex = 0;
-	}
-	else
-		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
-#endif
-
 	MonoScreenOn = 0;
 }
 
-void RGBM_Mono(uchar* r, uchar* g, uchar* b)
+void RGBM_Mono(uchar * r, uchar * g, uchar * b)
 {
 	uchar c;
 
-#ifdef GENERAL_FIXES
-	if (tomb4.inv_bg_mode == 3)
-		return;
-#endif
-
-	c = (*r + *b) >> 1;
-	*r = c;
-	*g = c;
-	*b = c;
+	if (tomb4.inv_bg_mode != 3)
+	{
+		c = (*r + *b) >> 1;
+		*r = c;
+		*g = c;
+		*b = c;
+	}
 }
 
 void MemBltSurf(void* dest, long x, long y, long w, long h, long dadd, void* source, long x2, long y2, DDSURFACEDESCX surface, float xsize, float ysize)
@@ -1885,7 +1727,6 @@ void MemBltSurf(void* dest, long x, long y, long w, long h, long dadd, void* sou
 	}
 }
 
-#ifdef GENERAL_FIXES
 static void BitMaskGetNumberOfBits(ulong bitMask, ulong *bitDepth, ulong *bitOffset)
 {
 	long i;
@@ -1996,15 +1837,12 @@ static void CustomBlt(LPDDSURFACEDESCX dst, ulong dstX, ulong dstY, LPDDSURFACED
 		dstLine += dst->lPitch;
 	}
 }
-#endif
 
 void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 {
 	DDSURFACEDESCX tSurf;
-#ifdef GENERAL_FIXES
 	DDSURFACEDESCX uSurf;
 	RECT r;
-#endif
 	ushort* pTexture;
 	ushort* pSrc;
 
@@ -2012,7 +1850,6 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 	tSurf.dwSize = sizeof(DDSURFACEDESCX);
 	surface->Lock(0, &tSurf, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
 	pSrc = (ushort*)tSurf.lpSurface;
-#ifdef GENERAL_FIXES
 	MonoScreen[0].surface = CreateTexturePage(tSurf.dwWidth, tSurf.dwHeight, 0, NULL, RGBM_Mono, -1);
 
 	memset(&uSurf, 0, sizeof(uSurf));
@@ -2029,33 +1866,6 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 	MonoScreen[0].surface->Unlock(0);
 	DXAttempt(MonoScreen[0].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[0].tex));
 	surface->Unlock(0);
-#else
-	pTexture = (ushort*)malloc(0x40000);
-
-	MemBltSurf(pTexture, 0, 0, 256, 256, 256, pSrc, 0, 0, tSurf, 1.0F, 1.0F);
-	MonoScreen[0].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[0].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[0].tex));
-
-	MemBltSurf(pTexture, 0, 0, 256, 256, 256, pSrc, 256, 0, tSurf, 1.0F, 1.0F);
-	MonoScreen[1].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[1].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[1].tex));
-
-	MemBltSurf(pTexture, 0, 0, 128, 256, 256, pSrc, 512, 0, tSurf, 1.0F, 1.0F);
-	MemBltSurf(pTexture, 128, 0, 128, 224, 256, pSrc, 512, 256, tSurf, 1.0F, 1.0F);
-	MonoScreen[2].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[2].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[2].tex));
-
-	MemBltSurf(pTexture, 0, 0, 256, 224, 256, pSrc, 0, 256, tSurf, 1.0F, 1.0F);
-	MonoScreen[3].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[3].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[3].tex));
-
-	MemBltSurf(pTexture, 0, 0, 256, 224, 256, pSrc, 256, 256, tSurf, 1.0F, 1.0F);
-	MonoScreen[4].surface = CreateTexturePage(256, 256, 0, (long*)pTexture, RGBM_Mono, 0);
-	DXAttempt(MonoScreen[4].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[4].tex));
-
-	surface->Unlock(0);
-	free(pTexture);
-#endif
 }
 
 void DoSlider(long x, long y, long width, long height, long pos, long clr1, long clr2, long clr3)

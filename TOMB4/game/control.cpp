@@ -39,9 +39,7 @@
 #include "lara.h"
 #include "deltapak.h"
 #include "health.h"
-#ifdef CUTSEQ_SKIPPER
 #include "../specific/dxshell.h"
-#endif
 #include "savegame.h"
 #include "../specific/file.h"
 
@@ -101,6 +99,7 @@ short FXType;
 char PoisonFlag;
 char TriggerTimer = 0;
 char LaserSightActive = 0;
+char DeathMenuActive;
 
 static PHD_VECTOR ClosestCoord;
 static long ClosestItem;
@@ -110,9 +109,6 @@ static long number_los_rooms = 0;
 static short los_rooms[20];
 
 static short cdtrack = -1;
-
-#ifdef GENERAL_FIXES
-char DeathMenuActive;
 
 static long S_Death()
 {
@@ -207,7 +203,6 @@ static long S_Death()
 	FreeMonoScreen();
 	return ret;
 }
-#endif
 
 long ControlPhase(long nframes, long demo_mode)
 {
@@ -231,9 +226,7 @@ long ControlPhase(long nframes, long demo_mode)
 	{
 		GlobalCounter++;
 		UpdateSky();
-#ifdef DISCORD_RPC
 		RPC_Update();
-#endif
 
 	//	if (cdtrack > 0)
 			//empty func call here
@@ -251,10 +244,8 @@ long ControlPhase(long nframes, long demo_mode)
 
 		if (cutseq_trig)
 		{
-#ifdef CUTSEQ_SKIPPER
 			if (keymap[DIK_ESCAPE] && !ScreenFading && !bDoCredits && tomb4.cutseq_skipper)
 				cutseq_trig = 3;
-#endif
 
 			input = 0;
 
@@ -272,8 +263,7 @@ long ControlPhase(long nframes, long demo_mode)
 
 		if (gfLevelComplete)
 			return 3;
-		
-#ifdef GENERAL_FIXES
+
 		if (tomb4.gameover)
 		{
 			if (reset_flag)
@@ -289,7 +279,6 @@ long ControlPhase(long nframes, long demo_mode)
 			}
 		}
 		else
-#endif
 		{
 			if (reset_flag || lara.death_count > 300 || lara.death_count > 60 && input)
 			{
@@ -309,29 +298,16 @@ long ControlPhase(long nframes, long demo_mode)
 
 		if (!FadeScreenHeight)
 		{
-#ifdef GENERAL_FIXES
 			if (input & IN_SAVE && lara_item->hit_points > 0)
 				S_LoadSave(IN_SAVE, 0, 0);
-#else
-			if (input & IN_SAVE)
-				S_LoadSave(IN_SAVE, 0);
-#endif
 
 			else if (input & IN_LOAD)
 			{
-#ifdef GENERAL_FIXES
 				if (S_LoadSave(IN_LOAD, 0, 0) >= 0)
-#else
-				if (S_LoadSave(IN_LOAD, 0) >= 0)
-#endif
 					return 2;
 			}
 
-#ifdef GENERAL_FIXES
 			if (input & IN_PAUSE && gfGameMode == 0 && lara_item->hit_points > 0)
-#else
-			if (input & IN_PAUSE && gfGameMode == 0)
-#endif
 			{
 				if (S_PauseMenu() == 8)
 					return 1;
@@ -563,10 +539,9 @@ void FlipMap(long FlipNumber)
 
 		if (r->flipped_room >= 0 && r->FlipNumber == FlipNumber)
 		{
-#ifdef GENERAL_FIXES	//reset lighting room so objects take the new room's light...
 			for (int j = r->item_number; j != NO_ITEM; j = items[j].next_item)
 				items[j].il.room_number = 255;
-#endif
+
 			RemoveRoomFlipItems(r);
 			flipped = &room[r->flipped_room];
 			memcpy(&temp, r, sizeof(temp));
@@ -2610,10 +2585,8 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 		target.y = v.y - ((v.y - src->y) >> 5);
 		target.z = v.z - ((v.z - src->z) >> 5);
 
-#ifdef GENERAL_FIXES
 		if (item_no >= 0 && DrawTarget)
 			lara.target = &items[item_no];
-#endif
 
 		if (firing)
 		{

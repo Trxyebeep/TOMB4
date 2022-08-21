@@ -146,13 +146,7 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 				continue;
 			}
 
-#ifdef GENERAL_FIXES
-			if (!objects[item2->object_number].draw_routine && item2->object_number != LARA || !item2->mesh_bits)
-				//don't get objects that are not drawn
-				//checking for LARA object num fixes Lara not being stored, which fixes nades not harming her.
-#else
-			if (!objects[item2->object_number].draw_routine || !item2->mesh_bits)	//don't get objects that are not drawn
-#endif
+			if (!objects[item2->object_number].draw_routine && item2->object_number != LARA || !item2->mesh_bits)	//don't get objects that are not drawn
 			{
 				item_number = next_item;
 				continue;
@@ -332,11 +326,7 @@ void CreatureCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	if (TestBoundsCollide(item, l, coll->radius) && TestCollision(item, l))
 	{
-#ifdef GENERAL_FIXES
 		if (lara.water_status != LW_UNDERWATER && lara.water_status != LW_SURFACE)
-#else
-		if (lara.water_status != LW_UNDERWATER && !lara.water_status != LW_SURFACE)	//dumb
-#endif
 		{
 			if (coll->enable_baddie_push)
 				ItemPushLara(item, l, coll, coll->enable_spaz, 0);

@@ -121,8 +121,6 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 
 		break;
 
-#ifdef GENERAL_FIXES
-
 	case 5:
 
 		if (App.dx.lpZBuffer)
@@ -138,8 +136,6 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 		break;
-
-#endif
 
 	case 6:
 
@@ -209,9 +205,7 @@ void DrawSortList()
 	}
 	else
 	{
-#ifdef GENERAL_FIXES				//just to shut VS up
-		pSort = SortList[0];		//if SortCount is < 0 then pSort will be uninitialized in the original, but I don't think that ever happens
-#endif
+		pSort = SortList[0];
 
 		for (num = 0; num < SortCount; num++)
 		{
@@ -268,11 +262,7 @@ void DrawSortList()
 		{
 			pSort = SortList[num];
 
-#ifdef GENERAL_FIXES
 			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 5 || pSort->drawtype == 6 || pSort->drawtype == 7)
-#else
-			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 6 || pSort->drawtype == 7)
-#endif
 				break;
 		}
 
@@ -286,11 +276,7 @@ void DrawSortList()
 		{
 			pSort = SortList[num];
 
-#ifdef GENERAL_FIXES
 			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 5 || pSort->drawtype == 6 || pSort->drawtype == 7)
-#else
-			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 6 || pSort->drawtype == 7)
-#endif
 			{
 				if (pSort->tpage == tpage && pSort->drawtype == drawtype)
 				{
@@ -471,11 +457,7 @@ void TriggerFXFogBulb(long x, long y, long z, long FXRad, long density, long r, 
 	FogBulb->WorldPos.z = (float)z;
 	FogBulb->rad = 0;
 	FogBulb->sqrad = 0;
-#ifdef GENERAL_FIXES
 	FogBulb->inv_sqrad = NAN;
-#else
-	FogBulb->inv_sqrad = 1 / FogBulb->sqrad;
-#endif
 	FogBulb->timer = 50;
 	FogBulb->active = 1;
 	FogBulb->FXRad = FXRad;
@@ -720,10 +702,7 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 	c = clipflags;
 	clipZ = 0;
 	clip = 1;
-
-#ifdef GENERAL_FIXES	//uninitialized
 	sl = 0;
-#endif
 
 	if (c[v0] & c[v1] & c[v2])
 		return;
@@ -813,14 +792,12 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 			OmniFog(&v[v1]);
 			OmniFog(&v[v2]);
 		}
-#ifdef GENERAL_FIXES
 		else
 		{
 			v[v0].specular |= 0xFF000000;
 			v[v1].specular |= 0xFF000000;
 			v[v2].specular |= 0xFF000000;
 		}
-#endif
 	}
 
 	pV = &v[v0];
@@ -1050,7 +1027,6 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 			OmniFog(&v[v2]);
 			OmniFog(&v[v3]);
 		}
-#ifdef GENERAL_FIXES
 		else
 		{
 			v[v0].specular |= 0xFF000000;
@@ -1058,7 +1034,6 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 			v[v2].specular |= 0xFF000000;
 			v[v3].specular |= 0xFF000000;
 		}
-#endif
 	}
 
 	pV = &v[v0];

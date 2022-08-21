@@ -11,14 +11,8 @@ void DoOptions();
 void DoStatScreen();
 long S_DisplayPauseMenu(long reset);
 long DoLoadSave(long LoadSave);
-#ifdef GENERAL_FIXES
 long S_LoadSave(long load_or_save, long mono, long inv_active);
-#else
-long S_LoadSave(long load_or_save, long mono);
-#endif
-#ifdef IMPROVED_BARS
 void S_DrawEnemyBar(long pos);
-#endif
 void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, long tU, long tV, long tW, long tH, long c0, long c1, long c2, long c3);
 void S_DisplayMonoScreen();
 void CreateMonoScreen();

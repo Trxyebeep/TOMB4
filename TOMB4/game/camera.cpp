@@ -9,12 +9,10 @@
 #include "deltapak.h"
 #include "draw.h"
 #include "../specific/input.h"
-#ifdef GENERAL_FIXES
 #include "effect2.h"
-#include "../tomb4/tomb4.h"
-#endif
 #include "lara.h"
 #include "savegame.h"
+#include "../tomb4/tomb4.h"
 
 CAMERA_INFO camera;
 
@@ -408,7 +406,6 @@ long CameraCollisionBounds(GAME_VECTOR* ideal, long push, long yfirst)
 
 void LaraTorch(PHD_VECTOR* Soffset, PHD_VECTOR* Eoffset, short yrot, long brightness)
 {
-#ifdef GENERAL_FIXES	//decompiled from PSX TR4
 	FLOOR_INFO* floor;
 	long x, y, z, sx, sy, sz, dx, dy, dz, falloff, counter, h, c, j;
 	long offs[5];
@@ -498,17 +495,6 @@ void LaraTorch(PHD_VECTOR* Soffset, PHD_VECTOR* Eoffset, short yrot, long bright
 		sy += dy;
 		sz += dz;
 	}
-#else
-	bLaraTorch = 1;
-	LaraTorchStart.x = Soffset->x;
-	LaraTorchStart.y = Soffset->y;
-	LaraTorchStart.z = Soffset->z;
-	LaraTorchEnd.x = Eoffset->x;
-	LaraTorchEnd.y = Eoffset->y;
-	LaraTorchEnd.z = Eoffset->z;
-	LaraTorchIntensity = brightness;
-	LaraTorchYRot = yrot;
-#endif
 }
 
 void ChaseCamera(ITEM_INFO* item)
@@ -673,11 +659,9 @@ void CombatCamera(ITEM_INFO* item)
 	{
 		camera.target_angle = lara.head_y_rot + lara.torso_y_rot + item->pos.y_rot;
 
-#ifdef GENERAL_FIXES
 		if (!tomb4.combat_cam_tilt)
 			camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot - 1820;
 		else
-#endif
 			camera.target_elevation = lara.torso_x_rot + item->pos.x_rot + lara.head_x_rot - 2730;
 	}
 
@@ -1414,9 +1398,7 @@ void CalculateCamera()
 	}
 	else
 	{
-#ifdef GENERAL_FIXES
 		if (camera.type != COMBAT_CAMERA || tomb4.combat_cam_tilt)
-#endif
 			y -= 256;
 
 		if (camera.type == COMBAT_CAMERA)
