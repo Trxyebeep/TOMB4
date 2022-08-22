@@ -40,7 +40,10 @@ bool WinRunCheck(LPSTR WindowName, LPSTR ClassName, HANDLE* mutex)
 		window = FindWindow(ClassName, WindowName);
 
 		if (window)
-			SendMessage(window, WM_ACTIVATE, 0, 0);
+		{
+			SendMessage(window, WM_ACTIVATE, WA_ACTIVE, 0);
+			SetWindowPos(window, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		}
 
 		return 1;
 	}
