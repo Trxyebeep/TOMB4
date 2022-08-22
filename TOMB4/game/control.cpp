@@ -322,14 +322,14 @@ long ControlPhase(long nframes, long demo_mode)
 		{
 			if (!BinocularRange)
 			{
-				if (lara.gun_type == WEAPON_REVOLVER && lara.sixshooter_type_carried & 4 && lara.gun_status == LG_READY)
+				if (lara.gun_type == WEAPON_REVOLVER && lara.sixshooter_type_carried & W_LASERSIGHT && lara.gun_status == LG_READY)
 				{
 					BinocularRange = 128;
 					BinocularOldCamera = camera.old_type;
 					lara.Busy = 1;
 					LaserSight = 1;
 				}
-				else if (lara.gun_type == WEAPON_CROSSBOW && lara.crossbow_type_carried & 4 && lara.gun_status == LG_READY)
+				else if (lara.gun_type == WEAPON_CROSSBOW && lara.crossbow_type_carried & W_LASERSIGHT && lara.gun_status == LG_READY)
 				{
 					BinocularRange = 128;
 					BinocularOldCamera = camera.old_type;

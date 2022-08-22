@@ -717,12 +717,12 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 
 						if (!(gfLevelFlags & GF_YOUNGLARA))
 						{
-							lara.pistols_type_carried |= 1;
-							lara.uzis_type_carried |= 1;
-							lara.shotgun_type_carried |= 1;
-							lara.crossbow_type_carried |= 1;
-							lara.grenade_type_carried |= 1;
-							lara.sixshooter_type_carried |= 1;
+							lara.pistols_type_carried |= W_PRESENT;
+							lara.uzis_type_carried |= W_PRESENT;
+							lara.shotgun_type_carried |= W_PRESENT;
+							lara.crossbow_type_carried |= W_PRESENT;
+							lara.grenade_type_carried |= W_PRESENT;
+							lara.sixshooter_type_carried |= W_PRESENT;
 						}
 					}
 				}
@@ -851,17 +851,17 @@ void construct_combine_object_list()
 
 	if (!(gfLevelFlags & GF_YOUNGLARA))
 	{
-		if (lara.sixshooter_type_carried & 1)
+		if (lara.sixshooter_type_carried & W_PRESENT)
 		{
-			if (lara.sixshooter_type_carried & 4)
+			if (lara.sixshooter_type_carried & W_LASERSIGHT)
 				insert_object_into_list_v2(INV_REVOLVER_LASER_ITEM);
 			else
 				insert_object_into_list_v2(INV_REVOLVER_ITEM);
 		}
 
-		if (lara.crossbow_type_carried & 1)
+		if (lara.crossbow_type_carried & W_PRESENT)
 		{
-			if (lara.crossbow_type_carried & 4)
+			if (lara.crossbow_type_carried & W_LASERSIGHT)
 				insert_object_into_list_v2(INV_CROSSBOW_LASER_ITEM);
 			else
 				insert_object_into_list_v2(INV_CROSSBOW_ITEM);
@@ -930,17 +930,17 @@ void construct_object_list()
 
 	if (!(gfLevelFlags & GF_YOUNGLARA))
 	{
-		if (lara.pistols_type_carried & 1)
+		if (lara.pistols_type_carried & W_PRESENT)
 			insert_object_into_list(INV_PISTOLS_ITEM);
 
-		if (lara.uzis_type_carried & 1)
+		if (lara.uzis_type_carried & W_PRESENT)
 			insert_object_into_list(INV_UZI_ITEM);
 		else if (AmountUziAmmo)
 			insert_object_into_list(INV_UZI_AMMO_ITEM);
 
-		if (lara.sixshooter_type_carried & 1)
+		if (lara.sixshooter_type_carried & W_PRESENT)
 		{
-			if (lara.sixshooter_type_carried & 4)
+			if (lara.sixshooter_type_carried & W_LASERSIGHT)
 				insert_object_into_list(INV_REVOLVER_LASER_ITEM);
 			else
 				insert_object_into_list(INV_REVOLVER_ITEM);
@@ -948,11 +948,11 @@ void construct_object_list()
 		else if (AmountRevolverAmmo)
 			insert_object_into_list(INV_REVOLVER_AMMO_ITEM);
 
-		if (lara.shotgun_type_carried & 1)
+		if (lara.shotgun_type_carried & W_PRESENT)
 		{
 			insert_object_into_list(INV_SHOTGUN_ITEM);
 
-			if (lara.shotgun_type_carried & 0x10)
+			if (lara.shotgun_type_carried & W_AMMO2)
 				CurrentShotGunAmmoType = 1;
 		}
 		else
@@ -964,13 +964,13 @@ void construct_object_list()
 				insert_object_into_list(INV_SHOTGUN_AMMO2_ITEM);
 		}
 
-		if (lara.grenade_type_carried & 1)
+		if (lara.grenade_type_carried & W_PRESENT)
 		{
 			insert_object_into_list(INV_GRENADEGUN_ITEM);
 
-			if (lara.grenade_type_carried & 0x10)
+			if (lara.grenade_type_carried & W_AMMO2)
 				CurrentGrenadeGunAmmoType = 1;
-			else if (lara.grenade_type_carried & 0x20)
+			else if (lara.grenade_type_carried & W_AMMO3)
 				CurrentGrenadeGunAmmoType = 2;
 		}
 		else
@@ -985,16 +985,16 @@ void construct_object_list()
 				insert_object_into_list(INV_GRENADEGUN_AMMO3_ITEM);
 		}
 
-		if (lara.crossbow_type_carried & 1)
+		if (lara.crossbow_type_carried & W_PRESENT)
 		{
-			if (lara.crossbow_type_carried & 4)
+			if (lara.crossbow_type_carried & W_LASERSIGHT)
 				insert_object_into_list(INV_CROSSBOW_LASER_ITEM);
 			else
 				insert_object_into_list(INV_CROSSBOW_ITEM);
 
-			if (lara.crossbow_type_carried & 0x10)
+			if (lara.crossbow_type_carried & W_AMMO2)
 				CurrentCrossBowAmmoType = 1;
-			else if (lara.crossbow_type_carried & 0x20)
+			else if (lara.crossbow_type_carried & W_AMMO3)
 				CurrentCrossBowAmmoType = 2;
 		}
 		else
@@ -1279,38 +1279,38 @@ void spinback(ushort* cock)
 
 void update_laras_weapons_status()
 {
-	if (lara.shotgun_type_carried & 1)
+	if (lara.shotgun_type_carried & W_PRESENT)
 	{
-		lara.shotgun_type_carried &= 0xC7;
+		lara.shotgun_type_carried &= ~(W_AMMO1 | W_AMMO2 | W_AMMO3);
 
 		if (CurrentShotGunAmmoType)
-			lara.shotgun_type_carried |= 0x10;
+			lara.shotgun_type_carried |= W_AMMO2;
 		else
-			lara.shotgun_type_carried |= 0x8;
+			lara.shotgun_type_carried |= W_AMMO1;
 	}
 
-	if (lara.grenade_type_carried & 1)
+	if (lara.grenade_type_carried & W_PRESENT)
 	{
-		lara.grenade_type_carried &= 0xC7;
+		lara.grenade_type_carried &= ~(W_AMMO1 | W_AMMO2 | W_AMMO3);
 
 		if (!CurrentGrenadeGunAmmoType)
-			lara.grenade_type_carried |= 0x8;
+			lara.grenade_type_carried |= W_AMMO1;
 		else if (CurrentGrenadeGunAmmoType == 1)
-			lara.grenade_type_carried |= 0x10;
+			lara.grenade_type_carried |= W_AMMO2;
 		else if (CurrentGrenadeGunAmmoType == 2)
-			lara.grenade_type_carried |= 0x20;
+			lara.grenade_type_carried |= W_AMMO3;
 	}
 
-	if (lara.crossbow_type_carried & 1)
+	if (lara.crossbow_type_carried & W_PRESENT)
 	{
-		lara.crossbow_type_carried &= 0xC7;
+		lara.crossbow_type_carried &= ~(W_AMMO1 | W_AMMO2 | W_AMMO3);
 
 		if (!CurrentCrossBowAmmoType)
-			lara.crossbow_type_carried |= 0x8;
+			lara.crossbow_type_carried |= W_AMMO1;
 		else if (CurrentCrossBowAmmoType == 1)
-			lara.crossbow_type_carried |= 0x10;
+			lara.crossbow_type_carried |= W_AMMO2;
 		else if (CurrentCrossBowAmmoType == 2)
-			lara.crossbow_type_carried |= 0x20;
+			lara.crossbow_type_carried |= W_AMMO3;
 	}
 }
 
@@ -1330,12 +1330,12 @@ void combine_revolver_lasersight(long flag)
 	if (flag)
 	{
 		lara.lasersight = 1;
-		lara.sixshooter_type_carried &= ~4;
+		lara.sixshooter_type_carried &= ~W_LASERSIGHT;
 	}
 	else
 	{
 		lara.lasersight = 0;
-		lara.sixshooter_type_carried |= 4;
+		lara.sixshooter_type_carried |= W_LASERSIGHT;
 	}
 
 	if (lara.gun_status && lara.gun_type == WEAPON_REVOLVER)
@@ -1350,12 +1350,12 @@ void combine_crossbow_lasersight(long flag)
 	if (flag)
 	{
 		lara.lasersight = 1;
-		lara.crossbow_type_carried &= ~4;
+		lara.crossbow_type_carried &= ~W_LASERSIGHT;
 	}
 	else
 	{
 		lara.lasersight = 0;
-		lara.crossbow_type_carried |= 4;
+		lara.crossbow_type_carried |= W_LASERSIGHT;
 	}
 
 	if (lara.gun_status && lara.gun_type == WEAPON_CROSSBOW)
@@ -1907,8 +1907,8 @@ void DEL_picked_up_object(short objnum)
 
 	case UZI_ITEM:
 
-		if (!(lara.uzis_type_carried & 1))
-			lara.uzis_type_carried = 9;
+		if (!(lara.uzis_type_carried & W_PRESENT))
+			lara.uzis_type_carried = W_PRESENT | W_AMMO1;
 												//LOOK!!!!
 	case UZI_AMMO_ITEM:
 
@@ -1919,16 +1919,16 @@ void DEL_picked_up_object(short objnum)
 
 	case PISTOLS_ITEM:
 
-		if (!(lara.pistols_type_carried & 1))
-			lara.pistols_type_carried = 9;
+		if (!(lara.pistols_type_carried & W_PRESENT))
+			lara.pistols_type_carried = W_PRESENT | W_AMMO1;
 
 		lara.num_pistols_ammo = -1;
 		break;
 
 	case SHOTGUN_ITEM:
 
-		if (!(lara.shotgun_type_carried & 1))
-			lara.shotgun_type_carried = 9;
+		if (!(lara.shotgun_type_carried & W_PRESENT))
+			lara.shotgun_type_carried = W_PRESENT | W_AMMO1;
 												//LOOK!!!!
 	case SHOTGUN_AMMO1_ITEM:
 
@@ -1946,8 +1946,8 @@ void DEL_picked_up_object(short objnum)
 
 	case SIXSHOOTER_ITEM:
 
-		if (!(lara.sixshooter_type_carried & 1))
-			lara.sixshooter_type_carried = 9;
+		if (!(lara.sixshooter_type_carried & W_PRESENT))
+			lara.sixshooter_type_carried = W_PRESENT | W_AMMO1;
 												//LOOK!!!
 	case SIXSHOOTER_AMMO_ITEM:
 
@@ -1958,8 +1958,8 @@ void DEL_picked_up_object(short objnum)
 
 	case CROSSBOW_ITEM:
 
-		if (!(lara.crossbow_type_carried & 1))
-			lara.crossbow_type_carried = 9;
+		if (!(lara.crossbow_type_carried & W_PRESENT))
+			lara.crossbow_type_carried = W_PRESENT | W_AMMO1;
 												//LOOK!!!
 	case CROSSBOW_AMMO1_ITEM:
 
@@ -1984,8 +1984,8 @@ void DEL_picked_up_object(short objnum)
 
 	case GRENADE_GUN_ITEM:
 
-		if (!(lara.grenade_type_carried & 1))
-			lara.grenade_type_carried = 9;
+		if (!(lara.grenade_type_carried & W_PRESENT))
+			lara.grenade_type_carried = W_PRESENT | W_AMMO1;
 												//LOOK!!!
 	case GRENADE_GUN_AMMO1_ITEM:
 
@@ -2017,7 +2017,7 @@ void DEL_picked_up_object(short objnum)
 
 	case LASERSIGHT_ITEM:
 		lf = (lara.pistols_type_carried | lara.uzis_type_carried | lara.shotgun_type_carried | lara.sixshooter_type_carried |
-			lara.crossbow_type_carried | lara.grenade_type_carried) & 4;
+			lara.crossbow_type_carried | lara.grenade_type_carried) & W_LASERSIGHT;
 
 		if (!lf)
 			lara.lasersight = 1;

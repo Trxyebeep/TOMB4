@@ -357,7 +357,7 @@ short* get_current_ammo_pointer(long weapon_type)
 
 	case WEAPON_SHOTGUN:
 
-		if (lara.shotgun_type_carried & 8)
+		if (lara.shotgun_type_carried & W_AMMO1)
 			ammo = &lara.num_shotgun_ammo1;
 		else
 			ammo = &lara.num_shotgun_ammo2;
@@ -366,9 +366,9 @@ short* get_current_ammo_pointer(long weapon_type)
 
 	case WEAPON_GRENADE:
 
-		if (lara.grenade_type_carried & 8)
+		if (lara.grenade_type_carried & W_AMMO1)
 			ammo = &lara.num_grenade_ammo1;
-		else if (lara.grenade_type_carried & 0x10)
+		else if (lara.grenade_type_carried & W_AMMO2)
 			ammo = &lara.num_grenade_ammo2;
 		else
 			ammo = &lara.num_grenade_ammo3;
@@ -377,9 +377,9 @@ short* get_current_ammo_pointer(long weapon_type)
 
 	case WEAPON_CROSSBOW:
 
-		if (lara.crossbow_type_carried & 8)
+		if (lara.crossbow_type_carried & W_AMMO1)
 			ammo = &lara.num_crossbow_ammo1;
-		else if (lara.crossbow_type_carried & 0x10)
+		else if (lara.crossbow_type_carried & W_AMMO2)
 			ammo = &lara.num_crossbow_ammo2;
 		else
 			ammo = &lara.num_crossbow_ammo3;
@@ -726,7 +726,7 @@ long WeaponObjectMesh(long weapon_type)
 	{
 	case WEAPON_REVOLVER:
 
-		if (lara.sixshooter_type_carried & 4)
+		if (lara.sixshooter_type_carried & W_LASERSIGHT)
 			return LARA_REVOLVER_LASER;
 		else
 			return SIXSHOOTER_ANIM;
@@ -742,7 +742,7 @@ long WeaponObjectMesh(long weapon_type)
 
 	case WEAPON_CROSSBOW:
 
-		if (lara.crossbow_type_carried & 4)
+		if (lara.crossbow_type_carried & W_LASERSIGHT)
 			return LARA_CROSSBOW_LASER;
 		else
 			return CROSSBOW_ANIM;

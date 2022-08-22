@@ -81,6 +81,17 @@ do \
 #define DSNGUID					IID_IDirectSoundNotify
 /***********************************************/
 
+enum carried_weapon_flags
+{
+	W_NONE =		0x0,
+	W_PRESENT =		0x1,
+	W_FLASLIGHT =	0x2,	//speculation, actually unused
+	W_LASERSIGHT =	0x4,
+	W_AMMO1 =		0x8,
+	W_AMMO2 =		0x10,
+	W_AMMO3 =		0x20
+};
+
 enum anim_commands
 {
 	ACMD_NULL,

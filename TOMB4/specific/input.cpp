@@ -107,7 +107,7 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 
 	if (keymap[DIK_1])
 	{
-		if (!(lara.pistols_type_carried & 1))
+		if (!(lara.pistols_type_carried & W_PRESENT))
 			return;
 
 		lara.request_gun_type = WEAPON_PISTOLS;
@@ -117,7 +117,7 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	}
 	else if (keymap[DIK_2])
 	{
-		if (!(lara.shotgun_type_carried & 1))
+		if (!(lara.shotgun_type_carried & W_PRESENT))
 			return;
 
 		lara.request_gun_type = WEAPON_SHOTGUN;
@@ -133,17 +133,17 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 
 				memset(ammo_change_buf, 0, sizeof(ammo_change_buf));
 
-				if (lara.shotgun_type_carried & 0x10)
+				if (lara.shotgun_type_carried & W_AMMO2)
 				{
-					lara.shotgun_type_carried &= ~0x10;
-					lara.shotgun_type_carried |= 0x8;
+					lara.shotgun_type_carried &= ~W_AMMO2;
+					lara.shotgun_type_carried |= W_AMMO1;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Normal");
 				}
-				else if (lara.shotgun_type_carried & 0x8)
+				else if (lara.shotgun_type_carried & W_AMMO1)
 				{
-					lara.shotgun_type_carried &= ~0x8;
-					lara.shotgun_type_carried |= 0x10;
+					lara.shotgun_type_carried &= ~W_AMMO1;
+					lara.shotgun_type_carried |= W_AMMO2;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Wideshot");
 				}
@@ -152,7 +152,7 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	}
 	else if (keymap[DIK_3])
 	{
-		if (!(lara.uzis_type_carried & 1))
+		if (!(lara.uzis_type_carried & W_PRESENT))
 			return;
 
 		lara.request_gun_type = WEAPON_UZI;
@@ -162,7 +162,7 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	}
 	else if (keymap[DIK_4])
 	{
-		if (!(lara.sixshooter_type_carried & 1))
+		if (!(lara.sixshooter_type_carried & W_PRESENT))
 			return;
 
 		lara.request_gun_type = WEAPON_REVOLVER;
@@ -172,7 +172,7 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	}
 	else if (keymap[DIK_5])
 	{
-		if (!(lara.grenade_type_carried & 1))
+		if (!(lara.grenade_type_carried & W_PRESENT))
 			return;
 
 		lara.request_gun_type = WEAPON_GRENADE;
@@ -188,24 +188,24 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 
 				memset(ammo_change_buf, 0, sizeof(ammo_change_buf));
 
-				if (lara.grenade_type_carried & 0x20)
+				if (lara.grenade_type_carried & W_AMMO3)
 				{
-					lara.grenade_type_carried &= ~0x20;
-					lara.grenade_type_carried |= 0x10;
+					lara.grenade_type_carried &= ~W_AMMO3;
+					lara.grenade_type_carried |= W_AMMO2;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Super");
 				}
-				else if (lara.grenade_type_carried & 0x10)
+				else if (lara.grenade_type_carried & W_AMMO2)
 				{
-					lara.grenade_type_carried &= ~0x10;
-					lara.grenade_type_carried |= 0x8;
+					lara.grenade_type_carried &= ~W_AMMO2;
+					lara.grenade_type_carried |= W_AMMO1;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Normal");
 				}
-				else if (lara.grenade_type_carried & 0x8)
+				else if (lara.grenade_type_carried & W_AMMO1)
 				{
-					lara.grenade_type_carried &= ~0x8;
-					lara.grenade_type_carried |= 0x20;
+					lara.grenade_type_carried &= ~W_AMMO1;
+					lara.grenade_type_carried |= W_AMMO3;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Flash");
 				}
@@ -214,7 +214,7 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	}
 	else if (keymap[DIK_6])
 	{
-		if (!(lara.crossbow_type_carried & 1))
+		if (!(lara.crossbow_type_carried & W_PRESENT))
 			return;
 
 		lara.request_gun_type = WEAPON_CROSSBOW;
@@ -230,24 +230,24 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 
 				memset(ammo_change_buf, 0, sizeof(ammo_change_buf));
 
-				if (lara.crossbow_type_carried & 0x20)
+				if (lara.crossbow_type_carried & W_AMMO3)
 				{
-					lara.crossbow_type_carried &= ~0x20;
-					lara.crossbow_type_carried |= 0x10;
+					lara.crossbow_type_carried &= ~W_AMMO3;
+					lara.crossbow_type_carried |= W_AMMO2;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Poison");
 				}
-				else if (lara.crossbow_type_carried & 0x10)
+				else if (lara.crossbow_type_carried & W_AMMO2)
 				{
-					lara.crossbow_type_carried &= ~0x10;
-					lara.crossbow_type_carried |= 0x8;
+					lara.crossbow_type_carried &= ~W_AMMO2;
+					lara.crossbow_type_carried |= W_AMMO1;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Normal");
 				}
-				else if (lara.crossbow_type_carried & 0x8)
+				else if (lara.crossbow_type_carried & W_AMMO1)
 				{
-					lara.crossbow_type_carried &= ~0x8;
-					lara.crossbow_type_carried |= 0x20;
+					lara.crossbow_type_carried &= ~W_AMMO1;
+					lara.crossbow_type_carried |= W_AMMO3;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Explosive");
 				}

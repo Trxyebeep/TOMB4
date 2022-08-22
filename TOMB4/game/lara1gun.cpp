@@ -137,9 +137,9 @@ void FireCrossbow(PHD_3DPOS* pos)
 		item->speed = 512;
 		AddActiveItem(item_number);
 
-		if (lara.crossbow_type_carried & 8)
+		if (lara.crossbow_type_carried & W_AMMO1)
 			item->item_flags[0] = 1;
-		else if (lara.crossbow_type_carried & 0x10)
+		else if (lara.crossbow_type_carried & W_AMMO2)
 			item->item_flags[0] = 2;
 		else
 			item->item_flags[0] = 3;
@@ -200,7 +200,7 @@ void FireShotgun()
 
 	fired = 0;
 
-	if (lara.shotgun_type_carried & 8)
+	if (lara.shotgun_type_carried & W_AMMO1)
 		scatter = 1820;
 	else
 		scatter = 5460;
@@ -320,9 +320,9 @@ void FireGrenade()
 	if (*ammo != -1)
 		--*ammo;
 
-	if (lara.grenade_type_carried & 8)
+	if (lara.grenade_type_carried & W_AMMO1)
 		item->item_flags[0] = 1;
-	else if (lara.grenade_type_carried & 0x10)
+	else if (lara.grenade_type_carried & W_AMMO2)
 		item->item_flags[0] = 2;
 	else
 		item->item_flags[0] = 3;

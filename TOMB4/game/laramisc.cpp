@@ -36,9 +36,9 @@ void LaraCheatGetStuff()
 		lara.crowbar = 1;
 
 	lara.lasersight = 1;
-	lara.uzis_type_carried = 9;
-	lara.shotgun_type_carried = 9;
-	lara.sixshooter_type_carried = 9;
+	lara.uzis_type_carried = W_PRESENT | W_AMMO1;
+	lara.shotgun_type_carried = W_PRESENT | W_AMMO1;
+	lara.sixshooter_type_carried = W_PRESENT | W_AMMO1;
 	lara.num_uzi_ammo = -1;
 	lara.num_revolver_ammo = -1;
 	lara.num_shotgun_ammo1 = -1;
@@ -72,12 +72,12 @@ void LaraCheatyBits()
 
 		if (!(gfLevelFlags & GF_YOUNGLARA))
 		{
-			lara.pistols_type_carried |= 1;
-			lara.uzis_type_carried |= 1;
-			lara.shotgun_type_carried |= 1;
-			lara.crossbow_type_carried |= 1;
-			lara.grenade_type_carried |= 1;
-			lara.sixshooter_type_carried |= 1;
+			lara.pistols_type_carried |= W_PRESENT;
+			lara.uzis_type_carried |= W_PRESENT;
+			lara.shotgun_type_carried |= W_PRESENT;
+			lara.crossbow_type_carried |= W_PRESENT;
+			lara.grenade_type_carried |= W_PRESENT;
+			lara.sixshooter_type_carried |= W_PRESENT;
 		}
 
 		dels_give_lara_items_cheat();
