@@ -604,7 +604,7 @@ long S_UpdateInput()
 	}
 
 	if (debounce)
-		dbinput = linput & (dbinput ^ linput);
+		dbinput = inputBusy & (dbinput ^ inputBusy);
 
 	input = linput;
 	return 1;
