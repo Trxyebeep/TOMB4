@@ -1727,39 +1727,39 @@ void MemBltSurf(void* dest, long x, long y, long w, long h, long dadd, void* sou
 	}
 }
 
-static void BitMaskGetNumberOfBits(ulong bitMask, ulong *bitDepth, ulong *bitOffset)
+static void BitMaskGetNumberOfBits(ulong bitMask, ulong& bitDepth, ulong& bitOffset)
 {
 	long i;
 
 	if (!bitMask) 
 	{
-		*bitOffset = 0;
-		*bitDepth = 0;
+		bitOffset = 0;
+		bitDepth = 0;
 		return;
 	}
 
 	for (i = 0; !(bitMask & 1); i++)
 		bitMask >>= 1;
 
-	*bitOffset = i;
+	bitOffset = i;
 
 	for (i = 0; bitMask != 0; i++)
 		bitMask >>= 1;
 
-	*bitDepth = i;
+	bitDepth = i;
 }
 
-static void WinVidGetColorBitMasks(COLOR_BIT_MASKS *bm, LPDDPIXELFORMAT pixelFormat)
+static void WinVidGetColorBitMasks(COLOR_BIT_MASKS* bm, LPDDPIXELFORMAT pixelFormat)
 {
 	bm->dwRBitMask = pixelFormat->dwRBitMask;
 	bm->dwGBitMask = pixelFormat->dwGBitMask;
 	bm->dwBBitMask = pixelFormat->dwBBitMask;
 	bm->dwRGBAlphaBitMask = pixelFormat->dwRGBAlphaBitMask;
 
-	BitMaskGetNumberOfBits(bm->dwRBitMask, &bm->dwRBitDepth, &bm->dwRBitOffset);
-	BitMaskGetNumberOfBits(bm->dwGBitMask, &bm->dwGBitDepth, &bm->dwGBitOffset);
-	BitMaskGetNumberOfBits(bm->dwBBitMask, &bm->dwBBitDepth, &bm->dwBBitOffset);
-	BitMaskGetNumberOfBits(bm->dwRGBAlphaBitMask, &bm->dwRGBAlphaBitDepth, &bm->dwRGBAlphaBitOffset);
+	BitMaskGetNumberOfBits(bm->dwRBitMask, bm->dwRBitDepth, bm->dwRBitOffset);
+	BitMaskGetNumberOfBits(bm->dwGBitMask, bm->dwGBitDepth, bm->dwGBitOffset);
+	BitMaskGetNumberOfBits(bm->dwBBitMask, bm->dwBBitDepth, bm->dwBBitOffset);
+	BitMaskGetNumberOfBits(bm->dwRGBAlphaBitMask, bm->dwRGBAlphaBitDepth, bm->dwRGBAlphaBitOffset);
 }
 
 static void CustomBlt(LPDDSURFACEDESCX dst, ulong dstX, ulong dstY, LPDDSURFACEDESCX src, LPRECT srcRect)
@@ -1791,9 +1791,9 @@ static void CustomBlt(LPDDSURFACEDESCX dst, ulong dstX, ulong dstY, LPDDSURFACED
 		{
 			color = 0;
 			memcpy(&color, srcPtr, srcBpp);
-			r = ((color & srcMask.dwRBitMask) >> srcMask.dwRBitOffset);
-			g = ((color & srcMask.dwGBitMask) >> srcMask.dwGBitOffset);
-			b = ((color & srcMask.dwBBitMask) >> srcMask.dwBBitOffset);
+			r = (color & srcMask.dwRBitMask) >> srcMask.dwRBitOffset;
+			g = (color & srcMask.dwGBitMask) >> srcMask.dwGBitOffset;
+			b = (color & srcMask.dwBBitMask) >> srcMask.dwBBitOffset;
 
 			if (srcMask.dwRBitDepth < dstMask.dwRBitDepth) 
 			{
@@ -1812,7 +1812,6 @@ static void CustomBlt(LPDDSURFACEDESCX dst, ulong dstX, ulong dstY, LPDDSURFACED
 			}
 			else if (srcMask.dwGBitDepth > dstMask.dwGBitDepth)
 				g >>= srcMask.dwGBitDepth - dstMask.dwGBitDepth;
-
 
 			if (srcMask.dwBBitDepth < dstMask.dwBBitDepth) 
 			{
