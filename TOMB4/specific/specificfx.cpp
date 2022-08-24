@@ -199,11 +199,12 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 	TEXTURESTRUCT Tex;
 	D3DTLVERTEX v[3];
 	PHD_VECTOR pos;
-	PHD_VECTOR cv[CIRCUMFERENCE_POINTS];
-	PHD_VECTOR cp[CIRCUMFERENCE_POINTS];
-	PHD_VECTOR ccv;
-	PHD_VECTOR ccp;
-	long fx, fy, fz, x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, xSize, zSize, xDist, zDist;
+	FVECTOR cv[CIRCUMFERENCE_POINTS];
+	FVECTOR cp[CIRCUMFERENCE_POINTS];
+	FVECTOR ccv;
+	FVECTOR ccp;
+	float fx, fy, fz;
+	long x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, xSize, zSize, xDist, zDist;
 	short room_number;
 
 	xSize = size * (box[1] - box[0]) / 192;	//x size of grid
@@ -215,8 +216,8 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 
 	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++)
 	{
-		cp[i].x = x * phd_sin(65536 * i / CIRCUMFERENCE_POINTS) >> W2V_SHIFT;
-		cp[i].z = z * phd_cos(65536 * i / CIRCUMFERENCE_POINTS) >> W2V_SHIFT;
+		cp[i].x = float(x * phd_sin(65536 * i / CIRCUMFERENCE_POINTS) >> W2V_SHIFT);
+		cp[i].z = float(z * phd_cos(65536 * i / CIRCUMFERENCE_POINTS) >> W2V_SHIFT);
 		cv[i].x = cp[i].x;
 		cv[i].z = cp[i].z;
 	}
@@ -248,30 +249,30 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 
 	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++)
 	{
-		x = cp[i].x;
-		z = cp[i].z;
-		cp[i].x = (x * phd_mxptr[M00] + z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
-		cp[i].z = (x * phd_mxptr[M20] + z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+		fx = cp[i].x;
+		fz = cp[i].z;
+		cp[i].x = fx * mMXPtr[M00] + fz * mMXPtr[M02] + mMXPtr[M03];
+		cp[i].z = fx * mMXPtr[M20] + fz * mMXPtr[M22] + mMXPtr[M23];
 	}
 
-	ccp.x = phd_mxptr[M03] >> W2V_SHIFT;
-	ccp.z = phd_mxptr[M23] >> W2V_SHIFT;
+	ccp.x = mMXPtr[M03];
+	ccp.z = mMXPtr[M23];
 	phd_PopMatrix();
 
 	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++)
 	{
 		room_number = item->room_number;
-		cp[i].y = GetHeight(GetFloor(cp[i].x, item->floor, cp[i].z, &room_number), cp[i].x, item->floor, cp[i].z);
+		cp[i].y = (float)GetHeight(GetFloor((long)cp[i].x, item->floor, (long)cp[i].z, &room_number), (long)cp[i].x, item->floor, (long)cp[i].z);
 
 		if (abs(cp[i].y - item->floor) > POINT_HEIGHT_CORRECTION)
-			cp[i].y = item->floor;
+			cp[i].y = (float)item->floor;
 	}
 
 	room_number = item->room_number;
-	ccp.y = GetHeight(GetFloor(ccp.x, item->floor, ccp.z, &room_number), ccp.x, item->floor, ccp.z);
+	ccp.y = (float)GetHeight(GetFloor((long)ccp.x, item->floor, (long)ccp.z, &room_number), (long)ccp.x, item->floor, (long)ccp.z);
 
 	if (abs(ccp.y - item->floor) > POINT_HEIGHT_CORRECTION)
-		ccp.y = item->floor;
+		ccp.y = (float)item->floor;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(pos.x, y, pos.z);
@@ -282,15 +283,15 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 		fx = cv[i].x;
 		fy = (cp[i].y - item->floor);
 		fz = cv[i].z;
-		cv[i].x = (phd_mxptr[M00] * fx + phd_mxptr[M01] * fy + phd_mxptr[M02] * fz + phd_mxptr[M03]) >> W2V_SHIFT;
-		cv[i].y = (phd_mxptr[M10] * fx + phd_mxptr[M11] * fy + phd_mxptr[M12] * fz + phd_mxptr[M13]) >> W2V_SHIFT;
-		cv[i].z = (phd_mxptr[M20] * fx + phd_mxptr[M21] * fy + phd_mxptr[M22] * fz + phd_mxptr[M23]) >> W2V_SHIFT;
+		cv[i].x = mMXPtr[M00] * fx + mMXPtr[M01] * fy + mMXPtr[M02] * fz + mMXPtr[M03];
+		cv[i].y = mMXPtr[M10] * fx + mMXPtr[M11] * fy + mMXPtr[M12] * fz + mMXPtr[M13];
+		cv[i].z = mMXPtr[M20] * fx + mMXPtr[M21] * fy + mMXPtr[M22] * fz + mMXPtr[M23];
 	}
 
-	fy = (ccp.y - item->floor);
-	ccv.x = (phd_mxptr[M01] * fy + phd_mxptr[M03]) >> W2V_SHIFT;
-	ccv.y = (phd_mxptr[M11] * fy + phd_mxptr[M13]) >> W2V_SHIFT;
-	ccv.z = (phd_mxptr[M21] * fy + phd_mxptr[M23]) >> W2V_SHIFT;
+	fy = float(ccp.y - item->floor);
+	ccv.x = mMXPtr[M01] * fy + mMXPtr[M03];
+	ccv.y = mMXPtr[M11] * fy + mMXPtr[M13];
+	ccv.z = mMXPtr[M21] * fy + mMXPtr[M23];
 	phd_PopMatrix();
 
 	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++) // Draw the pizza
@@ -370,30 +371,22 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 	pos.x = -xSize;
 	pos.y = -16;
 	pos.z = zSize;
-	x1 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> W2V_SHIFT;
-	y1 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> W2V_SHIFT;
-	z1 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> W2V_SHIFT;
+	ProjectTriPoints(&pos, x1, y1, z1);
 
 	pos.x = xSize;
 	pos.y = -16;
 	pos.z = zSize;
-	x2 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> W2V_SHIFT;
-	y2 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> W2V_SHIFT;
-	z2 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> W2V_SHIFT;
+	ProjectTriPoints(&pos, x2, y2, z2);
 
 	pos.x = xSize;
 	pos.y = -16;
 	pos.z = -zSize;
-	x3 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> W2V_SHIFT;
-	y3 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> W2V_SHIFT;
-	z3 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> W2V_SHIFT;
+	ProjectTriPoints(&pos, x3, y3, z3);
 
 	pos.x = -xSize;
 	pos.y = -16;
 	pos.z = -zSize;
-	x4 = (phd_mxptr[M00] * pos.x + phd_mxptr[M01] * pos.y + phd_mxptr[M02] * pos.z + phd_mxptr[M03]) >> W2V_SHIFT;
-	y4 = (phd_mxptr[M10] * pos.x + phd_mxptr[M11] * pos.y + phd_mxptr[M12] * pos.z + phd_mxptr[M13]) >> W2V_SHIFT;
-	z4 = (phd_mxptr[M20] * pos.x + phd_mxptr[M21] * pos.y + phd_mxptr[M22] * pos.z + phd_mxptr[M23]) >> W2V_SHIFT;
+	ProjectTriPoints(&pos, x4, y4, z4);
 	phd_PopMatrix();
 
 	setXYZ4(v, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, clipflags);
@@ -498,8 +491,8 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 	{
 		x = hXZ[0];
 		z = hXZ[1];
-		hXZ[0] = (x * phd_mxptr[M00] + z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
-		hXZ[1] = (x * phd_mxptr[M20] + z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+		hXZ[0] = long(x * mMXPtr[M00] + z * mMXPtr[M02] + mMXPtr[M03]);
+		hXZ[1] = long(x * mMXPtr[M20] + z * mMXPtr[M22] + mMXPtr[M23]);
 	}
 
 	phd_PopMatrix();
@@ -527,9 +520,9 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 		x = sXYZ[0];
 		y = *hY - item->floor;
 		z = sXYZ[2];
-		sXYZ[0] = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> W2V_SHIFT;
-		sXYZ[1] = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> W2V_SHIFT;
-		sXYZ[2] = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> W2V_SHIFT;
+		sXYZ[0] = long(mMXPtr[M00] * x + mMXPtr[M01] * y + mMXPtr[M02] * z + mMXPtr[M03]);
+		sXYZ[1] = long(mMXPtr[M10] * x + mMXPtr[M11] * y + mMXPtr[M12] * z + mMXPtr[M13]);
+		sXYZ[2] = long(mMXPtr[M20] * x + mMXPtr[M21] * y + mMXPtr[M22] * z + mMXPtr[M23]);
 	}
 
 	phd_PopMatrix();
@@ -1000,23 +993,23 @@ void DrawDebris()
 		offsets[0] = dptr->XYZOffsets1[0];
 		offsets[1] = dptr->XYZOffsets1[1];
 		offsets[2] = dptr->XYZOffsets1[2];
-		XY[0] = short((phd_mxptr[M03] + phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2]) >> W2V_SHIFT);
-		XY[1] = short((phd_mxptr[M13] + phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2]) >> W2V_SHIFT);
-		Z[0] = (phd_mxptr[M23] + phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2]) >> W2V_SHIFT;
+		XY[0] = short(mMXPtr[M03] + mMXPtr[M00] * offsets[0] + mMXPtr[M01] * offsets[1] + mMXPtr[M02] * offsets[2]);
+		XY[1] = short(mMXPtr[M13] + mMXPtr[M10] * offsets[0] + mMXPtr[M11] * offsets[1] + mMXPtr[M12] * offsets[2]);
+		Z[0] = long(mMXPtr[M23] + mMXPtr[M20] * offsets[0] + mMXPtr[M21] * offsets[1] + mMXPtr[M22] * offsets[2]);
 
 		offsets[0] = dptr->XYZOffsets2[0];
 		offsets[1] = dptr->XYZOffsets2[1];
 		offsets[2] = dptr->XYZOffsets2[2];
-		XY[2] = short((phd_mxptr[M03] + phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2]) >> W2V_SHIFT);
-		XY[3] = short((phd_mxptr[M13] + phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2]) >> W2V_SHIFT);
-		Z[1] = (phd_mxptr[M23] + phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2]) >> W2V_SHIFT;
+		XY[2] = short(mMXPtr[M03] + mMXPtr[M00] * offsets[0] + mMXPtr[M01] * offsets[1] + mMXPtr[M02] * offsets[2]);
+		XY[3] = short(mMXPtr[M13] + mMXPtr[M10] * offsets[0] + mMXPtr[M11] * offsets[1] + mMXPtr[M12] * offsets[2]);
+		Z[1] = long(mMXPtr[M23] + mMXPtr[M20] * offsets[0] + mMXPtr[M21] * offsets[1] + mMXPtr[M22] * offsets[2]);
 
 		offsets[0] = dptr->XYZOffsets3[0];
 		offsets[1] = dptr->XYZOffsets3[1];
 		offsets[2] = dptr->XYZOffsets3[2];
-		XY[4] = short((phd_mxptr[M03] + phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2]) >> W2V_SHIFT);
-		XY[5] = short((phd_mxptr[M13] + phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2]) >> W2V_SHIFT);
-		Z[2] = (phd_mxptr[M23] + phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2]) >> W2V_SHIFT;
+		XY[4] = short(mMXPtr[M03] + mMXPtr[M00] * offsets[0] + mMXPtr[M01] * offsets[1] + mMXPtr[M02] * offsets[2]);
+		XY[5] = short(mMXPtr[M13] + mMXPtr[M10] * offsets[0] + mMXPtr[M11] * offsets[1] + mMXPtr[M12] * offsets[2]);
+		Z[2] = long(mMXPtr[M23] + mMXPtr[M20] * offsets[0] + mMXPtr[M21] * offsets[1] + mMXPtr[M22] * offsets[2]);
 
 		setXYZ3(v, XY[0], XY[1], Z[0], XY[2], XY[3], Z[1], XY[4], XY[5], Z[2], clipflags);
 		phd_PopMatrix();
@@ -1237,26 +1230,27 @@ void DrawFlash()
 void S_DrawDarts(ITEM_INFO* item)
 {
 	D3DTLVERTEX v[2];
-	long x1, y1, z1, x2, y2, z2, num, mxx, mxy, mxz, xx, yy, zz;
+	float fx, fy, fz;
+	long x1, y1, z1, x2, y2, z2, num, mxx, mxy, mxz;
 	float zv;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	zv = f_persp / (float)phd_mxptr[M23];
-	x1 = short(float(phd_mxptr[M03] * zv + f_centerx));
-	y1 = short(float(phd_mxptr[M13] * zv + f_centery));
-	z1 = phd_mxptr[M23] >> W2V_SHIFT;
+	zv = f_persp / mMXPtr[M23];
+	x1 = short(mMXPtr[M03] * zv + f_centerx);
+	y1 = short(mMXPtr[M13] * zv + f_centery);
+	z1 = (long)mMXPtr[M23];
 	num = (-96 * phd_cos(item->pos.x_rot)) >> W2V_SHIFT;
 	mxx = (num * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
 	mxy = (96 * phd_sin(item->pos.x_rot)) >> W2V_SHIFT;
 	mxz = (num * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
-	xx = phd_mxptr[M00] * mxx + phd_mxptr[M01] * mxy + phd_mxptr[M02] * mxz + phd_mxptr[M03];
-	yy = phd_mxptr[M10] * mxx + phd_mxptr[M11] * mxy + phd_mxptr[M12] * mxz + phd_mxptr[M13];
-	zz = phd_mxptr[M20] * mxx + phd_mxptr[M21] * mxy + phd_mxptr[M22] * mxz + phd_mxptr[M23];
-	zv = f_persp / (float)zz;
-	x2 = short(float(xx * zv + f_centerx));
-	y2 = short(float(yy * zv + f_centery));
-	z2 = zz >> W2V_SHIFT;
+	fx = mMXPtr[M00] * mxx + mMXPtr[M01] * mxy + mMXPtr[M02] * mxz + mMXPtr[M03];
+	fy = mMXPtr[M10] * mxx + mMXPtr[M11] * mxy + mMXPtr[M12] * mxz + mMXPtr[M13];
+	fz = mMXPtr[M20] * mxx + mMXPtr[M21] * mxy + mMXPtr[M22] * mxz + mMXPtr[M23];
+	zv = f_persp / fz;
+	x2 = short(fx * zv + f_centerx);
+	y2 = short(fy * zv + f_centery);
+	z2 = (long)fz;
 
 	if (ClipLine(x1, y1, z1, x2, y2, z2, phd_winxmin, phd_winymin, phd_winxmax, phd_winymax))
 	{
@@ -1348,9 +1342,9 @@ void DrawFlatSky(ulong color, long zpos, long ypos, long drawtype)
 		x = vec[i].x;
 		y = vec[i].y;
 		z = vec[i].z;
-		vec[i].x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> W2V_SHIFT;
-		vec[i].y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> W2V_SHIFT;
-		vec[i].z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> W2V_SHIFT;
+		vec[i].x = long(mMXPtr[M00] * x + mMXPtr[M01] * y + mMXPtr[M02] * z + mMXPtr[M03]);
+		vec[i].y = long(mMXPtr[M10] * x + mMXPtr[M11] * y + mMXPtr[M12] * z + mMXPtr[M13]);
+		vec[i].z = long(mMXPtr[M20] * x + mMXPtr[M21] * y + mMXPtr[M22] * z + mMXPtr[M23]);
 		v[i].color = color | 0xFF000000;
 		v[i].specular = 0xFF000000;
 		CalcColorSplit(color, &v[i].color);
@@ -1396,9 +1390,9 @@ void DrawFlatSky(ulong color, long zpos, long ypos, long drawtype)
 		x = vec[i].x;
 		y = vec[i].y;
 		z = vec[i].z;
-		vec[i].x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> W2V_SHIFT;
-		vec[i].y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> W2V_SHIFT;
-		vec[i].z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> W2V_SHIFT;
+		vec[i].x = long(mMXPtr[M00] * x + mMXPtr[M01] * y + mMXPtr[M02] * z + mMXPtr[M03]);
+		vec[i].y = long(mMXPtr[M10] * x + mMXPtr[M11] * y + mMXPtr[M12] * z + mMXPtr[M13]);
+		vec[i].z = long(mMXPtr[M20] * x + mMXPtr[M21] * y + mMXPtr[M22] * z + mMXPtr[M23]);
 		v[i].color |= 0xFF000000;
 		v[i].specular = 0xFF000000;
 		CalcColorSplit(color, &v[i].color);
@@ -1430,6 +1424,13 @@ void OutputSky()
 	DrawSortList();
 	InitBuckets();
 	InitialiseSortList();
+}
+
+void ProjectTriPoints(PHD_VECTOR* pos, long& x, long& y, long& z)
+{
+	x = long(mMXPtr[M00] * pos->x + mMXPtr[M01] * pos->y + mMXPtr[M02] * pos->z + mMXPtr[M03]);
+	y = long(mMXPtr[M10] * pos->x + mMXPtr[M11] * pos->y + mMXPtr[M12] * pos->z + mMXPtr[M13]);
+	z = long(mMXPtr[M20] * pos->x + mMXPtr[M21] * pos->y + mMXPtr[M22] * pos->z + mMXPtr[M23]);
 }
 
 void setXY4(D3DTLVERTEX* v, long x1, long y1, long x2, long y2, long x3, long y3, long x4, long y4, long z, short* clip)
@@ -1836,7 +1837,7 @@ void DrawLaserSightSprite()
 	SPRITESTRUCT* sprite;
 	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
-	PHD_VECTOR vec;
+	FVECTOR vec;
 	long* Z;
 	short* XY;
 	short* pos;
@@ -1850,13 +1851,13 @@ void DrawLaserSightSprite()
 	pos[0] = short(LaserSightX - lara_item->pos.x_pos);
 	pos[1] = short(LaserSightY - lara_item->pos.y_pos);
 	pos[2] = short(LaserSightZ - lara_item->pos.z_pos);
-	vec.x = phd_mxptr[M00] * pos[0] + phd_mxptr[M01] * pos[1] + phd_mxptr[M02] * pos[2] + phd_mxptr[M03];
-	vec.y = phd_mxptr[M10] * pos[0] + phd_mxptr[M11] * pos[1] + phd_mxptr[M12] * pos[2] + phd_mxptr[M13];
-	vec.z = phd_mxptr[M20] * pos[0] + phd_mxptr[M21] * pos[1] + phd_mxptr[M22] * pos[2] + phd_mxptr[M23];
-	perspz = f_persp / (float)vec.z;
-	XY[0] = short(float(vec.x * perspz + f_centerx));
-	XY[1] = short(float(vec.y * perspz + f_centery));
-	Z[0] = vec.z >> W2V_SHIFT;
+	vec.x = mMXPtr[M00] * pos[0] + mMXPtr[M01] * pos[1] + mMXPtr[M02] * pos[2] + mMXPtr[M03];
+	vec.y = mMXPtr[M10] * pos[0] + mMXPtr[M11] * pos[1] + mMXPtr[M12] * pos[2] + mMXPtr[M13];
+	vec.z = mMXPtr[M20] * pos[0] + mMXPtr[M21] * pos[1] + mMXPtr[M22] * pos[2] + mMXPtr[M23];
+	perspz = f_persp / vec.z;
+	XY[0] = short(vec.x * perspz + f_centerx);
+	XY[1] = short(vec.y * perspz + f_centery);
+	Z[0] = (long)vec.z;
 	phd_PopMatrix();
 
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 14];
@@ -2022,6 +2023,7 @@ void ShowTitle()
 void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj)
 {
 	PHD_VECTOR pos;
+	FVECTOR fPos;
 	GAME_VECTOR start;
 	GAME_VECTOR target;
 	long* Z;
@@ -2148,13 +2150,13 @@ void SetUpLensFlare(long x, long y, long z, GAME_VECTOR* lfobj)
 		vec[2] = (short)pos.z;
 	}
 
-	pos.x = phd_mxptr[M00] * vec[0] + phd_mxptr[M01] * vec[1] + phd_mxptr[M02] * vec[2] + phd_mxptr[M03];
-	pos.y = phd_mxptr[M10] * vec[0] + phd_mxptr[M11] * vec[1] + phd_mxptr[M12] * vec[2] + phd_mxptr[M13];
-	pos.z = phd_mxptr[M20] * vec[0] + phd_mxptr[M21] * vec[1] + phd_mxptr[M22] * vec[2] + phd_mxptr[M23];
-	perspz = f_persp / (float)pos.z;
-	XY[0] = short(float(pos.x * perspz + f_centerx));
-	XY[1] = short(float(pos.y * perspz + f_centery));
-	Z[0] = pos.z >> W2V_SHIFT;
+	fPos.x = mMXPtr[M00] * vec[0] + mMXPtr[M01] * vec[1] + mMXPtr[M02] * vec[2] + mMXPtr[M03];
+	fPos.y = mMXPtr[M10] * vec[0] + mMXPtr[M11] * vec[1] + mMXPtr[M12] * vec[2] + mMXPtr[M13];
+	fPos.z = mMXPtr[M20] * vec[0] + mMXPtr[M21] * vec[1] + mMXPtr[M22] * vec[2] + mMXPtr[M23];
+	perspz = f_persp / fPos.z;
+	XY[0] = short(fPos.x * perspz + f_centerx);
+	XY[1] = short(fPos.y * perspz + f_centery);
+	Z[0] = (long)fPos.z;
 	phd_PopMatrix();
 	num = 0;
 
@@ -2402,7 +2404,7 @@ void DrawBinoculars()
 void DrawWraithTrail(ITEM_INFO* item)
 {
 	WRAITH_STRUCT* wraith;
-	PHD_VECTOR pos;
+	FVECTOR pos;
 	D3DTLVERTEX v[2];
 	long* Z;
 	short* XY;
@@ -2435,13 +2437,13 @@ void DrawWraithTrail(ITEM_INFO* item)
 			offsets[0] = short(wraith->pos.x - item->pos.x_pos);
 			offsets[1] = short(wraith->pos.y - item->pos.y_pos);
 			offsets[2] = short(wraith->pos.z - item->pos.z_pos);
-			pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
-			pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
-			pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
-			perspz = f_persp / (float)pos.z;
-			XY[0] = short(float(pos.x * perspz + f_centerx));
-			XY[1] = short(float(pos.y * perspz + f_centery));
-			Z[0] = pos.z >> W2V_SHIFT;
+			pos.x = offsets[0] * mMXPtr[M00] + offsets[1] * mMXPtr[M01] + offsets[2] * mMXPtr[M02] + mMXPtr[M03];
+			pos.y = offsets[0] * mMXPtr[M10] + offsets[1] * mMXPtr[M11] + offsets[2] * mMXPtr[M12] + mMXPtr[M13];
+			pos.z = offsets[0] * mMXPtr[M20] + offsets[1] * mMXPtr[M21] + offsets[2] * mMXPtr[M22] + mMXPtr[M23];
+			perspz = f_persp / pos.z;
+			XY[0] = short(pos.x * perspz + f_centerx);
+			XY[1] = short(pos.y * perspz + f_centery);
+			Z[0] = (long)pos.z;
 
 			if (!j || j == 7)
 				Z[1] = 0;
@@ -2508,7 +2510,7 @@ void DrawWraithTrail(ITEM_INFO* item)
 void DrawDrips()
 {
 	DRIP_STRUCT* drip;
-	PHD_VECTOR vec;
+	FVECTOR vec;
 	D3DTLVERTEX v[3];
 	long* Z;
 	short* XY;
@@ -2536,14 +2538,14 @@ void DrawDrips()
 		if (pos[0] < -20480 || pos[0] > 20480 || pos[1] < -20480 || pos[1] > 20480 || pos[2] < -20480 || pos[2] > 20480)
 			continue;
 
-		vec.x = pos[0] * phd_mxptr[M00] + pos[1] * phd_mxptr[M01] + pos[2] * phd_mxptr[M02] + phd_mxptr[M03];
-		vec.y = pos[0] * phd_mxptr[M10] + pos[1] * phd_mxptr[M11] + pos[2] * phd_mxptr[M12] + phd_mxptr[M13];
-		vec.z = pos[0] * phd_mxptr[M20] + pos[1] * phd_mxptr[M21] + pos[2] * phd_mxptr[M22] + phd_mxptr[M23];
+		vec.x = pos[0] * mMXPtr[M00] + pos[1] * mMXPtr[M01] + pos[2] * mMXPtr[M02] + mMXPtr[M03];
+		vec.y = pos[0] * mMXPtr[M10] + pos[1] * mMXPtr[M11] + pos[2] * mMXPtr[M12] + mMXPtr[M13];
+		vec.z = pos[0] * mMXPtr[M20] + pos[1] * mMXPtr[M21] + pos[2] * mMXPtr[M22] + mMXPtr[M23];
 
-		perspz = f_persp / (float)vec.z;
-		XY[0] = short(float(vec.x * perspz + f_centerx));
-		XY[1] = short(float(vec.y * perspz + f_centery));
-		Z[0] = vec.z >> W2V_SHIFT;
+		perspz = f_persp / vec.z;
+		XY[0] = short(vec.x * perspz + f_centerx);
+		XY[1] = short(vec.y * perspz + f_centery);
+		Z[0] = (long)vec.z;
 
 		pos[1] -= drip->Yvel >> 6;
 
@@ -2553,14 +2555,14 @@ void DrawDrips()
 			pos[1] -= short(SmokeWindZ >> 1);
 		}
 
-		vec.x = pos[0] * phd_mxptr[M00] + pos[1] * phd_mxptr[M01] + pos[2] * phd_mxptr[M02] + phd_mxptr[M03];
-		vec.y = pos[0] * phd_mxptr[M10] + pos[1] * phd_mxptr[M11] + pos[2] * phd_mxptr[M12] + phd_mxptr[M13];
-		vec.z = pos[0] * phd_mxptr[M20] + pos[1] * phd_mxptr[M21] + pos[2] * phd_mxptr[M22] + phd_mxptr[M23];
+		vec.x = pos[0] * mMXPtr[M00] + pos[1] * mMXPtr[M01] + pos[2] * mMXPtr[M02] + mMXPtr[M03];
+		vec.y = pos[0] * mMXPtr[M10] + pos[1] * mMXPtr[M11] + pos[2] * mMXPtr[M12] + mMXPtr[M13];
+		vec.z = pos[0] * mMXPtr[M20] + pos[1] * mMXPtr[M21] + pos[2] * mMXPtr[M22] + mMXPtr[M23];
 
-		perspz = f_persp / (float)vec.z;
-		XY[2] = short(float(vec.x * perspz + f_centerx));
-		XY[3] = short(float(vec.y * perspz + f_centery));
-		Z[1] = vec.z >> W2V_SHIFT;
+		perspz = f_persp / vec.z;
+		XY[2] = short(vec.x * perspz + f_centerx);
+		XY[3] = short(vec.y * perspz + f_centery);
+		Z[1] = (long)vec.z;
 
 		if (!Z[0])
 			continue;
@@ -2615,7 +2617,7 @@ void DrawBubbles()
 	SPRITESTRUCT* sprite;
 	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
-	PHD_VECTOR pos;
+	FVECTOR pos;
 	long* Z;
 	short* XY;
 	short* offsets;
@@ -2652,13 +2654,13 @@ void DrawBubbles()
 		offsets[0] = (short)dx;
 		offsets[1] = (short)dy;
 		offsets[2] = (short)dz;
-		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
-		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
-		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
-		perspz = f_persp / (float)pos.z;
-		XY[0] = short(float(pos.x * perspz + f_centerx));
-		XY[1] = short(float(pos.y * perspz + f_centery));
-		Z[0] = pos.z >> W2V_SHIFT;
+		pos.x = offsets[0] * mMXPtr[M00] + offsets[1] * mMXPtr[M01] + offsets[2] * mMXPtr[M02] + mMXPtr[M03];
+		pos.y = offsets[0] * mMXPtr[M10] + offsets[1] * mMXPtr[M11] + offsets[2] * mMXPtr[M12] + mMXPtr[M13];
+		pos.z = offsets[0] * mMXPtr[M20] + offsets[1] * mMXPtr[M21] + offsets[2] * mMXPtr[M22] + mMXPtr[M23];
+		perspz = f_persp / pos.z;
+		XY[0] = short(pos.x * perspz + f_centerx);
+		XY[1] = short(pos.y * perspz + f_centery);
+		Z[0] = (long)pos.z;
 
 		if (Z[0] < 32)
 		{
@@ -2731,7 +2733,7 @@ void DrawShockwaves()
 	SPRITESTRUCT* sprite;
 	D3DTLVERTEX vtx[4];
 	TEXTURESTRUCT tex;
-	PHD_VECTOR p1, p2, p3;
+	FVECTOR p1, p2, p3;
 	long* Z;
 	short* XY;
 	short* offsets;
@@ -2771,17 +2773,17 @@ void DrawShockwaves()
 			{
 				v = k * 0x3000;
 
-				p1.x = (offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
-				p1.y = (offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
-				p1.z = (offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+				p1.x = offsets[0] * mMXPtr[M00] + offsets[1] * mMXPtr[M01] + offsets[2] * mMXPtr[M02] + mMXPtr[M03];
+				p1.y = offsets[0] * mMXPtr[M10] + offsets[1] * mMXPtr[M11] + offsets[2] * mMXPtr[M12] + mMXPtr[M13];
+				p1.z = offsets[0] * mMXPtr[M20] + offsets[1] * mMXPtr[M21] + offsets[2] * mMXPtr[M22] + mMXPtr[M23];
 
-				p2.x = (offsets[4] * phd_mxptr[M00] + offsets[5] * phd_mxptr[M01] + offsets[6] * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
-				p2.y = (offsets[4] * phd_mxptr[M10] + offsets[5] * phd_mxptr[M11] + offsets[6] * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
-				p2.z = (offsets[4] * phd_mxptr[M20] + offsets[5] * phd_mxptr[M21] + offsets[6] * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+				p2.x = offsets[4] * mMXPtr[M00] + offsets[5] * mMXPtr[M01] + offsets[6] * mMXPtr[M02] + mMXPtr[M03];
+				p2.y = offsets[4] * mMXPtr[M10] + offsets[5] * mMXPtr[M11] + offsets[6] * mMXPtr[M12] + mMXPtr[M13];
+				p2.z = offsets[4] * mMXPtr[M20] + offsets[5] * mMXPtr[M21] + offsets[6] * mMXPtr[M22] + mMXPtr[M23];
 
-				p3.x = (offsets[8] * phd_mxptr[M00] + offsets[9] * phd_mxptr[M01] + offsets[10] * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
-				p3.y = (offsets[8] * phd_mxptr[M10] + offsets[9] * phd_mxptr[M11] + offsets[10] * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
-				p3.z = (offsets[8] * phd_mxptr[M20] + offsets[9] * phd_mxptr[M21] + offsets[10] * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+				p3.x = offsets[8] * mMXPtr[M00] + offsets[9] * mMXPtr[M01] + offsets[10] * mMXPtr[M02] + mMXPtr[M03];
+				p3.y = offsets[8] * mMXPtr[M10] + offsets[9] * mMXPtr[M11] + offsets[10] * mMXPtr[M12] + mMXPtr[M13];
+				p3.z = offsets[8] * mMXPtr[M20] + offsets[9] * mMXPtr[M21] + offsets[10] * mMXPtr[M22] + mMXPtr[M23];
 
 				offsets[0] = (rad * phd_sin(v)) >> W2V_SHIFT;
 				offsets[2] = (rad * phd_cos(v)) >> W2V_SHIFT;
@@ -2792,15 +2794,15 @@ void DrawShockwaves()
 
 				XY[0] = (short)p1.x;
 				XY[1] = (short)p1.y;
-				Z[0] = p1.z;
+				Z[0] = (long)p1.z;
 
 				XY[2] = (short)p2.x;
 				XY[3] = (short)p2.y;
-				Z[1] = p2.z;
+				Z[1] = (long)p2.z;
 
 				XY[4] = (short)p3.x;
 				XY[5] = (short)p3.y;
-				Z[2] = p3.z;
+				Z[2] = (long)p3.z;
 
 				XY += 6;
 				Z += 3;
@@ -2869,7 +2871,7 @@ void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags)
 {
 	SVECTOR* offsets;
 	D3DTLVERTEX v[4];
-	PHD_VECTOR p1, p2, p3;
+	FVECTOR p1, p2, p3;
 	long* Z;
 	short* XY;
 	long num, z1, z2, z3, z4, spec;
@@ -2904,17 +2906,17 @@ void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags)
 
 		for (int j = 0; j < 41; j++)
 		{
-			p1.x = (offsets[0].x * phd_mxptr[M00] + offsets[0].y * phd_mxptr[M01] + offsets[0].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
-			p1.y = (offsets[0].x * phd_mxptr[M10] + offsets[0].y * phd_mxptr[M11] + offsets[0].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
-			p1.z = (offsets[0].x * phd_mxptr[M20] + offsets[0].y * phd_mxptr[M21] + offsets[0].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+			p1.x = offsets[0].x * mMXPtr[M00] + offsets[0].y * mMXPtr[M01] + offsets[0].z * mMXPtr[M02] + mMXPtr[M03];
+			p1.y = offsets[0].x * mMXPtr[M10] + offsets[0].y * mMXPtr[M11] + offsets[0].z * mMXPtr[M12] + mMXPtr[M13];
+			p1.z = offsets[0].x * mMXPtr[M20] + offsets[0].y * mMXPtr[M21] + offsets[0].z * mMXPtr[M22] + mMXPtr[M23];
 
-			p2.x = (offsets[1].x * phd_mxptr[M00] + offsets[1].y * phd_mxptr[M01] + offsets[1].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
-			p2.y = (offsets[1].x * phd_mxptr[M10] + offsets[1].y * phd_mxptr[M11] + offsets[1].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
-			p2.z = (offsets[1].x * phd_mxptr[M20] + offsets[1].y * phd_mxptr[M21] + offsets[1].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+			p2.x = offsets[1].x * mMXPtr[M00] + offsets[1].y * mMXPtr[M01] + offsets[1].z * mMXPtr[M02] + mMXPtr[M03];
+			p2.y = offsets[1].x * mMXPtr[M10] + offsets[1].y * mMXPtr[M11] + offsets[1].z * mMXPtr[M12] + mMXPtr[M13];
+			p2.z = offsets[1].x * mMXPtr[M20] + offsets[1].y * mMXPtr[M21] + offsets[1].z * mMXPtr[M22] + mMXPtr[M23];
 
-			p3.x = (offsets[2].x * phd_mxptr[M00] + offsets[2].y * phd_mxptr[M01] + offsets[2].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
-			p3.y = (offsets[2].x * phd_mxptr[M10] + offsets[2].y * phd_mxptr[M11] + offsets[2].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
-			p3.z = (offsets[2].x * phd_mxptr[M20] + offsets[2].y * phd_mxptr[M21] + offsets[2].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+			p3.x = offsets[2].x * mMXPtr[M00] + offsets[2].y * mMXPtr[M01] + offsets[2].z * mMXPtr[M02] + mMXPtr[M03];
+			p3.y = offsets[2].x * mMXPtr[M10] + offsets[2].y * mMXPtr[M11] + offsets[2].z * mMXPtr[M12] + mMXPtr[M13];
+			p3.z = offsets[2].x * mMXPtr[M20] + offsets[2].y * mMXPtr[M21] + offsets[2].z * mMXPtr[M22] + mMXPtr[M23];
 
 			offsets[0].x += 512;
 			offsets[1].x += 512;
@@ -2924,15 +2926,15 @@ void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags)
 
 			XY[0] = (short)p1.x;
 			XY[1] = (short)p1.y;
-			Z[0] = p1.z;
+			Z[0] = (long)p1.z;
 
 			XY[2] = (short)p2.x;
 			XY[3] = (short)p2.y;
-			Z[1] = p2.z;
+			Z[1] = (long)p2.z;
 
 			XY[4] = (short)p3.x;
 			XY[5] = (short)p3.y;
-			Z[2] = p3.z;
+			Z[2] = (long)p3.z;
 		}
 
 		offsets[0].x -= 512;
@@ -3035,9 +3037,9 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 				offsets[0] = (rads[j] * phd_sin(k)) >> (W2V_SHIFT - 1);
 				offsets[1] = yVals[j] >> 3;
 				offsets[2] = (rads[j] * phd_cos(k)) >> (W2V_SHIFT - 1);
-				*XY++ = short((phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03]) >> W2V_SHIFT);
-				*XY++ = short((phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13]) >> W2V_SHIFT);
-				*Z++ = (phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23]) >> W2V_SHIFT;
+				*XY++ = short(mMXPtr[M00] * offsets[0] + mMXPtr[M01] * offsets[1] + mMXPtr[M02] * offsets[2] + mMXPtr[M03]);
+				*XY++ = short(mMXPtr[M10] * offsets[0] + mMXPtr[M11] * offsets[1] + mMXPtr[M12] * offsets[2] + mMXPtr[M13]);
+				*Z++ = long(mMXPtr[M20] * offsets[0] + mMXPtr[M21] * offsets[1] + mMXPtr[M22] * offsets[2] + mMXPtr[M23]);
 				Z++;	//?
 			}
 		}
@@ -3150,33 +3152,33 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 		offsets[0] = -ripple->size;
 		offsets[1] = 0;
 		offsets[2] = -ripple->size;
-		*XY++ = short((phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03]) >> W2V_SHIFT);
-		*XY++ = short((phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13]) >> W2V_SHIFT);
-		*Z++ = (phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23]) >> W2V_SHIFT;
+		*XY++ = short(mMXPtr[M00] * offsets[0] + mMXPtr[M01] * offsets[1] + mMXPtr[M02] * offsets[2] + mMXPtr[M03]);
+		*XY++ = short(mMXPtr[M10] * offsets[0] + mMXPtr[M11] * offsets[1] + mMXPtr[M12] * offsets[2] + mMXPtr[M13]);
+		*Z++ = long(mMXPtr[M20] * offsets[0] + mMXPtr[M21] * offsets[1] + mMXPtr[M22] * offsets[2] + mMXPtr[M23]);
 		Z++;
 
 		offsets[0] = -ripple->size;
 		offsets[1] = 0;
 		offsets[2] = ripple->size;
-		*XY++ = short((phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03]) >> W2V_SHIFT);
-		*XY++ = short((phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13]) >> W2V_SHIFT);
-		*Z++ = (phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23]) >> W2V_SHIFT;
+		*XY++ = short(mMXPtr[M00] * offsets[0] + mMXPtr[M01] * offsets[1] + mMXPtr[M02] * offsets[2] + mMXPtr[M03]);
+		*XY++ = short(mMXPtr[M10] * offsets[0] + mMXPtr[M11] * offsets[1] + mMXPtr[M12] * offsets[2] + mMXPtr[M13]);
+		*Z++ = long(mMXPtr[M20] * offsets[0] + mMXPtr[M21] * offsets[1] + mMXPtr[M22] * offsets[2] + mMXPtr[M23]);
 		Z++;
 
 		offsets[0] = ripple->size;
 		offsets[1] = 0;
 		offsets[2] = ripple->size;
-		*XY++ = short((phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03]) >> W2V_SHIFT);
-		*XY++ = short((phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13]) >> W2V_SHIFT);
-		*Z++ = (phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23]) >> W2V_SHIFT;
+		*XY++ = short(mMXPtr[M00] * offsets[0] + mMXPtr[M01] * offsets[1] + mMXPtr[M02] * offsets[2] + mMXPtr[M03]);
+		*XY++ = short(mMXPtr[M10] * offsets[0] + mMXPtr[M11] * offsets[1] + mMXPtr[M12] * offsets[2] + mMXPtr[M13]);
+		*Z++ = long(mMXPtr[M20] * offsets[0] + mMXPtr[M21] * offsets[1] + mMXPtr[M22] * offsets[2] + mMXPtr[M23]);
 		Z++;
 
 		offsets[0] = ripple->size;
 		offsets[1] = 0;
 		offsets[2] = -ripple->size;
-		*XY++ = short((phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03]) >> W2V_SHIFT);
-		*XY++ = short((phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13]) >> W2V_SHIFT);
-		*Z++ = (phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23]) >> W2V_SHIFT;
+		*XY++ = short(mMXPtr[M00] * offsets[0] + mMXPtr[M01] * offsets[1] + mMXPtr[M02] * offsets[2] + mMXPtr[M03]);
+		*XY++ = short(mMXPtr[M10] * offsets[0] + mMXPtr[M11] * offsets[1] + mMXPtr[M12] * offsets[2] + mMXPtr[M13]);
+		*Z++ = long(mMXPtr[M20] * offsets[0] + mMXPtr[M21] * offsets[1] + mMXPtr[M22] * offsets[2] + mMXPtr[M23]);
 		Z++;
 
 		phd_PopMatrix();
@@ -3372,7 +3374,7 @@ void S_DrawFireSparks(long size, long life)
 	SPRITESTRUCT* sprite;
 	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
-	PHD_VECTOR pos;
+	FVECTOR pos;
 	long* Z;
 	short* XY;
 	short* offsets;
@@ -3403,13 +3405,13 @@ void S_DrawFireSparks(long size, long life)
 		offsets[0] = (short)dx;
 		offsets[1] = (short)dy;
 		offsets[2] = (short)dz;
-		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
-		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
-		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
-		perspz = f_persp / (float)pos.z;
-		XY[0] = short(float(pos.x * perspz + f_centerx));
-		XY[1] = short(float(pos.y * perspz + f_centery));
-		Z[0] = pos.z >> W2V_SHIFT;
+		pos.x = offsets[0] * mMXPtr[M00] + offsets[1] * mMXPtr[M01] + offsets[2] * mMXPtr[M02] + mMXPtr[M03];
+		pos.y = offsets[0] * mMXPtr[M10] + offsets[1] * mMXPtr[M11] + offsets[2] * mMXPtr[M12] + mMXPtr[M13];
+		pos.z = offsets[0] * mMXPtr[M20] + offsets[1] * mMXPtr[M21] + offsets[2] * mMXPtr[M22] + mMXPtr[M23];
+		perspz = f_persp / pos.z;
+		XY[0] = short(pos.x * perspz + f_centerx);
+		XY[1] = short(pos.y * perspz + f_centery);
+		Z[0] = (long)pos.z;
 
 
 		if (Z[0] <= 0 || Z[0] >= 0x5000)
@@ -3628,7 +3630,7 @@ void DrawBlood()
 	SPRITESTRUCT* sprite;
 	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
-	PHD_VECTOR pos;
+	FVECTOR pos;
 	long* Z;
 	short* XY;
 	short* offsets;
@@ -3662,13 +3664,13 @@ void DrawBlood()
 		offsets[0] = (short)dx;
 		offsets[1] = (short)dy;
 		offsets[2] = (short)dz;
-		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
-		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
-		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
-		perspz = f_persp / (float)pos.z;
-		XY[0] = short(float(pos.x * perspz + f_centerx));
-		XY[1] = short(float(pos.y * perspz + f_centery));
-		Z[0] = pos.z >> W2V_SHIFT;
+		pos.x = offsets[0] * mMXPtr[M00] + offsets[1] * mMXPtr[M01] + offsets[2] * mMXPtr[M02] + mMXPtr[M03];
+		pos.y = offsets[0] * mMXPtr[M10] + offsets[1] * mMXPtr[M11] + offsets[2] * mMXPtr[M12] + mMXPtr[M13];
+		pos.z = offsets[0] * mMXPtr[M20] + offsets[1] * mMXPtr[M21] + offsets[2] * mMXPtr[M22] + mMXPtr[M23];
+		perspz = f_persp / pos.z;
+		XY[0] = short(pos.x * perspz + f_centerx);
+		XY[1] = short(pos.y * perspz + f_centery);
+		Z[0] = (long)pos.z;
 
 		if (Z[0] <= 0 || Z[0] >= 0x5000)
 			continue;
@@ -3733,7 +3735,7 @@ void S_DrawSmokeSparks()
 	SPRITESTRUCT* sprite;
 	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
-	PHD_VECTOR pos;
+	FVECTOR pos;
 	long* Z;
 	short* XY;
 	short* offsets;
@@ -3781,13 +3783,13 @@ void S_DrawSmokeSparks()
 		offsets[0] = (short)dx;
 		offsets[1] = (short)dy;
 		offsets[2] = (short)dz;
-		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
-		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
-		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
-		perspz = f_persp / (float)pos.z;
-		XY[0] = short(float(pos.x * perspz + f_centerx));
-		XY[1] = short(float(pos.y * perspz + f_centery));
-		Z[0] = pos.z >> W2V_SHIFT;
+		pos.x = offsets[0] * mMXPtr[M00] + offsets[1] * mMXPtr[M01] + offsets[2] * mMXPtr[M02] + mMXPtr[M03];
+		pos.y = offsets[0] * mMXPtr[M10] + offsets[1] * mMXPtr[M11] + offsets[2] * mMXPtr[M12] + mMXPtr[M13];
+		pos.z = offsets[0] * mMXPtr[M20] + offsets[1] * mMXPtr[M21] + offsets[2] * mMXPtr[M22] + mMXPtr[M23];
+		perspz = f_persp / pos.z;
+		XY[0] = short(pos.x * perspz + f_centerx);
+		XY[1] = short(pos.y * perspz + f_centery);
+		Z[0] = (long)pos.z;
 
 		if (Z[0] <= 0 || Z[0] >= 0x5000)
 		{
@@ -3885,7 +3887,7 @@ void DoUwEffect()
 	SPRITESTRUCT* sprite;
 	D3DTLVERTEX v[3];
 	TEXTURESTRUCT tex;
-	PHD_VECTOR pos;
+	FVECTOR pos;
 	long* Z;
 	short* XY;
 	short* offsets;
@@ -3965,13 +3967,13 @@ void DoUwEffect()
 		offsets[0] = (short)x;
 		offsets[1] = (short)y;
 		offsets[2] = (short)z;
-		pos.x = offsets[0] * phd_mxptr[M00] + offsets[1] * phd_mxptr[M01] + offsets[2] * phd_mxptr[M02] + phd_mxptr[M03];
-		pos.y = offsets[0] * phd_mxptr[M10] + offsets[1] * phd_mxptr[M11] + offsets[2] * phd_mxptr[M12] + phd_mxptr[M13];
-		pos.z = offsets[0] * phd_mxptr[M20] + offsets[1] * phd_mxptr[M21] + offsets[2] * phd_mxptr[M22] + phd_mxptr[M23];
-		perspz = f_persp / (float)pos.z;
-		XY[0] = short(float(pos.x * perspz + f_centerx));
-		XY[1] = short(float(pos.y * perspz + f_centery));
-		Z[0] = pos.z >> W2V_SHIFT;
+		pos.x = offsets[0] * mMXPtr[M00] + offsets[1] * mMXPtr[M01] + offsets[2] * mMXPtr[M02] + mMXPtr[M03];
+		pos.y = offsets[0] * mMXPtr[M10] + offsets[1] * mMXPtr[M11] + offsets[2] * mMXPtr[M12] + mMXPtr[M13];
+		pos.z = offsets[0] * mMXPtr[M20] + offsets[1] * mMXPtr[M21] + offsets[2] * mMXPtr[M22] + mMXPtr[M23];
+		perspz = f_persp / pos.z;
+		XY[0] = short(pos.x * perspz + f_centerx);
+		XY[1] = short(pos.y * perspz + f_centery);
+		Z[0] = (long)pos.z;
 
 		if (Z[0] < 32)
 		{
@@ -4039,7 +4041,7 @@ void DrawLightning()
 	SVECTOR* offsets;
 	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
-	PHD_VECTOR p1, p2, p3;
+	FVECTOR p1, p2, p3;
 	long* Z;
 	short* XY;
 	float perspz;
@@ -4079,29 +4081,29 @@ void DrawLightning()
 
 		for (int j = 0; j < pL->Segments; j++)
 		{
-			p1.x = (offsets[0].x * phd_mxptr[M00] + offsets[0].y * phd_mxptr[M01] + offsets[0].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
-			p1.y = (offsets[0].x * phd_mxptr[M10] + offsets[0].y * phd_mxptr[M11] + offsets[0].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
-			p1.z = (offsets[0].x * phd_mxptr[M20] + offsets[0].y * phd_mxptr[M21] + offsets[0].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+			p1.x = offsets[0].x * mMXPtr[M00] + offsets[0].y * mMXPtr[M01] + offsets[0].z * mMXPtr[M02] + mMXPtr[M03];
+			p1.y = offsets[0].x * mMXPtr[M10] + offsets[0].y * mMXPtr[M11] + offsets[0].z * mMXPtr[M12] + mMXPtr[M13];
+			p1.z = offsets[0].x * mMXPtr[M20] + offsets[0].y * mMXPtr[M21] + offsets[0].z * mMXPtr[M22] + mMXPtr[M23];
 
-			p2.x = (offsets[1].x * phd_mxptr[M00] + offsets[1].y * phd_mxptr[M01] + offsets[1].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
-			p2.y = (offsets[1].x * phd_mxptr[M10] + offsets[1].y * phd_mxptr[M11] + offsets[1].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
-			p2.z = (offsets[1].x * phd_mxptr[M20] + offsets[1].y * phd_mxptr[M21] + offsets[1].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+			p2.x = offsets[1].x * mMXPtr[M00] + offsets[1].y * mMXPtr[M01] + offsets[1].z * mMXPtr[M02] + mMXPtr[M03];
+			p2.y = offsets[1].x * mMXPtr[M10] + offsets[1].y * mMXPtr[M11] + offsets[1].z * mMXPtr[M12] + mMXPtr[M13];
+			p2.z = offsets[1].x * mMXPtr[M20] + offsets[1].y * mMXPtr[M21] + offsets[1].z * mMXPtr[M22] + mMXPtr[M23];
 
-			p3.x = (offsets[2].x * phd_mxptr[M00] + offsets[2].y * phd_mxptr[M01] + offsets[2].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
-			p3.y = (offsets[2].x * phd_mxptr[M10] + offsets[2].y * phd_mxptr[M11] + offsets[2].z * phd_mxptr[M12] + phd_mxptr[M13]) >> W2V_SHIFT;
-			p3.z = (offsets[2].x * phd_mxptr[M20] + offsets[2].y * phd_mxptr[M21] + offsets[2].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+			p3.x = offsets[2].x * mMXPtr[M00] + offsets[2].y * mMXPtr[M01] + offsets[2].z * mMXPtr[M02] + mMXPtr[M03];
+			p3.y = offsets[2].x * mMXPtr[M10] + offsets[2].y * mMXPtr[M11] + offsets[2].z * mMXPtr[M12] + mMXPtr[M13];
+			p3.z = offsets[2].x * mMXPtr[M20] + offsets[2].y * mMXPtr[M21] + offsets[2].z * mMXPtr[M22] + mMXPtr[M23];
 
 			XY[0] = (short)p1.x;
 			XY[1] = (short)p1.y;
-			Z[0] = p1.z;
+			Z[0] = (long)p1.z;
 
 			XY[2] = (short)p2.x;
 			XY[3] = (short)p2.y;
-			Z[1] = p2.z;
+			Z[1] = (long)p2.z;
 
 			XY[4] = (short)p3.x;
 			XY[5] = (short)p3.y;
-			Z[2] = p3.z;
+			Z[2] = (long)p3.z;
 
 			offsets += 3;
 			XY += 6;

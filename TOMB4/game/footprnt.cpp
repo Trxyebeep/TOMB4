@@ -55,13 +55,6 @@ void AddFootPrint(ITEM_INFO* item)
 	}
 }
 
-static void ProjectTriPoints(PHD_VECTOR* pos, long& x, long& y, long& z)
-{
-	x = long(mMXPtr[M00] * pos->x + mMXPtr[M01] * pos->y + mMXPtr[M02] * pos->z + mMXPtr[M03]);
-	y = long(mMXPtr[M10] * pos->x + mMXPtr[M11] * pos->y + mMXPtr[M12] * pos->z + mMXPtr[M13]);
-	z = long(mMXPtr[M20] * pos->x + mMXPtr[M21] * pos->y + mMXPtr[M22] * pos->z + mMXPtr[M23]);
-}
-
 void S_DrawFootPrints()
 {
 	FOOTPRINT* print;
