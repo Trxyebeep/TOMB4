@@ -402,7 +402,7 @@ void DrawAnimatingItem(ITEM_INFO* item)
 	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
 
-	if (obj->object_mip && (obj + 1)->loaded && phd_mxptr[M23] >> 16 > obj->object_mip)
+	if (obj->object_mip && (obj + 1)->loaded && mMXPtr[M23] / 4 > obj->object_mip)
 		obj++;
 
 	if (item->object_number < ENEMY_JEEP || item->object_number > SETHA_MIP)
@@ -1029,9 +1029,9 @@ void GetRoomBounds()
 			{
 				rn = *door++;
 
-				if (door[0] * (r->x + door[3] - w2v_matrix[M03]) +
-					door[1] * (r->y + door[4] - w2v_matrix[M13]) +
-					door[2] * (r->z + door[5] - w2v_matrix[M23]) < 0)
+				if (door[0] * long(r->x + door[3] - mW2V[M03]) +
+					door[1] * long(r->y + door[4] - mW2V[M13]) +
+					door[2] * long(r->z + door[5] - mW2V[M23]) < 0)
 					SetRoomBounds(door, rn, r);
 
 				door += 15;
@@ -1045,20 +1045,20 @@ void GetRoomBounds()
 void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom)
 {
 	ROOM_INFO* r;
-	PHD_VECTOR* v;
-	PHD_VECTOR* lastV;
-	static PHD_VECTOR vbuf[4];
-	long x, y, z, tooNear, tooFar, tL, tR, tT, tB;
+	FVECTOR* v;
+	FVECTOR* lastV;
+	static FVECTOR vbuf[4];
+	float x, y, z, tooNear, tooFar, tL, tR, tT, tB;
 
 	r = &room[rn];
 
 	if (r->left <= actualRoom->test_left && r->right >= actualRoom->test_right && r->top <= actualRoom->test_top && r->bottom >= actualRoom->test_bottom)
 		return;
 	
-	tL = actualRoom->test_right;
-	tR = actualRoom->test_left;
-	tB = actualRoom->test_top;
-	tT = actualRoom->test_bottom;
+	tL = (float)actualRoom->test_right;
+	tR = (float)actualRoom->test_left;
+	tB = (float)actualRoom->test_top;
+	tT = (float)actualRoom->test_bottom;
 	door += 3;
 	v = vbuf;
 	tooNear = 0;
@@ -1066,9 +1066,9 @@ void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom)
 
 	for (int i = 0; i < 4; i++, v++, door += 3)
 	{
-		v->x = phd_mxptr[M00] * door[0] + phd_mxptr[M01] * door[1] + phd_mxptr[M02] * door[2] + phd_mxptr[M03];
-		v->y = phd_mxptr[M10] * door[0] + phd_mxptr[M11] * door[1] + phd_mxptr[M12] * door[2] + phd_mxptr[M13];
-		v->z = phd_mxptr[M20] * door[0] + phd_mxptr[M21] * door[1] + phd_mxptr[M22] * door[2] + phd_mxptr[M23];
+		v->x = mMXPtr[M00] * door[0] + mMXPtr[M01] * door[1] + mMXPtr[M02] * door[2] + mMXPtr[M03];
+		v->y = mMXPtr[M10] * door[0] + mMXPtr[M11] * door[1] + mMXPtr[M12] * door[2] + mMXPtr[M13];
+		v->z = mMXPtr[M20] * door[0] + mMXPtr[M21] * door[1] + mMXPtr[M22] * door[2] + mMXPtr[M23];
 		x = v->x;
 		y = v->y;
 		z = v->z;
@@ -1077,27 +1077,27 @@ void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom)
 			tooNear++;
 		else
 		{
-			if (z > phd_zfar)
+			if (z > f_zfar)
 				tooFar++;
 
-			z /= phd_persp;
+			z /= f_mpersp;
 
 			if (z)
 			{
-				x = x / z + phd_centerx;
-				y = y / z + phd_centery;
+				x = x / z + f_centerx;
+				y = y / z + f_centery;
 			}
 			else
 			{
 				if (x < 0)
-					x = phd_left;
+					x = (float)phd_left;
 				else
-					x = phd_right;
+					x = (float)phd_right;
 
 				if (y < 0)
-					y = phd_top;
+					y = (float)phd_top;
 				else
-					y = phd_bottom;
+					y = (float)phd_bottom;
 			}
 
 			if (x - 1 < tL)
@@ -1204,7 +1204,7 @@ void DrawEffect(short fx_num)
 		phd_PushMatrix();
 		phd_TranslateAbs(fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos);
 
-		if (phd_mxptr[M23] > phd_znear && phd_mxptr[M23] < phd_zfar)
+		if (mMXPtr[M23] > f_mznear && mMXPtr[M23] < f_mzfar)
 		{
 			phd_RotYXZ(fx->pos.y_rot, fx->pos.x_rot, fx->pos.z_rot);
 			
