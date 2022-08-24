@@ -32,9 +32,7 @@ long GetSpheres(ITEM_INFO* item, SPHERE* ptr, long WorldSpace)
 		y = item->pos.y_pos;
 		z = item->pos.z_pos;
 		phd_PushUnitMatrix();
-		phd_mxptr[M03] = 0;
-		phd_mxptr[M13] = 0;
-		phd_mxptr[M23] = 0;
+		phd_SetTrans(0, 0, 0);
 	}
 	else
 	{
@@ -184,7 +182,9 @@ void InitInterpolate2(long frac, long rate)
 	IM_frac = frac;
 	IM_rate = rate;
 	IMptr = &IMstack[384];
+	mIMptr = &mIMstack[384];
 	memcpy(IMptr, phd_mxptr, 48);
+	memcpy(mIMptr, mMXPtr, 48);
 }
 
 void GetJointAbsPosition(ITEM_INFO* item, PHD_VECTOR* pos, long joint)
@@ -205,9 +205,7 @@ void GetJointAbsPosition(ITEM_INFO* item, PHD_VECTOR* pos, long joint)
 	frac = GetFrames(item, frm, &rate);
 
 	phd_PushUnitMatrix();
-	phd_mxptr[M03] = 0;
-	phd_mxptr[M13] = 0;
-	phd_mxptr[M23] = 0;
+	phd_SetTrans(0, 0, 0);
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
 
 	extra_rotation = (short*)item->data;

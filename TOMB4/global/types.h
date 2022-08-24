@@ -35,6 +35,8 @@ do \
 #define SQUARE(x) ((x)*(x))
 #define	TRIGMULT2(a,b)		(((a) * (b)) >> W2V_SHIFT)
 #define	TRIGMULT3(a,b,c)	(TRIGMULT2((TRIGMULT2(a, b)), c))
+#define	FTRIGMULT2(a,b)		((a) * (b))
+#define	FTRIGMULT3(a,b,c)	(FTRIGMULT2((FTRIGMULT2(a, b)), c))
 
 /*color*/
 #define RGBONLY(r, g, b) ((b) | (((g) | ((r) << 8)) << 8))

@@ -120,9 +120,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 	}
 
 	phd_PushUnitMatrix();
-	phd_mxptr[M03] = lara_item->pos.x_pos << W2V_SHIFT;
-	phd_mxptr[M13] = lara_item->pos.y_pos << W2V_SHIFT;
-	phd_mxptr[M23] = lara_item->pos.z_pos << W2V_SHIFT;
+	phd_SetTrans(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
 	phd_RotYXZ(lara_item->pos.y_rot, lara_item->pos.x_rot, lara_item->pos.z_rot);
 
 	if (frac)
@@ -335,9 +333,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 		for (int i = 0; i < 6; i++, bone += 4)
 		{
 			phd_PushUnitMatrix();
-			phd_mxptr[M03] = hair->pos.x_pos << W2V_SHIFT;
-			phd_mxptr[M13] = hair->pos.y_pos << W2V_SHIFT;
-			phd_mxptr[M23] = hair->pos.z_pos << W2V_SHIFT;
+			phd_SetTrans(hair->pos.x_pos, hair->pos.y_pos, hair->pos.z_pos);
 			phd_RotYXZ(hair->pos.y_rot, hair->pos.x_rot, 0);
 			phd_TranslateRel(bone[1], bone[2], bone[3]);
 			(hair + 1)->pos.x_pos = phd_mxptr[M03] >> W2V_SHIFT;
@@ -472,9 +468,7 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 			(hair - 1)->pos.x_rot = (short)-phd_atan(dist, dy);
 
 			phd_PushUnitMatrix();
-			phd_mxptr[M03] = (hair - 1)->pos.x_pos << W2V_SHIFT;
-			phd_mxptr[M13] = (hair - 1)->pos.y_pos << W2V_SHIFT;
-			phd_mxptr[M23] = (hair - 1)->pos.z_pos << W2V_SHIFT;
+			phd_SetTrans((hair - 1)->pos.x_pos, (hair - 1)->pos.y_pos, (hair - 1)->pos.z_pos);
 			phd_RotYXZ((hair - 1)->pos.y_rot, (hair - 1)->pos.x_rot, 0);
 
 			if (i == 6)

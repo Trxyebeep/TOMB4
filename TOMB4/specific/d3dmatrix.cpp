@@ -33,6 +33,23 @@ D3DMATRIX* D3DIdentityMatrix(D3DMATRIX* mx)
 	return mx;
 }
 
+void mSetD3DMatrix(D3DMATRIX* mx, float* imx)
+{
+	D3DIdentityMatrix(mx);
+	mx->_11 = imx[M00];
+	mx->_12 = imx[M10];
+	mx->_13 = imx[M20];
+	mx->_21 = imx[M01];
+	mx->_22 = imx[M11];
+	mx->_23 = imx[M21];
+	mx->_31 = imx[M02];
+	mx->_32 = imx[M12];
+	mx->_33 = imx[M22];
+	mx->_41 = imx[M03];
+	mx->_42 = imx[M13];
+	mx->_43 = imx[M23];
+}
+
 void SetD3DMatrix(D3DMATRIX* mx, long* imx)
 {
 	D3DIdentityMatrix(mx);
@@ -53,19 +70,7 @@ void SetD3DMatrix(D3DMATRIX* mx, long* imx)
 
 void SetD3DViewMatrix()
 {
-	D3DIdentityMatrix(&D3DMView);
-	D3DMView._11 = (float)phd_mxptr[M00] / 16384;
-	D3DMView._12 = (float)phd_mxptr[M10] / 16384;
-	D3DMView._13 = (float)phd_mxptr[M20] / 16384;
-	D3DMView._21 = (float)phd_mxptr[M01] / 16384;
-	D3DMView._22 = (float)phd_mxptr[M11] / 16384;
-	D3DMView._23 = (float)phd_mxptr[M21] / 16384;
-	D3DMView._31 = (float)phd_mxptr[M02] / 16384;
-	D3DMView._32 = (float)phd_mxptr[M12] / 16384;
-	D3DMView._33 = (float)phd_mxptr[M22] / 16384;
-	D3DMView._41 = float(phd_mxptr[M03] >> W2V_SHIFT);
-	D3DMView._42 = float(phd_mxptr[M13] >> W2V_SHIFT);
-	D3DMView._43 = float(phd_mxptr[M23] >> W2V_SHIFT);
+	mSetD3DMatrix(&D3DMView, mMXPtr);
 	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, &D3DMView));
 }
 

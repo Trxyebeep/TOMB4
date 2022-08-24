@@ -320,7 +320,7 @@ void DrawSortList()
 void CreateFogPos(FOGBULB_STRUCT* FogBulb)
 {
 	FVECTOR d;
-	long* mx;
+	float* mx;
 	float dist;
 	short bounds[6];
 
@@ -344,22 +344,22 @@ void CreateFogPos(FOGBULB_STRUCT* FogBulb)
 			bounds[3] = short(FogBulb->WorldPos.y - camera.pos.y - FogBulb->rad);
 			bounds[4] = short(FogBulb->WorldPos.z - camera.pos.z + FogBulb->rad);
 			bounds[5] = short(FogBulb->WorldPos.z - camera.pos.z - FogBulb->rad);
-			mx = phd_mxptr;
-			phd_mxptr = w2v_matrix;
+			mx = mMXPtr;
+			mMXPtr = mW2V;
 
 			if (S_GetObjectBounds(bounds))
 				NumFogBulbsInRange++;
 			else
 				FogBulb->inRange = 0;
 
-			phd_mxptr = mx;
+			mMXPtr = mx;
 
 			if (FogBulb->inRange)
 			{
 				FogBulb->vec.x = FogBulb->WorldPos.x - camera.pos.x;
 				FogBulb->vec.y = FogBulb->WorldPos.y - camera.pos.y;
 				FogBulb->vec.z = FogBulb->WorldPos.z - camera.pos.z;
-				SetD3DMatrix(&D3DMView, w2v_matrix);
+				mSetD3DMatrix(&D3DMView, mW2V);
 				mD3DTransform(&FogBulb->vec, &D3DMView);
 				FogBulb->pos.x = FogBulb->vec.x;
 				FogBulb->pos.y = FogBulb->vec.y;
@@ -1216,9 +1216,9 @@ void mD3DTransform(FVECTOR* vec, D3DMATRIX* mx)
 {
 	float x, y, z;
 
-	x = vec->x * mx->_11 + mx->_21 * vec->y + mx->_31 * vec->z + mx->_41;
-	y = vec->x * mx->_12 + mx->_22 * vec->y + mx->_32 * vec->z + mx->_42;
-	z = vec->x * mx->_13 + mx->_23 * vec->y + mx->_33 * vec->z + mx->_43;
+	x = vec->x * mx->_11 + mx->_21 * vec->y + mx->_31 * vec->z;
+	y = vec->x * mx->_12 + mx->_22 * vec->y + mx->_32 * vec->z;
+	z = vec->x * mx->_13 + mx->_23 * vec->y + mx->_33 * vec->z;
 	vec->x = x;
 	vec->y = y;
 	vec->z = z;

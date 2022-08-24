@@ -15,6 +15,7 @@ void gar_RotYXZsuperpack(short** pprot, long skip);
 void phd_PutPolygons_I(short* ptr, long clip);
 void InterpolateMatrix();
 void InterpolateArmMatrix(long* mx);
+void mInterpolateArmMatrix(float* mx);
 void S_InsertRoom(short room_number);
 void CalculateObjectLighting(ITEM_INFO* item, short* frame);
 void CalculateObjectLightingLara();
@@ -39,6 +40,9 @@ extern long* IMptr;
 extern long IM_rate;
 extern long IM_frac;
 extern long IMstack[indices_count * 64];
+
+extern float* mIMptr;
+extern float mIMstack[indices_count * 64];
 
 extern long current_room;
 extern short no_rotation[12];

@@ -206,7 +206,7 @@ void DrawBikeBeam(ITEM_INFO* item)
 			for (int i = 0; i < obj->nmeshes - 1; i++)
 			{
 				if (bone[0] & 1)
-					phd_mxptr -= 12;
+					phd_PopMatrix();
 
 				if (bone[0] & 2)
 					phd_PushMatrix();

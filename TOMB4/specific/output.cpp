@@ -392,7 +392,7 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 {
 	D3DVERTEX* vtx;
 	DYNAMIC* dptr;
-	PHD_VECTOR t, d, u, w;
+	FVECTOR t, d, u, w;
 	float fVal;
 	long r, g, b, sr, sg, sb;
 
@@ -403,13 +403,13 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 
 	if (tomb4.static_lighting)
 	{
-		u.x = phd_mxptr[M03] >> W2V_SHIFT;
-		u.y = phd_mxptr[M13] >> W2V_SHIFT;
-		u.z = phd_mxptr[M23] >> W2V_SHIFT;
-		ApplyTransposeMatrix(w2v_matrix, &u, &t);
-		t.x += w2v_matrix[M03];
-		t.y += w2v_matrix[M13];
-		t.z += w2v_matrix[M23];
+		u.x = mMXPtr[M03];
+		u.y = mMXPtr[M13];
+		u.z = mMXPtr[M23];
+		mApplyTransposeMatrix(mW2V, &u, &t);
+		t.x += mW2V[M03];
+		t.y += mW2V[M13];
+		t.z += mW2V[M23];
 		mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&vtx, NULL);
 	}
 
@@ -430,8 +430,8 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 					d.x = dptr->x - t.x;
 					d.y = dptr->y - t.y;
 					d.z = dptr->z - t.z;
-					ApplyMatrix(w2v_matrix, &d, &w);
-					ApplyTransposeMatrix(phd_mxptr, &w, &u);
+					mApplyMatrix(mW2V, &d, &w);
+					mApplyTransposeMatrix(mMXPtr, &w, &u);
 					fVal = sqrt(SQUARE(u.x - vtx[i].x) + SQUARE(u.y - vtx[i].y) + SQUARE(u.z - vtx[i].z)) * 1.7F;
 
 					if (fVal <= dptr->falloff)
@@ -879,7 +879,7 @@ long S_GetObjectBounds(short* bounds)
 	FVECTOR vtx[8];
 	float xMin, xMax, yMin, yMax, zMin, zMax, numZ, xv, yv, zv;
 
-	if (phd_mxptr[11] >= phd_zfar && !outside)
+	if (mMXPtr[M23] >= phd_zfar && !outside)
 		return 0;
 
 	xMin = bounds[0];
@@ -929,7 +929,7 @@ long S_GetObjectBounds(short* bounds)
 
 	for (int i = 0; i < 8; i++)
 	{
-		zv = vtx[i].x * phd_mxptr[M20] + vtx[i].y * phd_mxptr[M21] + vtx[i].z * phd_mxptr[M22] + phd_mxptr[M23];
+		zv = vtx[i].x * mMXPtr[M20] + vtx[i].y * mMXPtr[M21] + vtx[i].z * mMXPtr[M22] + mMXPtr[M23];
 
 		if (zv > phd_znear && phd_zfar > zv)
 		{
@@ -940,7 +940,7 @@ long S_GetObjectBounds(short* bounds)
 				zv = 1;
 
 			zv = 1 / zv;
-			xv = zv * (vtx[i].x * phd_mxptr[M00] + vtx[i].y * phd_mxptr[M01] + vtx[i].z * phd_mxptr[M02] + phd_mxptr[M03]);
+			xv = zv * (vtx[i].x * mMXPtr[M00] + vtx[i].y * mMXPtr[M01] + vtx[i].z * mMXPtr[M02] + mMXPtr[M03]);
 
 			if (xv < xMin)
 				xMin = xv;
@@ -948,7 +948,7 @@ long S_GetObjectBounds(short* bounds)
 			if (xv > xMax)
 				xMax = xv;
 
-			yv = zv * (vtx[i].x * phd_mxptr[M10] + vtx[i].y * phd_mxptr[M11] + vtx[i].z * phd_mxptr[M12] + phd_mxptr[M13]);
+			yv = zv * (vtx[i].x * mMXPtr[M10] + vtx[i].y * mMXPtr[M11] + vtx[i].z * mMXPtr[M12] + mMXPtr[M13]);
 
 			if (yv < yMin)
 				yMin = yv;

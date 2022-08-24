@@ -1094,9 +1094,7 @@ void ControlGrenade(short item_number)
 	if (item->speed && abovewater)
 	{
 		phd_PushUnitMatrix();
-		phd_mxptr[M03] = 0;
-		phd_mxptr[M13] = 0;
-		phd_mxptr[M23] = 0;
+		phd_SetTrans(0, 0, 0);
 		phd_RotYXZ(item->pos.y_rot + 0x8000, item->pos.x_rot, item->pos.z_rot);
 		phd_TranslateRel(0, 0, -64);
 		pos.x = phd_mxptr[M03] >> W2V_SHIFT;
