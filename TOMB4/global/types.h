@@ -2154,7 +2154,7 @@ struct STRINGHEADER
 
 struct GUNFLASH_STRUCT
 {
-	long mx[12];
+	float mx[12];
 	short on;
 };
 

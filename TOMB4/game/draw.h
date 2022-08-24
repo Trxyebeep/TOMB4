@@ -13,8 +13,7 @@ void phd_RotYXZ_I(short y, short x, short z);
 void gar_RotYXZsuperpack_I(short** pprot1, short** pprot2, long skip);
 void gar_RotYXZsuperpack(short** pprot, long skip);
 void phd_PutPolygons_I(short* ptr, long clip);
-void InterpolateMatrix();
-void InterpolateArmMatrix(long* mx);
+void mInterpolateMatrix();
 void mInterpolateArmMatrix(float* mx);
 void S_InsertRoom(short room_number);
 void CalculateObjectLighting(ITEM_INFO* item, short* frame);
@@ -36,10 +35,8 @@ void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds);
 
 extern STATIC_INFO static_objects[];
 
-extern long* IMptr;
 extern long IM_rate;
 extern long IM_frac;
-extern long IMstack[indices_count * 64];
 
 extern float* mIMptr;
 extern float mIMstack[indices_count * 64];

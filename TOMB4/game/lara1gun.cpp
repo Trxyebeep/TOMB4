@@ -1097,9 +1097,9 @@ void ControlGrenade(short item_number)
 		phd_SetTrans(0, 0, 0);
 		phd_RotYXZ(item->pos.y_rot + 0x8000, item->pos.x_rot, item->pos.z_rot);
 		phd_TranslateRel(0, 0, -64);
-		pos.x = phd_mxptr[M03] >> W2V_SHIFT;
-		pos.y = phd_mxptr[M13] >> W2V_SHIFT;
-		pos.z = phd_mxptr[M23] >> W2V_SHIFT;
+		pos.x = (long)mMXPtr[M03];
+		pos.y = (long)mMXPtr[M13];
+		pos.z = (long)mMXPtr[M23];
 		phd_PopMatrix();
 
 		TriggerRocketSmoke(item->pos.x_pos + pos.x, item->pos.y_pos + pos.y, item->pos.z_pos + pos.z, -1);

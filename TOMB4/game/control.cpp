@@ -3026,16 +3026,16 @@ long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS*
 	x = target->x - ItemPos->x_pos;
 	y = target->y - ItemPos->y_pos;
 	z = target->z - ItemPos->z_pos;
-	tpos.x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z) >> W2V_SHIFT;
-	tpos.y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z) >> W2V_SHIFT;
-	tpos.z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z) >> W2V_SHIFT;
+	tpos.x = long(mMXPtr[M00] * x + mMXPtr[M01] * y + mMXPtr[M02] * z);
+	tpos.y = long(mMXPtr[M10] * x + mMXPtr[M11] * y + mMXPtr[M12] * z);
+	tpos.z = long(mMXPtr[M20] * x + mMXPtr[M21] * y + mMXPtr[M22] * z);
 
 	x = start->x - ItemPos->x_pos;
 	y = start->y - ItemPos->y_pos;
 	z = start->z - ItemPos->z_pos;
-	spos.x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z) >> W2V_SHIFT;
-	spos.y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z) >> W2V_SHIFT;
-	spos.z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z) >> W2V_SHIFT;
+	spos.x = long(mMXPtr[M00] * x + mMXPtr[M01] * y + mMXPtr[M02] * z);
+	spos.y = long(mMXPtr[M10] * x + mMXPtr[M11] * y + mMXPtr[M12] * z);
+	spos.z = long(mMXPtr[M20] * x + mMXPtr[M21] * y + mMXPtr[M22] * z);
 
 	phd_PopMatrix();
 
@@ -3061,9 +3061,9 @@ long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS*
 	phd_PushUnitMatrix();
 	phd_RotY(ItemPos->y_rot);
 
-	x = (phd_mxptr[M00] * Coord->x + phd_mxptr[M01] * Coord->y + phd_mxptr[M02] * Coord->z) >> W2V_SHIFT;
-	y = (phd_mxptr[M10] * Coord->x + phd_mxptr[M11] * Coord->y + phd_mxptr[M12] * Coord->z) >> W2V_SHIFT;
-	z = (phd_mxptr[M20] * Coord->x + phd_mxptr[M21] * Coord->y + phd_mxptr[M22] * Coord->z) >> W2V_SHIFT;
+	x = long(mMXPtr[M00] * Coord->x + mMXPtr[M01] * Coord->y + mMXPtr[M02] * Coord->z);
+	y = long(mMXPtr[M10] * Coord->x + mMXPtr[M11] * Coord->y + mMXPtr[M12] * Coord->z);
+	z = long(mMXPtr[M20] * Coord->x + mMXPtr[M21] * Coord->y + mMXPtr[M22] * Coord->z);
 	Coord->x = x;
 	Coord->y = y;
 	Coord->z = z;

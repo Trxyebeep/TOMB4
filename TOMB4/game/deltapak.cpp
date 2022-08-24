@@ -639,9 +639,9 @@ void GetJointAbsPositionCutSeq(ITEM_INFO* item, OBJECT_INFO* obj, short* rot, PH
 	phd_TranslateRel(rot[6], rot[7], rot[8]);
 	rot2 = rot + 9;
 	gar_RotYXZsuperpack(&rot2, 0);
-	pos->x = phd_mxptr[M03] >> W2V_SHIFT;
-	pos->y = phd_mxptr[M13] >> W2V_SHIFT;
-	pos->z = phd_mxptr[M23] >> W2V_SHIFT;
+	pos->x = (long)mMXPtr[M03];
+	pos->y = (long)mMXPtr[M13];
+	pos->z = (long)mMXPtr[M23];
 	pos->x += item->pos.x_pos;
 	pos->y += item->pos.y_pos;
 	pos->z += item->pos.z_pos;

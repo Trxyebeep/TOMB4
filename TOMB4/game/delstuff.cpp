@@ -746,7 +746,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 	gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 
 	phd_PushMatrix();
-	InterpolateMatrix();
+	mInterpolateMatrix();
 	memcpy(matrix, mMXPtr, 48);
 	matrix += 12;
 	phd_PopMatrix();
@@ -755,7 +755,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 	phd_TranslateRel_I(bone[1], bone[2], bone[3]);
 	gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 	phd_PushMatrix();
-	InterpolateMatrix();
+	mInterpolateMatrix();
 	memcpy(matrix, mMXPtr, 48);
 	matrix += 12;
 	phd_PopMatrix();
@@ -763,7 +763,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 	phd_TranslateRel_I(bone[5], bone[6], bone[7]);
 	gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 	phd_PushMatrix();
-	InterpolateMatrix();
+	mInterpolateMatrix();
 	memcpy(matrix, mMXPtr, 48);
 	matrix += 12;
 	phd_PopMatrix();
@@ -771,7 +771,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 	phd_TranslateRel_I(bone[9], bone[10], bone[11]);
 	gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 	phd_PushMatrix();
-	InterpolateMatrix();
+	mInterpolateMatrix();
 	memcpy(matrix, mMXPtr, 48);
 	matrix += 12;
 	phd_PopMatrix();
@@ -781,7 +781,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 	phd_TranslateRel_I(bone[13], bone[14], bone[15]);
 	gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 	phd_PushMatrix();
-	InterpolateMatrix();
+	mInterpolateMatrix();
 	memcpy(matrix, mMXPtr, 48);
 	matrix += 12;
 	phd_PopMatrix();
@@ -789,7 +789,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 	phd_TranslateRel_I(bone[17], bone[18], bone[19]);
 	gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 	phd_PushMatrix();
-	InterpolateMatrix();
+	mInterpolateMatrix();
 	memcpy(matrix, mMXPtr, 48);
 	matrix += 12;
 	phd_PopMatrix();
@@ -797,7 +797,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 	phd_TranslateRel_I(bone[21], bone[22], bone[23]);
 	gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 	phd_PushMatrix();
-	InterpolateMatrix();
+	mInterpolateMatrix();
 	memcpy(matrix, mMXPtr, 48);
 	matrix += 12;
 	phd_PopMatrix();
@@ -807,7 +807,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 	gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 	phd_RotYXZ_I(lara.torso_y_rot, lara.torso_x_rot, lara.torso_z_rot);
 	phd_PushMatrix();
-	InterpolateMatrix();
+	mInterpolateMatrix();
 	memcpy(matrix, mMXPtr, 48);
 	matrix += 12;
 	phd_PopMatrix();
@@ -819,7 +819,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 	gar_RotYXZsuperpack_I(&rotcopy, &rot2copy, 6);
 	phd_RotYXZ_I(lara.head_y_rot, lara.head_x_rot, lara.head_z_rot);
 	phd_PushMatrix();
-	InterpolateMatrix();
+	mInterpolateMatrix();
 	memcpy(matrix, mMXPtr, 48);
 	matrix += 12;
 	phd_PopMatrix();
@@ -839,7 +839,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 		phd_TranslateRel_I(bone[29], bone[30], bone[31]);
 		gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 		phd_PushMatrix();
-		InterpolateMatrix();
+		mInterpolateMatrix();
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
 		phd_PopMatrix();
@@ -847,7 +847,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 		phd_TranslateRel_I(bone[33], bone[34], bone[35]);
 		gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 		phd_PushMatrix();
-		InterpolateMatrix();
+		mInterpolateMatrix();
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
 		phd_PopMatrix();
@@ -855,7 +855,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 		phd_TranslateRel_I(bone[37], bone[38], bone[39]);
 		gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 		phd_PushMatrix();
-		InterpolateMatrix();
+		mInterpolateMatrix();
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
 		phd_PopMatrix();
@@ -875,7 +875,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 			gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 
 		phd_PushMatrix();
-		InterpolateMatrix();
+		mInterpolateMatrix();
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
 		phd_PopMatrix();
@@ -883,7 +883,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 		phd_TranslateRel_I(bone[45], bone[46], bone[47]);
 		gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 		phd_PushMatrix();
-		InterpolateMatrix();
+		mInterpolateMatrix();
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
 		phd_PopMatrix();
@@ -891,7 +891,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 		phd_TranslateRel_I(bone[49], bone[50], bone[51]);
 		gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 		phd_PushMatrix();
-		InterpolateMatrix();
+		mInterpolateMatrix();
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
 		phd_PopMatrix();
@@ -994,7 +994,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 		rot = rot2;
 		gar_RotYXZsuperpack_I(&rot, &rot2, 8);
 		phd_PushMatrix();
-		InterpolateMatrix();
+		mInterpolateMatrix();
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
 		phd_PopMatrix();
@@ -1002,7 +1002,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 		phd_TranslateRel_I(bone[33], bone[34], bone[35]);
 		gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 		phd_PushMatrix();
-		InterpolateMatrix();
+		mInterpolateMatrix();
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
 		phd_PopMatrix();
@@ -1010,7 +1010,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 		phd_TranslateRel_I(bone[37], bone[38], bone[39]);
 		gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 		phd_PushMatrix();
-		InterpolateMatrix();
+		mInterpolateMatrix();
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
 		phd_PopMatrix();
@@ -1020,7 +1020,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 		phd_TranslateRel_I(bone[41], bone[42], bone[43]);
 		gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 		phd_PushMatrix();
-		InterpolateMatrix();
+		mInterpolateMatrix();
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
 		phd_PopMatrix();
@@ -1028,7 +1028,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 		phd_TranslateRel_I(bone[45], bone[46], bone[47]);
 		gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 		phd_PushMatrix();
-		InterpolateMatrix();
+		mInterpolateMatrix();
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
 		phd_PopMatrix();
@@ -1036,7 +1036,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 		phd_TranslateRel_I(bone[49], bone[50], bone[51]);
 		gar_RotYXZsuperpack_I(&rot, &rot2, 0);
 		phd_PushMatrix();
-		InterpolateMatrix();
+		mInterpolateMatrix();
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
 		phd_PopMatrix();

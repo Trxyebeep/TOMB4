@@ -930,9 +930,9 @@ long TestLaraPosition(short* bounds, ITEM_INFO* item, ITEM_INFO* l)
 	pos.x = l->pos.x_pos - item->pos.x_pos;
 	pos.y = l->pos.y_pos - item->pos.y_pos;
 	pos.z = l->pos.z_pos - item->pos.z_pos;
-	x = (pos.x * phd_mxptr[M00] + pos.y * phd_mxptr[M10] + pos.z * phd_mxptr[M20]) >> W2V_SHIFT;
-	y = (pos.x * phd_mxptr[M01] + pos.y * phd_mxptr[M11] + pos.z * phd_mxptr[M21]) >> W2V_SHIFT;
-	z = (pos.x * phd_mxptr[M02] + pos.y * phd_mxptr[M12] + pos.z * phd_mxptr[M22]) >> W2V_SHIFT;
+	x = long(pos.x * mMXPtr[M00] + pos.y * mMXPtr[M10] + pos.z * mMXPtr[M20]);
+	y = long(pos.x * mMXPtr[M01] + pos.y * mMXPtr[M11] + pos.z * mMXPtr[M21]);
+	z = long(pos.x * mMXPtr[M02] + pos.y * mMXPtr[M12] + pos.z * mMXPtr[M22]);
 	phd_PopMatrix();
 
 	return x >= bounds[0] && x <= bounds[1] && y >= bounds[2] && y <= bounds[3] && z >= bounds[4] && z <= bounds[5];
@@ -948,9 +948,9 @@ void AlignLaraPosition(PHD_VECTOR* pos, ITEM_INFO* item, ITEM_INFO* l)
 
 	phd_PushUnitMatrix();
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
-	x = item->pos.x_pos + ((pos->x * phd_mxptr[M00] + pos->y * phd_mxptr[M01] + pos->z * phd_mxptr[M02]) >> W2V_SHIFT);
-	y = item->pos.y_pos + ((pos->x * phd_mxptr[M10] + pos->y * phd_mxptr[M11] + pos->z * phd_mxptr[M12]) >> W2V_SHIFT);
-	z = item->pos.z_pos + ((pos->x * phd_mxptr[M20] + pos->y * phd_mxptr[M21] + pos->z * phd_mxptr[M22]) >> W2V_SHIFT);
+	x = item->pos.x_pos + long(pos->x * mMXPtr[M00] + pos->y * mMXPtr[M01] + pos->z * mMXPtr[M02]);
+	y = item->pos.y_pos + long(pos->x * mMXPtr[M10] + pos->y * mMXPtr[M11] + pos->z * mMXPtr[M12]);
+	z = item->pos.z_pos + long(pos->x * mMXPtr[M20] + pos->y * mMXPtr[M21] + pos->z * mMXPtr[M22]);
 	phd_PopMatrix();
 
 	l->pos.x_pos = x;
@@ -1064,9 +1064,9 @@ long MoveLaraPosition(PHD_VECTOR* v, ITEM_INFO* item, ITEM_INFO* l)
 	pos.z_rot = item->pos.z_rot;
 	phd_PushUnitMatrix();
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
-	pos.x_pos = item->pos.x_pos + ((v->x * phd_mxptr[M00] + v->y * phd_mxptr[M01] + v->z * phd_mxptr[M02]) >> W2V_SHIFT);
-	pos.y_pos = item->pos.y_pos + ((v->x * phd_mxptr[M10] + v->y * phd_mxptr[M11] + v->z * phd_mxptr[M12]) >> W2V_SHIFT);
-	pos.z_pos = item->pos.z_pos + ((v->x * phd_mxptr[M20] + v->y * phd_mxptr[M21] + v->z * phd_mxptr[M22]) >> W2V_SHIFT);
+	pos.x_pos = item->pos.x_pos + long(v->x * mMXPtr[M00] + v->y * mMXPtr[M01] + v->z * mMXPtr[M02]);
+	pos.y_pos = item->pos.y_pos + long(v->x * mMXPtr[M10] + v->y * mMXPtr[M11] + v->z * mMXPtr[M12]);
+	pos.z_pos = item->pos.z_pos + long(v->x * mMXPtr[M20] + v->y * mMXPtr[M21] + v->z * mMXPtr[M22]);
 	phd_PopMatrix();
 
 	if (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM || item->object_number == CLOCKWORK_BEETLE)
