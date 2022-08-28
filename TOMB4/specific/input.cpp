@@ -13,8 +13,9 @@
 #include "../game/gameflow.h"
 #include "../game/spotcam.h"
 #include "../tomb4/tomb4.h"
+#include "../tomb4/controller.h"
 
-const char* KeyboardButtons[272] =
+const char* KeyboardButtons[274] =
 {
 	0,
 	"Esc", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "+", "Bksp",
@@ -36,8 +37,8 @@ const char* KeyboardButtons[272] =
 	"Home", "Up", "PgUp", 0, "Left", 0, "Right", 0, "End", "Down", "PgDn", "Ins", "Del",
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	"Joy 1", "Joy 2", "Joy 3", "Joy 4", "Joy 5", "Joy 6", "Joy 7", "Joy 8",
-	"Joy 9", "Joy 10", "Joy 11", "Joy 12", "Joy 13", "Joy 14", "Joy 15", "Joy 16"
+	"dpad up", "dpad down", "dpad left", "dpad right", "start", "back", "L Thumb", "R Thumb",
+	"L Shoulder", "R Shoulder", "joy1", "joy2", "A", "B", "X", "Y", "L Trigger", "R Trigger"
 };
 
 const char* GermanKeyboard[272] =
@@ -347,9 +348,9 @@ long S_UpdateInput()
 		else if (joy_x > 8)
 			linput = IN_RIGHT;
 
-		if (joy_y > 8)
+		if (joy_y < -8)
 			linput |= IN_BACK;
-		else if (joy_y < -8)
+		else if (joy_y > 8)
 			linput |= IN_FORWARD;
 	}
 
@@ -612,34 +613,5 @@ long S_UpdateInput()
 
 long ReadJoystick(long& x, long& y)
 {
-	JOYINFOEX joystick;
-	static JOYCAPS caps;
-	static long unavailable = 1;
-
-	joystick.dwSize = sizeof(JOYINFOEX);
-	joystick.dwFlags = JOY_RETURNX | JOY_RETURNY | JOY_RETURNBUTTONS;
-
-	if (joyGetPosEx(0, &joystick) != JOYERR_NOERROR)
-	{
-		unavailable = 1;
-		x = 0;
-		y = 0;
-		return 0;
-	}
-
-	if (unavailable)
-	{
-		if (joyGetDevCaps(JOYSTICKID1, &caps, sizeof(caps)) != JOYERR_NOERROR)
-		{
-			x = 0;
-			y = 0;
-			return 0;
-		}
-		else
-			unavailable = 0;
-	}
-
-	x = (joystick.dwXpos << 5) / (caps.wXmax - caps.wXmin) - 16;
-	y = (joystick.dwYpos << 5) / (caps.wYmax - caps.wYmin) - 16;
-	return joystick.dwButtons;
+	return XI_ReadController(x, y);	//todo: anything other than xinput
 }
