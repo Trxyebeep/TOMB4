@@ -48,6 +48,9 @@ void GameClose()
 	if (ADPCMBuffer)
 		free(ADPCMBuffer);
 
+	if (logF)
+		fclose(logF);
+
 	free(malloc_buffer);
 	free(gfScriptFile);
 	free(gfLanguageFile);

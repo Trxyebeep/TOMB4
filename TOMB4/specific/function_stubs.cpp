@@ -1,6 +1,8 @@
 #include "../tomb4/pch.h"
 #include "function_stubs.h"
 
+FILE* logF = 0;
+
 PHD_VECTOR CamPos;
 PHD_VECTOR CamRot;
 
@@ -86,5 +88,17 @@ void* game_malloc(long size)
 
 void Log(ulong type, const char* s, ...)
 {
-	//not empty originally, obv
+#ifdef DO_LOG
+	if (!logF)
+		logF = fopen("log.txt", "w+");
+
+	va_list list;
+	char buf[4096];
+
+	va_start(list, s);
+	vsprintf(buf, s, list);
+	strcat(buf, "\n");
+	va_end(list);
+	fwrite(buf, strlen(buf), 1, logF);
+#endif
 }
