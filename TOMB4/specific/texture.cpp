@@ -25,17 +25,9 @@ LPDIRECTDRAWSURFACEX CreateTexturePage(long w, long h, long MipMapCount, long* p
 	desc.dwWidth = w;
 	desc.dwHeight = h;
 
-	if (w < 32 || h < 32)
-		MipMapCount = 0;
-
 	desc.ddpfPixelFormat = G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].TextureInfos[G_dxinfo->nTexture].ddpf;
 	desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
 	desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE;
-
-	if (App.dx.Flags & 0x80)
-		desc.ddsCaps.dwCaps2 = DDSCAPS2_TEXTUREMANAGE;
-	else
-		desc.ddsCaps.dwCaps |= DDSCAPS_SYSTEMMEMORY;
 
 	if (MipMapCount)
 	{
@@ -102,6 +94,86 @@ LPDIRECTDRAWSURFACEX CreateTexturePage(long w, long h, long MipMapCount, long* p
 				*lD++ = *(lS + x * 256 / w + y * 0x10000 / h);
 		}
 	}
+
+	LPDIRECTDRAWSURFACEX nextMip = NULL;
+	DDSCAPS2 mipCaps;
+	memset(&mipCaps, 0, sizeof(DDSCAPS2));
+	mipCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_MIPMAP;
+	LPDIRECTDRAWSURFACEX currentMip;
+	HRESULT mipResult = tSurf->GetAttachedSurface(&mipCaps, &currentMip);
+	//Traverse Mip Chain and fill them with data
+	while (mipResult == DD_OK)
+	{
+		currentMip->AddRef();
+		DDSURFACEDESCX mipDesc;
+		memset(&mipDesc, 0, sizeof(mipDesc));
+		mipDesc.dwSize = sizeof(DDSURFACEDESCX);
+		DXAttempt(currentMip->GetSurfaceDesc(&mipDesc));
+		DXAttempt(currentMip->Lock(0, &mipDesc, DDLOCK_NOSYSLOCK, 0));
+
+		if (!format)
+		{
+			lS = pSrc;
+			cD = (char*)mipDesc.lpSurface;
+
+			for (ulong y = 0; y < mipDesc.dwHeight; y++)
+			{
+				for (ulong x = 0; x < mipDesc.dwWidth; x++)
+				{
+					c = *(lS + x * 256 / mipDesc.dwWidth + y * 0x10000 / mipDesc.dwHeight);
+					r = CLRR(c);
+					g = CLRG(c);
+					b = CLRB(c);
+					a = CLRA(c);
+
+					if (RGBM)
+						RGBM(&r, &g, &b);
+
+					tex = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].TextureInfos[G_dxinfo->nTexture];
+					ro = r >> (8 - tex->rbpp) << (tex->rshift);
+					go = g >> (8 - tex->gbpp) << (tex->gshift);
+					bo = b >> (8 - tex->bbpp) << (tex->bshift);
+					ao = a >> (8 - tex->abpp) << (tex->ashift);
+					o = ro | go | bo | ao;
+
+					for (int i = tex->bpp; i > 0; i -= 8)
+					{
+						*cD++ = (char)o;
+						o >>= 8;
+					}
+				}
+			}
+		}
+		else if (format == 2)
+		{
+			sS = (short*)pSrc;
+			sD = (short*)mipDesc.lpSurface;
+
+			for (ulong y = 0; y < mipDesc.dwHeight; y++)
+			{
+				for (ulong x = 0; x < mipDesc.dwWidth; x++)
+					*sD++ = *(sS + x * 256 / mipDesc.dwWidth + y * 0x10000 / mipDesc.dwHeight);
+			}
+		}
+		else if (format == 1)
+		{
+			lS = pSrc;
+			lD = (long*)mipDesc.lpSurface;
+
+			for (ulong y = 0; y < mipDesc.dwHeight; y++)
+			{
+				for (ulong x = 0; x < mipDesc.dwWidth; x++)
+					*lD++ = *(lS + x * 256 / mipDesc.dwWidth + y * 0x10000 / mipDesc.dwHeight);
+			}
+		}
+		currentMip->Unlock(0);
+		mipResult = currentMip->GetAttachedSurface(
+				&mipCaps, &nextMip);
+		currentMip->Release();
+		currentMip = nextMip;
+	}
+
+
 
 	DXAttempt(tSurf->Unlock(0));
 	return tSurf;
