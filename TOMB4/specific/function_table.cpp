@@ -43,11 +43,17 @@ void HWInitialise()
 	{
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTFG_LINEAR);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFN_LINEAR);
+#ifdef MIPMAPPING
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTFP_LINEAR);
+#endif
 	}
 	else
 	{
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTFG_POINT);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFN_POINT);
+#ifdef MIPMAPPING
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTFP_POINT);
+#endif
 	}
 
 	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
