@@ -53,6 +53,15 @@ static char* FileData;
 static char* CompressedData;
 static long num_items;
 
+#ifndef MIPMAPPING
+#define MIPMAPCOUNT_ROOM 0
+#define MIPMAPCOUNT_OBJECT 0
+#else
+// Only two mip maps, anything beyond causes too many bleeding issues
+#define MIPMAPCOUNT_ROOM 2
+#define MIPMAPCOUNT_OBJECT 1
+#endif
+
 unsigned int __stdcall LoadLevel(void* name)
 {
 	OBJECT_INFO* obj;
@@ -412,7 +421,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 		Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 		nTex = nTextures;
 		nTextures++;
-		tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, 0, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
+		tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, MIPMAPCOUNT_ROOM, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
 		DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 		Textures[nTex].tex = pTex;
 		Textures[nTex].surface = tSurf;
@@ -436,7 +445,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 		Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 		nTex = nTextures;
 		nTextures++;
-		tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, 0, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
+		tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, MIPMAPCOUNT_OBJECT, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
 		DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 		Textures[nTex].tex = pTex;
 		Textures[nTex].surface = tSurf;
@@ -461,13 +470,13 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 		for (int i = 0; i < BTPages; i++)
 		{
 			if (i < (BTPages >> 1))
-				tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, 0, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
+				tSurf = CreateTexturePage(App.TextureSize, App.TextureSize, MIPMAPCOUNT_ROOM, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
 			else
 			{
 				if (!App.BumpMapping)
 					break;
 
-				tSurf = CreateTexturePage(App.BumpMapSize, App.BumpMapSize, 0, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
+				tSurf = CreateTexturePage(App.BumpMapSize, App.BumpMapSize, MIPMAPCOUNT_ROOM, (long*)(TextureData + (i * skip * 0x10000)), 0, format);
 			}
 
 			Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
@@ -585,7 +594,7 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	Textures = (TEXTURE*)AddStruct(Textures, nTextures, sizeof(TEXTURE));
 	nTex = nTextures;
 	nTextures++;
-	tSurf = CreateTexturePage(256, 256, 0, (long*)TextureData, 0, 0);
+	tSurf = CreateTexturePage(256, 256, MIPMAPCOUNT_ROOM, (long*)TextureData, 0, 0);
 	DXAttempt(tSurf->QueryInterface(TEXGUID, (LPVOID*)&pTex));
 	Textures[nTex].tex = pTex;
 	Textures[nTex].surface = tSurf;
