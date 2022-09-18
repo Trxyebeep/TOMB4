@@ -743,7 +743,7 @@ void DoBar(long x, long y, long width, long height, long pos, long clr1, long cl
 #pragma warning(disable : 4244)
 void DoOptions()
 {
-	XINPUT_STATE joystate;
+	JOYINFOEX joy;
 	char** keyboard_buttons;
 	char* txt;
 	static long menu;
@@ -788,7 +788,6 @@ void DoOptions()
 			keyboard_buttons = (char**)KeyboardButtons;
 
 		small_font = 1;
-		font_height = medi_font_height;
 		PrintString(phd_centerx >> 2, textY, selection & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Control_Method), 0);
 		PrintString(phd_centerx >> 2, textY + font_height, selection & 2 ? 1 : 2, "\x18", 0);
 		PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 4 ? 1 : 2, "\x1A", 0);
@@ -806,7 +805,6 @@ void DoOptions()
 		PrintString(phd_centerx >> 2, textY + 14 * font_height, selection & 0x4000 ? 1 : 2, SCRIPT_TEXT(TXT_Inventory), 0);
 		PrintString(phd_centerx >> 2, textY + 15 * font_height, selection & 0x8000 ? 1 : 2, SCRIPT_TEXT(TXT_Step_Left), 0);
 		PrintString(phd_centerx >> 2, textY + 16 * font_height, selection & 0x10000 ? 1 : 2, SCRIPT_TEXT(TXT_Step_Right), 0);
-		PrintString(phd_centerx >> 2, textY + 17 * font_height, selection & 0x20000 ? 1 : 2, SCRIPT_TEXT(TXT_Paused), 0);
 
 		if (!ControlMethod)
 			PrintString(phd_centerx + (phd_centerx >> 2), textY, controls_selection & 1 ? 1 : 6, SCRIPT_TEXT(TXT_Keyboard), 0);
@@ -926,15 +924,6 @@ void DoOptions()
 			txt = keyboard_buttons[layout[1][15]];
 
 		PrintString(phd_centerx + (phd_centerx >> 2), textY + 16 * font_height, controls_selection & 0x10000 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x20000)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][16]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 17 * font_height, controls_selection & 0x20000 ? 1 : 6, txt, 0);
-
-		font_height = stash_font_height;
 		small_font = 0;
 
 		if (ControlMethod < 2 && !waiting_for_key)
@@ -1052,19 +1041,9 @@ void DoOptions()
 
 			if (ControlMethod == 1)
 			{
-				ZeroMemory(&joystate, sizeof(XINPUT_STATE));
-				joystick = 0;
-				
-				for (int i = 0; i < 4; i++)
-				{
-					if (XInputGetState(i, &joystate) == ERROR_SUCCESS)
-					{
-						joystick = 1;
-						break;
-					}
-				}
+				joy.dwSize = sizeof(JOYINFOEX);
 
-				if (!joystick)
+				if (joyGetPosEx(0, &joy) == JOYERR_UNPLUGGED)
 				{
 					if (dbinput & IN_LEFT)
 						ControlMethod = 0;
@@ -1078,8 +1057,8 @@ void DoOptions()
 		if (!selection)
 			selection = 1;
 
-		if (selection > (ulong)(1 << (18 - 1)))
-			selection = 1 << (18 - 1);
+		if (selection > (ulong)(1 << (17 - 1)))
+			selection = 1 << (17 - 1);
 
 		if (dbinput & IN_DESELECT)
 		{
@@ -1105,12 +1084,20 @@ void DoOptions()
 		DoSlider(400, 3 * font_height - (font_height >> 1) + textY + 4, 200, 16, MusicVolume, 0xFF1F1F1F, 0xFF3F3FFF, music_volume_bar_shade);
 		DoSlider(400, textY + 4 * font_height + 4 - (font_height >> 1), 200, 16, SFXVolume, 0xFF1F1F1F, 0xFF3F3FFF, sfx_volume_bar_shade);
 
-		if (!SoundQuality)
+		switch (SoundQuality)
+		{
+		case 0:
 			strcpy(quality_text, SCRIPT_TEXT(TXT_Low));
-		else if (SoundQuality == 1)
+			break;
+
+		case 1:
 			strcpy(quality_text, SCRIPT_TEXT(TXT_Medium));
-		else if (SoundQuality == 2)
+			break;
+
+		case 2:
 			strcpy(quality_text, SCRIPT_TEXT(TXT_High));
+			break;
+		}
 
 		PrintString(phd_centerx + (phd_centerx >> 2), textY + 5 * font_height, selection & 8 ? 1 : 6, quality_text, 0);
 		

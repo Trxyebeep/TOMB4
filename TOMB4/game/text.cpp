@@ -9,7 +9,6 @@
 
 long stash_font_height;
 long smol_font_height;
-long medi_font_height;
 long small_font;
 long font_height;
 long GnFrameCounter;
@@ -272,7 +271,6 @@ void InitFont()
 
 	font_height = short(float(3.0F * phd_winymax / 40.0F));
 	stash_font_height = font_height;
-	medi_font_height = short(float(1.0F * phd_winymax / 15.0F));
 	smol_font_height = short(float(7.0F * phd_winymax / 120.0F));
 }
 

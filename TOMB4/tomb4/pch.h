@@ -22,6 +22,5 @@
 #include <dsound.h>
 #include <mmreg.h>
 #include <MSAcm.h>
-#include <Xinput.h>
 
 #endif //PCH_H
