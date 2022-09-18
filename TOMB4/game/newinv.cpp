@@ -594,7 +594,7 @@ void do_debounced_joystick_poo()
 		friggrimmer = 0;
 	}
 
-	if (input & IN_DRAW || input & IN_DESELECT)
+	if (input & IN_DESELECT)
 		deselect_debounce = 1;
 	else
 	{
@@ -2900,7 +2900,6 @@ long S_CallInventory2()
 	val = 0;
 	oldLaraBusy = lara.Busy;
 	friggrimmer = (input & IN_SELECT) != 0;
-	friggrimmer2 = (input & IN_DESELECT) != 0;
 	rings[RING_INVENTORY] = &pcring1;
 	rings[RING_AMMO] = &pcring2;
 	CreateMonoScreen();
@@ -2923,11 +2922,10 @@ long S_CallInventory2()
 		UpdatePulseColour();
 		GameTimer++;
 
-		if (go_deselect)
+		if (dbinput & IN_OPTION)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			val = 1;
-			go_deselect = 0;
 		}
 
 		if (MainThread.ended)

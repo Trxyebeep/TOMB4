@@ -413,7 +413,7 @@ long S_UpdateInput()
 		linput |= IN_ROLL;
 
 	if (Key(13))
-		linput |= IN_DESELECT | IN_OPTION;
+		linput |= IN_OPTION;
 
 	if (Key(14))
 		linput |= IN_WALK | IN_LEFT;
