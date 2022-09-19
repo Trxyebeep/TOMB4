@@ -168,7 +168,7 @@ void ScalesControl(short item_number)
 				item->status = ITEM_INACTIVE;
 				item->item_flags[1] = 0;
 			}
-			else if (ReTriggerAhmet(short((long)lara.GeneralPtr)))	//stupid
+			else if (ReTriggerAhmet(short((long)lara.GeneralPtr)))	//sort this out
 			{
 				for (numTriggers = GetSwitchTrigger(item, itemNos, 0); numTriggers > 0; numTriggers--)
 				{

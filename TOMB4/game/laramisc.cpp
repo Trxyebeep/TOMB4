@@ -14,15 +14,13 @@
 #include "../specific/3dmath.h"
 #include "spotcam.h"
 #include "camera.h"
-#ifdef GENERAL_FIXES
 #include "newinv.h"
 #include "../specific/dxshell.h"
-#include "../tomb4/tomb4.h"
-#endif
 #include "../specific/input.h"
 #include "savegame.h"
 #include "gameflow.h"
 #include "../specific/file.h"
+#include "../tomb4/tomb4.h"
 
 COLL_INFO mycoll;
 
@@ -38,9 +36,9 @@ void LaraCheatGetStuff()
 		lara.crowbar = 1;
 
 	lara.lasersight = 1;
-	lara.uzis_type_carried = 9;
-	lara.shotgun_type_carried = 9;
-	lara.sixshooter_type_carried = 9;
+	lara.uzis_type_carried = W_PRESENT | W_AMMO1;
+	lara.shotgun_type_carried = W_PRESENT | W_AMMO1;
+	lara.sixshooter_type_carried = W_PRESENT | W_AMMO1;
 	lara.num_uzi_ammo = -1;
 	lara.num_revolver_ammo = -1;
 	lara.num_shotgun_ammo1 = -1;
@@ -48,9 +46,6 @@ void LaraCheatGetStuff()
 
 void LaraCheatyBits()
 {
-	static short cheat_hit_points;
-
-#ifdef GENERAL_FIXES
 	if (!tomb4.cheats)
 		return;
 
@@ -77,12 +72,12 @@ void LaraCheatyBits()
 
 		if (!(gfLevelFlags & GF_YOUNGLARA))
 		{
-			lara.pistols_type_carried |= 1;
-			lara.uzis_type_carried |= 1;
-			lara.shotgun_type_carried |= 1;
-			lara.crossbow_type_carried |= 1;
-			lara.grenade_type_carried |= 1;
-			lara.sixshooter_type_carried |= 1;
+			lara.pistols_type_carried |= W_PRESENT;
+			lara.uzis_type_carried |= W_PRESENT;
+			lara.shotgun_type_carried |= W_PRESENT;
+			lara.crossbow_type_carried |= W_PRESENT;
+			lara.grenade_type_carried |= W_PRESENT;
+			lara.sixshooter_type_carried |= W_PRESENT;
 		}
 
 		dels_give_lara_items_cheat();
@@ -129,41 +124,6 @@ void LaraCheatyBits()
 		gfLevelComplete = gfCurrentLevel + 1;
 	}
 #endif
-
-#else
-	if (!Gameflow->CheatEnabled)
-		return;
-
-	if (input & IN_D)
-	{
-		LaraCheatGetStuff();
-		lara_item->hit_points = 1000;
-	}
-
-	if (input & IN_CHEAT)
-	{
-		lara_item->pos.y_pos -= 128;
-
-		if (lara.water_status != LW_FLYCHEAT)
-		{
-			lara.water_status = LW_FLYCHEAT;
-			lara_item->frame_number = anims[ANIM_SWIMCHEAT].frame_base;
-			lara_item->anim_number = ANIM_SWIMCHEAT;
-			lara_item->current_anim_state = AS_SWIM;
-			lara_item->goal_anim_state = AS_SWIM;
-			lara_item->gravity_status = 0;
-			lara_item->pos.x_rot = 5460;
-			lara_item->fallspeed = 30;
-			lara.air = 1800;
-			lara.death_count = 0;
-			lara.torso_y_rot = 0;
-			lara.torso_x_rot = 0;
-			lara.head_y_rot = 0;
-			lara.head_x_rot = 0;
-			cheat_hit_points = lara_item->hit_points;
-		}
-	}
-#endif
 }
 
 void LaraCheat(ITEM_INFO* item, COLL_INFO* coll)
@@ -185,9 +145,6 @@ void LaraCheat(ITEM_INFO* item, COLL_INFO* coll)
 		lara.gun_status = 0;
 		LaraInitialiseMeshes();
 		lara.mesh_effects = 0;
-#ifndef GENERAL_FIXES
-		lara_item->hit_points = cheat_hit_points;
-#endif
 	}
 }
 
@@ -495,11 +452,7 @@ void LaraControl(short item_number)
 			case LW_WADE:
 				camera.target_elevation = -4004;
 
-#ifdef GENERAL_FIXES
 				if (hfw > 256)
-#else
-				if (hfw >= 256)
-#endif
 				{
 					if (hfw > 730)
 					{

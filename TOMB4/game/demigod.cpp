@@ -385,12 +385,8 @@ void DemigodControl(short item_number)
 				if (info.distance < 0x900000)
 				{
 					if (info.bite ||
-#ifdef GENERAL_FIXES
 					((lara_item->current_anim_state >= AS_CLIMBSTNC && lara_item->current_anim_state <= AS_CLIMBDOWN ||
 						lara_item->current_anim_state == AS_HANG) && !lara.location && lara_item->room_number > 114))
-#else
-						(lara_item->current_anim_state >= AS_CLIMBSTNC && lara_item->current_anim_state <= AS_CLIMBDOWN && !lara.location))
-#endif
 					{
 						item->goal_anim_state = 13;
 						break;
@@ -591,12 +587,8 @@ void DemigodControl(short item_number)
 				item->pos.y_rot += 1274;
 
 			if (info.distance < 0x900000 && info.bite ||
-#ifdef GENERAL_FIXES
 			((lara_item->current_anim_state >= AS_CLIMBSTNC && lara_item->current_anim_state <= AS_CLIMBDOWN ||
 				lara_item->current_anim_state == AS_HANG) && !lara.location && lara_item->room_number > 114))
-#else
-				(lara_item->current_anim_state >= AS_CLIMBSTNC && lara_item->current_anim_state <= AS_CLIMBDOWN && !lara.location))
-#endif
 				item->goal_anim_state = 14;
 			else
 				item->goal_anim_state = 0;
@@ -624,12 +616,8 @@ void DemigodControl(short item_number)
 				TriggerHammerSmoke(pos.x, pos.y + 128, pos.z, 8);
 				camera.bounce = -128;
 
-#ifdef GENERAL_FIXES
 				if ((lara_item->current_anim_state >= AS_CLIMBSTNC && lara_item->current_anim_state <= AS_CLIMBDOWN ||
 					lara_item->current_anim_state == AS_HANG) && !lara.location && lara_item->room_number > 114)
-#else
-				if (lara_item->current_anim_state >= AS_CLIMBSTNC && lara_item->current_anim_state <= AS_CLIMBDOWN && !lara.location)
-#endif
 				{
 					lara.torso_x_rot = 0;
 					lara.torso_y_rot = 0;
@@ -639,9 +627,7 @@ void DemigodControl(short item_number)
 					lara_item->frame_number = anims[ANIM_FALLDOWN].frame_base;
 					lara_item->current_anim_state = AS_FORWARDJUMP;
 					lara_item->goal_anim_state = AS_FORWARDJUMP;
-#ifdef GENERAL_FIXES
 					lara_item->pos.x_pos += -50 * phd_sin(lara_item->pos.y_rot) >> W2V_SHIFT;
-#endif
 					lara_item->gravity_status = 1;
 					lara_item->speed = 2;
 					lara_item->fallspeed = 1;

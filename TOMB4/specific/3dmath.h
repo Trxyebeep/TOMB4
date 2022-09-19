@@ -3,6 +3,7 @@
 
 void phd_PushMatrix();
 void phd_PushUnitMatrix();
+void phd_SetTrans(long x, long y, long z);
 long phd_TranslateRel(long x, long y, long z);
 void phd_RotX(short angle);
 void phd_RotY(short angle);
@@ -25,6 +26,11 @@ extern float one;
 extern float mone;
 extern float FogStart;
 extern float FogEnd;
+
+extern float* mMXPtr;
+extern float mW2V[indices_count];
+extern float fMXStack[20 * indices_count];
+extern float fcossin_tbl[65536];
 
 extern long* phd_mxptr;
 extern long w2v_matrix[indices_count];
@@ -79,7 +85,23 @@ __inline short phd_cos(long angle)
 	return 4 * rcossin_tbl[(angle & 0x1FFE) + 1];
 }
 
+__inline float fSin(long angle)
+{
+	return fcossin_tbl[(ushort)angle];
+}
+
+__inline float fCos(long angle)
+{
+	return fcossin_tbl[ushort(angle + 0x4000)];
+}
+
+__inline void mPopMatrix()
+{
+	mMXPtr -= indices_count;
+}
+
 __inline void phd_PopMatrix()
 {
 	phd_mxptr -= indices_count;
+	mPopMatrix();
 }

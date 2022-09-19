@@ -15,4 +15,3 @@ extern THREAD MainThread;
 extern short* clipflags;
 extern float vert_wibble_table[32];
 extern long SaveCounter;
-extern short FPCW;

@@ -378,10 +378,8 @@ void VoncroyRaceControl(short item_number)
 	AI_INFO info;
 	long Xoffset, Zoffset, x, y, z, nearheight, midheight, farheight, dx, dz, distance, ahead, iAngle, h, c;
 	short angle, torso_x, torso_y, head_x, head_y, room_number, jump_ahead, long_jump_ahead, ifl3;
-#ifdef GENERAL_FIXES
 	static short* meshpp = meshes[objects[VON_CROY].mesh_index + 42];
 	static long talk = 0;
-#endif
 
 	if (!CreatureActive(item_number))
 		return;
@@ -468,7 +466,6 @@ void VoncroyRaceControl(short item_number)
 
 	angle = CreatureTurn(item, VonCroy->maximum_turn);
 
-#ifdef GENERAL_FIXES
 	if (bUseSpotCam && XATrack == 80)
 	{
 		talk++;
@@ -490,7 +487,6 @@ void VoncroyRaceControl(short item_number)
 		lara.mesh_ptrs[LM_HEAD] = meshes[objects[LARA_SKIN].mesh_index + 2 * LM_HEAD];
 		meshes[objects[VON_CROY].mesh_index + 42] = meshpp;
 	}
-#endif
 
 	switch (item->current_anim_state)
 	{

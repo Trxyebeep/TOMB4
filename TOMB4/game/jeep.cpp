@@ -1502,9 +1502,7 @@ void JeepControl(short item_number)
 
 	driving = -1;
 	killed = 0;
-#ifdef GENERAL_FIXES
 	pitch = 0;
-#endif
 	item = &items[item_number];
 	jeep = (JEEPINFO*)item->data;
 	hitWall = JeepDynamics(item);

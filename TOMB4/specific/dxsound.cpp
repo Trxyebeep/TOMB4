@@ -8,7 +8,7 @@
 #include "winmain.h"
 
 #pragma warning(push)
-#pragma warning(disable : 4838)	//long -> char truncation bullshit
+#pragma warning(disable : 4838)
 #pragma warning(disable : 4309)
 static char source_pcm_format[50] =
 {

@@ -32,9 +32,7 @@ long GetSpheres(ITEM_INFO* item, SPHERE* ptr, long WorldSpace)
 		y = item->pos.y_pos;
 		z = item->pos.z_pos;
 		phd_PushUnitMatrix();
-		phd_mxptr[M03] = 0;
-		phd_mxptr[M13] = 0;
-		phd_mxptr[M23] = 0;
+		phd_SetTrans(0, 0, 0);
 	}
 	else
 	{
@@ -61,9 +59,9 @@ long GetSpheres(ITEM_INFO* item, SPHERE* ptr, long WorldSpace)
 	if (!(WorldSpace & 2))
 		phd_TranslateRel(meshp[0], meshp[1], meshp[2]);
 
-	ptr->x = x + (phd_mxptr[M03] >> W2V_SHIFT);
-	ptr->y = y + (phd_mxptr[M13] >> W2V_SHIFT);
-	ptr->z = z + (phd_mxptr[M23] >> W2V_SHIFT);
+	ptr->x = x + (long)mMXPtr[M03];
+	ptr->y = y + (long)mMXPtr[M13];
+	ptr->z = z + (long)mMXPtr[M23];
 	ptr->r = meshp[3];
 	ptr++;
 	phd_PopMatrix();
@@ -101,9 +99,9 @@ long GetSpheres(ITEM_INFO* item, SPHERE* ptr, long WorldSpace)
 		if (!(WorldSpace & 2))
 			phd_TranslateRel(meshp[0], meshp[1], meshp[2]);
 
-		ptr->x = x + (phd_mxptr[M03] >> W2V_SHIFT);
-		ptr->y = y + (phd_mxptr[M13] >> W2V_SHIFT);
-		ptr->z = z + (phd_mxptr[M23] >> W2V_SHIFT);
+		ptr->x = x + (long)mMXPtr[M03];
+		ptr->y = y + (long)mMXPtr[M13];
+		ptr->z = z + (long)mMXPtr[M23];
 		ptr->r = meshp[3];
 		ptr++;
 		phd_PopMatrix();
@@ -183,15 +181,15 @@ void InitInterpolate2(long frac, long rate)
 {
 	IM_frac = frac;
 	IM_rate = rate;
-	IMptr = &IMstack[384];
-	memcpy(IMptr, phd_mxptr, 48);
+	mIMptr = &mIMstack[384];
+	memcpy(mIMptr, mMXPtr, 48);
 }
 
 void GetJointAbsPosition(ITEM_INFO* item, PHD_VECTOR* pos, long joint)
 {
 	OBJECT_INFO* obj;
-	long* mx;
-	long* imx;
+	float* mMx;
+	float* mIMx;
 	long* bone;
 	short* frm[2];
 	short* extra_rotation;
@@ -199,15 +197,13 @@ void GetJointAbsPosition(ITEM_INFO* item, PHD_VECTOR* pos, long joint)
 	short* rot2;
 	long frac, rate, poppush;
 
-	mx = phd_mxptr;
-	imx = IMptr;
+	mMx = mMXPtr;
+	mIMx = mIMptr;
 	obj = &objects[item->object_number];
 	frac = GetFrames(item, frm, &rate);
 
 	phd_PushUnitMatrix();
-	phd_mxptr[M03] = 0;
-	phd_mxptr[M13] = 0;
-	phd_mxptr[M23] = 0;
+	phd_SetTrans(0, 0, 0);
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
 
 	extra_rotation = (short*)item->data;
@@ -254,7 +250,7 @@ void GetJointAbsPosition(ITEM_INFO* item, PHD_VECTOR* pos, long joint)
 		}
 
 		phd_TranslateRel_I(pos->x, pos->y, pos->z);
-		InterpolateMatrix();
+		mInterpolateMatrix();
 	}
 	else
 	{
@@ -293,9 +289,9 @@ void GetJointAbsPosition(ITEM_INFO* item, PHD_VECTOR* pos, long joint)
 		phd_TranslateRel(pos->x, pos->y, pos->z);
 	}
 
-	pos->x = item->pos.x_pos + (phd_mxptr[M03] >> W2V_SHIFT);
-	pos->y = item->pos.y_pos + (phd_mxptr[M13] >> W2V_SHIFT);
-	pos->z = item->pos.z_pos + (phd_mxptr[M23] >> W2V_SHIFT);
-	phd_mxptr = mx;
-	IMptr = imx;
+	pos->x = item->pos.x_pos + (long)mMXPtr[M03];
+	pos->y = item->pos.y_pos + (long)mMXPtr[M13];
+	pos->z = item->pos.z_pos + (long)mMXPtr[M23];
+	mMXPtr = mMx;
+	mIMptr = mIMx;
 }

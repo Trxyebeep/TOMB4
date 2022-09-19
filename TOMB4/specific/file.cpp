@@ -281,12 +281,6 @@ FILE* FileOpen(const char* name)
 	char path_name[80];
 
 	memset(path_name, 0, 80);
-#ifndef NO_CD
-	path_name[0] = cd_drive;
-	path_name[1] = ':';		//original code
-	path_name[2] = '\\';
-#endif
-
 	strcat(path_name, name);
 	Log(5, "FileOpen - %s", path_name);
 	file = fopen(path_name, "rb");
@@ -944,7 +938,7 @@ bool LoadSprites()
 			stat = &static_objects[slot];
 			stat->mesh_number = *(short*)FileData;
 			FileData += sizeof(short);
-			stat->mesh_number = *(short*)FileData;	//what the hell
+			stat->mesh_number = *(short*)FileData;
 			FileData += sizeof(short);
 		}
 		else

@@ -135,19 +135,15 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 	obj = &objects[item->object_number];
 	frame = GetBestFrame(item);
 	phd_PushUnitMatrix();
-	phd_mxptr[M03] = 0;
-	phd_mxptr[M13] = 0;
-	phd_mxptr[M23] = 0;
+	phd_SetTrans(0, 0, 0);
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
 	phd_TranslateRel(frame[6], frame[7], frame[8]);
 	rotation = frame + 9;
 	gar_RotYXZsuperpack(&rotation, 0);
 
-#ifdef GENERAL_FIXES	//fix crash if exploding inactive enemies.. eg: mummies before they wake up
 	if (!item->data)
 		extra_rotation = no_rotation;
 	else
-#endif
 		extra_rotation = (short*)item->data;
 
 	bone = &bones[obj->bone_index];
@@ -162,9 +158,9 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 			if (fx_number != NO_ITEM)
 			{
 				fx = &effects[fx_number];
-				fx->pos.x_pos = item->pos.x_pos + (phd_mxptr[M03] >> W2V_SHIFT);
-				fx->pos.y_pos = item->pos.y_pos + (phd_mxptr[M13] >> W2V_SHIFT);
-				fx->pos.z_pos = item->pos.z_pos + (phd_mxptr[M23] >> W2V_SHIFT);
+				fx->pos.x_pos = item->pos.x_pos + (long)mMXPtr[M03];
+				fx->pos.y_pos = item->pos.y_pos + (long)mMXPtr[M13];
+				fx->pos.z_pos = item->pos.z_pos + (long)mMXPtr[M23];
 				fx->room_number = item->room_number;
 				fx->pos.y_rot = (short)(GetRandomControl() << 1);
 				fx->pos.x_rot = 0;
@@ -236,9 +232,9 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 			if (fx_number != NO_ITEM)
 			{
 				fx = &effects[fx_number];
-				fx->pos.x_pos = item->pos.x_pos + (phd_mxptr[M03] >> W2V_SHIFT);
-				fx->pos.y_pos = item->pos.y_pos + (phd_mxptr[M13] >> W2V_SHIFT);
-				fx->pos.z_pos = item->pos.z_pos + (phd_mxptr[M23] >> W2V_SHIFT);
+				fx->pos.x_pos = item->pos.x_pos + (long)mMXPtr[M03];
+				fx->pos.y_pos = item->pos.y_pos + (long)mMXPtr[M13];
+				fx->pos.z_pos = item->pos.z_pos + (long)mMXPtr[M23];
 				fx->room_number = item->room_number;
 				fx->pos.y_rot = (short)(GetRandomControl() << 1);
 				fx->pos.x_rot = 0;
@@ -1272,18 +1268,18 @@ void TriggerGunflash(SVECTOR* pos)
 	flash = &Gunflashes[num];
 	phd_TranslateRel(pos->x, pos->y, pos->z);
 	phd_RotX(-0x4000);
-	flash->mx[M00] = phd_mxptr[M00];
-	flash->mx[M01] = phd_mxptr[M01];
-	flash->mx[M02] = phd_mxptr[M02];
-	flash->mx[M03] = phd_mxptr[M03];
-	flash->mx[M10] = phd_mxptr[M10];
-	flash->mx[M11] = phd_mxptr[M11];
-	flash->mx[M12] = phd_mxptr[M12];
-	flash->mx[M13] = phd_mxptr[M13];
-	flash->mx[M20] = phd_mxptr[M20];
-	flash->mx[M21] = phd_mxptr[M21];
-	flash->mx[M22] = phd_mxptr[M22];
-	flash->mx[M23] = phd_mxptr[M23];
+	flash->mx[M00] = mMXPtr[M00];
+	flash->mx[M01] = mMXPtr[M01];
+	flash->mx[M02] = mMXPtr[M02];
+	flash->mx[M03] = mMXPtr[M03];
+	flash->mx[M10] = mMXPtr[M10];
+	flash->mx[M11] = mMXPtr[M11];
+	flash->mx[M12] = mMXPtr[M12];
+	flash->mx[M13] = mMXPtr[M13];
+	flash->mx[M20] = mMXPtr[M20];
+	flash->mx[M21] = mMXPtr[M21];
+	flash->mx[M22] = mMXPtr[M22];
+	flash->mx[M23] = mMXPtr[M23];
 	flash->on = 1;
 }
 
@@ -1295,13 +1291,8 @@ void SetGunFlash(short weapon)
 	{
 	case WEAPON_REVOLVER:
 		pos.x = 0;
-#ifdef GENERAL_FIXES
 		pos.y = 190;
 		pos.z = 50;
-#else
-		pos.y = 215;
-		pos.z = 65;
-#endif
 		break;
 
 	case WEAPON_UZI:
@@ -1350,18 +1341,18 @@ void DrawGunflashes()
 		if (!flash->on)
 			break;
 
-		phd_mxptr[M00] = flash->mx[M00];
-		phd_mxptr[M01] = flash->mx[M01];
-		phd_mxptr[M02] = flash->mx[M02];
-		phd_mxptr[M03] = flash->mx[M03];
-		phd_mxptr[M10] = flash->mx[M10];
-		phd_mxptr[M11] = flash->mx[M11];
-		phd_mxptr[M12] = flash->mx[M12];
-		phd_mxptr[M13] = flash->mx[M13];
-		phd_mxptr[M20] = flash->mx[M20];
-		phd_mxptr[M21] = flash->mx[M21];
-		phd_mxptr[M22] = flash->mx[M22];
-		phd_mxptr[M23] = flash->mx[M23];
+		mMXPtr[M00] = flash->mx[M00];
+		mMXPtr[M01] = flash->mx[M01];
+		mMXPtr[M02] = flash->mx[M02];
+		mMXPtr[M03] = flash->mx[M03];
+		mMXPtr[M10] = flash->mx[M10];
+		mMXPtr[M11] = flash->mx[M11];
+		mMXPtr[M12] = flash->mx[M12];
+		mMXPtr[M13] = flash->mx[M13];
+		mMXPtr[M20] = flash->mx[M20];
+		mMXPtr[M21] = flash->mx[M21];
+		mMXPtr[M22] = flash->mx[M22];
+		mMXPtr[M23] = flash->mx[M23];
 		phd_RotZ(short(GetRandomDraw() << 1));
 		GlobalAmbient = 0xFF2F2F00;
 		phd_PutPolygons(meshes[objects[GUN_FLASH].mesh_index], -1);
@@ -2067,15 +2058,14 @@ void S_DrawSparks()
 	FX_INFO* fx;
 	ITEM_INFO* item;
 	PHD_VECTOR pos;
+	FVECTOR fPos;
 	long* Z;
 	short* XY;
 	short* offsets;
 	float perspz;
 	long x, y, z, smallest_size;
 
-#ifdef GENERAL_FIXES
 	smallest_size = 0;
-#endif
 
 	for (int i = 0; i < 16; i++)
 		NodeOffsets[i].GotIt = 0;
@@ -2176,13 +2166,13 @@ void S_DrawSparks()
 		offsets[0] = (short)x;
 		offsets[1] = (short)y;
 		offsets[2] = (short)z;
-		pos.x = phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03];
-		pos.y = phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13];
-		pos.z = phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23];
-		perspz = f_persp / (float)pos.z;
-		XY[0] = short(float(pos.x * perspz + f_centerx));
-		XY[1] = short(float(pos.y * perspz + f_centery));
-		Z[0] = pos.z >> W2V_SHIFT;
+		fPos.x = mMXPtr[M00] * offsets[0] + mMXPtr[M01] * offsets[1] + mMXPtr[M02] * offsets[2] + mMXPtr[M03];
+		fPos.y = mMXPtr[M10] * offsets[0] + mMXPtr[M11] * offsets[1] + mMXPtr[M12] * offsets[2] + mMXPtr[M13];
+		fPos.z = mMXPtr[M20] * offsets[0] + mMXPtr[M21] * offsets[1] + mMXPtr[M22] * offsets[2] + mMXPtr[M23];
+		perspz = f_persp / fPos.z;
+		XY[0] = short(fPos.x * perspz + f_centerx);
+		XY[1] = short(fPos.y * perspz + f_centery);
+		Z[0] = (long)fPos.z;
 
 		if (sptr->Flags & 8)
 		{
@@ -2194,13 +2184,13 @@ void S_DrawSparks()
 			offsets[0] = short(x - (sptr->Xvel >> 4));
 			offsets[1] = short(y - (sptr->Yvel >> 4));
 			offsets[2] = short(z - (sptr->Zvel >> 4));
-			pos.x = phd_mxptr[M00] * offsets[0] + phd_mxptr[M01] * offsets[1] + phd_mxptr[M02] * offsets[2] + phd_mxptr[M03];
-			pos.y = phd_mxptr[M10] * offsets[0] + phd_mxptr[M11] * offsets[1] + phd_mxptr[M12] * offsets[2] + phd_mxptr[M13];
-			pos.z = phd_mxptr[M20] * offsets[0] + phd_mxptr[M21] * offsets[1] + phd_mxptr[M22] * offsets[2] + phd_mxptr[M23];
-			perspz = f_persp / (float)pos.z;
-			XY[2] = short(float(pos.x * perspz + f_centerx));
-			XY[3] = short(float(pos.y * perspz + f_centery));
-			Z[1] = pos.z >> W2V_SHIFT;
+			fPos.x = mMXPtr[M00] * offsets[0] + mMXPtr[M01] * offsets[1] + mMXPtr[M02] * offsets[2] + mMXPtr[M03];
+			fPos.y = mMXPtr[M10] * offsets[0] + mMXPtr[M11] * offsets[1] + mMXPtr[M12] * offsets[2] + mMXPtr[M13];
+			fPos.z = mMXPtr[M20] * offsets[0] + mMXPtr[M21] * offsets[1] + mMXPtr[M22] * offsets[2] + mMXPtr[M23];
+			perspz = f_persp / fPos.z;
+			XY[2] = short(fPos.x * perspz + f_centerx);
+			XY[3] = short(fPos.y * perspz + f_centery);
+			Z[1] = (long)fPos.z;
 		}
 
 		S_DrawDrawSparks(sptr, smallest_size, XY, Z);

@@ -39,14 +39,12 @@ void S_CalculateStaticMeshLight(long x, long y, long z, long shade, ROOM_INFO* r
 void InitItemDynamicLighting(ITEM_INFO* item)
 {
 	DYNAMIC* dptr;
-	PHD_VECTOR d;
-	PHD_VECTOR vec;
+	FVECTOR d;
+	FVECTOR vec;
 	FVECTOR l;
 	long last_off;
 
-#ifdef GENERAL_FIXES
-	last_off = -1;	//uninitialized var
-#endif
+	last_off = -1;
 
 	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
@@ -57,8 +55,8 @@ void InitItemDynamicLighting(ITEM_INFO* item)
 			d.x = dptr->x - item->il.item_pos.x;
 			d.y = dptr->y - item->il.item_pos.y;
 			d.z = dptr->z - item->il.item_pos.z;
-			ApplyMatrix(w2v_matrix, &d, &vec);
-			ApplyTransposeMatrix(phd_mxptr, &vec, &d);
+			mApplyMatrix(mW2V, &d, &vec);
+			mApplyTransposeMatrix(mMXPtr, &vec, &d);
 			D3DDynamics[i].D3DLightx.dvPosition.x = d.x;
 			D3DDynamics[i].D3DLightx.dvPosition.y = d.y;
 			D3DDynamics[i].D3DLightx.dvPosition.z = d.z;
@@ -89,16 +87,16 @@ void InitItemDynamicLighting(ITEM_INFO* item)
 		d.x = LaraTorchEnd.x - LaraTorchStart.x;
 		d.y = LaraTorchEnd.y - LaraTorchStart.y;
 		d.z = LaraTorchEnd.z - LaraTorchStart.z;
-		ApplyMatrix(w2v_matrix, &d, &vec);
-		ApplyTransposeMatrix(phd_mxptr, &vec, &d);
+		mApplyMatrix(mW2V, &d, &vec);
+		mApplyTransposeMatrix(mMXPtr, &vec, &d);
 		l.x = d.x;
 		l.y = d.y;
 		l.z = d.z;
 		d.x = LaraTorchStart.x - item->il.item_pos.x;
 		d.y = LaraTorchStart.y - item->il.item_pos.y;
 		d.z = LaraTorchStart.z - item->il.item_pos.z;
-		ApplyMatrix(w2v_matrix, &d, &vec);
-		ApplyTransposeMatrix(phd_mxptr, &vec, &d);
+		mApplyMatrix(mW2V, &d, &vec);
+		mApplyTransposeMatrix(mMXPtr, &vec, &d);
 		D3DDynamics[last_off].D3DLightx.dcvColor.r = LaraTorchIntensity / 255.0F;
 		D3DDynamics[last_off].D3DLightx.dcvColor.g = LaraTorchIntensity / 255.0F;
 		D3DDynamics[last_off].D3DLightx.dcvColor.b = 0;
@@ -183,18 +181,20 @@ void InitDynamicLighting()
 
 void SetupLight(D3DLIGHT_STRUCT* d3dlight, PCLIGHT* light, long* ambient)
 {
-	PHD_VECTOR d;
-	PHD_VECTOR vec;
+	FVECTOR d;
+	FVECTOR vec;
 	FVECTOR l;
 	float fVal;
 	long r, g, b, val, val2;;
 
-	d = light->rlp;
+	d.x = light->rlp.x;
+	d.y = light->rlp.y;
+	d.z = light->rlp.z;
 	d3dlight->D3DLightx.dcvColor.r = light->r;
 	d3dlight->D3DLightx.dcvColor.g = light->g;
 	d3dlight->D3DLightx.dcvColor.b = light->b;
-	ApplyMatrix(w2v_matrix, &d, &vec);
-	ApplyTransposeMatrix(phd_mxptr, &vec, &d);
+	mApplyMatrix(mW2V, &d, &vec);
+	mApplyTransposeMatrix(mMXPtr, &vec, &d);
 	d3dlight->D3DLightx.dvPosition.x = d.x;
 	d3dlight->D3DLightx.dvPosition.y = d.y;
 	d3dlight->D3DLightx.dvPosition.z = d.z;
@@ -204,8 +204,8 @@ void SetupLight(D3DLIGHT_STRUCT* d3dlight, PCLIGHT* light, long* ambient)
 		d.x = light->inx;
 		d.y = light->iny;
 		d.z = light->inz;
-		ApplyMatrix(w2v_matrix, &d, &vec);
-		ApplyTransposeMatrix(phd_mxptr, &vec, &d);
+		mApplyMatrix(mW2V, &d, &vec);
+		mApplyTransposeMatrix(mMXPtr, &vec, &d);
 		l.x = d.x;
 		l.y = d.y;
 		l.z = d.z;
@@ -279,10 +279,8 @@ void SetupLight(D3DLIGHT_STRUCT* d3dlight, PCLIGHT* light, long* ambient)
 		if (val >= light->Inner)
 			val2 = (val - light->Outer) / ((light->Outer - light->Inner) / -val2);
 
-#ifdef GENERAL_FIXES
 		if (val2 < 0)
 			val2 = 0;
-#endif
 
 		r -= val2;
 		g -= val2;
@@ -321,18 +319,18 @@ void ClearDynamicLighting()
 	}
 }
 
-void ApplyMatrix(long* matrix, PHD_VECTOR* start, PHD_VECTOR* dest)
+void mApplyMatrix(float* matrix, FVECTOR* start, FVECTOR* dest)
 {
-	dest->x = (start->x * matrix[M00] + start->y * matrix[M01] + start->z * matrix[M02]) >> W2V_SHIFT;
-	dest->y = (start->x * matrix[M10] + start->y * matrix[M11] + start->z * matrix[M12]) >> W2V_SHIFT;
-	dest->z = (start->x * matrix[M20] + start->y * matrix[M21] + start->z * matrix[M22]) >> W2V_SHIFT;
+	dest->x = start->x * matrix[M00] + start->y * matrix[M01] + start->z * matrix[M02];
+	dest->y = start->x * matrix[M10] + start->y * matrix[M11] + start->z * matrix[M12];
+	dest->z = start->x * matrix[M20] + start->y * matrix[M21] + start->z * matrix[M22];
 }
 
-void ApplyTransposeMatrix(long* matrix, PHD_VECTOR* start, PHD_VECTOR* dest)
+void mApplyTransposeMatrix(float* matrix, FVECTOR* start, FVECTOR* dest)
 {
-	dest->x = (start->x * matrix[M00] + start->y * matrix[M10] + start->z * matrix[M20]) >> W2V_SHIFT;
-	dest->y = (start->x * matrix[M01] + start->y * matrix[M11] + start->z * matrix[M21]) >> W2V_SHIFT;
-	dest->z = (start->x * matrix[M02] + start->y * matrix[M12] + start->z * matrix[M22]) >> W2V_SHIFT;
+	dest->x = start->x * matrix[M00] + start->y * matrix[M10] + start->z * matrix[M20];
+	dest->y = start->x * matrix[M01] + start->y * matrix[M11] + start->z * matrix[M21];
+	dest->z = start->x * matrix[M02] + start->y * matrix[M12] + start->z * matrix[M22];
 }
 
 void MallocD3DLights()
@@ -530,10 +528,7 @@ void CreateLightList(ITEM_INFO* item)
 		dx = current_lights[i].ix - item->il.item_pos.x;
 		dy = current_lights[i].iy - item->il.item_pos.y;
 		dz = current_lights[i].iz - item->il.item_pos.z;
-
-#ifdef GENERAL_FIXES	//stupid uninitialized var
 		range = SQUARE(dx) + SQUARE(dy) + SQUARE(dz);
-#endif
 
 		if (current_lights[i].Type == LIGHT_POINT || current_lights[i].Type == LIGHT_SHADOW)
 		{

@@ -23,13 +23,11 @@
 #include "../specific/LoadSave.h"
 #include "../specific/gamemain.h"
 #include "newinv.h"
-#ifdef GENERAL_FIXES
-#include "../tomb4/tomb4.h"
-#endif
 #include "../specific/dxshell.h"
 #include "../specific/input.h"
 #include "../specific/3dmath.h"
 #include "lara.h"
+#include "../tomb4/tomb4.h"
 
 short CreditGroups[18] =
 {
@@ -100,11 +98,9 @@ const char* CreditsTable[]
 	"%15",
 	"Jeremy H. Smith", "Adrian Smith",
 
-#ifdef GENERAL_FIXES
 	"0",
 	"Tomb Raider IV Community Edition",
 	"Troye", "ChocolateFan"
-#endif
 };
 
 GAMEFLOW* Gameflow;
@@ -170,10 +166,6 @@ void DoGameflow()
 	fmv_to_play[1] = 0;
 	gfCurrentLevel = Gameflow->TitleEnabled ? 0 : 1;
 	gf = &gfScriptWad[gfScriptOffset[gfCurrentLevel]];
-
-#ifdef GENERAL_FIXES
-	init_tomb4_stuff();	//This is only called once at the beginning of the game, and these settings can technically be considered 'gameflow' so this is fine here
-#endif
 
 	while (1)
 	{
@@ -379,11 +371,9 @@ void DoGameflow()
 			gfFog.r = gf[0];
 			gfFog.g = gf[1];
 			gfFog.b = gf[2];
-#ifdef GENERAL_FIXES		//fixes fog for levels that never call SetFog, like Desert Railroad.
 			savegame.fog_colour.r = gfFog.r;
 			savegame.fog_colour.g = gfFog.g;
 			savegame.fog_colour.b = gfFog.b;
-#endif
 			gf += 3;
 			break;
 
@@ -929,7 +919,7 @@ void DoTitle(uchar Name, uchar Audio)
 	while (!gfStatus)
 	{
 		S_InitialisePolyList();
-		gfStatus = TitleOptions();	//INLINEDDDDD!!!!!
+		gfStatus = TitleOptions();	//originally inlined
 
 		if (gfStatus)
 			break;
@@ -1102,11 +1092,7 @@ long DoCredits()
 			if (*s == '%')
 				PrintString(ushort(phd_winwidth >> 1), (ushort)y, 6, SCRIPT_TEXT(CreditGroups[atoi(s + 1)]), FF_CENTER);
 			else if (*s != '0')
-#ifdef GENERAL_FIXES
 				PrintString(ushort(phd_winwidth >> 1), (ushort)y, 2 + (i == 72 ? 4 : 0), s, FF_CENTER);
-#else
-				PrintString(ushort(phd_winwidth >> 1), (ushort)y, 2, s, FF_CENTER);
-#endif
 
 			num_drawn++;
 		}

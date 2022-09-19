@@ -25,13 +25,11 @@
 #include "../game/deltapak.h"
 #include "../game/health.h"
 #include "../game/control.h"
-#ifdef GENERAL_FIXES
 #include "../game/text.h"
 #include "../game/gameflow.h"
-#include "../tomb4/tomb4.h"
 #include "../game/spotcam.h"
 #include "../game/effect2.h"
-#endif
+#include "../tomb4/tomb4.h"
 
 D3DTLVERTEX SkinVerts[40][12];
 short SkinClip[40][12];
@@ -41,7 +39,7 @@ long GlobalAmbient;
 float AnimatingTexturesV[16][8][3];
 static short AnimatingTexturesVOffset;
 
-void phd_PutPolygons(short* objptr, long clip)	//whore
+void phd_PutPolygons(short* objptr, long clip)
 {
 	MESH_DATA* mesh;
 	SPRITESTRUCT* envmap_sprite;
@@ -62,11 +60,7 @@ void phd_PutPolygons(short* objptr, long clip)	//whore
 
 	if (objptr)
 	{
-#ifdef GENERAL_FIXES
 		if (objptr == meshes[objects[LARA_DOUBLE].mesh_index] || objptr == meshes[objects[LARA_DOUBLE].mesh_index + 2])
-#else
-		if (objptr == meshes[objects[LARA_DOUBLE].mesh_index])	//forgets mesh 1, also somehow applies to Lara's 'hips'.
-#endif
 			envmap_sprite = &spriteinfo[objects[SKY_GRAPHICS].mesh_index];
 		else
 			envmap_sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 11];
@@ -396,32 +390,28 @@ void ProjectTrainVerts(short nVerts, D3DTLVERTEX* v, short* clip, long x)
 
 void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 {
-#ifdef GENERAL_FIXES
 	D3DVERTEX* vtx;
 	DYNAMIC* dptr;
-	PHD_VECTOR t, d, u, w;
+	FVECTOR t, d, u, w;
 	float fVal;
-#endif
 	long r, g, b, sr, sg, sb;
 
 	sr = (StaticMeshShade & 0x1F) << 3;
 	sg = ((StaticMeshShade >> 5) & 0x1F) << 3;
 	sb = ((StaticMeshShade >> 10) & 0x1F) << 3;
-#ifdef GENERAL_FIXES
 	vtx = 0;
 
 	if (tomb4.static_lighting)
 	{
-		u.x = phd_mxptr[M03] >> W2V_SHIFT;
-		u.y = phd_mxptr[M13] >> W2V_SHIFT;
-		u.z = phd_mxptr[M23] >> W2V_SHIFT;
-		ApplyTransposeMatrix(w2v_matrix, &u, &t);
-		t.x += w2v_matrix[M03];
-		t.y += w2v_matrix[M13];
-		t.z += w2v_matrix[M23];
+		u.x = mMXPtr[M03];
+		u.y = mMXPtr[M13];
+		u.z = mMXPtr[M23];
+		mApplyTransposeMatrix(mW2V, &u, &t);
+		t.x += mW2V[M03];
+		t.y += mW2V[M13];
+		t.z += mW2V[M23];
 		mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&vtx, NULL);
 	}
-#endif
 
 	for (int i = 0; i < nVerts; i++)
 	{
@@ -429,7 +419,6 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 		g = CLRG(v->color) + ((sg * (mesh->prelight[i] & 0xFF)) >> 8);
 		b = CLRB(v->color) + ((sb * (mesh->prelight[i] & 0xFF)) >> 8);
 
-#ifdef GENERAL_FIXES
 		if (tomb4.static_lighting)
 		{
 			for (int j = 0; j < MAX_DYNAMICS; j++)
@@ -441,8 +430,8 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 					d.x = dptr->x - t.x;
 					d.y = dptr->y - t.y;
 					d.z = dptr->z - t.z;
-					ApplyMatrix(w2v_matrix, &d, &w);
-					ApplyTransposeMatrix(phd_mxptr, &w, &u);
+					mApplyMatrix(mW2V, &d, &w);
+					mApplyTransposeMatrix(mMXPtr, &w, &u);
 					fVal = sqrt(SQUARE(u.x - vtx[i].x) + SQUARE(u.y - vtx[i].y) + SQUARE(u.z - vtx[i].z)) * 1.7F;
 
 					if (fVal <= dptr->falloff)
@@ -455,7 +444,6 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 				}
 			}
 		}
-#endif
 
 		if (r > 255)
 			r = 255;
@@ -478,10 +466,8 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 		v++;
 	}
 
-#ifdef GENERAL_FIXES
 	if (tomb4.static_lighting)
 		mesh->SourceVB->Unlock();
-#endif
 }
 
 void _InsertRoom(ROOM_INFO* r)
@@ -504,9 +490,7 @@ void RenderLoadPic(long unused)
 	camera.target.y = gfLoadTarget.y;
 	camera.target.z = gfLoadTarget.z;
 	camera.pos.room_number = gfLoadRoom;
-#ifdef GENERAL_FIXES
 	camera.underwater = room[gfLoadRoom].flags & ROOM_UNDERWATER;
-#endif
 
 	if (gfLoadRoom == 255)
 		return;
@@ -528,7 +512,6 @@ void RenderLoadPic(long unused)
 		S_InitialisePolyList();
 		RenderIt(camera.pos.room_number);
 
-#ifdef GENERAL_FIXES
 		if (tomb4.loadingtxt && !tomb4.tr5_loadbar)
 		{
 			if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
@@ -538,7 +521,6 @@ void RenderLoadPic(long unused)
 				PrintString((ushort)phd_centerx, ushort((float(phd_winymax / 480.0F) + (phd_winymax - font_height)) - (font_height >> 1)),
 					5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
 		}
-#endif
 
 		S_OutputPolyList();
 		S_DumpScreen();
@@ -549,7 +531,6 @@ void RenderLoadPic(long unused)
 	S_InitialisePolyList();
 	RenderIt(camera.pos.room_number);
 
-#ifdef GENERAL_FIXES
 	if (tomb4.loadingtxt && !tomb4.tr5_loadbar)
 	{
 		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
@@ -559,7 +540,6 @@ void RenderLoadPic(long unused)
 			PrintString((ushort)phd_centerx, ushort((float(phd_winymax / 480.0F) + (phd_winymax - font_height)) - (font_height >> 1)),
 				5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
 	}
-#endif
 
 	S_OutputPolyList();
 	S_DumpScreen();
@@ -578,11 +558,7 @@ void S_InitialisePolyList()
 	rect.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
 
 	if (gfLevelFlags & GF_TRAIN)
-#ifdef GENERAL_FIXES
 		col = 0xD2B163;
-#else
-		col = 0xCEAE60;
-#endif
 	else if (gfCurrentLevel == 5 || gfCurrentLevel == 6)
 	{
 		col = FogTableColor[19];
@@ -593,10 +569,6 @@ void S_InitialisePolyList()
 	
 	if (App.dx.Flags & 0x80)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &rect, D3DCLEAR_TARGET, col, 1.0F, 0));
-#ifndef GENERAL_FIXES
-	else
-		ClearFakeDevice(App.dx.lpD3DDevice, 1, &rect, D3DCLEAR_TARGET, col, 1.0F, 0);
-#endif
 
 	_BeginScene();
 	InitBuckets();
@@ -907,7 +879,7 @@ long S_GetObjectBounds(short* bounds)
 	FVECTOR vtx[8];
 	float xMin, xMax, yMin, yMax, zMin, zMax, numZ, xv, yv, zv;
 
-	if (phd_mxptr[11] >= phd_zfar && !outside)
+	if (mMXPtr[M23] >= phd_zfar && !outside)
 		return 0;
 
 	xMin = bounds[0];
@@ -957,7 +929,7 @@ long S_GetObjectBounds(short* bounds)
 
 	for (int i = 0; i < 8; i++)
 	{
-		zv = vtx[i].x * phd_mxptr[M20] + vtx[i].y * phd_mxptr[M21] + vtx[i].z * phd_mxptr[M22] + phd_mxptr[M23];
+		zv = vtx[i].x * mMXPtr[M20] + vtx[i].y * mMXPtr[M21] + vtx[i].z * mMXPtr[M22] + mMXPtr[M23];
 
 		if (zv > phd_znear && phd_zfar > zv)
 		{
@@ -968,7 +940,7 @@ long S_GetObjectBounds(short* bounds)
 				zv = 1;
 
 			zv = 1 / zv;
-			xv = zv * (vtx[i].x * phd_mxptr[M00] + vtx[i].y * phd_mxptr[M01] + vtx[i].z * phd_mxptr[M02] + phd_mxptr[M03]);
+			xv = zv * (vtx[i].x * mMXPtr[M00] + vtx[i].y * mMXPtr[M01] + vtx[i].z * mMXPtr[M02] + mMXPtr[M03]);
 
 			if (xv < xMin)
 				xMin = xv;
@@ -976,7 +948,7 @@ long S_GetObjectBounds(short* bounds)
 			if (xv > xMax)
 				xMax = xv;
 
-			yv = zv * (vtx[i].x * phd_mxptr[M10] + vtx[i].y * phd_mxptr[M11] + vtx[i].z * phd_mxptr[M12] + phd_mxptr[M13]);
+			yv = zv * (vtx[i].x * mMXPtr[M10] + vtx[i].y * mMXPtr[M11] + vtx[i].z * mMXPtr[M12] + mMXPtr[M13]);
 
 			if (yv < yMin)
 				yMin = yv;
@@ -1224,7 +1196,6 @@ void S_OutputPolyList()
 	D3DRECT r;
 	long h;
 
-	RestoreFPCW(FPCW);
 	WinFrameRate();
 	nPolys = 0;
 	nClippedPolys = 0;
@@ -1272,11 +1243,7 @@ void S_OutputPolyList()
 		DrawSortList();
 	}
 
-#ifdef GENERAL_FIXES
 	if (pickups[CurrentPickup].life != -1 && !MonoScreenOn && !GLOBAL_playing_cutseq && !bDisableLaraControl)
-#else
-	if (pickups[CurrentPickup].life != -1 && !MonoScreenOn && !GLOBAL_playing_cutseq)
-#endif
 	{
 		bWaterEffect = 0;
 		InitialiseSortList();
@@ -1315,8 +1282,6 @@ void S_OutputPolyList()
 		DoScreenFade();
 		DrawSortList();
 	}
-
-	MungeFPCW(&FPCW);
 }
 
 void CalcVertsColorSplitMMX(long nVerts, D3DTLVERTEX* v)
@@ -1370,7 +1335,7 @@ void StashSkinVertices(long node)
 	while (1)
 	{
 		if (*vns < 0)
-			return;	//they forgot to unlock DestVB
+			break;
 
 		d->sx = v[*vns].sx;
 		d->sy = v[*vns].sy;
@@ -1384,6 +1349,8 @@ void StashSkinVertices(long node)
 		d++;
 		vns++;
 	}
+
+	DestVB->Unlock();
 }
 
 void SkinVerticesToScratch(long node)
@@ -1401,7 +1368,7 @@ void SkinVerticesToScratch(long node)
 	while (1)
 	{
 		if (*vns < 0)
-			return;	//they forgot to unlock DestVB again
+			break;
 
 		v[*vns].sx = d->sx;
 		v[*vns].sy = d->sy;
@@ -1415,4 +1382,6 @@ void SkinVerticesToScratch(long node)
 		d++;
 		vns++;
 	}
+
+	DestVB->Unlock();
 }

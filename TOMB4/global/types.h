@@ -35,6 +35,8 @@ do \
 #define SQUARE(x) ((x)*(x))
 #define	TRIGMULT2(a,b)		(((a) * (b)) >> W2V_SHIFT)
 #define	TRIGMULT3(a,b,c)	(TRIGMULT2((TRIGMULT2(a, b)), c))
+#define	FTRIGMULT2(a,b)		((a) * (b))
+#define	FTRIGMULT3(a,b,c)	(FTRIGMULT2((FTRIGMULT2(a, b)), c))
 
 /*color*/
 #define RGBONLY(r, g, b) ((b) | (((g) | ((r) << 8)) << 8))
@@ -57,18 +59,8 @@ do \
 #define WINDOW_STYLE	(WS_OVERLAPPED | WS_BORDER | WS_CAPTION)
 #define W2V_SHIFT	14
 #define MAX_SAMPLES	370
-
-#ifdef GENERAL_FIXES
 #define MAX_DYNAMICS	64
-#else
-#define MAX_DYNAMICS	32
-#endif
-
-#ifdef GENERAL_FIXES
 #define MALLOC_SIZE	15000000	//15MB
-#else
-#define MALLOC_SIZE	5000000		//5MB
-#endif
 
 /********************DX defs********************/
 #define LPDIRECTDRAWX			LPDIRECTDRAW4
@@ -86,17 +78,21 @@ do \
 #define TEXGUID					IID_IDirect3DTexture2
 #define DDGUID					IID_IDirectDraw4
 #define D3DGUID					IID_IDirect3D3
-
-#if (DIRECTINPUT_VERSION >= 0x800)
 #define DIGUID					IID_IDirectInput8
 #define DIDGUID					IID_IDirectInputDevice8
-#else
-#define DIGUID					IID_IDirectInput2
-#define DIDGUID					IID_IDirectInputDevice2
-#endif
-
 #define DSNGUID					IID_IDirectSoundNotify
 /***********************************************/
+
+enum carried_weapon_flags
+{
+	W_NONE =		0x0,
+	W_PRESENT =		0x1,
+	W_FLASHLIGHT =	0x2,	//speculation, actually unused
+	W_LASERSIGHT =	0x4,
+	W_AMMO1 =		0x8,
+	W_AMMO2 =		0x10,
+	W_AMMO3 =		0x20
+};
 
 enum anim_commands
 {
@@ -2158,7 +2154,7 @@ struct STRINGHEADER
 
 struct GUNFLASH_STRUCT
 {
-	long mx[12];
+	float mx[12];
 	short on;
 };
 
@@ -2263,7 +2259,6 @@ struct TRAIN_STATIC
 	short zoff;
 };
 
-#ifdef IMPROVED_BARS
 struct GouraudBarColourSet
 {
 	uchar abLeftRed[5];
@@ -2273,9 +2268,7 @@ struct GouraudBarColourSet
 	uchar abRightGreen[5];
 	uchar abRightBlue[5];
 };
-#endif
 
-#ifdef GENERAL_FIXES
 struct COLOR_BIT_MASKS
 {
 	ulong dwRBitMask;
@@ -2315,5 +2308,4 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool hpbar_inv;
 	bool static_lighting;
 };
-#endif
 #pragma pack(pop)

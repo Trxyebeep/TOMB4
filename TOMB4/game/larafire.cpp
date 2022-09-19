@@ -164,9 +164,6 @@ WEAPON_INFO weapons[9] =
 static short HoldStates[] =
 {
 	AS_WALK,
-#ifndef GENERAL_FIXES
-	AS_RUN,
-#endif
 	AS_STOP,
 	AS_POSE,
 	AS_TURN_R,
@@ -176,11 +173,6 @@ static short HoldStates[] =
 	AS_STEPLEFT,
 	AS_STEPRIGHT,
 	AS_WADE,
-#ifndef GENERAL_FIXES
-	AS_PICKUP,
-	AS_SWITCHON,
-	AS_SWITCHOFF,
-#endif
 	AS_DUCK,
 	AS_DUCKROTL,
 	AS_DUCKROTR,
@@ -365,7 +357,7 @@ short* get_current_ammo_pointer(long weapon_type)
 
 	case WEAPON_SHOTGUN:
 
-		if (lara.shotgun_type_carried & 8)
+		if (lara.shotgun_type_carried & W_AMMO1)
 			ammo = &lara.num_shotgun_ammo1;
 		else
 			ammo = &lara.num_shotgun_ammo2;
@@ -374,9 +366,9 @@ short* get_current_ammo_pointer(long weapon_type)
 
 	case WEAPON_GRENADE:
 
-		if (lara.grenade_type_carried & 8)
+		if (lara.grenade_type_carried & W_AMMO1)
 			ammo = &lara.num_grenade_ammo1;
-		else if (lara.grenade_type_carried & 0x10)
+		else if (lara.grenade_type_carried & W_AMMO2)
 			ammo = &lara.num_grenade_ammo2;
 		else
 			ammo = &lara.num_grenade_ammo3;
@@ -385,9 +377,9 @@ short* get_current_ammo_pointer(long weapon_type)
 
 	case WEAPON_CROSSBOW:
 
-		if (lara.crossbow_type_carried & 8)
+		if (lara.crossbow_type_carried & W_AMMO1)
 			ammo = &lara.num_crossbow_ammo1;
-		else if (lara.crossbow_type_carried & 0x10)
+		else if (lara.crossbow_type_carried & W_AMMO2)
 			ammo = &lara.num_crossbow_ammo2;
 		else
 			ammo = &lara.num_crossbow_ammo3;
@@ -460,18 +452,18 @@ long FireWeapon(long weapon_type, ITEM_INFO* target, ITEM_INFO* src, short* angl
 
 	if (best < 0)
 	{
-		bum_vdest.x = bum_vsrc.x + (0x5000 * phd_mxptr[M20] >> W2V_SHIFT);
-		bum_vdest.y = bum_vsrc.y + (0x5000 * phd_mxptr[M21] >> W2V_SHIFT);
-		bum_vdest.z = bum_vsrc.z + (0x5000 * phd_mxptr[M22] >> W2V_SHIFT);
+		bum_vdest.x = bum_vsrc.x + long(0x5000 * mMXPtr[M20]);
+		bum_vdest.y = bum_vsrc.y + long(0x5000 * mMXPtr[M21]);
+		bum_vdest.z = bum_vsrc.z + long(0x5000 * mMXPtr[M22]);
 		GetTargetOnLOS(&bum_vsrc, &bum_vdest, 0, 1);
 		return -1;
 	}
 	else
 	{
 		savegame.Game.AmmoHits++;
-		bum_vdest.x = bum_vsrc.x + (bestdist * phd_mxptr[M20] >> W2V_SHIFT);
-		bum_vdest.y = bum_vsrc.y + (bestdist * phd_mxptr[M21] >> W2V_SHIFT);
-		bum_vdest.z = bum_vsrc.z + (bestdist * phd_mxptr[M22] >> W2V_SHIFT);
+		bum_vdest.x = bum_vsrc.x + long(bestdist * mMXPtr[M20]);
+		bum_vdest.y = bum_vsrc.y + long(bestdist * mMXPtr[M21]);
+		bum_vdest.z = bum_vsrc.z + long(bestdist * mMXPtr[M22]);
 
 		if (!GetTargetOnLOS(&bum_vsrc, &bum_vdest, 0, 1))
 			HitTarget(target, &bum_vdest, winfo->damage, 0);
@@ -734,7 +726,7 @@ long WeaponObjectMesh(long weapon_type)
 	{
 	case WEAPON_REVOLVER:
 
-		if (lara.sixshooter_type_carried & 4)
+		if (lara.sixshooter_type_carried & W_LASERSIGHT)
 			return LARA_REVOLVER_LASER;
 		else
 			return SIXSHOOTER_ANIM;
@@ -750,7 +742,7 @@ long WeaponObjectMesh(long weapon_type)
 
 	case WEAPON_CROSSBOW:
 
-		if (lara.crossbow_type_carried & 4)
+		if (lara.crossbow_type_carried & W_LASERSIGHT)
 			return LARA_CROSSBOW_LASER;
 		else
 			return CROSSBOW_ANIM;

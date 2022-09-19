@@ -6,21 +6,15 @@
 #include "spotcam.h"
 #include "control.h"
 #include "../specific/3dmath.h"
-#ifdef ENEMY_BARS
-#include "../tomb4/tomb4.h"
 #include "objects.h"
-#endif
-#ifdef AMMO_COUNTER
 #include "larafire.h"
 #include "camera.h"
-#endif
-#ifdef GENERAL_FIXES
 #include "../specific/input.h"
-#endif
 #include "lara.h"
 #include "deltapak.h"
 #include "savegame.h"
 #include "gameflow.h"
+#include "../tomb4/tomb4.h"
 
 DISPLAYPU pickups[8];
 short PickupX;
@@ -49,12 +43,9 @@ long FlashIt()
 
 void DrawGameInfo(long timed)
 {
-	long flash_state, seconds;
-	char buf[80];
-#ifdef AMMO_COUNTER
-	long length;
+	long flash_state, seconds, length;
 	short ammo, btm;
-#endif
+	char buf[80];
 
 	if (!GLOBAL_playing_cutseq && !bDisableLaraControl && gfGameMode != 1)
 	{
@@ -66,7 +57,6 @@ void DrawGameInfo(long timed)
 		if (DashTimer < 120)
 			S_DrawDashBar(100 * DashTimer / 120);
 
-#ifdef ENEMY_BARS
 		if (lara.target)
 		{
 			if (tomb4.enemy_bars && lara.target->hit_points > 0)
@@ -79,7 +69,6 @@ void DrawGameInfo(long timed)
 					S_DrawEnemyBar(100 * lara.target->hit_points / objects[lara.target->object_number].hit_points);
 			}
 		}
-#endif
 
 		if (gfLevelFlags & GF_TIMER && savegame.Level.Timer && savegame.Level.Timer < 108000)
 		{
@@ -88,7 +77,6 @@ void DrawGameInfo(long timed)
 			PrintString(ushort(phd_winwidth >> 1), (ushort)font_height, 0, buf, 0x8000);
 		}
 
-#ifdef AMMO_COUNTER
 		if (tomb4.ammo_counter)
 		{
 			if (lara.gun_status == LG_READY)
@@ -106,9 +94,7 @@ void DrawGameInfo(long timed)
 				}
 			}
 		}
-#endif
 
-#ifdef GENERAL_FIXES	//Ammotype change tings
 		if (ammo_change_timer)
 		{
 			ammo_change_timer--;
@@ -117,7 +103,6 @@ void DrawGameInfo(long timed)
 			if (ammo_change_timer <= 0)
 				ammo_change_timer = 0;
 		}
-#endif
 	}
 }
 

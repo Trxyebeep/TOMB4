@@ -11,10 +11,8 @@
 #include "../game/lara.h"
 #include "../game/savegame.h"
 #include "../game/gameflow.h"
-#ifdef GENERAL_FIXES
-#include "../tomb4/tomb4.h"
 #include "../game/spotcam.h"
-#endif
+#include "../tomb4/tomb4.h"
 
 const char* KeyboardButtons[272] =
 {
@@ -82,14 +80,12 @@ long input;
 long linput;
 long dbinput;
 long inputBusy;
+short ammo_change_timer = 0;
+char ammo_change_buf[12];
 
 static long joy_x;
 static long joy_y;
 static long joy_fire;
-
-#ifdef GENERAL_FIXES
-short ammo_change_timer = 0;
-char ammo_change_buf[12];
 
 static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 {
@@ -111,7 +107,7 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 
 	if (keymap[DIK_1])
 	{
-		if (!(lara.pistols_type_carried & 1))
+		if (!(lara.pistols_type_carried & W_PRESENT))
 			return;
 
 		lara.request_gun_type = WEAPON_PISTOLS;
@@ -121,7 +117,7 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	}
 	else if (keymap[DIK_2])
 	{
-		if (!(lara.shotgun_type_carried & 1))
+		if (!(lara.shotgun_type_carried & W_PRESENT))
 			return;
 
 		lara.request_gun_type = WEAPON_SHOTGUN;
@@ -137,17 +133,17 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 
 				memset(ammo_change_buf, 0, sizeof(ammo_change_buf));
 
-				if (lara.shotgun_type_carried & 0x10)
+				if (lara.shotgun_type_carried & W_AMMO2)
 				{
-					lara.shotgun_type_carried &= ~0x10;
-					lara.shotgun_type_carried |= 0x8;
+					lara.shotgun_type_carried &= ~W_AMMO2;
+					lara.shotgun_type_carried |= W_AMMO1;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Normal");
 				}
-				else if (lara.shotgun_type_carried & 0x8)
+				else if (lara.shotgun_type_carried & W_AMMO1)
 				{
-					lara.shotgun_type_carried &= ~0x8;
-					lara.shotgun_type_carried |= 0x10;
+					lara.shotgun_type_carried &= ~W_AMMO1;
+					lara.shotgun_type_carried |= W_AMMO2;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Wideshot");
 				}
@@ -156,7 +152,7 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	}
 	else if (keymap[DIK_3])
 	{
-		if (!(lara.uzis_type_carried & 1))
+		if (!(lara.uzis_type_carried & W_PRESENT))
 			return;
 
 		lara.request_gun_type = WEAPON_UZI;
@@ -166,7 +162,7 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	}
 	else if (keymap[DIK_4])
 	{
-		if (!(lara.sixshooter_type_carried & 1))
+		if (!(lara.sixshooter_type_carried & W_PRESENT))
 			return;
 
 		lara.request_gun_type = WEAPON_REVOLVER;
@@ -176,7 +172,7 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	}
 	else if (keymap[DIK_5])
 	{
-		if (!(lara.grenade_type_carried & 1))
+		if (!(lara.grenade_type_carried & W_PRESENT))
 			return;
 
 		lara.request_gun_type = WEAPON_GRENADE;
@@ -192,24 +188,24 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 
 				memset(ammo_change_buf, 0, sizeof(ammo_change_buf));
 
-				if (lara.grenade_type_carried & 0x20)
+				if (lara.grenade_type_carried & W_AMMO3)
 				{
-					lara.grenade_type_carried &= ~0x20;
-					lara.grenade_type_carried |= 0x10;
+					lara.grenade_type_carried &= ~W_AMMO3;
+					lara.grenade_type_carried |= W_AMMO2;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Super");
 				}
-				else if (lara.grenade_type_carried & 0x10)
+				else if (lara.grenade_type_carried & W_AMMO2)
 				{
-					lara.grenade_type_carried &= ~0x10;
-					lara.grenade_type_carried |= 0x8;
+					lara.grenade_type_carried &= ~W_AMMO2;
+					lara.grenade_type_carried |= W_AMMO1;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Normal");
 				}
-				else if (lara.grenade_type_carried & 0x8)
+				else if (lara.grenade_type_carried & W_AMMO1)
 				{
-					lara.grenade_type_carried &= ~0x8;
-					lara.grenade_type_carried |= 0x20;
+					lara.grenade_type_carried &= ~W_AMMO1;
+					lara.grenade_type_carried |= W_AMMO3;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Flash");
 				}
@@ -218,7 +214,7 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 	}
 	else if (keymap[DIK_6])
 	{
-		if (!(lara.crossbow_type_carried & 1))
+		if (!(lara.crossbow_type_carried & W_PRESENT))
 			return;
 
 		lara.request_gun_type = WEAPON_CROSSBOW;
@@ -234,24 +230,24 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 
 				memset(ammo_change_buf, 0, sizeof(ammo_change_buf));
 
-				if (lara.crossbow_type_carried & 0x20)
+				if (lara.crossbow_type_carried & W_AMMO3)
 				{
-					lara.crossbow_type_carried &= ~0x20;
-					lara.crossbow_type_carried |= 0x10;
+					lara.crossbow_type_carried &= ~W_AMMO3;
+					lara.crossbow_type_carried |= W_AMMO2;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Poison");
 				}
-				else if (lara.crossbow_type_carried & 0x10)
+				else if (lara.crossbow_type_carried & W_AMMO2)
 				{
-					lara.crossbow_type_carried &= ~0x10;
-					lara.crossbow_type_carried |= 0x8;
+					lara.crossbow_type_carried &= ~W_AMMO2;
+					lara.crossbow_type_carried |= W_AMMO1;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Normal");
 				}
-				else if (lara.crossbow_type_carried & 0x8)
+				else if (lara.crossbow_type_carried & W_AMMO1)
 				{
-					lara.crossbow_type_carried &= ~0x8;
-					lara.crossbow_type_carried |= 0x20;
+					lara.crossbow_type_carried &= ~W_AMMO1;
+					lara.crossbow_type_carried |= W_AMMO3;
 					ammo_change_timer = 30;
 					sprintf(ammo_change_buf, "Explosive");
 				}
@@ -259,7 +255,6 @@ static void DoWeaponHotkey()	//adds extra checks and does ammo type swaps..
 		}
 	}
 }
-#endif
 
 long Key(long number)
 {
@@ -457,73 +452,7 @@ long S_UpdateInput()
 		}
 	}
 
-#ifdef GENERAL_FIXES
 	DoWeaponHotkey();
-#else
-	if (!(gfLevelFlags & GF_YOUNGLARA))
-	{
-		if (keymap[DIK_1])
-		{
-			if (lara.pistols_type_carried & 1)
-			{
-				lara.request_gun_type = WEAPON_PISTOLS;
-
-				if (lara.gun_status == LG_NO_ARMS && lara.gun_type == WEAPON_PISTOLS)
-					lara.gun_status = LG_DRAW_GUNS;
-			}
-		}
-		else if (keymap[DIK_2])
-		{
-			if (lara.shotgun_type_carried & 1)
-			{
-				lara.request_gun_type = WEAPON_SHOTGUN;
-
-				if (lara.gun_status == LG_NO_ARMS && lara.gun_type == WEAPON_SHOTGUN)
-					lara.gun_status = LG_DRAW_GUNS;
-			}
-		}
-		else if (keymap[DIK_3])
-		{
-			if (lara.uzis_type_carried & 1)
-			{
-				lara.request_gun_type = WEAPON_UZI;
-
-				if (lara.gun_status == LG_NO_ARMS && lara.gun_type == WEAPON_UZI)
-					lara.gun_status = LG_DRAW_GUNS;
-			}
-		}
-		else if (keymap[DIK_4])
-		{
-			if (lara.sixshooter_type_carried & 1)
-			{
-				lara.request_gun_type = WEAPON_REVOLVER;
-
-				if (lara.gun_status == LG_NO_ARMS && lara.gun_type == WEAPON_REVOLVER)
-					lara.gun_status = LG_DRAW_GUNS;
-			}
-		}
-		else if (keymap[DIK_5])
-		{
-			if (lara.grenade_type_carried & 1)
-			{
-				lara.request_gun_type = WEAPON_GRENADE;
-
-				if (lara.gun_status == LG_NO_ARMS && lara.gun_type == WEAPON_GRENADE)
-					lara.gun_status = LG_DRAW_GUNS;
-			}
-		}
-		else if (keymap[DIK_6])
-		{
-			if (lara.crossbow_type_carried & 1)
-			{
-				lara.request_gun_type = WEAPON_CROSSBOW;
-
-				if (lara.gun_status == LG_NO_ARMS && lara.gun_type == WEAPON_CROSSBOW)
-					lara.gun_status = LG_DRAW_GUNS;
-			}
-		}
-	}
-#endif
 
 	if (keymap[DIK_0])
 	{
@@ -531,7 +460,6 @@ long S_UpdateInput()
 		{
 			if (lara_item->hit_points > 0 && lara_item->hit_points < 1000 || lara.poisoned)
 			{
-#ifdef GENERAL_FIXES
 				if (lara.num_small_medipack)
 				{
 					if (lara.num_small_medipack != -1)
@@ -557,25 +485,6 @@ long S_UpdateInput()
 
 					med_hotkey_timer = 15;
 				}
-#else
-				if (lara.num_small_medipack && lara.num_small_medipack != -1)
-					lara.num_small_medipack--;
-
-				if (lara.num_small_medipack)
-				{
-					lara.dpoisoned = 0;
-					lara_item->hit_points += 500;
-
-					if (lara_item->hit_points > 1000)
-					{
-						lara_item->hit_points = 1000;
-						SoundEffect(SFX_MENU_MEDI, 0, SFX_ALWAYS);
-						savegame.Game.HealthUsed++;
-					}
-				}
-
-				med_hotkey_timer = 15;
-#endif
 			}
 		}
 	}
@@ -585,7 +494,6 @@ long S_UpdateInput()
 		{
 			if (lara_item->hit_points > 0 && lara_item->hit_points < 1000 || lara.poisoned)
 			{
-#ifdef GENERAL_FIXES
 				if (lara.num_large_medipack)
 				{
 					if (lara.num_large_medipack != -1)
@@ -607,25 +515,6 @@ long S_UpdateInput()
 							setup_objectlist_startposition(INV_MEMCARD_LOAD_ITEM);
 					}
 				}
-#else
-				if (lara.num_large_medipack && lara.num_large_medipack != -1)
-					lara.num_large_medipack--;
-
-				if (lara.num_large_medipack)
-				{
-					lara.dpoisoned = 0;
-					lara_item->hit_points += 1000;
-
-					if (lara_item->hit_points > 1000)
-					{
-						lara_item->hit_points = 1000;
-						SoundEffect(SFX_MENU_MEDI, 0, SFX_ALWAYS);
-						savegame.Game.HealthUsed++;
-					}
-				}
-
-				med_hotkey_timer = 15;
-#endif
 			}
 		}
 	}
@@ -715,7 +604,7 @@ long S_UpdateInput()
 	}
 
 	if (debounce)
-		dbinput = linput & (dbinput ^ linput);
+		dbinput = inputBusy & (dbinput ^ inputBusy);
 
 	input = linput;
 	return 1;

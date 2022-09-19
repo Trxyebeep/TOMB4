@@ -14,8 +14,5 @@ extern long input;
 extern long linput;
 extern long dbinput;
 extern long inputBusy;
-
-#ifdef GENERAL_FIXES
 extern short ammo_change_timer;
 extern char ammo_change_buf[12];
-#endif

@@ -3,19 +3,18 @@
 #include "delstuff.h"
 #include "control.h"
 #include "sound.h"
-#ifdef FOOTPRINTS
 #include "objects.h"
 #include "../specific/specificfx.h"
 #include "../specific/function_table.h"
 #include "../specific/3dmath.h"
-#include "../tomb4/tomb4.h"
 #include "../specific/function_stubs.h"
 #include "../specific/gamemain.h"
 #include "../specific/file.h"
+#include "lara.h"
+#include "../tomb4/tomb4.h"
 
 #define PRINT_HEIGHT_CORRECTION 128 // The maximum difference between the footprint and the floor
-#endif
-#include "lara.h"
+
 
 static char footsounds[14] = { 0, 5, 3, 2, 1, 9, 9, 4, 6, 5, 3, 9, 4, 6 };
 
@@ -54,14 +53,6 @@ void AddFootPrint(ITEM_INFO* item)
 		print->Active = 512;
 		FootPrintNum = (FootPrintNum + 1) & 0x1F;
 	}
-}
-
-#ifdef FOOTPRINTS
-static void ProjectTriPoints(PHD_VECTOR* pos, long& x, long& y, long& z)
-{
-	x = (phd_mxptr[M00] * pos->x + phd_mxptr[M01] * pos->y + phd_mxptr[M02] * pos->z + phd_mxptr[M03]) >> W2V_SHIFT;
-	y = (phd_mxptr[M10] * pos->x + phd_mxptr[M11] * pos->y + phd_mxptr[M12] * pos->z + phd_mxptr[M13]) >> W2V_SHIFT;
-	z = (phd_mxptr[M20] * pos->x + phd_mxptr[M21] * pos->y + phd_mxptr[M22] * pos->z + phd_mxptr[M23]) >> W2V_SHIFT;
 }
 
 void S_DrawFootPrints()
@@ -107,8 +98,8 @@ void S_DrawFootPrints()
 
 			for (int j = 0; j < 3; j++)
 			{
-				x = (pos[j].x * phd_mxptr[M00] + pos[j].z * phd_mxptr[M02] + phd_mxptr[M03]) >> W2V_SHIFT;
-				z = (pos[j].x * phd_mxptr[M20] + pos[j].z * phd_mxptr[M22] + phd_mxptr[M23]) >> W2V_SHIFT;
+				x = long(pos[j].x * mMXPtr[M00] + pos[j].z * mMXPtr[M02] + mMXPtr[M03]);
+				z = long(pos[j].x * mMXPtr[M20] + pos[j].z * mMXPtr[M22] + mMXPtr[M23]);
 				room_number = lara_item->room_number;
 				pos[j].y = GetHeight(GetFloor(x, print->y, z, &room_number), x, print->y, z) - print->y;
 
@@ -156,4 +147,3 @@ void S_DrawFootPrints()
 		}
 	}
 }
-#endif

@@ -121,8 +121,6 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 
 		break;
 
-#ifdef GENERAL_FIXES
-
 	case 5:
 
 		if (App.dx.lpZBuffer)
@@ -138,8 +136,6 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 		break;
-
-#endif
 
 	case 6:
 
@@ -209,9 +205,7 @@ void DrawSortList()
 	}
 	else
 	{
-#ifdef GENERAL_FIXES				//just to shut VS up
-		pSort = SortList[0];		//if SortCount is < 0 then pSort will be uninitialized in the original, but I don't think that ever happens
-#endif
+		pSort = SortList[0];
 
 		for (num = 0; num < SortCount; num++)
 		{
@@ -251,7 +245,7 @@ void DrawSortList()
 				}
 				else
 				{
-					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined in asm
+					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
 					drawtype = pSort->drawtype;
 					tpage = pSort->tpage;
 					bVtx = bVtxbak;
@@ -268,11 +262,7 @@ void DrawSortList()
 		{
 			pSort = SortList[num];
 
-#ifdef GENERAL_FIXES
 			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 5 || pSort->drawtype == 6 || pSort->drawtype == 7)
-#else
-			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 6 || pSort->drawtype == 7)
-#endif
 				break;
 		}
 
@@ -286,11 +276,7 @@ void DrawSortList()
 		{
 			pSort = SortList[num];
 
-#ifdef GENERAL_FIXES
 			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 5 || pSort->drawtype == 6 || pSort->drawtype == 7)
-#else
-			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 6 || pSort->drawtype == 7)
-#endif
 			{
 				if (pSort->tpage == tpage && pSort->drawtype == drawtype)
 				{
@@ -334,7 +320,7 @@ void DrawSortList()
 void CreateFogPos(FOGBULB_STRUCT* FogBulb)
 {
 	FVECTOR d;
-	long* mx;
+	float* mx;
 	float dist;
 	short bounds[6];
 
@@ -358,22 +344,22 @@ void CreateFogPos(FOGBULB_STRUCT* FogBulb)
 			bounds[3] = short(FogBulb->WorldPos.y - camera.pos.y - FogBulb->rad);
 			bounds[4] = short(FogBulb->WorldPos.z - camera.pos.z + FogBulb->rad);
 			bounds[5] = short(FogBulb->WorldPos.z - camera.pos.z - FogBulb->rad);
-			mx = phd_mxptr;
-			phd_mxptr = w2v_matrix;
+			mx = mMXPtr;
+			mMXPtr = mW2V;
 
 			if (S_GetObjectBounds(bounds))
 				NumFogBulbsInRange++;
 			else
 				FogBulb->inRange = 0;
 
-			phd_mxptr = mx;
+			mMXPtr = mx;
 
 			if (FogBulb->inRange)
 			{
 				FogBulb->vec.x = FogBulb->WorldPos.x - camera.pos.x;
 				FogBulb->vec.y = FogBulb->WorldPos.y - camera.pos.y;
 				FogBulb->vec.z = FogBulb->WorldPos.z - camera.pos.z;
-				SetD3DMatrix(&D3DMView, w2v_matrix);
+				mSetD3DMatrix(&D3DMView, mW2V);
 				mD3DTransform(&FogBulb->vec, &D3DMView);
 				FogBulb->pos.x = FogBulb->vec.x;
 				FogBulb->pos.y = FogBulb->vec.y;
@@ -471,11 +457,7 @@ void TriggerFXFogBulb(long x, long y, long z, long FXRad, long density, long r, 
 	FogBulb->WorldPos.z = (float)z;
 	FogBulb->rad = 0;
 	FogBulb->sqrad = 0;
-#ifdef GENERAL_FIXES
 	FogBulb->inv_sqrad = NAN;
-#else
-	FogBulb->inv_sqrad = 1 / FogBulb->sqrad;
-#endif
 	FogBulb->timer = 50;
 	FogBulb->active = 1;
 	FogBulb->FXRad = FXRad;
@@ -720,10 +702,7 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 	c = clipflags;
 	clipZ = 0;
 	clip = 1;
-
-#ifdef GENERAL_FIXES	//uninitialized
 	sl = 0;
-#endif
 
 	if (c[v0] & c[v1] & c[v2])
 		return;
@@ -813,14 +792,12 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 			OmniFog(&v[v1]);
 			OmniFog(&v[v2]);
 		}
-#ifdef GENERAL_FIXES
 		else
 		{
 			v[v0].specular |= 0xFF000000;
 			v[v1].specular |= 0xFF000000;
 			v[v2].specular |= 0xFF000000;
 		}
-#endif
 	}
 
 	pV = &v[v0];
@@ -1050,7 +1027,6 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 			OmniFog(&v[v2]);
 			OmniFog(&v[v3]);
 		}
-#ifdef GENERAL_FIXES
 		else
 		{
 			v[v0].specular |= 0xFF000000;
@@ -1058,7 +1034,6 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 			v[v2].specular |= 0xFF000000;
 			v[v3].specular |= 0xFF000000;
 		}
-#endif
 	}
 
 	pV = &v[v0];
@@ -1241,9 +1216,9 @@ void mD3DTransform(FVECTOR* vec, D3DMATRIX* mx)
 {
 	float x, y, z;
 
-	x = vec->x * mx->_11 + mx->_21 * vec->y + mx->_31 * vec->z + mx->_41;
-	y = vec->x * mx->_12 + mx->_22 * vec->y + mx->_32 * vec->z + mx->_42;
-	z = vec->x * mx->_13 + mx->_23 * vec->y + mx->_33 * vec->z + mx->_43;
+	x = vec->x * mx->_11 + mx->_21 * vec->y + mx->_31 * vec->z;
+	y = vec->x * mx->_12 + mx->_22 * vec->y + mx->_32 * vec->z;
+	z = vec->x * mx->_13 + mx->_23 * vec->y + mx->_33 * vec->z;
 	vec->x = x;
 	vec->y = y;
 	vec->z = z;

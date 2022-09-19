@@ -675,7 +675,7 @@ void ControlPlanetEffect(short item_number)
 
 				TriggerLightningGlow(pos.x, pos.y, pos.z, RGBA(0, g, b, (GetRandomControl() & 0x1F) + 48));
 				SoundEffect(SFX_ELEC_ARCING_LOOP, (PHD_3DPOS*)&pos, SFX_DEFAULT);
-				pos = pos2;	//!!!!!!!!!!!!!!! so cool
+				pos = pos2;
 			}
 
 			TriggerLightningGlow(pos2.x, pos2.y, pos2.z, RGBA(0, g, b, (GetRandomControl() & 0x1F) + 48));

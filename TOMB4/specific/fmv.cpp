@@ -29,7 +29,6 @@ static BINK_STRUCT* Bink;
 static LPDIRECTDRAWSURFACEX BinkSurface;
 static long BinkSurfaceType;
 
-#ifdef GENERAL_FIXES
 #define GET_DLL_PROC(dll, proc, n) \
 { \
 	*(FARPROC *)&(proc) = GetProcAddress((dll), n); \
@@ -59,9 +58,8 @@ bool LoadBinkStuff()
 		GET_DLL_PROC(hBinkW32, BinkClose, "_BinkClose@4");
 		//end of ugh
 	}
-	catch (LPCTSTR name)
+	catch (LPCTSTR)
 	{
-		name = "warning C4101: 'name': unreferenced local variable.... ok!";
 		FreeLibrary(hBinkW32);
 		hBinkW32 = 0;
 		return 0;
@@ -69,7 +67,6 @@ bool LoadBinkStuff()
 
 	return 1;
 }
-#endif
 
 void ShowBinkFrame()
 {
@@ -107,13 +104,6 @@ long PlayFmvNow(long num)
 
 	sprintf(name, "fmv\\fmv%02d.bik", num);
 	memset(path, 0, sizeof(path));
-
-#ifndef NO_CD
-	memset(path, 0, sizeof(path));
-	path[0] = cd_drive;
-	path[1] = ':';
-	path[2] = '\\';
-#endif
 	strcat(path, name);
 	App.fmv = 1;
 	modes = G_dxinfo->DDInfo[App.DXInfo.nDD].D3DDevices[App.DXInfo.nD3D].DisplayModes;

@@ -180,13 +180,8 @@ void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
 	{
 		state = lara_item->current_anim_state;
 
-#ifdef GENERAL_FIXES
-		
 		if (state == AS_DUCK || state == AS_DUCKROLL || state == AS_ALL4S || state == AS_CRAWL ||
-			state == AS_ALL4TURNL|| state == AS_ALL4TURNR || state == AS_DUCKROTL || state == AS_DUCKROTR)	//add the last 2
-#else
-		if (state == AS_DUCK || state == AS_DUCKROLL || state == AS_ALL4S || state == AS_CRAWL || state == AS_ALL4TURNL || state == AS_ALL4TURNR)
-#endif
+			state == AS_ALL4TURNL|| state == AS_ALL4TURNR || state == AS_DUCKROTL || state == AS_DUCKROTR)
 			y -= 384;
 	}
 

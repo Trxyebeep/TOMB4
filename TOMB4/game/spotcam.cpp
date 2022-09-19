@@ -5,13 +5,11 @@
 #include "control.h"
 #include "camera.h"
 #include "switch.h"
-#ifdef GENERAL_FIXES
 #include "../specific/dxshell.h"
-#include "../tomb4/tomb4.h"
-#endif
 #include "../specific/input.h"
 #include "lara.h"
 #include "gameflow.h"
+#include "../tomb4/tomb4.h"
 
 SPOTCAM SpotCam[128];
 long bTrackCamInit = 0;
@@ -73,7 +71,7 @@ void SetSplineData(long num, long cam)
 		camera_ytarget[num] = LaraFixedPosition.y;
 		camera_ztarget[num] = LaraFixedPosition.z;
 	}
-	else//useless
+	else
 	{
 		camera_xtarget[num] = spotcam->tx;
 		camera_ytarget[num] = spotcam->ty;
@@ -367,10 +365,8 @@ void CalculateSpotCams()
 	else if (!spotcam_timer)
 		current_spline_position += cspeed;
 
-#ifdef GENERAL_FIXES
 	if (tomb4.cutseq_skipper && keymap[DIK_ESCAPE] && gfCurrentLevel)
 		current_spline_position = 0x10000;
-#endif
 
 	if (!(input & IN_LOOK))
 		bFirstLook = 0;
@@ -559,7 +555,7 @@ void CalculateSpotCams()
 					else
 					{
 						current_spline_camera--;
-						SetSplineData(0, current_spline_camera - 1);	//both INLINEDDDDDDDDD
+						SetSplineData(0, current_spline_camera - 1);	//both inlined
 						SetSplineData(1, current_spline_camera);
 						memcpy(&backup, &camera, sizeof(CAMERA_INFO));
 						camera.old_type = FIXED_CAMERA;

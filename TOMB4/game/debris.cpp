@@ -232,9 +232,7 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 		TPos.y = shatter_item->Sphere.y;
 		TPos.z = shatter_item->Sphere.z;
 		RotY = shatter_item->YRot;
-#ifdef GENERAL_FIXES
-		rgb = 0;					//uninitialized
-#endif
+		rgb = 0;
 	}
 	else
 	{
@@ -268,9 +266,9 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 		z = (long)*vtx++;
 		vtx += 5;
 
-		offsets[0] = short((phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z + phd_mxptr[M03]) >> W2V_SHIFT);
-		offsets[1] = short((phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z + phd_mxptr[M13]) >> W2V_SHIFT);
-		offsets[2] = short((phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z + phd_mxptr[M23]) >> W2V_SHIFT);
+		offsets[0] = short(mMXPtr[M00] * x + mMXPtr[M01] * y + mMXPtr[M02] * z + mMXPtr[M03]);
+		offsets[1] = short(mMXPtr[M10] * x + mMXPtr[M11] * y + mMXPtr[M12] * z + mMXPtr[M13]);
+		offsets[2] = short(mMXPtr[M20] * x + mMXPtr[M21] * y + mMXPtr[M22] * z + mMXPtr[M23]);
 
 		pos.x += offsets[0];
 		pos.y += offsets[1];

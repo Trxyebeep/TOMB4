@@ -14,12 +14,7 @@
 #include "lara.h"
 #include "newinv.h"
 
-#ifdef GENERAL_FIXES
 static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 0 };
-#else
-static PHD_VECTOR FullBlockSwitchPos = { 0, 256, 100 };
-#endif
-
 static PHD_VECTOR SwitchPos = { 0, 0, 0 };
 static PHD_VECTOR Switch2Pos = { 0, 0, 108 };
 static PHD_VECTOR UnderwaterSwitchPos = { 0, -736, -416 };

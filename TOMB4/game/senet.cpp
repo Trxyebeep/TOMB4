@@ -139,7 +139,7 @@ long CheckSenetWinner(long ourPiece)
 
 			if (num >= 3)									//all 3 dead?
 			{
-				trigger_item_in_room(0, RAISING_BLOCK2);	//lara winer!
+				trigger_item_in_room(0, RAISING_BLOCK2);	//lara wins
 				trigger_item_in_room(19, RAISING_BLOCK2);
 				return 1;
 			}
@@ -155,7 +155,7 @@ long CheckSenetWinner(long ourPiece)
 
 			if (num >= 6)									//all 3 dead?
 			{
-				trigger_item_in_room(20, TRAPDOOR1);		//semerkhet winer!	
+				trigger_item_in_room(20, TRAPDOOR1);		//semerkhet wins	
 				trigger_item_in_room(21, TRAPDOOR1);
 				trigger_item_in_room(22, TRAPDOOR1);
 				trigger_item_in_room(81, TRAPDOOR1);
@@ -389,7 +389,7 @@ void GameStixControl(short item_number)
 		else
 			last_throw = 0;
 	}
-	else if (!last_throw)	//keep an eye on me uwu
+	else if (!last_throw)
 	{
 		ThrowSticks(item);
 		change = 0;

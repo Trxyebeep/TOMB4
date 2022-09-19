@@ -594,7 +594,7 @@ void TriggerCrocgodMissile(PHD_3DPOS* pos, short room_number, short num)
 		fx->room_number = room_number;
 		fx->counter = 15 + (num << 4);
 		fx->flag1 = 6;
-		fx->object_number = 384;
+		fx->object_number = BUBBLES;
 		fx->speed = (GetRandomControl() & 0x1F) + 96;
 		fx->frame_number = objects[BUBBLES].mesh_index + 10;
 	}

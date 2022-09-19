@@ -15,23 +15,12 @@
 #include "switch.h"
 #include "lot.h"
 
-#ifdef GENERAL_FIXES
 static PHD_VECTOR CrowbarDoorPos = { -412, 0, 140 };
-#else
-static PHD_VECTOR CrowbarDoorPos = { -412, 0, 256 };
-#endif
-
 static PHD_VECTOR PullDoorPos = { -201, 0, 322 };
 static PHD_VECTOR PushDoorPos = { 201, 0, -702 };
 static PHD_VECTOR KickDoorPos = { 0, 0, -917 };
 static PHD_VECTOR DoubleDoorPos = { 0, 0, 220 };
-
-#ifdef GENERAL_FIXES
 static PHD_VECTOR UnderwaterDoorPos = { -251, -760, -46 };
-#else
-static PHD_VECTOR UnderwaterDoorPos = { -251, -540, -46 };
-#endif
-
 static short CrowbarDoorBounds[12] = { -512, 512, -1024, 0, 0, 512, -14560, 14560, -14560, 14560, -14560, 14560 };
 static short PushPullKickDoorBounds[12] = { -384, 384, 0, 0, -1024, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short UnderwaterDoorBounds[12] = { -256, 256, -1024, 0, -1024, 0, -14560, 14560, -14560, 14560, -14560, 14560 };

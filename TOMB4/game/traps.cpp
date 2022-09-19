@@ -1566,14 +1566,12 @@ void FlameControl(short fx_number)
 	FX_INFO* fx;
 	long r, g, b, wh;
 
-#ifdef GENERAL_FIXES
 	if (lara.water_status == LW_FLYCHEAT)
 	{
 		KillEffect(fx_number);
 		lara.burn = 0;
 		return;
 	}
-#endif
 
 	fx = &effects[fx_number];
 
@@ -2515,7 +2513,7 @@ void ControlObelisk(short item_number)
 						item->item_flags[2] = NO_ITEM;
 
 						disc = find_a_fucking_item(PUZZLE_ITEM1_COMBO1);
-						disc->status = ITEM_INACTIVE;	//hmm
+						disc->status = ITEM_INACTIVE;
 						SoundEffect(SFX_EXPLOSION1, &disc->pos, SFX_DEFAULT);
 						SoundEffect(SFX_EXPLOSION2, &disc->pos, SFX_DEFAULT);
 					}

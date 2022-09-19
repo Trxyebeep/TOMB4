@@ -10,11 +10,9 @@
 #include "winmain.h"
 #include "../game/sound.h"
 #include "../game/gameflow.h"
-#ifdef DISCORD_RPC
-#include "../tomb4/tomb4.h"
-#endif
 #include "dxshell.h"
 #include "../game/savegame.h"
+#include "../tomb4/tomb4.h"
 
 LPDIRECT3DVERTEXBUFFER DestVB;
 WATERTAB WaterTable[22][64];
@@ -22,7 +20,6 @@ THREAD MainThread;
 short* clipflags;
 float vert_wibble_table[32];
 long SaveCounter;
-short FPCW;
 
 static float unused_vert_wibble_table[256];
 static uchar water_abs[4] = { 4, 8, 12, 16 };
@@ -51,6 +48,9 @@ void GameClose()
 	if (ADPCMBuffer)
 		free(ADPCMBuffer);
 
+	if (logF)
+		fclose(logF);
+
 	free(malloc_buffer);
 	free(gfScriptFile);
 	free(gfLanguageFile);
@@ -58,8 +58,6 @@ void GameClose()
 
 unsigned int __stdcall GameMain(void* ptr)
 {
-	long fpcw;
-
 	Log(2, "GameMain");
 
 	if (GameInitialise())
@@ -70,28 +68,19 @@ unsigned int __stdcall GameMain(void* ptr)
 		InitFont();
 		TIME_Init();
 		App.SetupComplete = 1;
-		fpcw = MungeFPCW(&FPCW);
 		S_CDStop();
 		ClearSurfaces();
 
 		if (!App.SoundDisabled)
 			SOUND_Init();
 
-#ifdef DISCORD_RPC
 		RPC_Init();
-#endif
-
+		init_tomb4_stuff();
 		DoGameflow();
 		GameClose();
 		S_CDStop();
 
-#ifdef DISCORD_RPC
 		RPC_close();
-#endif
-
-		if (fpcw)
-			RestoreFPCW(FPCW);
-
 		PostMessage(App.hWnd, WM_CLOSE, 0, 0);
 		MainThread.active = 0;
 		_endthreadex(1);

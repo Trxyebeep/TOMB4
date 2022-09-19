@@ -1925,7 +1925,7 @@ void InitialiseLara()
 	lara.gun_type = gun;
 	lara.request_gun_type = gun;
 	LaraInitialiseMeshes();
-	lara.pistols_type_carried = 9;
+	lara.pistols_type_carried = W_PRESENT | W_AMMO1;
 	lara.binoculars = 1;
 	lara.num_flares = 3;
 	lara.num_small_medipack = 3;

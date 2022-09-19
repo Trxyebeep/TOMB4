@@ -39,9 +39,7 @@
 #include "lara.h"
 #include "deltapak.h"
 #include "health.h"
-#ifdef CUTSEQ_SKIPPER
 #include "../specific/dxshell.h"
-#endif
 #include "savegame.h"
 #include "../specific/file.h"
 
@@ -101,6 +99,7 @@ short FXType;
 char PoisonFlag;
 char TriggerTimer = 0;
 char LaserSightActive = 0;
+char DeathMenuActive;
 
 static PHD_VECTOR ClosestCoord;
 static long ClosestItem;
@@ -110,9 +109,6 @@ static long number_los_rooms = 0;
 static short los_rooms[20];
 
 static short cdtrack = -1;
-
-#ifdef GENERAL_FIXES
-char DeathMenuActive;
 
 static long S_Death()
 {
@@ -207,7 +203,6 @@ static long S_Death()
 	FreeMonoScreen();
 	return ret;
 }
-#endif
 
 long ControlPhase(long nframes, long demo_mode)
 {
@@ -231,9 +226,7 @@ long ControlPhase(long nframes, long demo_mode)
 	{
 		GlobalCounter++;
 		UpdateSky();
-#ifdef DISCORD_RPC
 		RPC_Update();
-#endif
 
 	//	if (cdtrack > 0)
 			//empty func call here
@@ -251,10 +244,8 @@ long ControlPhase(long nframes, long demo_mode)
 
 		if (cutseq_trig)
 		{
-#ifdef CUTSEQ_SKIPPER
 			if (keymap[DIK_ESCAPE] && !ScreenFading && !bDoCredits && tomb4.cutseq_skipper)
 				cutseq_trig = 3;
-#endif
 
 			input = 0;
 
@@ -272,8 +263,7 @@ long ControlPhase(long nframes, long demo_mode)
 
 		if (gfLevelComplete)
 			return 3;
-		
-#ifdef GENERAL_FIXES
+
 		if (tomb4.gameover)
 		{
 			if (reset_flag)
@@ -289,7 +279,6 @@ long ControlPhase(long nframes, long demo_mode)
 			}
 		}
 		else
-#endif
 		{
 			if (reset_flag || lara.death_count > 300 || lara.death_count > 60 && input)
 			{
@@ -309,29 +298,16 @@ long ControlPhase(long nframes, long demo_mode)
 
 		if (!FadeScreenHeight)
 		{
-#ifdef GENERAL_FIXES
 			if (input & IN_SAVE && lara_item->hit_points > 0)
 				S_LoadSave(IN_SAVE, 0, 0);
-#else
-			if (input & IN_SAVE)
-				S_LoadSave(IN_SAVE, 0);
-#endif
 
 			else if (input & IN_LOAD)
 			{
-#ifdef GENERAL_FIXES
 				if (S_LoadSave(IN_LOAD, 0, 0) >= 0)
-#else
-				if (S_LoadSave(IN_LOAD, 0) >= 0)
-#endif
 					return 2;
 			}
 
-#ifdef GENERAL_FIXES
 			if (input & IN_PAUSE && gfGameMode == 0 && lara_item->hit_points > 0)
-#else
-			if (input & IN_PAUSE && gfGameMode == 0)
-#endif
 			{
 				if (S_PauseMenu() == 8)
 					return 1;
@@ -346,14 +322,14 @@ long ControlPhase(long nframes, long demo_mode)
 		{
 			if (!BinocularRange)
 			{
-				if (lara.gun_type == WEAPON_REVOLVER && lara.sixshooter_type_carried & 4 && lara.gun_status == LG_READY)
+				if (lara.gun_type == WEAPON_REVOLVER && lara.sixshooter_type_carried & W_LASERSIGHT && lara.gun_status == LG_READY)
 				{
 					BinocularRange = 128;
 					BinocularOldCamera = camera.old_type;
 					lara.Busy = 1;
 					LaserSight = 1;
 				}
-				else if (lara.gun_type == WEAPON_CROSSBOW && lara.crossbow_type_carried & 4 && lara.gun_status == LG_READY)
+				else if (lara.gun_type == WEAPON_CROSSBOW && lara.crossbow_type_carried & W_LASERSIGHT && lara.gun_status == LG_READY)
 				{
 					BinocularRange = 128;
 					BinocularOldCamera = camera.old_type;
@@ -563,10 +539,9 @@ void FlipMap(long FlipNumber)
 
 		if (r->flipped_room >= 0 && r->FlipNumber == FlipNumber)
 		{
-#ifdef GENERAL_FIXES	//reset lighting room so objects take the new room's light...
 			for (int j = r->item_number; j != NO_ITEM; j = items[j].next_item)
 				items[j].il.room_number = 255;
-#endif
+
 			RemoveRoomFlipItems(r);
 			flipped = &room[r->flipped_room];
 			memcpy(&temp, r, sizeof(temp));
@@ -2610,10 +2585,8 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 		target.y = v.y - ((v.y - src->y) >> 5);
 		target.z = v.z - ((v.z - src->z) >> 5);
 
-#ifdef GENERAL_FIXES
 		if (item_no >= 0 && DrawTarget)
 			lara.target = &items[item_no];
-#endif
 
 		if (firing)
 		{
@@ -3053,16 +3026,16 @@ long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS*
 	x = target->x - ItemPos->x_pos;
 	y = target->y - ItemPos->y_pos;
 	z = target->z - ItemPos->z_pos;
-	tpos.x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z) >> W2V_SHIFT;
-	tpos.y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z) >> W2V_SHIFT;
-	tpos.z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z) >> W2V_SHIFT;
+	tpos.x = long(mMXPtr[M00] * x + mMXPtr[M01] * y + mMXPtr[M02] * z);
+	tpos.y = long(mMXPtr[M10] * x + mMXPtr[M11] * y + mMXPtr[M12] * z);
+	tpos.z = long(mMXPtr[M20] * x + mMXPtr[M21] * y + mMXPtr[M22] * z);
 
 	x = start->x - ItemPos->x_pos;
 	y = start->y - ItemPos->y_pos;
 	z = start->z - ItemPos->z_pos;
-	spos.x = (phd_mxptr[M00] * x + phd_mxptr[M01] * y + phd_mxptr[M02] * z) >> W2V_SHIFT;
-	spos.y = (phd_mxptr[M10] * x + phd_mxptr[M11] * y + phd_mxptr[M12] * z) >> W2V_SHIFT;
-	spos.z = (phd_mxptr[M20] * x + phd_mxptr[M21] * y + phd_mxptr[M22] * z) >> W2V_SHIFT;
+	spos.x = long(mMXPtr[M00] * x + mMXPtr[M01] * y + mMXPtr[M02] * z);
+	spos.y = long(mMXPtr[M10] * x + mMXPtr[M11] * y + mMXPtr[M12] * z);
+	spos.z = long(mMXPtr[M20] * x + mMXPtr[M21] * y + mMXPtr[M22] * z);
 
 	phd_PopMatrix();
 
@@ -3088,9 +3061,9 @@ long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS*
 	phd_PushUnitMatrix();
 	phd_RotY(ItemPos->y_rot);
 
-	x = (phd_mxptr[M00] * Coord->x + phd_mxptr[M01] * Coord->y + phd_mxptr[M02] * Coord->z) >> W2V_SHIFT;
-	y = (phd_mxptr[M10] * Coord->x + phd_mxptr[M11] * Coord->y + phd_mxptr[M12] * Coord->z) >> W2V_SHIFT;
-	z = (phd_mxptr[M20] * Coord->x + phd_mxptr[M21] * Coord->y + phd_mxptr[M22] * Coord->z) >> W2V_SHIFT;
+	x = long(mMXPtr[M00] * Coord->x + mMXPtr[M01] * Coord->y + mMXPtr[M02] * Coord->z);
+	y = long(mMXPtr[M10] * Coord->x + mMXPtr[M11] * Coord->y + mMXPtr[M12] * Coord->z);
+	z = long(mMXPtr[M20] * Coord->x + mMXPtr[M21] * Coord->y + mMXPtr[M22] * Coord->z);
 	Coord->x = x;
 	Coord->y = y;
 	Coord->z = z;

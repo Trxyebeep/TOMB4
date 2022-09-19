@@ -98,7 +98,7 @@ static ITEM_INFO* horus_item_thing;
 static PACKNODE* camera_pnodes;
 static PACKNODE* actor_pnodes[10];
 static ITEM_INFO duff_item[10];
-static char* GLOBAL_resident_depack_buffers;	//useless
+static char* GLOBAL_resident_depack_buffers;	//not really used
 static camera_type GLOBAL_oldcamtype;
 static ulong cutseq_meshbits[10];
 static ulong cutseq_meshswapbits[10];
@@ -639,9 +639,9 @@ void GetJointAbsPositionCutSeq(ITEM_INFO* item, OBJECT_INFO* obj, short* rot, PH
 	phd_TranslateRel(rot[6], rot[7], rot[8]);
 	rot2 = rot + 9;
 	gar_RotYXZsuperpack(&rot2, 0);
-	pos->x = phd_mxptr[M03] >> W2V_SHIFT;
-	pos->y = phd_mxptr[M13] >> W2V_SHIFT;
-	pos->z = phd_mxptr[M23] >> W2V_SHIFT;
+	pos->x = (long)mMXPtr[M03];
+	pos->y = (long)mMXPtr[M13];
+	pos->z = (long)mMXPtr[M23];
 	pos->x += item->pos.x_pos;
 	pos->y += item->pos.y_pos;
 	pos->z += item->pos.z_pos;
@@ -1217,11 +1217,7 @@ void twentythree_control()
 
 	switch (GLOBAL_cutseq_frame)
 	{
-#ifdef GENERAL_FIXES
 	case 210:
-#else
-	case 194:
-#endif
 		horus_item_thing->mesh_bits &= ~0x200;
 		horus_item_thing->mesh_bits |= 0x20;
 		break;
@@ -1241,11 +1237,7 @@ void twentythree_control()
 		horus_item_thing->mesh_bits |= 0x80;
 		break;
 
-#ifdef GENERAL_FIXES
 	case 500:
-#else
-	case 514:
-#endif
 		horus_item_thing->mesh_bits &= ~2;
 		horus_item_thing->mesh_bits |= 0x100;
 		break;
@@ -1259,11 +1251,7 @@ void twentythree_control()
 void twentythree_end()
 {
 	DelsHandyTeleportLara(17476, 29952, 15872, -16135);
-#ifdef GENERAL_FIXES
 	lara.questitems = 0;
-#else
-	lara.questitems &= 1;
-#endif
 }
 
 void twentyfour_init()

@@ -49,35 +49,35 @@ void Draw_Mirror_Lara()
 
 	if (lara.right_arm.flash_gun)
 	{
-		phd_mxptr[M00] = lara_matrices[11 * indices_count + M00];
-		phd_mxptr[M01] = lara_matrices[11 * indices_count + M01];
-		phd_mxptr[M02] = lara_matrices[11 * indices_count + M02];
-		phd_mxptr[M03] = lara_matrices[11 * indices_count + M03];
-		phd_mxptr[M10] = lara_matrices[11 * indices_count + M10];
-		phd_mxptr[M11] = lara_matrices[11 * indices_count + M11];
-		phd_mxptr[M12] = lara_matrices[11 * indices_count + M12];
-		phd_mxptr[M13] = lara_matrices[11 * indices_count + M13];
-		phd_mxptr[M20] = lara_matrices[11 * indices_count + M20];
-		phd_mxptr[M21] = lara_matrices[11 * indices_count + M21];
-		phd_mxptr[M22] = lara_matrices[11 * indices_count + M22];
-		phd_mxptr[M23] = lara_matrices[11 * indices_count + M23];
+		mMXPtr[M00] = lara_matrices[11 * indices_count + M00];
+		mMXPtr[M01] = lara_matrices[11 * indices_count + M01];
+		mMXPtr[M02] = lara_matrices[11 * indices_count + M02];
+		mMXPtr[M03] = lara_matrices[11 * indices_count + M03];
+		mMXPtr[M10] = lara_matrices[11 * indices_count + M10];
+		mMXPtr[M11] = lara_matrices[11 * indices_count + M11];
+		mMXPtr[M12] = lara_matrices[11 * indices_count + M12];
+		mMXPtr[M13] = lara_matrices[11 * indices_count + M13];
+		mMXPtr[M20] = lara_matrices[11 * indices_count + M20];
+		mMXPtr[M21] = lara_matrices[11 * indices_count + M21];
+		mMXPtr[M22] = lara_matrices[11 * indices_count + M22];
+		mMXPtr[M23] = lara_matrices[11 * indices_count + M23];
 		SetGunFlash(lara.gun_type);
 	}
 
 	if (lara.left_arm.flash_gun)
 	{
-		phd_mxptr[M00] = lara_matrices[14 * indices_count + M00];
-		phd_mxptr[M01] = lara_matrices[14 * indices_count + M01];
-		phd_mxptr[M02] = lara_matrices[14 * indices_count + M02];
-		phd_mxptr[M03] = lara_matrices[14 * indices_count + M03];
-		phd_mxptr[M10] = lara_matrices[14 * indices_count + M10];
-		phd_mxptr[M11] = lara_matrices[14 * indices_count + M11];
-		phd_mxptr[M12] = lara_matrices[14 * indices_count + M12];
-		phd_mxptr[M13] = lara_matrices[14 * indices_count + M13];
-		phd_mxptr[M20] = lara_matrices[14 * indices_count + M20];
-		phd_mxptr[M21] = lara_matrices[14 * indices_count + M21];
-		phd_mxptr[M22] = lara_matrices[14 * indices_count + M22];
-		phd_mxptr[M23] = lara_matrices[14 * indices_count + M23];
+		mMXPtr[M00] = lara_matrices[14 * indices_count + M00];
+		mMXPtr[M01] = lara_matrices[14 * indices_count + M01];
+		mMXPtr[M02] = lara_matrices[14 * indices_count + M02];
+		mMXPtr[M03] = lara_matrices[14 * indices_count + M03];
+		mMXPtr[M10] = lara_matrices[14 * indices_count + M10];
+		mMXPtr[M11] = lara_matrices[14 * indices_count + M11];
+		mMXPtr[M12] = lara_matrices[14 * indices_count + M12];
+		mMXPtr[M13] = lara_matrices[14 * indices_count + M13];
+		mMXPtr[M20] = lara_matrices[14 * indices_count + M20];
+		mMXPtr[M21] = lara_matrices[14 * indices_count + M21];
+		mMXPtr[M22] = lara_matrices[14 * indices_count + M22];
+		mMXPtr[M23] = lara_matrices[14 * indices_count + M23];
 		SetGunFlash(lara.gun_type);
 	}
 

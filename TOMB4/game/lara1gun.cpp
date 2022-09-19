@@ -137,9 +137,9 @@ void FireCrossbow(PHD_3DPOS* pos)
 		item->speed = 512;
 		AddActiveItem(item_number);
 
-		if (lara.crossbow_type_carried & 8)
+		if (lara.crossbow_type_carried & W_AMMO1)
 			item->item_flags[0] = 1;
-		else if (lara.crossbow_type_carried & 0x10)
+		else if (lara.crossbow_type_carried & W_AMMO2)
 			item->item_flags[0] = 2;
 		else
 			item->item_flags[0] = 3;
@@ -200,7 +200,7 @@ void FireShotgun()
 
 	fired = 0;
 
-	if (lara.shotgun_type_carried & 8)
+	if (lara.shotgun_type_carried & W_AMMO1)
 		scatter = 1820;
 	else
 		scatter = 5460;
@@ -320,9 +320,9 @@ void FireGrenade()
 	if (*ammo != -1)
 		--*ammo;
 
-	if (lara.grenade_type_carried & 8)
+	if (lara.grenade_type_carried & W_AMMO1)
 		item->item_flags[0] = 1;
-	else if (lara.grenade_type_carried & 0x10)
+	else if (lara.grenade_type_carried & W_AMMO2)
 		item->item_flags[0] = 2;
 	else
 		item->item_flags[0] = 3;
@@ -751,11 +751,7 @@ void undraw_shotgun(long weapon_type)
 		lara.left_arm.frame_number = 0;
 	}
 	else if (item->current_anim_state == 3 &&
-#ifdef GENERAL_FIXES
 		anims[item->anim_number].frame_base == item->frame_number - (weapon_type == WEAPON_GRENADE ? 16 : 21))
-#else
-	 anims[item->anim_number].frame_base == item->frame_number - 21)
-#endif
 			undraw_shotgun_meshes(weapon_type);
 
 	lara.right_arm.frame_base = anims[item->anim_number].frame_ptr;
@@ -1098,14 +1094,12 @@ void ControlGrenade(short item_number)
 	if (item->speed && abovewater)
 	{
 		phd_PushUnitMatrix();
-		phd_mxptr[M03] = 0;
-		phd_mxptr[M13] = 0;
-		phd_mxptr[M23] = 0;
+		phd_SetTrans(0, 0, 0);
 		phd_RotYXZ(item->pos.y_rot + 0x8000, item->pos.x_rot, item->pos.z_rot);
 		phd_TranslateRel(0, 0, -64);
-		pos.x = phd_mxptr[M03] >> W2V_SHIFT;
-		pos.y = phd_mxptr[M13] >> W2V_SHIFT;
-		pos.z = phd_mxptr[M23] >> W2V_SHIFT;
+		pos.x = (long)mMXPtr[M03];
+		pos.y = (long)mMXPtr[M13];
+		pos.z = (long)mMXPtr[M23];
 		phd_PopMatrix();
 
 		TriggerRocketSmoke(item->pos.x_pos + pos.x, item->pos.y_pos + pos.y, item->pos.z_pos + pos.z, -1);
