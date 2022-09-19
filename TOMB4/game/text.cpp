@@ -67,7 +67,7 @@ char AccentTable[46][2] =
 };
 
 #pragma warning(push)
-#pragma warning(disable : 4838)	//long -> char truncation bullshit
+#pragma warning(disable : 4838)
 #pragma warning(disable : 4309)
 static CVECTOR ShadeFromTo[10][2] =
 {

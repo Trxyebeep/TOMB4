@@ -24,7 +24,7 @@
 #include "../tomb4/tomb4.h"
 
 #pragma warning(push)
-#pragma warning(disable : 4838)	//long -> char truncation bullshit
+#pragma warning(disable : 4838)
 #pragma warning(disable : 4309)
 INVOBJ inventry_objects_list[NUM_INVOBJ] =
 {
@@ -1612,7 +1612,7 @@ void remove_inventory_item(short object_number)
 	}
 	else if (object_number >= KEY_ITEM1_COMBO1 && object_number <= KEY_ITEM8_COMBO2)
 		lara.keyitemscombo &= ~(1 << (object_number - KEY_ITEM1_COMBO1));
-	else if (object_number >= KEY_ITEM1 && object_number <= KEY_ITEM11)	//uhhh why 11
+	else if (object_number >= KEY_ITEM1 && object_number <= KEY_ITEM11)	//why 11
 		lara.keyitems &= ~(1 << (object_number - KEY_ITEM1));
 	else if (object_number >= PICKUP_ITEM1_COMBO1 && object_number <= PICKUP_ITEM4_COMBO2)
 		lara.pickupitemscombo &= ~(1 << (object_number - PICKUP_ITEM1_COMBO1));
@@ -1891,7 +1891,7 @@ void use_current_item()
 		GLOBAL_inventoryitemchosen = gmeobject;
 }
 
-void DEL_picked_up_object(short objnum)
+void DEL_picked_up_object(short objnum)	//notice fallthroughs
 {
 	long lf;
 
@@ -1909,7 +1909,7 @@ void DEL_picked_up_object(short objnum)
 
 		if (!(lara.uzis_type_carried & W_PRESENT))
 			lara.uzis_type_carried = W_PRESENT | W_AMMO1;
-												//LOOK!!!!
+
 	case UZI_AMMO_ITEM:
 
 		if (lara.num_uzi_ammo != -1)
@@ -1929,7 +1929,7 @@ void DEL_picked_up_object(short objnum)
 
 		if (!(lara.shotgun_type_carried & W_PRESENT))
 			lara.shotgun_type_carried = W_PRESENT | W_AMMO1;
-												//LOOK!!!!
+
 	case SHOTGUN_AMMO1_ITEM:
 
 		if (lara.num_shotgun_ammo1 != -1)
@@ -1948,7 +1948,7 @@ void DEL_picked_up_object(short objnum)
 
 		if (!(lara.sixshooter_type_carried & W_PRESENT))
 			lara.sixshooter_type_carried = W_PRESENT | W_AMMO1;
-												//LOOK!!!
+
 	case SIXSHOOTER_AMMO_ITEM:
 
 		if (lara.num_revolver_ammo != -1)
@@ -1960,7 +1960,7 @@ void DEL_picked_up_object(short objnum)
 
 		if (!(lara.crossbow_type_carried & W_PRESENT))
 			lara.crossbow_type_carried = W_PRESENT | W_AMMO1;
-												//LOOK!!!
+
 	case CROSSBOW_AMMO1_ITEM:
 
 		if (lara.num_crossbow_ammo1 != -1)
@@ -1986,7 +1986,7 @@ void DEL_picked_up_object(short objnum)
 
 		if (!(lara.grenade_type_carried & W_PRESENT))
 			lara.grenade_type_carried = W_PRESENT | W_AMMO1;
-												//LOOK!!!
+
 	case GRENADE_GUN_AMMO1_ITEM:
 
 		if (lara.num_grenade_ammo1 != -1)
@@ -2193,17 +2193,17 @@ void draw_ammo_selector()
 	{
 		objme = &inventry_objects_list[ammo_object_list[i].invitem];
 
-		if (i == *current_ammo_type)	//current ammo type selected?
+		if (i == *current_ammo_type)
 		{
-			if (objme->flags & 2)	//rot y
+			if (objme->flags & 2)
 				ammo_object_list[i].yrot += 1022;
 		}
 		else
-			spinback(&ammo_object_list[i].yrot);	//spin back
+			spinback(&ammo_object_list[i].yrot);
 
 		yrot = ammo_object_list[i].yrot;
 
-		if (i == *current_ammo_type)	//current ammo type selected?
+		if (i == *current_ammo_type)
 		{
 			if (ammo_object_list[i].amount == -1)
 				sprintf(cunter, SCRIPT_TEXT(TXT_Unlimited_s), SCRIPT_TEXT(objme->objname));
@@ -2213,11 +2213,11 @@ void draw_ammo_selector()
 			if (ammo_selector_fade_val)
 				PrintString((ushort)phd_centerx, ushort(font_height + phd_centery + 2 * font_height - 9), 8, cunter, FF_CENTER);
 
-			DrawThreeDeeObject2D(long((float)phd_centerx / 256.0F * 64.0F + inventry_xpos + xpos),	//draw lit
+			DrawThreeDeeObject2D(long((float)phd_centerx / 256.0F * 64.0F + inventry_xpos + xpos),
 				long((float)phd_centery / 120.0F * 190.0F + inventry_ypos), ammo_object_list[i].invitem, ammo_selector_fade_val, 0, yrot, 0, 0, 0);
 		}
 		else
-			DrawThreeDeeObject2D(long((float)phd_centerx / 256.0F * 64.0F + inventry_xpos + xpos),	//draw shaded
+			DrawThreeDeeObject2D(long((float)phd_centerx / 256.0F * 64.0F + inventry_xpos + xpos),
 				long((float)phd_centery / 120.0F * 190.0F + inventry_ypos), ammo_object_list[i].invitem, ammo_selector_fade_val, 0, yrot, 0, 1, 0);
 
 		xpos += OBJLIST_SPACING;
@@ -2247,7 +2247,7 @@ void handle_inventry_menu()
 				if (do_special_waterskin_combine_bullshit(0))
 				{
 					combine_type_flag = 2;
-					combine_ring_fade_dir = 2;	//they forgot the <beep> SoundEffect call here
+					combine_ring_fade_dir = 2;	//they forgot the SoundEffect call here
 				}
 			}
 			else if (ammo_item >= INV_WATERSKIN1_EMPTY_ITEM && ammo_item <= INV_WATERSKIN1_3_ITEM &&	//big one selected

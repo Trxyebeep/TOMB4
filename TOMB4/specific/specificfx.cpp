@@ -384,7 +384,7 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 	zSize = size * (box[5] - box[4]) / 192;	//z size of grid
 	xDist = xSize / LINE_POINTS;			//distance between each point of the grid on X
 	zDist = zSize / LINE_POINTS;			//distance between each point of the grid on Z
-	x = -xDist - (xDist >> 1);				//idfk
+	x = -xDist - (xDist >> 1);
 	z = zDist + (zDist >> 1);
 	sXYZ = sxyz;
 	hXZ = hxz;

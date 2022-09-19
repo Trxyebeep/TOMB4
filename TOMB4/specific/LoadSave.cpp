@@ -296,14 +296,14 @@ static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long c
 	v[2].rhw = f_mpersp / f_mznear * f_moneopersp;
 	v[3].rhw = f_mpersp / f_mznear * f_moneopersp;
 
-	r1 = (float)CLRR(clr1);		//get rgbs
+	r1 = (float)CLRR(clr1);
 	g1 = (float)CLRG(clr1);
 	b1 = (float)CLRB(clr1);
 	r2 = (float)CLRR(clr2);
 	g2 = (float)CLRG(clr2);
 	b2 = (float)CLRB(clr2);
 
-	mul = fx2 / (fw * fx);		//mix
+	mul = fx2 / (fw * fx);
 	r = r1 + ((r2 - r1) * mul);
 	g = g1 + ((g2 - g1) * mul);
 	b = b1 + ((b2 - b1) * mul);
@@ -311,13 +311,13 @@ static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long c
 	lr = (long)r1;
 	lg = (long)g1;
 	lb = (long)b1;
-	clr_11 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);	//clr1 is taken as is
+	clr_11 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);
 	clr_12 = RGBONLY(lr, lg, lb);
 
 	lr = (long)r;
 	lg = (long)g;
 	lb = (long)b;
-	clr_21 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);	//clr2 is the mix
+	clr_21 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);
 	clr_22 = RGBONLY(lr, lg, lb);
 
 	v[0].color = clr_11;
@@ -1598,7 +1598,7 @@ void CreateMonoScreen()
 	ConvertSurfaceToTextures(App.dx.lpBackBuffer);
 }
 
-void FreeMonoScreen()	//"I DONT KNOW WHAT A FOR LOOP IS!!!!!!!!!" - said whoever stupid fuck that wrote this
+void FreeMonoScreen()
 {
 	if (MonoScreen[0].surface)
 	{

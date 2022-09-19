@@ -2513,7 +2513,7 @@ void ControlObelisk(short item_number)
 						item->item_flags[2] = NO_ITEM;
 
 						disc = find_a_fucking_item(PUZZLE_ITEM1_COMBO1);
-						disc->status = ITEM_INACTIVE;	//hmm
+						disc->status = ITEM_INACTIVE;
 						SoundEffect(SFX_EXPLOSION1, &disc->pos, SFX_DEFAULT);
 						SoundEffect(SFX_EXPLOSION2, &disc->pos, SFX_DEFAULT);
 					}

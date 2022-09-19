@@ -245,7 +245,7 @@ void DrawSortList()
 				}
 				else
 				{
-					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined in asm
+					HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);	//inlined
 					drawtype = pSort->drawtype;
 					tpage = pSort->tpage;
 					bVtx = bVtxbak;

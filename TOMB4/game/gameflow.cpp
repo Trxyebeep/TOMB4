@@ -919,7 +919,7 @@ void DoTitle(uchar Name, uchar Audio)
 	while (!gfStatus)
 	{
 		S_InitialisePolyList();
-		gfStatus = TitleOptions();	//INLINEDDDDD!!!!!
+		gfStatus = TitleOptions();	//originally inlined
 
 		if (gfStatus)
 			break;

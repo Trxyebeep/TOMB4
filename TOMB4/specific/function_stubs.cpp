@@ -89,11 +89,11 @@ void* game_malloc(long size)
 void Log(ulong type, const char* s, ...)
 {
 #ifdef DO_LOG
-	if (!logF)
-		logF = fopen("log.txt", "w+");
-
 	va_list list;
 	char buf[4096];
+
+	if (!logF)
+		logF = fopen("log.txt", "w+");
 
 	va_start(list, s);
 	vsprintf(buf, s, list);

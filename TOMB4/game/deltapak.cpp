@@ -98,7 +98,7 @@ static ITEM_INFO* horus_item_thing;
 static PACKNODE* camera_pnodes;
 static PACKNODE* actor_pnodes[10];
 static ITEM_INFO duff_item[10];
-static char* GLOBAL_resident_depack_buffers;	//useless
+static char* GLOBAL_resident_depack_buffers;	//not really used
 static camera_type GLOBAL_oldcamtype;
 static ulong cutseq_meshbits[10];
 static ulong cutseq_meshswapbits[10];

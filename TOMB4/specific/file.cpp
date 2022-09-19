@@ -938,7 +938,7 @@ bool LoadSprites()
 			stat = &static_objects[slot];
 			stat->mesh_number = *(short*)FileData;
 			FileData += sizeof(short);
-			stat->mesh_number = *(short*)FileData;	//what the hell
+			stat->mesh_number = *(short*)FileData;
 			FileData += sizeof(short);
 		}
 		else

@@ -211,14 +211,14 @@ static void mRotYXZpack(long angles)
 	if (angle)
 		mRotY(angle);
 
-	angle = (angles >> 20) & 0x3FF;//firrst ten bits, X
-	angle <<= 6;//* 64
+	angle = (angles >> 20) & 0x3FF;
+	angle <<= 6;
 
 	if (angle)
 		mRotX(angle);
 
-	angle = angles & 0x3FF;//last ten, Z
-	angle <<= 6;//* 64
+	angle = angles & 0x3FF;
+	angle <<= 6;
 
 	if (angle)
 		mRotZ(angle);

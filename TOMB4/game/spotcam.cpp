@@ -71,7 +71,7 @@ void SetSplineData(long num, long cam)
 		camera_ytarget[num] = LaraFixedPosition.y;
 		camera_ztarget[num] = LaraFixedPosition.z;
 	}
-	else//useless
+	else
 	{
 		camera_xtarget[num] = spotcam->tx;
 		camera_ytarget[num] = spotcam->ty;
@@ -555,7 +555,7 @@ void CalculateSpotCams()
 					else
 					{
 						current_spline_camera--;
-						SetSplineData(0, current_spline_camera - 1);	//both INLINEDDDDDDDDD
+						SetSplineData(0, current_spline_camera - 1);	//both inlined
 						SetSplineData(1, current_spline_camera);
 						memcpy(&backup, &camera, sizeof(CAMERA_INFO));
 						camera.old_type = FIXED_CAMERA;

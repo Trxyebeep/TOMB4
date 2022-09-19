@@ -477,7 +477,7 @@ void SethControl(short item_number)
 				else
 				{
 					item->ai_bits = AMBUSH;
-					seth->hurt_by_lara = 1;		//liars wtf
+					seth->hurt_by_lara = 1;	
 					item->goal_anim_state = 2;
 				}
 			}

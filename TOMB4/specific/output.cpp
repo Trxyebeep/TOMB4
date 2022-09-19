@@ -39,7 +39,7 @@ long GlobalAmbient;
 float AnimatingTexturesV[16][8][3];
 static short AnimatingTexturesVOffset;
 
-void phd_PutPolygons(short* objptr, long clip)	//whore
+void phd_PutPolygons(short* objptr, long clip)
 {
 	MESH_DATA* mesh;
 	SPRITESTRUCT* envmap_sprite;
@@ -1335,7 +1335,7 @@ void StashSkinVertices(long node)
 	while (1)
 	{
 		if (*vns < 0)
-			return;	//they forgot to unlock DestVB
+			break;
 
 		d->sx = v[*vns].sx;
 		d->sy = v[*vns].sy;
@@ -1349,6 +1349,8 @@ void StashSkinVertices(long node)
 		d++;
 		vns++;
 	}
+
+	DestVB->Unlock();
 }
 
 void SkinVerticesToScratch(long node)
@@ -1366,7 +1368,7 @@ void SkinVerticesToScratch(long node)
 	while (1)
 	{
 		if (*vns < 0)
-			return;	//they forgot to unlock DestVB again
+			break;
 
 		v[*vns].sx = d->sx;
 		v[*vns].sy = d->sy;
@@ -1380,4 +1382,6 @@ void SkinVerticesToScratch(long node)
 		d++;
 		vns++;
 	}
+
+	DestVB->Unlock();
 }

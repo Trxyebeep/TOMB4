@@ -1291,7 +1291,7 @@ void PrintObjects(short room_number)
 		if (item->status != ITEM_INVISIBLE)
 		{
 			if (item->after_death)
-				GlobalAlpha = 0xFE000000 * item->after_death;	//mmmm
+				GlobalAlpha = 0xFE000000 * item->after_death;
 
 			if (obj->draw_routine)
 				obj->draw_routine(item);

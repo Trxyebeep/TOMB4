@@ -22,7 +22,6 @@ long DXCreateD3DDevice(LPDIRECT3DX d3d, GUID guid, LPDIRECTDRAWSURFACEX surf, LP
 long DXCreateViewport(LPDIRECT3DX d3d, LPDIRECT3DDEVICEX device, long w, long h, LPDIRECT3DVIEWPORTX* viewport);
 HRESULT DXShowFrame();
 void DXMove(long x, long y);
-//void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance);
 void DXSaveScreen(LPDIRECTDRAWSURFACEX surf, const char* name);
 void DXClose();
 long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, long WindowStyle);

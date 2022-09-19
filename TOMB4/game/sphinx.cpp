@@ -86,7 +86,7 @@ void SphinxControl(short item_number)
 	GetCreatureMood(item, &info, 1);
 	CreatureMood(item, &info, 1);
 	angle = CreatureTurn(item, sphinx->maximum_turn);
-	x = abs(item->item_flags[2] - short(item->pos.x_pos));	//hmmmmmmmmmmmmmmmmmmmmmm?
+	x = abs(item->item_flags[2] - short(item->pos.x_pos));
 	z = abs(item->item_flags[3] - short(item->pos.z_pos));
 
 	switch (item->current_anim_state)
@@ -116,7 +116,7 @@ void SphinxControl(short item_number)
 
 		if (info.distance > 0x400000 && abs(info.angle) <= 512)
 			item->goal_anim_state = 5;
-		else if (item->required_anim_state == 5)	//rly
+		else if (item->required_anim_state == 5)
 			item->goal_anim_state = 5;
 		else if (info.distance < 0x400000 && item->goal_anim_state != 5)
 		{
