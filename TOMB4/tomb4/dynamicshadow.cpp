@@ -962,7 +962,7 @@ void phd_PutPolygons_ShadowMesh(short* objptr, long clip)
 
 	tex.flag = 0;
 	tex.tpage = 0;
-	tex.drawtype = 3;
+	tex.drawtype = 8;
 	tex.u1 = 0;
 	tex.v1 = 0;
 	tex.u2 = 0;

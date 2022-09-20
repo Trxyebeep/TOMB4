@@ -162,6 +162,20 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		break;
+
+	case 8:	//special shadow stencil thing(?)
+
+		if (App.dx.lpZBuffer)
+			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
+
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 1);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
+		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+		break;
 	}
 
 	DrawPrimitiveCnt++;
@@ -262,7 +276,8 @@ void DrawSortList()
 		{
 			pSort = SortList[num];
 
-			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 5 || pSort->drawtype == 6 || pSort->drawtype == 7)
+			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 5 ||
+				pSort->drawtype == 6 || pSort->drawtype == 7 || pSort->drawtype == 8)
 				break;
 		}
 
@@ -276,7 +291,8 @@ void DrawSortList()
 		{
 			pSort = SortList[num];
 
-			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 5 || pSort->drawtype == 6 || pSort->drawtype == 7)
+			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 5 ||
+				pSort->drawtype == 6 || pSort->drawtype == 7 || pSort->drawtype == 8)
 			{
 				if (pSort->tpage == tpage && pSort->drawtype == drawtype)
 				{
