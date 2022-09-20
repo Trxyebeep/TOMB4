@@ -1,43 +1,29 @@
 #include "../tomb4/pch.h"
-#include "delstuff.h"
-#include "../specific/specificfx.h"
+#include "dynamicshadow.h"
 #include "../specific/3dmath.h"
-#include "draw.h"
+#include "../game/control.h"
+#include "../game/lara.h"
+#include "../game/draw.h"
+#include "../game/objects.h"
+#include "../game/lara_states.h"
+#include "../specific/d3dmatrix.h"
 #include "../specific/output.h"
-#include "hair.h"
-#include "objects.h"
-#include "control.h"
-#include "lara_states.h"
-#include "../specific/input.h"
-#include "../specific/function_stubs.h"
-#include "lara.h"
-#include "gameflow.h"
-#include "../tomb4/tomb4.h"
-#include "../tomb4/dynamicshadow.h"
+#include "../game/gameflow.h"
+#include "../specific/winmain.h"
+#include "../specific/dxshell.h"
+#include "../specific/gamemain.h"
+#include "../specific/drawroom.h"
+#include "../specific/function_table.h"
 
-short* GLaraShadowframe;
-float lara_matrices[180];
-float lara_joint_matrices[180];
-long LaraNodeAmbient[2];
-long bLaraUnderWater;
-uchar LaraNodeUnderwater[15];
-char SkinVertNums[40][12];
-char ScratchVertNums[40][12];
-char bLaraInWater;
+float shadow_matrices[180];
+float shadow_joint_matrices[180];
 
-char HairRotScratchVertNums[5][12] =
+long ShadowMeshSweetnessTable[15] =
 {
-	{ 4, 5, 6, 7, -1, 0, 0, 0, 0, 0, 0, 0 },
-	{ 5, 6, 7, 4, -1, 0, 0, 0, 0, 0, 0, 0 },
-	{ 6, 7, 4, 5, -1, 0, 0, 0, 0, 0, 0, 0 },
-	{ 7, 4, 5, 6, -1, 0, 0, 0, 0, 0, 0, 0 },
-	{ 4, 5, 6, 7, -1, 0, 0, 0, 0, 0, 0, 0 }
+	0, 1, 2, 3, 4, 5, 6, 7, 14, 8, 9, 10, 11, 12, 13
 };
 
-static long lara_mesh_sweetness_table[15] = { 0, 1, 2, 3, 4, 5, 6, 7, 14, 8, 9, 10, 11, 12, 13 };
-static char lara_underwater_skin_sweetness_table[15] = { 0, 2, 3, 0, 5, 6, 7, 9, 10, 11, 12, 13, 14, 8, 0 };
-
-static char NodesToStashToScratch[14][2] =
+char ShadowNodesToStashToScratch[14][2] =
 {
 	{1, 3},
 	{4, 5},
@@ -55,7 +41,7 @@ static char NodesToStashToScratch[14][2] =
 	{16, 27}
 };
 
-static char NodesToStashFromScratch[15][4] =
+char ShadowNodesToStashFromScratch[15][4] =
 {
 	{0, 1, 2, -1},
 	{3, 4, -1, 0},
@@ -74,7 +60,7 @@ static char NodesToStashFromScratch[15][4] =
 	{26, -1, 0, 0}
 };
 
-static uchar SkinUseMatrix[14][2] =
+uchar ShadowUseMatrix[14][2] =
 {
 	{255, 255},
 	{1, 2},
@@ -92,307 +78,132 @@ static uchar SkinUseMatrix[14][2] =
 	{255, 255}
 };
 
-static long in_joints;
+long ls_pitch;
+long ls_yaw;
 
-void DrawLara(ITEM_INFO* item, long mirror)
+void CollectLights(ITEM_INFO* item)
 {
-	OBJECT_INFO* obj;
-	FVECTOR v0;
-	FVECTOR v1;
-	short** meshpp;
-	long* bone;
-	short* rot;
-	long top, bottom, left, right, dx, dy, dz, dist, stash, cos, sin, xRot;
-	static long a = 255;
+	PCLIGHT* light;
+	PHD_VECTOR best;
+	long x, y, z, dist, bestdist;
+	short angles[2];
+	bool found;
 
-	top = phd_top;
-	bottom = phd_bottom;
-	left = phd_left;
-	right = phd_right;
-	phd_top = 0;
-	phd_left = 0;
-	phd_bottom = phd_winymax;
-	phd_right = phd_winxmax;
-	phd_PushMatrix();
-	obj = &objects[item->object_number];
+	light = (PCLIGHT*)item->il.pCurrentLights;
+	found = 0;
+	best.x = 0;
+	best.y = 0;
+	best.z = 0;
+	bestdist = 0x7FFFFFFF;
 
-	if (lara.vehicle == NO_ITEM)
-		S_PrintShadow(obj->shadow_size, GLaraShadowframe, item);
-
-	if (tomb4.look_transparency)
+	for (int i = 0; i < item->il.nCurrentLights; i++)
 	{
-		if (input & IN_LOOK)
+		if (!light[i].Active)
+			continue;
+
+		if (light[i].Type == LIGHT_SUN)	//if room has a sun, take it and exit
 		{
-			dx = lara_item->pos.x_pos - CamPos.x;
-			dy = lara_item->pos.y_pos - CamPos.y - 512;
-			dz = lara_item->pos.z_pos - CamPos.z;
-			dist = phd_sqrt(SQUARE(dx) + SQUARE(dy) + SQUARE(dz));
-			a = dist >> 2;
-
-			if (a < 0)
-				a = 0;
-
-			if (a > 255)
-				a = 255;
-
-			GlobalAlpha = a << 24;
+			phd_GetVectorAngles(light[i].inx, light[i].iny, light[i].inz, angles);
+			ls_pitch = angles[1];
+			ls_yaw = angles[0];
+			return;
 		}
-		else
+
+		if (light[i].Type == LIGHT_POINT || light[i].Type == LIGHT_SPOT)	//other lights?
 		{
-			if (a < 255)
+			x = item->pos.x_pos - light[i].ix;
+			y = item->pos.y_pos - light[i].iy;
+			z = item->pos.z_pos - light[i].iz;
+			dist = SQUARE(x) + SQUARE(y) + SQUARE(z);
+
+			if (dist < bestdist)	//find the closest
 			{
-				a += 8;
-
-				if (a > 255)
-					a = 255;
-			}
-
-			GlobalAlpha = a << 24;
-		}
-	}
-
-	if (!mirror)
-		CalculateObjectLightingLara();
-
-	for (int i = 0; i < 15; i++)//skin
-	{
-		mMXPtr[M00] = lara_matrices[i * 12 + M00];
-		mMXPtr[M01] = lara_matrices[i * 12 + M01];
-		mMXPtr[M02] = lara_matrices[i * 12 + M02];
-		mMXPtr[M03] = lara_matrices[i * 12 + M03];
-		mMXPtr[M10] = lara_matrices[i * 12 + M10];
-		mMXPtr[M11] = lara_matrices[i * 12 + M11];
-		mMXPtr[M12] = lara_matrices[i * 12 + M12];
-		mMXPtr[M13] = lara_matrices[i * 12 + M13];
-		mMXPtr[M20] = lara_matrices[i * 12 + M20];
-		mMXPtr[M21] = lara_matrices[i * 12 + M21];
-		mMXPtr[M22] = lara_matrices[i * 12 + M22];
-		mMXPtr[M23] = lara_matrices[i * 12 + M23];
-
-		if (LaraNodeUnderwater[i])
-			bLaraUnderWater = i;
-		else
-			bLaraUnderWater = -1;
-
-		phd_PutPolygons(lara.mesh_ptrs[lara_mesh_sweetness_table[i]], -1);	//no meshbits checks?
-
-		for (int j = 0; j < 4; j++)
-		{
-			stash = (uchar)NodesToStashFromScratch[i][j];
-
-			if (stash == 255)
-				break;
-
-			StashSkinVertices(stash);
-		}
-	}
-
-	in_joints = 1;
-	phd_PopMatrix();
-	bLaraUnderWater = LaraNodeUnderwater[8] != 0 ? 8 : -1;
-	DrawHair();
-	phd_PushMatrix();
-	obj = &objects[LARA_SKIN_JOINTS];
-	meshpp = &meshes[obj->mesh_index];
-	meshpp += 2;
-
-	for (int i = 0; i < 14; i++)//joints
-	{
-		SkinVerticesToScratch(NodesToStashToScratch[i][0]);
-		SkinVerticesToScratch(NodesToStashToScratch[i][1]);
-
-		if (LaraNodeUnderwater[lara_underwater_skin_sweetness_table[i]])
-			bLaraUnderWater = lara_underwater_skin_sweetness_table[i];
-		else
-			bLaraUnderWater = -1;
-
-		if (SkinUseMatrix[i][0] >= 255)
-			phd_PutPolygons(*meshpp, -1);
-		else
-		{
-			mMXPtr[M00] = lara_matrices[SkinUseMatrix[i][1] * 12 + M00];
-			mMXPtr[M01] = lara_matrices[SkinUseMatrix[i][1] * 12 + M01];
-			mMXPtr[M02] = lara_matrices[SkinUseMatrix[i][1] * 12 + M02];
-			mMXPtr[M03] = lara_matrices[SkinUseMatrix[i][1] * 12 + M03];
-			mMXPtr[M10] = lara_matrices[SkinUseMatrix[i][1] * 12 + M10];
-			mMXPtr[M11] = lara_matrices[SkinUseMatrix[i][1] * 12 + M11];
-			mMXPtr[M12] = lara_matrices[SkinUseMatrix[i][1] * 12 + M12];
-			mMXPtr[M13] = lara_matrices[SkinUseMatrix[i][1] * 12 + M13];
-			mMXPtr[M20] = lara_matrices[SkinUseMatrix[i][1] * 12 + M20];
-			mMXPtr[M21] = lara_matrices[SkinUseMatrix[i][1] * 12 + M21];
-			mMXPtr[M22] = lara_matrices[SkinUseMatrix[i][1] * 12 + M22];
-			mMXPtr[M23] = lara_matrices[SkinUseMatrix[i][1] * 12 + M23];
-			phd_PushMatrix();
-			v0.x = lara_matrices[12 * SkinUseMatrix[i][0] + M01];
-			v0.y = lara_matrices[12 * SkinUseMatrix[i][0] + M11];
-			v0.z = lara_matrices[12 * SkinUseMatrix[i][0] + M21];
-			v1.x = lara_matrices[12 * SkinUseMatrix[i][1] + M01];
-			v1.y = lara_matrices[12 * SkinUseMatrix[i][1] + M11];
-			v1.z = lara_matrices[12 * SkinUseMatrix[i][1] + M21];
-			cos = long(v0.x * v1.x + v0.y * v1.y + v0.z * v1.z);
-			sin = phd_sqrt(16777216 - SQUARE(cos));
-
-			if (i == 1 || i == 4)
-				xRot = -phd_atan(cos, sin);
-			else
-				xRot = phd_atan(cos, sin);
-
-			phd_RotX(short(-xRot >> 1));
-			phd_PutPolygons(*meshpp, -1);
-			phd_PopMatrix();
-		}
-
-		meshpp += 2;
-	}
-
-	in_joints = 0;
-	bLaraUnderWater = (LaraNodeUnderwater[0] != 0) - 1;
-
-	if (!(gfLevelFlags & GF_YOUNGLARA))
-	{
-		obj = &objects[lara.holster];
-		meshpp = &meshes[obj->mesh_index];
-		meshpp += 8;
-		mMXPtr[M00] = lara_matrices[1 * 12 + M00];
-		mMXPtr[M01] = lara_matrices[1 * 12 + M01];
-		mMXPtr[M02] = lara_matrices[1 * 12 + M02];
-		mMXPtr[M03] = lara_matrices[1 * 12 + M03];
-		mMXPtr[M10] = lara_matrices[1 * 12 + M10];
-		mMXPtr[M11] = lara_matrices[1 * 12 + M11];
-		mMXPtr[M12] = lara_matrices[1 * 12 + M12];
-		mMXPtr[M13] = lara_matrices[1 * 12 + M13];
-		mMXPtr[M20] = lara_matrices[1 * 12 + M20];
-		mMXPtr[M21] = lara_matrices[1 * 12 + M21];
-		mMXPtr[M22] = lara_matrices[1 * 12 + M22];
-		mMXPtr[M23] = lara_matrices[1 * 12 + M23];
-		phd_PutPolygons(*meshpp, -1);
-
-		meshpp += 8;
-		mMXPtr[M00] = lara_matrices[4 * 12 + M00];
-		mMXPtr[M01] = lara_matrices[4 * 12 + M01];
-		mMXPtr[M02] = lara_matrices[4 * 12 + M02];
-		mMXPtr[M03] = lara_matrices[4 * 12 + M03];
-		mMXPtr[M10] = lara_matrices[4 * 12 + M10];
-		mMXPtr[M11] = lara_matrices[4 * 12 + M11];
-		mMXPtr[M12] = lara_matrices[4 * 12 + M12];
-		mMXPtr[M13] = lara_matrices[4 * 12 + M13];
-		mMXPtr[M20] = lara_matrices[4 * 12 + M20];
-		mMXPtr[M21] = lara_matrices[4 * 12 + M21];
-		mMXPtr[M22] = lara_matrices[4 * 12 + M22];
-		mMXPtr[M23] = lara_matrices[4 * 12 + M23];
-		phd_PutPolygons(*meshpp, -1);
-
-		if (lara.back_gun)
-		{
-			phd_PushMatrix();
-			mMXPtr[M00] = lara_matrices[84 + M00];
-			mMXPtr[M01] = lara_matrices[84 + M01];
-			mMXPtr[M02] = lara_matrices[84 + M02];
-			mMXPtr[M03] = lara_matrices[84 + M03];
-			mMXPtr[M10] = lara_matrices[84 + M10];
-			mMXPtr[M11] = lara_matrices[84 + M11];
-			mMXPtr[M12] = lara_matrices[84 + M12];
-			mMXPtr[M13] = lara_matrices[84 + M13];
-			mMXPtr[M20] = lara_matrices[84 + M20];
-			mMXPtr[M21] = lara_matrices[84 + M21];
-			mMXPtr[M22] = lara_matrices[84 + M22];
-			mMXPtr[M23] = lara_matrices[84 + M23];
-			obj = &objects[lara.back_gun];
-			bone = &bones[obj->bone_index];
-			meshpp = &meshes[obj->mesh_index];
-			meshpp += 28;
-			phd_TranslateRel(bone[53], bone[54], bone[55]);
-			rot = objects[lara.back_gun].frame_base + 9;
-			gar_RotYXZsuperpack(&rot, 14);
-			phd_PutPolygons(*meshpp, -1);
-			phd_PopMatrix();
-		}
-	}
-
-	bLaraUnderWater = 0;
-	phd_PopMatrix();
-	phd_top = top;
-	phd_bottom = bottom;
-	phd_left = left;
-	phd_right = right;
-	GlobalAlpha = 0xFF000000;
-}
-
-void GetLaraJointPos(PHD_VECTOR* pos, long node)
-{
-	phd_PushMatrix();
-	mMXPtr[M00] = lara_joint_matrices[node * 12 + M00];
-	mMXPtr[M01] = lara_joint_matrices[node * 12 + M01];
-	mMXPtr[M02] = lara_joint_matrices[node * 12 + M02];
-	mMXPtr[M03] = lara_joint_matrices[node * 12 + M03];
-	mMXPtr[M10] = lara_joint_matrices[node * 12 + M10];
-	mMXPtr[M11] = lara_joint_matrices[node * 12 + M11];
-	mMXPtr[M12] = lara_joint_matrices[node * 12 + M12];
-	mMXPtr[M13] = lara_joint_matrices[node * 12 + M13];
-	mMXPtr[M20] = lara_joint_matrices[node * 12 + M20];
-	mMXPtr[M21] = lara_joint_matrices[node * 12 + M21];
-	mMXPtr[M22] = lara_joint_matrices[node * 12 + M22];
-	mMXPtr[M23] = lara_joint_matrices[node * 12 + M23];
-	phd_TranslateRel(pos->x, pos->y, pos->z);
-	pos->x = (long)mMXPtr[M03];
-	pos->y = (long)mMXPtr[M13];
-	pos->z = (long)mMXPtr[M23];
-	pos->x += lara_item->pos.x_pos;
-	pos->y += lara_item->pos.y_pos;
-	pos->z += lara_item->pos.z_pos;
-	phd_PopMatrix();
-}
-
-void SetLaraUnderwaterNodes()
-{
-	PHD_VECTOR pos;
-	long bit;
-	short room_num;
-
-	pos.x = lara_item->pos.x_pos;
-	pos.y = lara_item->pos.y_pos;
-	pos.z = lara_item->pos.z_pos;
-	room_num = lara_item->room_number;
-	GetFloor(pos.x, pos.y, pos.z, &room_num);
-	bLaraInWater = room[room_num].flags & ROOM_UNDERWATER ? 1 : 0;
-	bit = 0;
-
-	for (int i = 14; i >= 0; i--)
-	{
-		pos.x = 0;
-		pos.y = 0;
-		pos.z = 0;
-		GetLaraJointPos(&pos, i);
-
-		if (lara_mesh_sweetness_table[i] == 7)
-			pos.y -= 120;
-
-		if (lara_mesh_sweetness_table[i] == 14)
-			pos.y -= 60;
-
-		room_num = lara_item->room_number;
-		GetFloor(pos.x, pos.y, pos.z, &room_num);
-		LaraNodeUnderwater[i] = room[room_num].flags & ROOM_UNDERWATER;
-
-		if (room[room_num].flags & ROOM_UNDERWATER)
-		{
-			lara.wet[i] = 252;
-
-			if (!(bit & 1))
-			{
-				LaraNodeAmbient[1] = room[room_num].ambient;
-				bit |= 1;
+				bestdist = dist;
+				best.x = x;
+				best.y = y;
+				best.z = z;
+				found = 1;
 			}
 		}
-		else if (!(bit & 2))
-		{
-			LaraNodeAmbient[0] = room[room_num].ambient;
-			bit |= 2;
-		}
+	}
+
+	if (found)	//found a close light?
+	{
+		phd_GetVectorAngles(best.x, best.y, best.z, angles);
+		ls_pitch = angles[1];
+		ls_yaw = angles[0];
+	}
+	else
+	{
+		ls_pitch = item->pos.x_rot - 0x2000;	//no lights, do overhead
+		ls_yaw = item->pos.y_rot + 0x8000;
 	}
 }
 
-void Rich_CalcLaraMatrices_Normal(short* frame, long* bone, long flag)
+void ProjectLightToFloorMatrix(ITEM_INFO* item)
+{
+	FLOOR_INFO* floor;
+	long x, y, z, h, dy;
+	long pitch, yaw, c, t, rs, rc;
+	short rn;
+
+	x = item->pos.x_pos;
+	y = item->pos.y_pos;
+	z = item->pos.z_pos;
+	rn = item->room_number;
+	floor = GetFloor(x, y, z, &rn);
+	h = GetHeight(floor, x, y, z);
+	dy = y - h;
+	x -= (dy * phd_sin(ls_yaw)) >> 15;
+	y = h - 1;
+	z -= (dy * phd_cos(ls_yaw)) >> 15;
+	phd_TranslateAbs(x, y, z);
+
+	pitch = ls_pitch - 16384;
+	yaw = ls_yaw - 32768;
+	c = phd_cos(pitch);
+
+	if (c)
+	{
+		if (1024 * phd_sin(pitch) / c < 0)
+			t = -(1024 * phd_sin(pitch) / c);
+		else
+			t = 1024 * phd_sin(pitch) / c;
+
+		if (t > 1024)
+			t = 1024;
+	}
+	else
+		t = 1024;
+
+	rs = t * phd_sin(yaw);
+
+	if (rs < 0)
+		rs -= 1025;
+
+	rs >>= 10;
+	rc = t * phd_cos(yaw);
+
+	if (rc < 0)
+		rc -= 1025;
+
+	rc >>= 10;
+	phd_mxptr[M01] = (phd_mxptr[M02] * rc + phd_mxptr[M00] * rs) >> 14;
+	phd_mxptr[M11] = (phd_mxptr[M12] * rc + phd_mxptr[M10] * rs) >> 14;
+	phd_mxptr[M21] = (phd_mxptr[M22] * rc + phd_mxptr[M20] * rs) >> 14;
+
+	mMXPtr[M00] = (float)phd_mxptr[M00] / 16384;
+	mMXPtr[M01] = (float)phd_mxptr[M01] / 16384;
+	mMXPtr[M02] = (float)phd_mxptr[M02] / 16384;
+	mMXPtr[M10] = (float)phd_mxptr[M10] / 16384;
+	mMXPtr[M11] = (float)phd_mxptr[M11] / 16384;
+	mMXPtr[M12] = (float)phd_mxptr[M12] / 16384;
+	mMXPtr[M20] = (float)phd_mxptr[M20] / 16384;
+	mMXPtr[M21] = (float)phd_mxptr[M21] / 16384;
+	mMXPtr[M22] = (float)phd_mxptr[M22] / 16384;
+}
+
+void CalcShadowMatrices_Normal(short* frame, long* bone, long flag)
 {
 	PHD_VECTOR vec;
 	float* matrix;
@@ -401,14 +212,14 @@ void Rich_CalcLaraMatrices_Normal(short* frame, long* bone, long flag)
 	short gun;
 
 	if (flag == 1)
-		matrix = lara_joint_matrices;
+		matrix = shadow_joint_matrices;
 	else
-		matrix = lara_matrices;
+		matrix = shadow_matrices;
 
 	phd_PushMatrix();
 
 	if (!flag || flag == 2)
-		phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+		ProjectLightToFloorMatrix(lara_item);
 	else
 		phd_SetTrans(0, 0, 0);
 
@@ -702,10 +513,9 @@ void Rich_CalcLaraMatrices_Normal(short* frame, long* bone, long flag)
 	phd_PopMatrix();
 	phd_PopMatrix();
 	phd_PopMatrix();
-	GLaraShadowframe = frame;
 }
 
-void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac, long rate, long* bone, long flag)
+void CalcShadowMatrices_Interpolated(short* frame1, short* frame2, long frac, long rate, long* bone, long flag)
 {
 	PHD_VECTOR vec;
 	float* matrix;
@@ -717,14 +527,14 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 	short gun;
 
 	if (flag == 1)
-		matrix = lara_joint_matrices;
+		matrix = shadow_joint_matrices;
 	else
-		matrix = lara_matrices;
+		matrix = shadow_matrices;
 
 	phd_PushMatrix();
 
 	if (!flag || flag == 2)
-		phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+		ProjectLightToFloorMatrix(lara_item);
 	else
 		phd_SetTrans(0, 0, 0);
 
@@ -909,12 +719,12 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 		gar_RotYXZsuperpack(&rot, 8);
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
-		
+
 		phd_TranslateRel(bone[33], bone[34], bone[35]);
 		gar_RotYXZsuperpack(&rot, 0);
 		memcpy(matrix, mMXPtr, 48);
 		matrix += 12;
-		
+
 		phd_TranslateRel(bone[37], bone[38], bone[39]);
 		gar_RotYXZsuperpack(&rot, 0);
 		memcpy(matrix, mMXPtr, 48);
@@ -1049,7 +859,7 @@ void Rich_CalcLaraMatrices_Interpolated(short* frame1, short* frame2, long frac,
 	phd_PopMatrix();
 }
 
-void CalcLaraMatrices(long flag)
+void CalcShadowMatrices(long flag)
 {
 	long* bone;
 	short* frame;
@@ -1057,7 +867,7 @@ void CalcLaraMatrices(long flag)
 	long rate, frac;
 	short jerk;
 
-	CalcShadowMatrices(flag);
+	CollectLights(lara_item);
 	bone = &bones[objects[lara_item->object_number].bone_index];
 	frac = GetFrames(lara_item, frmptr, &rate);
 
@@ -1065,8 +875,7 @@ void CalcLaraMatrices(long flag)
 	{
 		if (frac)
 		{
-			GLaraShadowframe = GetBoundsAccurate(lara_item);
-			Rich_CalcLaraMatrices_Interpolated(frmptr[0], frmptr[1], frac, rate, bone, flag);
+			CalcShadowMatrices_Interpolated(frmptr[0], frmptr[1], frac, rate, bone, flag);
 			return;
 		}
 	}
@@ -1087,5 +896,256 @@ void CalcLaraMatrices(long flag)
 		frame = &anims[jerk].frame_ptr[lara.hit_frame * (anims[jerk].interpolation >> 8)];
 	}
 
-	Rich_CalcLaraMatrices_Normal(frame, bone, flag);
+	CalcShadowMatrices_Normal(frame, bone, flag);
+}
+
+void TransformShadowMesh(D3DTLVERTEX* v, MESH_DATA* mesh)
+{
+	short* clip;
+	float zv;
+	short c;
+
+	clip = clipflags;
+
+	for (int i = 0; i < mesh->nVerts; i++)
+	{
+		v->tu = v->sx;
+		v->tv = v->sy;
+		c = 0;
+
+		if (v->sz < f_mznear)
+			c = -128;
+		else
+		{
+			zv = f_mpersp / v->sz;
+			v->sx = zv * v->sx + f_centerx;
+			v->sy = zv * v->sy + f_centery;
+			v->rhw = f_moneopersp * zv;
+
+			if (v->sx < f_left)
+				c++;
+			else if (v->sx > f_right)
+				c += 2;
+
+			if (v->sy < f_top)
+				c += 4;
+			else if (v->sy > f_bottom)
+				c += 8;
+		}
+
+		*clip++ = c;
+		v->color = 0x28000000;
+		v->specular = 0xFF000000;
+		v++;
+	}
+}
+
+void phd_PutPolygons_ShadowMesh(short* objptr, long clip)
+{
+	MESH_DATA* mesh;
+	D3DTLVERTEX* v;
+	TEXTURESTRUCT tex;
+	short* quad;
+	short* tri;
+
+	SetD3DViewMatrix();
+	mesh = (MESH_DATA*)objptr;
+
+	if (!objptr)
+		return;
+
+	if (mesh->nVerts)
+		DXAttempt(DestVB->ProcessVertices(D3DVOP_TRANSFORM, 0, mesh->nVerts, mesh->SourceVB, 0, App.dx._lpD3DDevice, 0));
+
+	DestVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
+	TransformShadowMesh(v, mesh);
+
+	tex.flag = 0;
+	tex.tpage = 0;
+	tex.drawtype = 3;
+	tex.u1 = 0;
+	tex.v1 = 0;
+	tex.u2 = 0;
+	tex.v2 = 0;
+	tex.u3 = 0;
+	tex.v3 = 0;
+	tex.u4 = 0;
+	tex.v4 = 0;
+
+	quad = mesh->gt4;
+
+	for (int i = 0; i < mesh->ngt4; i++, quad += 6)
+		AddQuadSorted(v, quad[0], quad[1], quad[2], quad[3], &tex, 1);
+
+	tri = mesh->gt3;
+
+	for (int i = 0; i < mesh->ngt3; i++, tri += 5)
+		AddTriSorted(v, tri[0], tri[1], tri[2], &tex, 1);
+
+	DestVB->Unlock();
+}
+
+void DrawDynamicShadow()
+{
+	OBJECT_INFO* obj;
+	FVECTOR v0;
+	FVECTOR v1;
+	short** meshpp;
+	long* bone;
+	short* rot;
+	long top, bottom, left, right, stash, cos, sin, xRot;
+
+	top = phd_top;
+	bottom = phd_bottom;
+	left = phd_left;
+	right = phd_right;
+	phd_top = 0;
+	phd_left = 0;
+	phd_bottom = phd_winymax;
+	phd_right = phd_winxmax;
+	phd_PushMatrix();
+	obj = &objects[lara_item->object_number];
+
+	for (int i = 0; i < 15; i++)//skin
+	{
+		mMXPtr[M00] = shadow_matrices[i * 12 + M00];
+		mMXPtr[M01] = shadow_matrices[i * 12 + M01];
+		mMXPtr[M02] = shadow_matrices[i * 12 + M02];
+		mMXPtr[M03] = shadow_matrices[i * 12 + M03];
+		mMXPtr[M10] = shadow_matrices[i * 12 + M10];
+		mMXPtr[M11] = shadow_matrices[i * 12 + M11];
+		mMXPtr[M12] = shadow_matrices[i * 12 + M12];
+		mMXPtr[M13] = shadow_matrices[i * 12 + M13];
+		mMXPtr[M20] = shadow_matrices[i * 12 + M20];
+		mMXPtr[M21] = shadow_matrices[i * 12 + M21];
+		mMXPtr[M22] = shadow_matrices[i * 12 + M22];
+		mMXPtr[M23] = shadow_matrices[i * 12 + M23];
+
+		phd_PutPolygons_ShadowMesh(lara.mesh_ptrs[ShadowMeshSweetnessTable[i]], -1);	//no meshbits checks?
+
+		for (int j = 0; j < 4; j++)
+		{
+			stash = (uchar)ShadowNodesToStashFromScratch[i][j];
+
+			if (stash == 255)
+				break;
+
+			StashSkinVertices(stash);
+		}
+	}
+
+	obj = &objects[LARA_SKIN_JOINTS];
+	meshpp = &meshes[obj->mesh_index];
+	meshpp += 2;
+
+	for (int i = 0; i < 14; i++)//joints
+	{
+		SkinVerticesToScratch(ShadowNodesToStashToScratch[i][0]);
+		SkinVerticesToScratch(ShadowNodesToStashToScratch[i][1]);
+
+		if (ShadowUseMatrix[i][0] >= 255)
+			phd_PutPolygons_ShadowMesh(*meshpp, -1);
+		else
+		{
+			mMXPtr[M00] = shadow_matrices[ShadowUseMatrix[i][1] * 12 + M00];
+			mMXPtr[M01] = shadow_matrices[ShadowUseMatrix[i][1] * 12 + M01];
+			mMXPtr[M02] = shadow_matrices[ShadowUseMatrix[i][1] * 12 + M02];
+			mMXPtr[M03] = shadow_matrices[ShadowUseMatrix[i][1] * 12 + M03];
+			mMXPtr[M10] = shadow_matrices[ShadowUseMatrix[i][1] * 12 + M10];
+			mMXPtr[M11] = shadow_matrices[ShadowUseMatrix[i][1] * 12 + M11];
+			mMXPtr[M12] = shadow_matrices[ShadowUseMatrix[i][1] * 12 + M12];
+			mMXPtr[M13] = shadow_matrices[ShadowUseMatrix[i][1] * 12 + M13];
+			mMXPtr[M20] = shadow_matrices[ShadowUseMatrix[i][1] * 12 + M20];
+			mMXPtr[M21] = shadow_matrices[ShadowUseMatrix[i][1] * 12 + M21];
+			mMXPtr[M22] = shadow_matrices[ShadowUseMatrix[i][1] * 12 + M22];
+			mMXPtr[M23] = shadow_matrices[ShadowUseMatrix[i][1] * 12 + M23];
+			phd_PushMatrix();
+			v0.x = shadow_matrices[12 * ShadowUseMatrix[i][0] + M01];
+			v0.y = shadow_matrices[12 * ShadowUseMatrix[i][0] + M11];
+			v0.z = shadow_matrices[12 * ShadowUseMatrix[i][0] + M21];
+			v1.x = shadow_matrices[12 * ShadowUseMatrix[i][1] + M01];
+			v1.y = shadow_matrices[12 * ShadowUseMatrix[i][1] + M11];
+			v1.z = shadow_matrices[12 * ShadowUseMatrix[i][1] + M21];
+			cos = long(v0.x * v1.x + v0.y * v1.y + v0.z * v1.z);
+			sin = phd_sqrt(16777216 - SQUARE(cos));
+
+			if (i == 1 || i == 4)
+				xRot = -phd_atan(cos, sin);
+			else
+				xRot = phd_atan(cos, sin);
+
+			phd_RotX(short(-xRot >> 1));
+			phd_PutPolygons_ShadowMesh(*meshpp, -1);
+			phd_PopMatrix();
+		}
+
+		meshpp += 2;
+	}
+
+	if (!(gfLevelFlags & GF_YOUNGLARA))
+	{
+		obj = &objects[lara.holster];
+		meshpp = &meshes[obj->mesh_index];
+		meshpp += 8;
+		mMXPtr[M00] = shadow_matrices[1 * 12 + M00];
+		mMXPtr[M01] = shadow_matrices[1 * 12 + M01];
+		mMXPtr[M02] = shadow_matrices[1 * 12 + M02];
+		mMXPtr[M03] = shadow_matrices[1 * 12 + M03];
+		mMXPtr[M10] = shadow_matrices[1 * 12 + M10];
+		mMXPtr[M11] = shadow_matrices[1 * 12 + M11];
+		mMXPtr[M12] = shadow_matrices[1 * 12 + M12];
+		mMXPtr[M13] = shadow_matrices[1 * 12 + M13];
+		mMXPtr[M20] = shadow_matrices[1 * 12 + M20];
+		mMXPtr[M21] = shadow_matrices[1 * 12 + M21];
+		mMXPtr[M22] = shadow_matrices[1 * 12 + M22];
+		mMXPtr[M23] = shadow_matrices[1 * 12 + M23];
+		phd_PutPolygons_ShadowMesh(*meshpp, -1);
+
+		meshpp += 8;
+		mMXPtr[M00] = shadow_matrices[4 * 12 + M00];
+		mMXPtr[M01] = shadow_matrices[4 * 12 + M01];
+		mMXPtr[M02] = shadow_matrices[4 * 12 + M02];
+		mMXPtr[M03] = shadow_matrices[4 * 12 + M03];
+		mMXPtr[M10] = shadow_matrices[4 * 12 + M10];
+		mMXPtr[M11] = shadow_matrices[4 * 12 + M11];
+		mMXPtr[M12] = shadow_matrices[4 * 12 + M12];
+		mMXPtr[M13] = shadow_matrices[4 * 12 + M13];
+		mMXPtr[M20] = shadow_matrices[4 * 12 + M20];
+		mMXPtr[M21] = shadow_matrices[4 * 12 + M21];
+		mMXPtr[M22] = shadow_matrices[4 * 12 + M22];
+		mMXPtr[M23] = shadow_matrices[4 * 12 + M23];
+		phd_PutPolygons_ShadowMesh(*meshpp, -1);
+
+		if (lara.back_gun)
+		{
+			phd_PushMatrix();
+			mMXPtr[M00] = shadow_matrices[84 + M00];
+			mMXPtr[M01] = shadow_matrices[84 + M01];
+			mMXPtr[M02] = shadow_matrices[84 + M02];
+			mMXPtr[M03] = shadow_matrices[84 + M03];
+			mMXPtr[M10] = shadow_matrices[84 + M10];
+			mMXPtr[M11] = shadow_matrices[84 + M11];
+			mMXPtr[M12] = shadow_matrices[84 + M12];
+			mMXPtr[M13] = shadow_matrices[84 + M13];
+			mMXPtr[M20] = shadow_matrices[84 + M20];
+			mMXPtr[M21] = shadow_matrices[84 + M21];
+			mMXPtr[M22] = shadow_matrices[84 + M22];
+			mMXPtr[M23] = shadow_matrices[84 + M23];
+			obj = &objects[lara.back_gun];
+			bone = &bones[obj->bone_index];
+			meshpp = &meshes[obj->mesh_index];
+			meshpp += 28;
+			phd_TranslateRel(bone[53], bone[54], bone[55]);
+			rot = objects[lara.back_gun].frame_base + 9;
+			gar_RotYXZsuperpack(&rot, 14);
+			phd_PutPolygons_ShadowMesh(*meshpp, -1);
+			phd_PopMatrix();
+		}
+	}
+
+	phd_PopMatrix();
+	phd_top = top;
+	phd_bottom = bottom;
+	phd_left = left;
+	phd_right = right;
 }

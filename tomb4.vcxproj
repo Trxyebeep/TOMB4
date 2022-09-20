@@ -270,6 +270,7 @@
     <ClInclude Include="TOMB4\specific\texture.h" />
     <ClInclude Include="TOMB4\specific\time.h" />
     <ClInclude Include="TOMB4\specific\winmain.h" />
+    <ClInclude Include="TOMB4\tomb4\dynamicshadow.h" />
     <ClInclude Include="TOMB4\tomb4\libs\discordRPC\discord_register.h" />
     <ClInclude Include="TOMB4\tomb4\libs\discordRPC\discord_rpc.h" />
     <ClInclude Include="TOMB4\tomb4\libs\zlib\zlib.h" />
@@ -381,6 +382,7 @@
     <ClCompile Include="TOMB4\specific\texture.cpp" />
     <ClCompile Include="TOMB4\specific\time.cpp" />
     <ClCompile Include="TOMB4\specific\winmain.cpp" />
+    <ClCompile Include="TOMB4\tomb4\dynamicshadow.cpp" />
     <ClCompile Include="TOMB4\tomb4\libs\zlib\adler32.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>

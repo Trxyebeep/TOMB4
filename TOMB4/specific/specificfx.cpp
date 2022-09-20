@@ -19,8 +19,9 @@
 #include "file.h"
 #include "../game/lara.h"
 #include "../game/gameflow.h"
-
 #include "../tomb4/tomb4.h"
+#include "../tomb4/dynamicshadow.h"
+
 #define CIRCUMFERENCE_POINTS 32 // Number of points in the circumference
 #define LINE_POINTS	4	//number of points in each grid line
 #define POINT_HEIGHT_CORRECTION	196	//if the difference between the floor below Lara and the floor height below the point is greater than this value, point height is corrected to lara's floor level.
@@ -372,7 +373,18 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 
 	if (tomb4.shadow_mode != 1)
 	{
-		if (tomb4.shadow_mode == 4)
+		if (tomb4.shadow_mode == 5)
+		{
+			if (item == lara_item)
+				DrawDynamicShadow();
+			else
+			{
+				tomb4.shadow_mode = 3;
+				S_PrintCircleShadow(size, box, item);
+				tomb4.shadow_mode = 5;
+			}
+		}
+		else if (tomb4.shadow_mode == 4)
 			S_PrintSpriteShadow(size, box, item);
 		else
 			S_PrintCircleShadow(size, box, item);
