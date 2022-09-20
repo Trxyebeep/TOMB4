@@ -39,10 +39,12 @@ DXPTR* G_dxptr;
 DXINFO* G_dxinfo;
 LPDIRECTDRAWX G_ddraw;
 LPDIRECT3DX G_d3d;
+DXD3DDEVICE* G_device;
 HWND G_hwnd;
 char keymap[256];
 
 static char keymap2[256];
+static bool dont_kill_d3d = 0;
 
 void DXBitMask2ShiftCnt(ulong mask, uchar* shift, uchar* count)
 {
@@ -216,14 +218,6 @@ BOOL __stdcall DXEnumDirectDraw(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPS
 		{
 			Log(2, "DXEnumDirect3D");
 			DXAttempt(G_d3d->EnumDevices(DXEnumDirect3D, (void*)DDInfo));
-
-			if (G_d3d)
-			{
-				Log(4, "Released %s @ %x - RefCnt = %d", "Direct3D", G_d3d, G_d3d->Release());
-				G_d3d = 0;
-			}
-			else
-				Log(1, "%s Attempt To Release NULL Ptr", "Direct3D");
 		}
 
 		DXSetCooperativeLevel(G_ddraw, 0, DDSCL_NORMAL);
@@ -437,6 +431,20 @@ HRESULT __stdcall DXEnumZBufferFormats(LPDDPIXELFORMAT lpDDPixFmt, LPVOID lpCont
 	zbuffer->bpp = lpDDPixFmt->dwRGBBitCount;
 	Log(3, "%d Bit", zbuffer->bpp);
 	d3d->nZBufferInfos++;
+	return D3DENUMRET_OK;
+}
+
+HRESULT __stdcall DXEnumStencilFormats(LPDDPIXELFORMAT lpDDPixFmt, LPVOID lpContext)
+{
+	if (!lpDDPixFmt || !lpContext)
+		return D3DENUMRET_CANCEL;
+
+	if (lpDDPixFmt->dwFlags == ((LPDDPIXELFORMAT)lpContext)->dwFlags)
+	{
+		memcpy(lpContext, lpDDPixFmt, sizeof(DDPIXELFORMAT));
+		return D3DENUMRET_CANCEL;
+	}
+
 	return D3DENUMRET_OK;
 }
 
@@ -671,6 +679,14 @@ void DXClose()
 		else
 			Log(1, "%s Attempt To Release NULL Ptr", "Z Buffer");
 
+		if (G_dxptr->lpStencil)
+		{
+			Log(4, "Released %s @ %x - RefCnt = %d", "Stencil", G_dxptr->lpStencil, G_dxptr->lpStencil->Release());
+			G_dxptr->lpStencil = 0;
+		}
+		else
+			Log(1, "%s Attempt To Release NULL Ptr", "Stencil");
+
 		if (G_dxptr->lpBackBuffer)
 		{
 			Log(4, "Released %s @ %x - RefCnt = %d", "Back Buffer", G_dxptr->lpBackBuffer, G_dxptr->lpBackBuffer->Release());
@@ -706,6 +722,17 @@ void DXClose()
 				Log(1, "%s Attempt To Release NULL Ptr", "Direct3D");
 		}
 	}
+
+	if (!dont_kill_d3d)
+	{
+		if (G_d3d)
+		{
+			Log(4, "Released %s @ %x - RefCnt = %d", "Direct3D", G_d3d, G_d3d->Release());
+			G_d3d = 0;
+		}
+		else
+			Log(1, "%s Attempt To Release NULL Ptr", "Direct3D");
+	}
 }
 
 long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, long WindowStyle)
@@ -729,7 +756,9 @@ long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, lon
 	if (Flags & 64)
 		flag = 1;
 
+	dont_kill_d3d = 1;
 	DXClose();
+	dont_kill_d3d = 0;
 
 	if (!flag)
 	{
@@ -887,6 +916,25 @@ long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, lon
 
 		DXAttempt(G_dxptr->lpBackBuffer->AddAttachedSurface(G_dxptr->lpZBuffer));
 		Log(3, "ZBuffer Created %x", G_dxptr->lpZBuffer);
+
+		Log(3, "Creating Stencil");
+		memset(&desc, 0, sizeof(DDSURFACEDESCX));
+		desc.dwSize = sizeof(DDSURFACEDESCX);
+		desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+		desc.ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY | DDSCAPS_ZBUFFER;
+		desc.dwWidth = G_dxptr->dwRenderWidth;
+		desc.dwHeight = G_dxptr->dwRenderHeight;
+		desc.ddpfPixelFormat.dwFlags = DDPF_ZBUFFER | DDPF_STENCILBUFFER;
+		G_d3d->EnumZBufferFormats(G_device->Guid, DXEnumStencilFormats, (void*)&desc.ddpfPixelFormat);
+
+		if (DXAttempt(G_dxptr->lpDD->CreateSurface(&desc, &G_dxptr->lpStencil, 0)) != DD_OK)
+		{
+			DXClose();
+			return 0;
+		}
+
+		DXAttempt(G_dxptr->lpBackBuffer->AddAttachedSurface(G_dxptr->lpStencil));
+		Log(3, "Stencil Created %x", G_dxptr->lpStencil);
 	}
 
 	if (!DXCreateD3DDevice(G_dxptr->lpD3D, G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].Guid, G_dxptr->lpBackBuffer, &G_dxptr->lpD3DDevice))
@@ -1072,6 +1120,7 @@ HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR
 	Log(2, "DXEnumZBufferFormats");
 	DXAttempt(G_d3d->EnumZBufferFormats(device->Guid, DXEnumZBufferFormats, (void*)device));
 	ddi->nD3DDevices++;
+	G_device = device;
 	return D3DENUMRET_OK;
 }
 
