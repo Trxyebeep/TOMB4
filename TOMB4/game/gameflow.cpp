@@ -583,7 +583,7 @@ void DoLevel(uchar Name, uchar Audio)
 				fmv_to_play[0] = 0;
 		}
 
-		if (fmv_to_play[0] && PlayFmvNow(fmv_to_play[0] & 0x7F) == 2)
+		if (!fmv_to_play[0] || PlayFmvNow(fmv_to_play[0] & 0x7F) != 2)
 		{
 			if (fmv_to_play[1])
 				PlayFmvNow(fmv_to_play[1] & 0x7F);
@@ -591,11 +591,11 @@ void DoLevel(uchar Name, uchar Audio)
 	}
 
 	num_fmvs = 0;
-	fmv_to_play[1] = 0;
 	fmv_to_play[0] = 0;
-	lara.examine3 = 0;
-	lara.examine2 = 0;
+	fmv_to_play[1] = 0;
 	lara.examine1 = 0;
+	lara.examine2 = 0;
+	lara.examine3 = 0;
 	RenderLoadPic(0);
 
 	if (gfStatus == 3)
