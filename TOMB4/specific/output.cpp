@@ -1233,8 +1233,6 @@ void S_OutputPolyList()
 		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
 	}
 
-	//do I need to clear the stencil?
-
 	if (BinocularRange && !MonoScreenOn)
 	{
 		InitialiseSortList();
