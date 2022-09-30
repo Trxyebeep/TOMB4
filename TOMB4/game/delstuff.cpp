@@ -13,7 +13,6 @@
 #include "lara.h"
 #include "gameflow.h"
 #include "../tomb4/tomb4.h"
-#include "../tomb4/dynamicshadow.h"
 
 short* GLaraShadowframe;
 float lara_matrices[180];
@@ -1057,7 +1056,6 @@ void CalcLaraMatrices(long flag)
 	long rate, frac;
 	short jerk;
 
-	CalcShadowMatrices(flag);
 	bone = &bones[objects[lara_item->object_number].bone_index];
 	frac = GetFrames(lara_item, frmptr, &rate);
 

@@ -20,7 +20,6 @@
 #include "../game/lara.h"
 #include "../game/gameflow.h"
 #include "../tomb4/tomb4.h"
-#include "../tomb4/dynamicshadow.h"
 
 #define CIRCUMFERENCE_POINTS 32 // Number of points in the circumference
 #define LINE_POINTS	4	//number of points in each grid line
@@ -373,18 +372,7 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 
 	if (tomb4.shadow_mode != 1)
 	{
-		if (tomb4.shadow_mode == 5)
-		{
-			if (item == lara_item)
-				DrawDynamicShadow();
-			else
-			{
-				tomb4.shadow_mode = 3;
-				S_PrintCircleShadow(size, box, item);
-				tomb4.shadow_mode = 5;
-			}
-		}
-		else if (tomb4.shadow_mode == 4)
+		if (tomb4.shadow_mode == 4)
 			S_PrintSpriteShadow(size, box, item);
 		else
 			S_PrintCircleShadow(size, box, item);
