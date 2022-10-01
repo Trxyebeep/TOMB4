@@ -1124,11 +1124,8 @@ void S_AnimateTextures(long n)
 
 			if (i < nAnimUVRanges && gfUVRotate)
 			{
-				while (nRangeFrames > 0)
-				{
-					range++;
-					nRangeFrames--;
-				}
+				if (nRangeFrames > 0)
+					range += nRangeFrames;
 			}
 			else
 			{
