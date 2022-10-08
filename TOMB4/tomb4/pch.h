@@ -9,7 +9,7 @@
 
 // add headers that you want to pre-compile here
 #define DIRECTINPUT_VERSION 0x0800
-#define DIRECTSOUND_VERSION	0x0500
+#define DIRECTSOUND_VERSION	0x0800
 #define _USE_MATH_DEFINES
 #include <windows.h>
 #include <windowsx.h>

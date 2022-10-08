@@ -1232,7 +1232,7 @@ struct DXPTR
 	LPDIRECTDRAWSURFACEX lpBackBuffer;
 	LPDIRECTDRAWSURFACEX lpZBuffer;
 	LPDIRECT3DVIEWPORTX lpViewport;
-	LPDIRECTSOUND lpDS;
+	LPDIRECTSOUND8 lpDS;
 	ulong dwRenderWidth;
 	ulong dwRenderHeight;
 	RECT rViewport;
@@ -1994,9 +1994,10 @@ struct SAMPLE_INFO
 
 struct DS_SAMPLE
 {
-	LPDIRECTSOUNDBUFFER buffer;
+	LPDIRECTSOUNDBUFFER8 buffer;
 	long frequency;
 	long playing;
+	LPDIRECTSOUNDFXECHO8 echo;
 };
 
 struct BUBBLE_STRUCT

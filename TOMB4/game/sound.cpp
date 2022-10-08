@@ -8,6 +8,7 @@
 #include "control.h"
 
 SAMPLE_INFO* sample_infos;
+long num_sample_infos;
 SoundSlot LaSlot[32];
 short* sample_lut;
 long sound_active = 0;

@@ -21,12 +21,22 @@ char* samples_buffer;
 
 static LPDIRECTSOUNDBUFFER DSPrimary;
 static DS_SAMPLE DS_Samples[32];
-static DS_SAMPLE DS_Buffers[256];
+static DS_SAMPLE DS_Buffers[256][8];
 static MMRESULT mmresult;
 static WAVEFORMATEX pcm_format;
 static HACMSTREAM hACMStream;
 static ACMSTREAMHEADER ACMStreamHeader;
 static char* decompressed_samples_buffer;
+
+static DSFXEcho echo_preset[5] =
+{
+	{100.0F, 0.0F, 33.3F, 33.3F, 0}, // Outside
+	{100.0F, 10.0F, 33.3F, 33.3F, 0}, // Small Room
+	{100.0F, 45.0F, 33.3F, 33.3F, 0}, // Medium Room
+	{100.0F, 75.0F, 33.3F, 33.3F, 0}, // Large Room
+	{100.0F, 95.0F, 33.3F, 33.3F, 0} // Pipe
+};
+static LPDSFXEcho current_echo = echo_preset;
 
 bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 {
@@ -92,6 +102,7 @@ void DSAdjustPan(long num, long pan)
 
 		pan >>= 4;
 		DS_Samples[num].buffer->SetPan(pan);
+		DS_Samples[num].echo->SetAllParameters(current_echo);
 	}
 }
 
@@ -119,7 +130,7 @@ bool DXDSCreate()
 {
 	sizeof(WAVEFORMATEX);
 	Log(2, "DXDSCreate");
-	DXAttempt(DirectSoundCreate(G_dxinfo->DSInfo[G_dxinfo->nDS].lpGuid, &App.dx.lpDS, 0));
+	DXAttempt(DirectSoundCreate8(G_dxinfo->DSInfo[G_dxinfo->nDS].lpGuid, &App.dx.lpDS, 0));
 	DXAttempt(App.dx.lpDS->SetCooperativeLevel(App.hWnd, DSSCL_EXCLUSIVE));
 	DXSetOutputFormat();
 	sound_active = 1;
@@ -174,13 +185,19 @@ bool FreeSampleDecompress()
 	return 1;
 }
 
-bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
+bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num, long num2)
 {
+	SAMPLE_INFO* info;
 	LPWAVEFORMATEX format;
-	LPDIRECTSOUNDBUFFER buffer;
+	LPDIRECTSOUNDBUFFER8 buffer;
 	LPVOID dest;
 	DSBUFFERDESC desc;
+	LPDIRECTSOUNDBUFFER obuffer;
+	LPDIRECTSOUNDFXECHO8 echo;
+	DSEFFECTDESC fx;
+	uchar* ptr;
 	ulong bytes;
+	long count;
 
 	Log(8, "DXCreateSampleADPCM");
 
@@ -198,28 +215,68 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 	if (mmresult != DS_OK)
 		Log(1, "Stream Convert %d", mmresult);
 
-	desc.dwSize = 20;
-	desc.dwFlags = DSBCAPS_STATIC | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME;
+	desc.dwSize = sizeof(DSBUFFERDESC);
+	desc.dwFlags = DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFX;
 	desc.dwReserved = 0;
 	desc.dwBufferBytes = uncomp_size - 32;
+	count = pcm_format.nAvgBytesPerSec / desc.dwBufferBytes;
+
+	if (count > 1)
+		desc.dwBufferBytes *= count;
+
 	desc.lpwfxFormat = &pcm_format;
+	desc.guid3DAlgorithm = GUID_NULL;
 	
-	if (DXAttempt(App.dx.lpDS->CreateSoundBuffer(&desc, &buffer, 0)) != DS_OK)
+	if (DXAttempt(App.dx.lpDS->CreateSoundBuffer(&desc, &obuffer, 0)) != DS_OK)
 	{
 		Log(1, "Unable To Create Sound Buffer");
 		return 0;
 	}
 
-	if (DXAttempt(buffer->Lock(0, uncomp_size - 32, &dest, &bytes, 0, 0, 0)) != DS_OK)
+	if (DXAttempt(obuffer->Lock(0, desc.dwBufferBytes, &dest, &bytes, 0, 0, 0)) != DS_OK)
 	{
 		Log(1, "Unable To Lock Sound Buffer");
 		return 0;
 	}
 
-	memcpy(dest, decompressed_samples_buffer, uncomp_size - 32);
-	DXAttempt(buffer->Unlock(dest, bytes, 0, 0));
-	DS_Buffers[num].frequency = pcm_format.nSamplesPerSec;
-	DS_Buffers[num].buffer = buffer;
+	ptr = (uchar*)dest;
+	memcpy(ptr, decompressed_samples_buffer, uncomp_size - 32);
+	ptr += uncomp_size - 32;
+
+	for (int i = 0; i < num_sample_infos; i++)
+	{
+		info = &sample_infos[i];
+
+		if (num >= info->number && num < info->number + (info->flags >> 2 & 0xF))
+		{
+			if ((info->flags & 3) == 3)
+			{
+				for (int j = 1; j < count; j++)
+				{
+					memcpy(ptr, decompressed_samples_buffer, uncomp_size - 32);
+					ptr += uncomp_size - 32;
+				}
+			}
+			else
+				memset(ptr, 0, desc.dwBufferBytes - uncomp_size + 32);
+
+			break;
+		}
+	}
+
+	DXAttempt(obuffer->Unlock(dest, bytes, 0, 0));
+	DXAttempt(obuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID*)&buffer));
+	DXAttempt(obuffer->Release());
+	fx.dwSize = sizeof(DSEFFECTDESC);
+	fx.dwFlags = 0;
+	fx.guidDSFXClass = GUID_DSFX_STANDARD_ECHO;
+	fx.dwReserved1 = 0;
+	fx.dwReserved2 = 0;
+	DXAttempt(buffer->SetFX(1, &fx, 0));
+	DXAttempt(buffer->GetObjectInPath(GUID_DSFX_STANDARD_ECHO, 0, IID_IDirectSoundFXEcho8, (LPVOID*)&echo));
+	DS_Buffers[num][num2].frequency = pcm_format.nSamplesPerSec;
+	DS_Buffers[num][num2].buffer = buffer;
+	DS_Buffers[num][num2].echo = echo;
 	return 1;
 }
 
@@ -265,19 +322,38 @@ long DSGetFreeChannel()
 
 long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 {
-	LPDIRECTSOUNDBUFFER buffer;
-	long channel;
+	LPDIRECTSOUNDBUFFER8 buffer;
+	ulong status;
+	long channel, num2;
 
 	channel = DSGetFreeChannel();
 
-	if (channel < 0 || DXAttempt(App.dx.lpDS->DuplicateSoundBuffer(DS_Buffers[num].buffer, &buffer)) != DS_OK)
+	if (channel < 0)
 		return -1;
+
+	num2 = -1;
+
+	for (int i = 0; i < 8; i++)
+	{
+		if (DXAttempt(DS_Buffers[num][i].buffer->GetStatus(&status)) == DS_OK && !(status & DSBSTATUS_PLAYING))
+		{
+			num2 = i;
+			break;
+		}
+	}
+
+	if (num2 == -1)
+		return -1;
+
+	buffer = DS_Buffers[num][num2].buffer;
+	buffer->AddRef();
 
 	if (DXAttempt(buffer->SetVolume(volume)) != DS_OK || DXAttempt(buffer->SetCurrentPosition(0)) != DS_OK)
 		return -1;
 
 	DS_Samples[channel].buffer = buffer;
 	DS_Samples[channel].playing = num;
+	DS_Samples[channel].echo = DS_Buffers[num][num2].echo;
 	DSAdjustPitch(channel, pitch);
 	DSAdjustPan(channel, pan);
 	buffer->Stop();
@@ -334,10 +410,14 @@ void DXFreeSounds()
 
 	for (int i = 0; i < 256; i++)
 	{
-		if (DS_Buffers[i].buffer)
+		for (int j = 0; j < 8; j++)
 		{
-			Log(4, "Released %s @ %x - RefCnt = %d", "SoundBuffer", DS_Buffers[i].buffer, DS_Buffers[i].buffer->Release());
-			DS_Buffers[i].buffer = 0;
+			if (DS_Buffers[i][j].buffer)
+			{
+				Log(4, "Released %s @ %x - RefCnt = %d", "SoundBuffer", DS_Buffers[i][j].buffer, DS_Buffers[i][j].buffer->Release());
+				DS_Buffers[i][j].echo->Release();
+				DS_Buffers[i][j].buffer = 0;
+			}
 		}
 	}
 }
@@ -363,4 +443,9 @@ void S_SoundSetPitch(long num, long pitch)
 {
 	if (sound_active)
 		DSAdjustPitch(num, pitch);
+}
+
+void S_SetReverbType(int reverb)
+{
+	current_echo = &echo_preset[reverb];
 }
