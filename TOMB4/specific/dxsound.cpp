@@ -28,15 +28,15 @@ static HACMSTREAM hACMStream;
 static ACMSTREAMHEADER ACMStreamHeader;
 static char* decompressed_samples_buffer;
 
-static DSFXEcho echo_preset[5] =
+static DSFXWavesReverb reverb_preset[5] =
 {
-	{100.0F, 0.0F, 33.3F, 33.3F, 0}, // Outside
-	{100.0F, 10.0F, 33.3F, 33.3F, 0}, // Small Room
-	{100.0F, 45.0F, 33.3F, 33.3F, 0}, // Medium Room
-	{100.0F, 75.0F, 33.3F, 33.3F, 0}, // Large Room
-	{100.0F, 95.0F, 33.3F, 33.3F, 0} // Pipe
+	{0.0F, 0.0F, 0.001F, 0.01F}, // Outside
+	{0.0F, 0.0F, 100.0F, 0.01F}, // Small Room
+	{0.0F, 0.0F, 500.0F, 0.01F}, // Medium Room
+	{0.0F, 0.0F, 1000.0F, 0.01F}, // Large Room
+	{0.0F, 0.0F, 3000.0F, 0.01F} // Pipe
 };
-static LPDSFXEcho current_echo = echo_preset;
+static long current_reverb;
 
 bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 {
@@ -102,7 +102,7 @@ void DSAdjustPan(long num, long pan)
 
 		pan >>= 4;
 		DS_Samples[num].buffer->SetPan(pan);
-		DS_Samples[num].echo->SetAllParameters(current_echo);
+		DS_Samples[num].reverb->SetAllParameters(&reverb_preset[current_reverb]);
 	}
 }
 
@@ -193,7 +193,7 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num,
 	LPVOID dest;
 	DSBUFFERDESC desc;
 	LPDIRECTSOUNDBUFFER obuffer;
-	LPDIRECTSOUNDFXECHO8 echo;
+	LPDIRECTSOUNDFXWAVESREVERB8 reverb;
 	DSEFFECTDESC fx;
 	uchar* ptr;
 	ulong bytes;
@@ -269,14 +269,14 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num,
 	DXAttempt(obuffer->Release());
 	fx.dwSize = sizeof(DSEFFECTDESC);
 	fx.dwFlags = 0;
-	fx.guidDSFXClass = GUID_DSFX_STANDARD_ECHO;
+	fx.guidDSFXClass = GUID_DSFX_WAVES_REVERB;
 	fx.dwReserved1 = 0;
 	fx.dwReserved2 = 0;
 	DXAttempt(buffer->SetFX(1, &fx, 0));
-	DXAttempt(buffer->GetObjectInPath(GUID_DSFX_STANDARD_ECHO, 0, IID_IDirectSoundFXEcho8, (LPVOID*)&echo));
+	DXAttempt(buffer->GetObjectInPath(GUID_DSFX_WAVES_REVERB, 0, IID_IDirectSoundFXWavesReverb8, (LPVOID*)&reverb));
 	DS_Buffers[num][num2].frequency = pcm_format.nSamplesPerSec;
 	DS_Buffers[num][num2].buffer = buffer;
-	DS_Buffers[num][num2].echo = echo;
+	DS_Buffers[num][num2].reverb = reverb;
 	return 1;
 }
 
@@ -353,7 +353,7 @@ long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 
 	DS_Samples[channel].buffer = buffer;
 	DS_Samples[channel].playing = num;
-	DS_Samples[channel].echo = DS_Buffers[num][num2].echo;
+	DS_Samples[channel].reverb = DS_Buffers[num][num2].reverb;
 	DSAdjustPitch(channel, pitch);
 	DSAdjustPan(channel, pan);
 	buffer->Stop();
@@ -415,7 +415,7 @@ void DXFreeSounds()
 			if (DS_Buffers[i][j].buffer)
 			{
 				Log(4, "Released %s @ %x - RefCnt = %d", "SoundBuffer", DS_Buffers[i][j].buffer, DS_Buffers[i][j].buffer->Release());
-				DS_Buffers[i][j].echo->Release();
+				DS_Buffers[i][j].reverb->Release();
 				DS_Buffers[i][j].buffer = 0;
 			}
 		}
@@ -445,7 +445,7 @@ void S_SoundSetPitch(long num, long pitch)
 		DSAdjustPitch(num, pitch);
 }
 
-void S_SetReverbType(int reverb)
+void S_SetReverbType(long reverb)
 {
-	current_echo = &echo_preset[reverb];
+	current_reverb = reverb;
 }

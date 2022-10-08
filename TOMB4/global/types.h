@@ -1997,7 +1997,7 @@ struct DS_SAMPLE
 	LPDIRECTSOUNDBUFFER8 buffer;
 	long frequency;
 	long playing;
-	LPDIRECTSOUNDFXECHO8 echo;
+	LPDIRECTSOUNDFXWAVESREVERB8 reverb;
 };
 
 struct BUBBLE_STRUCT
