@@ -526,6 +526,7 @@ void ObjectObjects()
 
 	for (int i = WATERFALL1; i <= WATERFALL3; i++)
 	{
+		obj = &objects[i];
 		obj->control = ControlWaterfall;
 		obj->save_flags = 1;
 	}
@@ -708,7 +709,7 @@ void TrapObjects()
 	obj->save_flags = 1;
 	obj->save_anim = 1;
 
-	for (int i = PUSHABLE_OBJECT1; i < PUSHABLE_OBJECT5; i++)
+	for (int i = PUSHABLE_OBJECT1; i <= PUSHABLE_OBJECT5; i++)
 	{
 		obj = &objects[i];
 		obj->initialise = InitialiseMovingBlock;
