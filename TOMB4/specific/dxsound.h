@@ -9,7 +9,7 @@ bool DXSetOutputFormat();
 bool DXDSCreate();
 bool InitSampleDecompress();
 bool FreeSampleDecompress();
-bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num, long num2);
+bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num);
 void DXStopSample(long num);
 bool DSIsChannelPlaying(long num);
 long DSGetFreeChannel();
@@ -24,5 +24,6 @@ long S_SoundSampleIsPlaying(long num);
 void S_SoundSetPanAndVolume(long num, short pan, ushort volume);
 void S_SoundSetPitch(long num, long pitch);
 void S_SetReverbType(long reverb);
+void DXDSClose();
 
 extern char* samples_buffer;

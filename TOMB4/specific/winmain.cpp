@@ -155,6 +155,8 @@ void WinClose()
 	}
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "DirectInput");
+
+	DXDSClose();
 }
 
 float WinFrameRate()

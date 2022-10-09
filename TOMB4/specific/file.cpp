@@ -1208,6 +1208,7 @@ bool LoadAIInfo()
 bool LoadSamples()
 {
 	long num_samples, uncomp_size, comp_size;
+	static long num_sample_infos;
 
 	Log(2, "LoadSamples");
 	sample_lut = (short*)game_malloc(MAX_SAMPLES * sizeof(short));
@@ -1251,13 +1252,10 @@ bool LoadSamples()
 		fread(&comp_size, 1, 4, level_fp);
 		fread(samples_buffer, comp_size, 1, level_fp);
 
-		for (int j = 0; j < 8; j++)
+		if (!DXCreateSampleADPCM(samples_buffer, comp_size, uncomp_size, i))
 		{
-			if (!DXCreateSampleADPCM(samples_buffer, comp_size, uncomp_size, i, j))
-			{
-				FreeSampleDecompress();
-				return 0;
-			}
+			FreeSampleDecompress();
+			return 0;
 		}
 	}
 

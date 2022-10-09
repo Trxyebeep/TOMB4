@@ -9,7 +9,6 @@ long SoundEffect(long sfx, PHD_3DPOS* pos, long flags);
 void SayNo();
 
 extern SAMPLE_INFO* sample_infos;
-extern long num_sample_infos;
 extern SoundSlot LaSlot[32];
 extern short* sample_lut;
 extern long sound_active;

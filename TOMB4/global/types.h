@@ -1233,6 +1233,7 @@ struct DXPTR
 	LPDIRECTDRAWSURFACEX lpZBuffer;
 	LPDIRECT3DVIEWPORTX lpViewport;
 	LPDIRECTSOUND8 lpDS;
+	IXAudio2* lpXA;
 	ulong dwRenderWidth;
 	ulong dwRenderHeight;
 	RECT rViewport;
@@ -1994,10 +1995,9 @@ struct SAMPLE_INFO
 
 struct DS_SAMPLE
 {
-	LPDIRECTSOUNDBUFFER8 buffer;
+	LPDIRECTSOUNDBUFFER buffer;
 	long frequency;
 	long playing;
-	LPDIRECTSOUNDFXWAVESREVERB8 reverb;
 };
 
 struct BUBBLE_STRUCT
