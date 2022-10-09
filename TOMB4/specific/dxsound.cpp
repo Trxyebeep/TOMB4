@@ -6,6 +6,7 @@
 #include "../game/sound.h"
 #include "LoadSave.h"
 #include "winmain.h"
+#include "../tomb4/tomb4.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)
@@ -393,6 +394,9 @@ void S_SoundSetPitch(long num, long pitch)
 
 void S_SetReverbType(long reverb)
 {
+	if (!tomb4.reverb)
+		reverb = 0;
+
 	if (current_reverb != reverb)
 	{
 		if (reverb)

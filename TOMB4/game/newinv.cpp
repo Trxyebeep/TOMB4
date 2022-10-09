@@ -22,6 +22,7 @@
 #include "lara.h"
 #include "savegame.h"
 #include "../tomb4/tomb4.h"
+#include "../specific/dxsound.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)
@@ -2907,6 +2908,7 @@ long S_CallInventory2()
 	init_new_inventry();
 	camera.number_frames = 2;
 	return_value = 0;
+	S_SetReverbType(1);
 
 	while (!reset_flag && !val)
 	{
