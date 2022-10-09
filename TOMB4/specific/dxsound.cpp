@@ -70,8 +70,13 @@ bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 
 void DSChangeVolume(long num, long volume)
 {
+	float fvolume;
+
 	if (XA_Voices[num])
-		XA_Voices[num]->SetVolume(XAudio2DecibelsToAmplitudeRatio(volume / 100.0F), XAUDIO2_COMMIT_NOW);
+	{
+		fvolume = XAudio2DecibelsToAmplitudeRatio(volume / 100.0F);
+		XA_Voices[num]->SetChannelVolumes(1, &fvolume, XAUDIO2_COMMIT_NOW);
+	}
 }
 
 void DSAdjustPitch(long num, long pitch)
@@ -393,12 +398,18 @@ void S_SetReverbType(long reverb)
 		if (reverb)
 		{
 			if (!current_reverb)
+			{
 				XAMaster->EnableEffect(0, XAUDIO2_COMMIT_NOW);
+				XAMaster->SetVolume(2.0F, XAUDIO2_COMMIT_NOW);
+			}
 
 			XAMaster->SetEffectParameters(0, &reverb_type[reverb - 1], sizeof(XAUDIO2FX_REVERB_PARAMETERS), XAUDIO2_COMMIT_NOW);
 		}
 		else
+		{
 			XAMaster->DisableEffect(0, XAUDIO2_COMMIT_NOW);
+			XAMaster->SetVolume(1.0F, XAUDIO2_COMMIT_NOW);
+		}
 
 		current_reverb = reverb;
 	}
