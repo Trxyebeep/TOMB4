@@ -101,7 +101,7 @@ void DrawLara(ITEM_INFO* item, long mirror)
 	short** meshpp;
 	long* bone;
 	short* rot;
-	long top, bottom, left, right, dx, dy, dz, dist, stash, cos, sin, xRot;
+	long top, bottom, left, right, dx, dy, dz, dist, stash, xRot;
 	static long a = 255;
 
 	top = phd_top;
@@ -228,14 +228,7 @@ void DrawLara(ITEM_INFO* item, long mirror)
 			v1.x = lara_matrices[12 * SkinUseMatrix[i][1] + M01];
 			v1.y = lara_matrices[12 * SkinUseMatrix[i][1] + M11];
 			v1.z = lara_matrices[12 * SkinUseMatrix[i][1] + M21];
-			cos = long(v0.x * v1.x + v0.y * v1.y + v0.z * v1.z);
-			sin = phd_sqrt(16777216 - SQUARE(cos));
-
-			if (i == 1 || i == 4)
-				xRot = -phd_atan(cos, sin);
-			else
-				xRot = phd_atan(cos, sin);
-
+			xRot = long(32768.0F / (float)M_PI * acosf(v0.x * v1.x + v0.y * v1.y + v0.z * v1.z));
 			phd_RotX(short(-xRot >> 1));
 			phd_PutPolygons(*meshpp, -1);
 			phd_PopMatrix();
