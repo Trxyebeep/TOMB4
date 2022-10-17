@@ -21,6 +21,7 @@
 #include "gameflow.h"
 #include "../specific/file.h"
 #include "../tomb4/tomb4.h"
+#include "../specific/dxsound.h"
 
 COLL_INFO mycoll;
 
@@ -594,7 +595,7 @@ void LaraControl(short item_number)
 		}
 	}
 
-//	S_SetReverbType(room[l->room_number].ReverbType);	//empty func call
+	S_SetReverbType(room[l->room_number].ReverbType);
 
 	if (l->hit_points <= 0)
 	{

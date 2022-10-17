@@ -96,6 +96,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "static_lighting");
 		tomb4.static_lighting = 1;						//on
 		REG_WriteBool(buf, tomb4.static_lighting);
+
+		sprintf(buf, "reverb");
+		tomb4.reverb = 1;								//on
+		REG_WriteBool(buf, tomb4.reverb);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -158,6 +162,9 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "static_lighting");
 		REG_ReadBool(buf, tomb4.static_lighting, 1);
+
+		sprintf(buf, "reverb");
+		REG_ReadBool(buf, tomb4.reverb, 1);
 	}
 
 	CloseRegistry();
@@ -228,6 +235,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "static_lighting");
 	REG_WriteBool(buf, tomb4.static_lighting);
+
+	sprintf(buf, "reverb");
+	REG_WriteBool(buf, tomb4.reverb);
 
 	CloseRegistry();
 }

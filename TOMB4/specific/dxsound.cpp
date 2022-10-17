@@ -6,6 +6,7 @@
 #include "../game/sound.h"
 #include "LoadSave.h"
 #include "winmain.h"
+#include "../tomb4/tomb4.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)
@@ -20,13 +21,26 @@ static char source_pcm_format[50] =
 char* samples_buffer;
 
 static LPDIRECTSOUNDBUFFER DSPrimary;
-static DS_SAMPLE DS_Samples[32];
-static DS_SAMPLE DS_Buffers[256];
+static IXAudio2MasteringVoice* XAMaster;
+static IUnknown* XAEffect;
+static IXAudio2SourceVoice* XA_Voices[32];
+static XAUDIO2_BUFFER XA_Buffers[256];
 static MMRESULT mmresult;
 static WAVEFORMATEX pcm_format;
 static HACMSTREAM hACMStream;
 static ACMSTREAMHEADER ACMStreamHeader;
 static char* decompressed_samples_buffer;
+
+static XAUDIO2FX_REVERB_I3DL2_PARAMETERS reverb_preset[4] =
+{
+	{50.0F,-1000, -500, 0.0F, 2.31F, 0.64F, -711, 0.012F, -800, 0.017F, 100.0F, 100.0F, 5000.0F}, // Small Room
+	{50.0F,-1000, -500, 0.0F, 2.31F, 0.64F, -711, 0.012F, -300, 0.017F, 100.0F, 100.0F, 5000.0F}, // Medium Room
+	{50.0F,-1000, -500, 0.0F, 2.31F, 0.64F, -711, 0.012F, 200, 0.017F, 100.0F, 100.0F, 5000.0F}, // Large Room
+	{50.0F,-1000, -500, 0.0F, 2.31F, 0.64F, -711, 0.012F, 700, 0.017F, 100.0F, 100.0F, 5000.0F} // Pipe
+};
+static XAUDIO2FX_REVERB_PARAMETERS reverb_type[4];
+
+static long current_reverb;
 
 bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 {
@@ -57,15 +71,20 @@ bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 
 void DSChangeVolume(long num, long volume)
 {
-	if (DS_Samples[num].buffer)
-		DS_Samples[num].buffer->SetVolume(volume);
+	float fvolume;
+
+	if (XA_Voices[num])
+	{
+		fvolume = XAudio2DecibelsToAmplitudeRatio(volume / 100.0F);
+		XA_Voices[num]->SetChannelVolumes(1, &fvolume, XAUDIO2_COMMIT_NOW);
+	}
 }
 
 void DSAdjustPitch(long num, long pitch)
 {
 	ulong frequency;
 
-	if (DS_Samples[num].buffer)
+	if (XA_Voices[num])
 	{
 		frequency = ulong((float)pitch / 65536.0F * 22050.0F);
 
@@ -74,13 +93,15 @@ void DSAdjustPitch(long num, long pitch)
 		else if (frequency > 100000)
 			frequency = 100000;
 
-		DS_Samples[num].buffer->SetFrequency(frequency);
+		XA_Voices[num]->SetFrequencyRatio(frequency / 22050.0F, XAUDIO2_COMMIT_NOW);
 	}
 }
 
 void DSAdjustPan(long num, long pan)
 {
-	if (DS_Samples[num].buffer)
+	float matrix[2];
+
+	if (XA_Voices[num])
 	{
 		if (pan < 0)
 		{
@@ -91,7 +112,24 @@ void DSAdjustPan(long num, long pan)
 			pan = 0x8000 - pan;
 
 		pan >>= 4;
-		DS_Samples[num].buffer->SetPan(pan);
+
+		if (!pan)
+		{
+			matrix[0] = 1.0F;
+			matrix[1] = 1.0F;
+		}
+		else if (pan < 0)
+		{
+			matrix[0] = 1.0F;
+			matrix[1] = XAudio2DecibelsToAmplitudeRatio(pan / 100.0F);
+		}
+		else
+		{
+			matrix[0] = XAudio2DecibelsToAmplitudeRatio(-pan / 100.0F);
+			matrix[1] = 1.0F;
+		}
+
+		XA_Voices[num]->SetOutputMatrix(0, 1, 2, matrix, XAUDIO2_COMMIT_NOW);
 	}
 }
 
@@ -117,17 +155,10 @@ bool DXSetOutputFormat()
 
 bool DXDSCreate()
 {
-	sizeof(WAVEFORMATEX);
-	Log(2, "DXDSCreate");
-	DXAttempt(DirectSoundCreate(G_dxinfo->DSInfo[G_dxinfo->nDS].lpGuid, &App.dx.lpDS, 0));
-	DXAttempt(App.dx.lpDS->SetCooperativeLevel(App.hWnd, DSSCL_EXCLUSIVE));
-	DXSetOutputFormat();
-	sound_active = 1;
-	return 1;
-}
+	XAUDIO2_EFFECT_DESCRIPTOR chaind;
+	XAUDIO2_EFFECT_CHAIN chain;
 
-bool InitSampleDecompress()
-{
+	Log(2, "DXDSCreate");
 	pcm_format.wFormatTag = WAVE_FORMAT_PCM;
 	pcm_format.cbSize = 0;
 	pcm_format.nChannels = 1;
@@ -135,6 +166,30 @@ bool InitSampleDecompress()
 	pcm_format.nSamplesPerSec = 22050;
 	pcm_format.nBlockAlign = 2;
 	pcm_format.wBitsPerSample = 16;
+	DXAttempt(DirectSoundCreate8(G_dxinfo->DSInfo[G_dxinfo->nDS].lpGuid, &App.dx.lpDS, 0));
+	DXAttempt(App.dx.lpDS->SetCooperativeLevel(App.hWnd, DSSCL_EXCLUSIVE));
+	DXSetOutputFormat();
+	DXAttempt(XAudio2Create(&App.dx.lpXA, 0, XAUDIO2_DEFAULT_PROCESSOR));
+	DXAttempt(XAudio2CreateReverb(&XAEffect, 0));
+	chaind.pEffect = XAEffect;
+	chaind.InitialState = TRUE;
+	chaind.OutputChannels = 2;
+	chain.EffectCount = 1;
+	chain.pEffectDescriptors = &chaind;
+	DXAttempt(App.dx.lpXA->CreateMasteringVoice(&XAMaster, 2, 44100, 0, 0, &chain, AudioCategory_GameEffects));
+
+	for (int i = 0; i < 32; i++)
+		DXAttempt(App.dx.lpXA->CreateSourceVoice(&XA_Voices[i], &pcm_format, 0, XAUDIO2_MAX_FREQ_RATIO, 0, 0, 0));
+
+	for (int i = 0; i < 4; i++)
+		ReverbConvertI3DL2ToNative(&reverb_preset[i], &reverb_type[i], FALSE);
+
+	sound_active = 1;
+	return 1;
+}
+
+bool InitSampleDecompress()
+{
 	mmresult = acmStreamOpen(&hACMStream, hACMDriver, (LPWAVEFORMATEX)source_pcm_format, &pcm_format, 0, 0, 0, 0);
 
 	if (mmresult != DS_OK)
@@ -177,10 +232,6 @@ bool FreeSampleDecompress()
 bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 {
 	LPWAVEFORMATEX format;
-	LPDIRECTSOUNDBUFFER buffer;
-	LPVOID dest;
-	DSBUFFERDESC desc;
-	ulong bytes;
 
 	Log(8, "DXCreateSampleADPCM");
 
@@ -198,55 +249,31 @@ bool DXCreateSampleADPCM(char* data, long comp_size, long uncomp_size, long num)
 	if (mmresult != DS_OK)
 		Log(1, "Stream Convert %d", mmresult);
 
-	desc.dwSize = 20;
-	desc.dwFlags = DSBCAPS_STATIC | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME;
-	desc.dwReserved = 0;
-	desc.dwBufferBytes = uncomp_size - 32;
-	desc.lpwfxFormat = &pcm_format;
-	
-	if (DXAttempt(App.dx.lpDS->CreateSoundBuffer(&desc, &buffer, 0)) != DS_OK)
-	{
-		Log(1, "Unable To Create Sound Buffer");
-		return 0;
-	}
-
-	if (DXAttempt(buffer->Lock(0, uncomp_size - 32, &dest, &bytes, 0, 0, 0)) != DS_OK)
-	{
-		Log(1, "Unable To Lock Sound Buffer");
-		return 0;
-	}
-
-	memcpy(dest, decompressed_samples_buffer, uncomp_size - 32);
-	DXAttempt(buffer->Unlock(dest, bytes, 0, 0));
-	DS_Buffers[num].frequency = pcm_format.nSamplesPerSec;
-	DS_Buffers[num].buffer = buffer;
+	XA_Buffers[num].pAudioData = (BYTE*)malloc(uncomp_size - 32);
+	memcpy((void*)XA_Buffers[num].pAudioData, decompressed_samples_buffer, uncomp_size - 32);
+	XA_Buffers[num].AudioBytes = uncomp_size - 32;
 	return 1;
 }
 
 void DXStopSample(long num)
 {
-	if (num >= 0 && DS_Samples[num].buffer)
+	if (num >= 0 && XA_Voices[num])
 	{
-		DXAttempt(DS_Samples[num].buffer->Stop());
-		DXAttempt(DS_Samples[num].buffer->Release());
-		DS_Samples[num].playing = 0;
-		DS_Samples[num].buffer = 0;
+		DXAttempt(XA_Voices[num]->Stop(0, XAUDIO2_COMMIT_NOW));
+		DXAttempt(XA_Voices[num]->FlushSourceBuffers());
 	}
 }
 
 bool DSIsChannelPlaying(long num)
 {
-	ulong status;
+	XAUDIO2_VOICE_STATE state;
 
-	if (DS_Samples[num].buffer)
+	if (XA_Voices[num])
 	{
-		if (DXAttempt(DS_Samples[num].buffer->GetStatus(&status)) == DS_OK)
-		{
-			if (status & DSBSTATUS_PLAYING)
-				return 1;
+		XA_Voices[num]->GetState(&state, XAUDIO2_VOICE_NOSAMPLESPLAYED);
 
-			DXStopSample(num);
-		}
+		if (state.BuffersQueued)
+			return 1;
 	}
 
 	return 0;
@@ -265,23 +292,23 @@ long DSGetFreeChannel()
 
 long DXStartSample(long num, long volume, long pitch, long pan, ulong flags)
 {
-	LPDIRECTSOUNDBUFFER buffer;
+	IXAudio2SourceVoice* voice;
+	XAUDIO2_BUFFER* buffer;
 	long channel;
 
 	channel = DSGetFreeChannel();
 
-	if (channel < 0 || DXAttempt(App.dx.lpDS->DuplicateSoundBuffer(DS_Buffers[num].buffer, &buffer)) != DS_OK)
+	if (channel < 0)
 		return -1;
 
-	if (DXAttempt(buffer->SetVolume(volume)) != DS_OK || DXAttempt(buffer->SetCurrentPosition(0)) != DS_OK)
-		return -1;
-
-	DS_Samples[channel].buffer = buffer;
-	DS_Samples[channel].playing = num;
+	voice = XA_Voices[channel];
+	DSChangeVolume(channel, volume);
 	DSAdjustPitch(channel, pitch);
 	DSAdjustPan(channel, pan);
-	buffer->Stop();
-	DXAttempt(buffer->Play(0, 0, flags));
+	buffer = &XA_Buffers[num];
+	buffer->LoopCount = flags;
+	DXAttempt(voice->SubmitSourceBuffer(buffer, 0));
+	DXAttempt(voice->Start(0, XAUDIO2_COMMIT_NOW));
 	return channel;
 }
 
@@ -325,7 +352,7 @@ long S_SoundPlaySample(long num, ushort volume, long pitch, short pan)
 
 long S_SoundPlaySampleLooped(long num, ushort volume, long pitch, short pan)
 {
-	return DXStartSample(num, CalcVolume(volume), pitch, pan, DSBPLAY_LOOPING);
+	return DXStartSample(num, CalcVolume(volume), pitch, pan, XAUDIO2_LOOP_INFINITE);
 }
 
 void DXFreeSounds()
@@ -334,10 +361,10 @@ void DXFreeSounds()
 
 	for (int i = 0; i < 256; i++)
 	{
-		if (DS_Buffers[i].buffer)
+		if (XA_Buffers[i].pAudioData)
 		{
-			Log(4, "Released %s @ %x - RefCnt = %d", "SoundBuffer", DS_Buffers[i].buffer, DS_Buffers[i].buffer->Release());
-			DS_Buffers[i].buffer = 0;
+			free((void*)XA_Buffers[i].pAudioData);
+			XA_Buffers[i].pAudioData = 0;
 		}
 	}
 }
@@ -363,4 +390,47 @@ void S_SoundSetPitch(long num, long pitch)
 {
 	if (sound_active)
 		DSAdjustPitch(num, pitch);
+}
+
+void S_SetReverbType(long reverb)
+{
+	if (!tomb4.reverb)
+		reverb = 0;
+
+	if (current_reverb != reverb)
+	{
+		if (reverb)
+		{
+			if (!current_reverb)
+			{
+				XAMaster->EnableEffect(0, XAUDIO2_COMMIT_NOW);
+				XAMaster->SetVolume(2.0F, XAUDIO2_COMMIT_NOW);
+			}
+
+			XAMaster->SetEffectParameters(0, &reverb_type[reverb - 1], sizeof(XAUDIO2FX_REVERB_PARAMETERS), XAUDIO2_COMMIT_NOW);
+		}
+		else
+		{
+			XAMaster->DisableEffect(0, XAUDIO2_COMMIT_NOW);
+			XAMaster->SetVolume(1.0F, XAUDIO2_COMMIT_NOW);
+		}
+
+		current_reverb = reverb;
+	}
+}
+
+void DXDSClose()
+{
+	for (int i = 0; i < 32; i++)
+	{
+		if (XA_Voices[i])
+		{
+			XA_Voices[i]->DestroyVoice();
+			XA_Voices[i] = 0;
+		}
+	}
+
+	XAMaster->DestroyVoice();
+	XAEffect->Release();
+	App.dx.lpXA->Release();
 }

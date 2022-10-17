@@ -886,7 +886,7 @@ void DoTitle(uchar Name, uchar Audio)
 	SOUND_Stop();
 	S_CDPlay(Audio, 1);
 	IsAtmospherePlaying = 0;
-	//empty func call here
+	S_SetReverbType(1);
 	InitialiseCamera();
 
 	if (bDoCredits)

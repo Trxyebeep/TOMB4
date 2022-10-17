@@ -23,5 +23,7 @@ void DXFreeSounds();
 long S_SoundSampleIsPlaying(long num);
 void S_SoundSetPanAndVolume(long num, short pan, ushort volume);
 void S_SoundSetPitch(long num, long pitch);
+void S_SetReverbType(long reverb);
+void DXDSClose();
 
 extern char* samples_buffer;

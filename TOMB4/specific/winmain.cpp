@@ -155,6 +155,8 @@ void WinClose()
 	}
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "DirectInput");
+
+	DXDSClose();
 }
 
 float WinFrameRate()
@@ -528,6 +530,8 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 		return 0;
 	}
 
+	CoInitializeEx(0, COINIT_MULTITHREADED);
+
 	if (G_dxptr->Flags & 1)	//remove the border in fullscreen
 	{
 		SetWindowLongPtr(App.hWnd, GWL_STYLE, WS_POPUP);
@@ -581,5 +585,6 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	ReleaseDC(desktop, hdc);
 	devmode.dmFields = DM_BITSPERPEL;
 	ChangeDisplaySettings(&devmode, 0);
+	CoUninitialize();
 	return 0;
 }

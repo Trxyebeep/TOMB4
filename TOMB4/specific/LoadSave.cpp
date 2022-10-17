@@ -2053,6 +2053,7 @@ long S_PauseMenu()
 	CreateMonoScreen();
 	S_DisplayPauseMenu(1);
 	InventoryActive = 1;
+	S_SetReverbType(1);
 
 	do
 	{

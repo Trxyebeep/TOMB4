@@ -1232,7 +1232,8 @@ struct DXPTR
 	LPDIRECTDRAWSURFACEX lpBackBuffer;
 	LPDIRECTDRAWSURFACEX lpZBuffer;
 	LPDIRECT3DVIEWPORTX lpViewport;
-	LPDIRECTSOUND lpDS;
+	LPDIRECTSOUND8 lpDS;
+	IXAudio2* lpXA;
 	ulong dwRenderWidth;
 	ulong dwRenderHeight;
 	RECT rViewport;
@@ -2307,5 +2308,6 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool combat_cam_tilt;
 	bool hpbar_inv;
 	bool static_lighting;
+	bool reverb;
 };
 #pragma pack(pop)

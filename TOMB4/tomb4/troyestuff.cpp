@@ -7,7 +7,7 @@
 #include "../specific/3dmath.h"
 
 #define PAGE0_NUM	14
-#define PAGE1_NUM	6
+#define PAGE1_NUM	7
 #define YPOS	textY + y++ * font_height
 #define CHECK_SEL(c)	selection & (1 << s++) ? 1 : c
 
@@ -402,6 +402,7 @@ bool Page1(long& num, long textY, ulong selection)
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "combat cam tilt", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Inv healthbar", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "static lighting", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Reverb", 0);
 
 	y = 2;
 	s = 0;
@@ -422,6 +423,9 @@ bool Page1(long& num, long textY, ulong selection)
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	strcpy(buffer, tomb4.static_lighting ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
+
+	strcpy(buffer, tomb4.reverb ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	switch (selection)
@@ -487,6 +491,17 @@ bool Page1(long& num, long textY, ulong selection)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			tomb4.static_lighting = !tomb4.static_lighting;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 6:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.reverb = !tomb4.reverb;
 			changed = 1;
 		}
 
