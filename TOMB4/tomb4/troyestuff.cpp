@@ -425,7 +425,7 @@ bool Page1(long& num, long textY, ulong selection)
 	strcpy(buffer, tomb4.static_lighting ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
-	strcpy(buffer, tomb4.reverb ? "on" : "off");
+	strcpy(buffer, tomb4.reverb == 1 ? "off" : tomb4.reverb == 2 ? "Lara room" : "Camera room");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	switch (selection)
@@ -498,10 +498,25 @@ bool Page1(long& num, long textY, ulong selection)
 
 	case 1 << 6:
 
-		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		if (dbinput & IN_LEFT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.reverb = !tomb4.reverb;
+			tomb4.reverb--;
+
+			if (tomb4.reverb < 1)
+				tomb4.reverb = 3;
+
+			changed = 1;
+		}
+
+		if (dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.reverb++;
+
+			if (tomb4.reverb > 3)
+				tomb4.reverb = 1;
+
 			changed = 1;
 		}
 
