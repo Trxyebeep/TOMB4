@@ -1,5 +1,51 @@
 # tomb4 changelog
 
+## [2.0.0](https://github.com/Trxyebeep/TOMB4/tree/V2.0.0) (date)
+
+### Original bug fixes
+
+- Fix window border.
+- Fix pickups freezing in the corner during flybies.
+- Fix a divide by 0 in FX fog code.
+- Fix a rare crash when shattering objects due to an unintialized variable.
+- Fix Lara saying "No" when interacting with the Plinths in Temple of Horus.
+- Fix water sfx playing when Lara is shot.
+- Fix enemies aiming higher than Lara during duck turn animations.
+- Fix grenadegun unequip frame.
+- Fix backdrop color in train level.
+- Fix launching multiple instances hanging the game.
+- Fix dynamic lights in the last level.
+
+### tomb4 bug fixes
+
+- Fix failing to use the sand in the element puzzle.
+- Fix red color when looking up from water.
+- Fix jeep smoke appearing at wrong times.
+- Fix lara flying when dying on water surface.
+- Fix enemy jeep sometimes disappearing when triggered.
+- Fix bug where shotgun sometimes wouldn't down the skeletons.
+- Fix deadlock when opening the pause menu while in binoculars.
+- Fix multiple FMVs playback at the end of KV5.
+- Fix issues with joint lighting.
+- Fix savegames crashing.
+
+### new tomb4 features
+
+- Increase dynamic lights limit.
+- Remove outdated mmx code.
+- Decrease font size in the new options menu to fit more options.
+- Upgrade input to DirectInput8.
+- Raise internal memory limit from 5 to 15MBs.
+- Make DOZY remove fire from Lara.
+- Improve crouch tilting.
+- Reposition the enemy health bar in lasersight.
+- Add flyby skipper.
+- Finish decompiling 100% of game code, make a new exe with the new icon.
+- Remove the software renderer.
+- Implement a new float matrix for smoother/more accurate animations and drawing.
+- Implement reverb.
+
+
 ## [1.2.1](https://github.com/Trxyebeep/TOMB4/tree/V1.2.1) (May 28 2022)
 
 ### tomb4 bug fixes
