@@ -2308,6 +2308,6 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool combat_cam_tilt;
 	bool hpbar_inv;
 	bool static_lighting;
-	bool reverb;
+	ulong reverb;				//1-> off, 2-> Lara room, 3->camera room
 };
 #pragma pack(pop)
