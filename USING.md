@@ -4,11 +4,9 @@
 
 ## [Releases page](https://github.com/Trxyebeep/TOMB4/releases)
 
-### *first time installs:*
-
 #### Steam/GoG version:
-1. Get the latest release package that says "exe + dll"
-2. unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
+1. Get the latest release package.
+2. Unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
 3. Enjoy!
 
 #### CD version:
@@ -19,15 +17,10 @@
 - Entire fmv folder
 - SCRIPT.DAT
 - <language.dat> (whichever language your game version is in, typically English.dat or US/UK.dat
-3. Get the latest release package that says "exe + dll"
-4. unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
+3. Get the latest release package.
+4. Unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
 5. Enjoy!
 
-
-### *Updating/Non-first time installing:*
-1. Get the latest release package that says "dll only"
-2. unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
-3. Enjoy!
 ------------------------
 
 ## New options menu:
@@ -123,3 +116,6 @@ Toggles the healthbar appearing in the inventory when looking over the medipacks
 
 ### 20. static lighting:
 Toggles static lighting.
+
+### 21. Reverb:
+Toggles Reverb and allows choosing its room.
