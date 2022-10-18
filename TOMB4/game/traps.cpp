@@ -243,7 +243,7 @@ void ControlTwoBlockPlatform(short item_number)
 
 	if (item->trigger_flags)
 	{
-		if (item->pos.y_pos > item->item_flags[0] - (item->trigger_flags << 4))
+		if (item->pos.y_pos > item->item_flags[0] - (long(item->trigger_flags & 0xFFFFFFF0) << 4))
 			item->pos.y_pos -= item->trigger_flags & 0xF;
 
 		room_number = item->room_number;

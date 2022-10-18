@@ -229,7 +229,7 @@ void DrawLara(ITEM_INFO* item, long mirror)
 			v1.y = lara_matrices[12 * SkinUseMatrix[i][1] + M11];
 			v1.z = lara_matrices[12 * SkinUseMatrix[i][1] + M21];
 			xRot = long(32768.0F / (float)M_PI * acosf(v0.x * v1.x + v0.y * v1.y + v0.z * v1.z));
-			phd_RotX(short(-xRot >> 1));
+			phd_RotX(short(xRot >> 1));
 			phd_PutPolygons(*meshpp, -1);
 			phd_PopMatrix();
 		}
