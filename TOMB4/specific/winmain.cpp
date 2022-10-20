@@ -548,7 +548,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	}
 
 	DXInitKeyboard(App.hWnd, App.hInstance);
-	App.hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(101));
+	App.hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDR_ACCELERATOR));
 
 	if (!App.SoundDisabled)
 	{
