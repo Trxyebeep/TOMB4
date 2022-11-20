@@ -220,6 +220,7 @@ void RagheadControl(short item_number)
 	if (item->hit_points <= 0)
 	{
 		item->hit_points = 0;
+		raghead->LOT.is_jumping = 0;
 		room_number = item->room_number;
 		floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 		item->floor = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
@@ -237,6 +238,7 @@ void RagheadControl(short item_number)
 
 		case 32:
 			item->gravity_status = 1;
+			raghead->LOT.is_jumping = 1;
 
 			if (item->pos.y_pos >= item->floor)
 			{
