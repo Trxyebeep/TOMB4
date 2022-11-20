@@ -210,6 +210,8 @@ static long TestBlockPull(ITEM_INFO* item, long height, ushort quadrant)
 
 	rx = item->pos.x_pos;
 	rz = item->pos.z_pos;
+	item->pos.x_pos = x;
+	item->pos.z_pos = z;
 	GetCollidedObjects(item, 256, 1, itemlist, 0, 0);
 	item->pos.x_pos = rx;
 	item->pos.z_pos = rz;
