@@ -767,6 +767,7 @@ void TrapObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[FLAME_EMITTER3];
+	obj->initialise = InitialiseFlameEmitter3;
 	obj->control = FlameEmitter3Control;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
