@@ -883,7 +883,7 @@ long S_GetObjectBounds(short* bounds)
 	FVECTOR vtx[8];
 	float xMin, xMax, yMin, yMax, zMin, zMax, numZ, xv, yv, zv;
 
-	if (mMXPtr[M23] >= phd_zfar && !outside)
+	if (mMXPtr[M23] >= f_mzfar && !outside)
 		return 0;
 
 	xMin = bounds[0];
@@ -935,10 +935,10 @@ long S_GetObjectBounds(short* bounds)
 	{
 		zv = vtx[i].x * mMXPtr[M20] + vtx[i].y * mMXPtr[M21] + vtx[i].z * mMXPtr[M22] + mMXPtr[M23];
 
-		if (zv > phd_znear && phd_zfar > zv)
+		if (zv > f_mznear && f_mzfar > zv)
 		{
 			numZ++;
-			zv /= phd_persp;
+			zv /= f_mpersp;
 
 			if (!zv)
 				zv = 1;
@@ -962,10 +962,10 @@ long S_GetObjectBounds(short* bounds)
 		}
 	}
 
-	xMin += phd_centerx;
-	xMax += phd_centerx;
-	yMin += phd_centery;
-	yMax += phd_centery;
+	xMin += f_centerx;
+	xMax += f_centerx;
+	yMin += f_centery;
+	yMax += f_centery;
 
 	if (numZ < 8 || xMin < 0 || yMin < 0 || phd_winxmax < xMax || phd_winymax < yMax)
 		return -1;
