@@ -101,53 +101,58 @@ static GouraudBarColourSet enemyBarColourSet =
 	{ 0, 0, 0, 0, 0 }
 };
 
-static void S_DrawGouraudBar(long x, long y, long width, long height, long value, GouraudBarColourSet* colour)
+static void DrawColoredRect(float x0, float y0, float x1, float y1, float z, ulong c0, ulong c1, ulong c2, ulong c3, TEXTURESTRUCT* tex)
 {
 	D3DTLVERTEX v[4];
-	TEXTURESTRUCT tex;
-	float fx, fx2, fy, fy2, fvalue;
-	long r, g, b;
 
+	v[0].sx = x0;
+	v[0].sy = y0;
+	v[0].color = RGBA_SETALPHA(c0, 0xFF);
+
+	v[1].sx = x1;
+	v[1].sy = y0;
+	v[1].color = RGBA_SETALPHA(c1, 0xFF);
+
+	v[2].sx = x1;
+	v[2].sy = y1;
+	v[2].color = RGBA_SETALPHA(c2, 0xFF);
+
+	v[3].sx = x0;
+	v[3].sy = y1;
+	v[3].color = RGBA_SETALPHA(c3, 0xFF);
+
+	for (int i = 0; i < 4; i++)
+	{
+		v[i].sz = z;
+		v[i].rhw = f_mpersp / z * f_moneopersp;
+		v[i].specular = 0xFF000000;
+	}
+
+	AddQuadSorted(v, 0, 1, 2, 3, tex, 0);
+}
+
+static void S_DrawGouraudBar(long x, long y, long width, long height, long pos, GouraudBarColourSet* colour)
+{
+	TEXTURESTRUCT tex;
+	float bar, max, h, x0, y0, x1, y1;
+	long p, r, g, b, c0, c1, c2, c3;
+
+	nPolyType = 6;
 	clipflags[0] = 0;
 	clipflags[1] = 0;
 	clipflags[2] = 0;
 	clipflags[3] = 0;
-	nPolyType = 6;
 	tex.drawtype = 0;
 	tex.tpage = 0;
-	fx = phd_winxmax * 0.0015625F;
-	fy = phd_winymax * 0.0020833334F;
-	fvalue = 0.0099999998F * value;
-	fx2 = width * fvalue;
-	fy2 = height * 0.1666666716F;
-	v[0].specular = 0xFF000000;
-	v[1].specular = 0xFF000000;
-	v[2].specular = 0xFF000000;
-	v[3].specular = 0xFF000000;
-	v[0].sx = x * fx;
-	v[1].sx = x * fx + fx2 * fx;
-	v[2].sx = x * fx;
-	v[3].sx = x * fx + fx2 * fx;
-	v[0].sy = y * fy - fy2 * fy;
-	v[1].sy = y * fy - fy2 * fy;
-	v[2].sy = y * fy;
-	v[3].sy = y * fy;
-	v[0].sz = f_mznear;
-	v[1].sz = f_mznear;
-	v[2].sz = f_mznear;
-	v[3].sz = f_mznear;
-	v[0].rhw = f_mpersp / f_mznear * f_moneopersp;
-	v[1].rhw = f_mpersp / f_mznear * f_moneopersp;
-	v[2].rhw = f_mpersp / f_mznear * f_moneopersp;
-	v[3].rhw = f_mpersp / f_mznear * f_moneopersp;
 
-	v[0].sy += fy2 * fy;
-	v[1].sy += fy2 * fy;
-	v[2].sy += fy2 * fy;
-	v[3].sy += fy2 * fy;
+	h = (float)height / 3.0F;
+	max = (float)pos / 100.0F;
+	bar = (float)width * max;
 
-	v[0].color = 0xFF000000;
-	v[1].color = 0xFF000000;
+	x0 = (float)x;
+	y0 = (float)y;
+	x1 = x + bar;
+	y1 = y + h;
 
 	r = colour->abLeftRed[0];
 	g = colour->abLeftGreen[0];
@@ -155,41 +160,35 @@ static void S_DrawGouraudBar(long x, long y, long width, long height, long value
 	r -= r >> 2;
 	g -= g >> 2;
 	b -= b >> 2;
-	v[2].color = RGBONLY(r, g, b);
+	c2 = RGBONLY(r, g, b);
 
-	r = (long)((1 - fvalue) * colour->abLeftRed[0] + fvalue * colour->abRightRed[0]);
-	g = (long)((1 - fvalue) * colour->abLeftGreen[0] + fvalue * colour->abRightGreen[0]);
-	b = (long)((1 - fvalue) * colour->abLeftBlue[0] + fvalue * colour->abRightBlue[0]);
+	r = (long)((1 - max) * colour->abLeftRed[0] + max * colour->abRightRed[0]);
+	g = (long)((1 - max) * colour->abLeftGreen[0] + max * colour->abRightGreen[0]);
+	b = (long)((1 - max) * colour->abLeftBlue[0] + max * colour->abRightBlue[0]);
 	r -= r >> 2;
 	g -= g >> 2;
 	b -= b >> 2;
-	v[3].color = RGBONLY(r, g, b);
+	c3 = RGBONLY(r, g, b);
 
-	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);
+	DrawColoredRect(x0, y0, x1, y1, f_mznear, 0, 0, c3, c2, &tex);
 
 	for (int i = 0; i < 4; i++)
 	{
-		v[0].sy += fy2 * fy;
-		v[1].sy += fy2 * fy;
-		v[2].sy += fy2 * fy;
-		v[3].sy += fy2 * fy;
-		v[0].color = RGBONLY(colour->abLeftRed[i], colour->abLeftGreen[i], colour->abLeftBlue[i]);
-		r = (long)((1 - fvalue) * colour->abLeftRed[i] + fvalue * colour->abRightRed[i]);
-		g = (long)((1 - fvalue) * colour->abLeftGreen[i] + fvalue * colour->abRightGreen[i]);
-		b = (long)((1 - fvalue) * colour->abLeftBlue[i] + fvalue * colour->abRightBlue[i]);
-		v[1].color = RGBONLY(r, g, b);
-		v[2].color = RGBONLY(colour->abLeftRed[i + 1], colour->abLeftGreen[i + 1], colour->abLeftBlue[i + 1]);
-		r = (long)((1 - fvalue) * colour->abLeftRed[i + 1] + fvalue * colour->abRightRed[i + 1]);
-		g = (long)((1 - fvalue) * colour->abLeftGreen[i + 1] + fvalue * colour->abRightGreen[i + 1]);
-		b = (long)((1 - fvalue) * colour->abLeftBlue[i + 1] + fvalue * colour->abRightBlue[i + 1]);
-		v[3].color = RGBONLY(r, g, b);
-		AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);
-	}
+		c0 = RGBONLY(colour->abLeftRed[i], colour->abLeftGreen[i], colour->abLeftBlue[i]);
+		r = (long)((1 - max) * colour->abLeftRed[i] + max * colour->abRightRed[i]);
+		g = (long)((1 - max) * colour->abLeftGreen[i] + max * colour->abRightGreen[i]);
+		b = (long)((1 - max) * colour->abLeftBlue[i] + max * colour->abRightBlue[i]);
+		c1 = RGBONLY(r, g, b);
+		c2 = RGBONLY(colour->abLeftRed[i + 1], colour->abLeftGreen[i + 1], colour->abLeftBlue[i + 1]);
+		r = (long)((1 - max) * colour->abLeftRed[i + 1] + max * colour->abRightRed[i + 1]);
+		g = (long)((1 - max) * colour->abLeftGreen[i + 1] + max * colour->abRightGreen[i + 1]);
+		b = (long)((1 - max) * colour->abLeftBlue[i + 1] + max * colour->abRightBlue[i + 1]);
+		c3 = RGBONLY(r, g, b);
 
-	v[0].sy += fy2 * fy;
-	v[1].sy += fy2 * fy;
-	v[2].sy += fy2 * fy;
-	v[3].sy += fy2 * fy;
+		y0 += h;
+		y1 += h;
+		DrawColoredRect(x0, y0, x1, y1, f_mznear, c0, c1, c3, c2, &tex);
+	}
 
 	r = colour->abLeftRed[4];
 	g = colour->abLeftGreen[4];
@@ -197,104 +196,47 @@ static void S_DrawGouraudBar(long x, long y, long width, long height, long value
 	r -= r >> 2;
 	g -= g >> 2;
 	b -= b >> 2;
-	v[0].color = RGBONLY(r, g, b);
+	c0 = RGBONLY(r, g, b);
 
-	r = (long)((1 - fvalue) * colour->abLeftRed[4] + fvalue * colour->abRightRed[4]);
-	g = (long)((1 - fvalue) * colour->abLeftGreen[4] + fvalue * colour->abRightGreen[4]);
-	b = (long)((1 - fvalue) * colour->abLeftBlue[4] + fvalue * colour->abRightBlue[4]);
+	r = (long)((1 - max) * colour->abLeftRed[4] + max * colour->abRightRed[4]);
+	g = (long)((1 - max) * colour->abLeftGreen[4] + max * colour->abRightGreen[4]);
+	b = (long)((1 - max) * colour->abLeftBlue[4] + max * colour->abRightBlue[4]);
 	r -= r >> 2;
 	g -= g >> 2;
 	b -= b >> 2;
-	v[1].color = RGBONLY(r, g, b);
+	c1 = RGBONLY(r, g, b);
 
-	v[2].color = 0xFF000000;
-	v[3].color = 0xFF000000;
-	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);
+	y0 += h;
+	y1 += h;
+	DrawColoredRect(x0, y0, x1, y1, f_mznear, c0, c1, 0, 0, &tex);
 
-	v[0].sx = x * fx - 2;
-	v[1].sx = x * fx + width * fx + 2;
-	v[2].sx = x * fx - 2;
-	v[3].sx = x * fx + width * fx + 2;
-	v[0].sy = y * fy;
-	v[1].sy = y * fy;
-	v[2].sy = y * fy + height * fy;
-	v[3].sy = y * fy + height * fy;
-	v[0].sz = f_mznear + 1;
-	v[1].sz = f_mznear + 1;
-	v[2].sz = f_mznear + 1;
-	v[3].sz = f_mznear + 1;
-	v[0].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
-	v[1].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
-	v[2].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
-	v[3].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
-	v[0].color = 0;
-	v[1].color = 0;
-	v[2].color = 0;
-	v[3].color = 0;
-	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//black background
+	x0 = (float)x;
+	y0 = (float)y;
+	x1 = float(x + width);
+	y1 = y + (h * 6);
+	p = GetFixedScale(1);
 
-	v[0].sx = x * fx - 3;
-	v[1].sx = x * fx + width * fx + 3;
-	v[2].sx = x * fx - 3;
-	v[3].sx = x * fx + width * fx + 3;
-	v[0].sy = y * fy - 1;
-	v[1].sy = y * fy - 1;
-	v[2].sy = y * fy + height * fy + 1;
-	v[3].sy = y * fy + height * fy + 1;
-	v[0].sz = f_mznear + 2;
-	v[1].sz = f_mznear + 2;
-	v[2].sz = f_mznear + 2;
-	v[3].sz = f_mznear + 2;
-	v[0].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
-	v[1].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
-	v[2].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
-	v[3].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
-	v[0].color = 0xFFFFFFFF;
-	v[1].color = 0xFFFFFFFF;
-	v[2].color = 0xFFFFFFFF;
-	v[3].color = 0xFFFFFFFF;
-	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//white border
+	DrawColoredRect(x0, y0, x1, y1, f_mznear + 1, 0, 0, 0, 0, &tex);
+	DrawColoredRect(x0 - p, y0 - p, x1 + p, y1 + p, f_mznear + 2, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, &tex);
 }
 
 static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long clr1, long clr2)
 {
-	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
-	float fx, fx2, fy, fw, fh, r1, g1, b1, r2, g2, b2, r, g, b, mul;
-	long lr, lg, lb, clr_11, clr_12, clr_21, clr_22;
+	float r1, g1, b1, r2, g2, b2, r, g, b, mul;
+	long bar, y2, p, lr, lg, lb, c0, c1, c2, c3;
 
+	nPolyType = 6;
 	clipflags[0] = 0;
 	clipflags[1] = 0;
 	clipflags[2] = 0;
 	clipflags[3] = 0;
-	nPolyType = 6;
 	tex.drawtype = 0;
 	tex.tpage = 0;
-	fx = (float)phd_winxmax * 0.0015625F;
-	fy = (float)phd_winymax * 0.0020833334F;
-	fw = (float)width;
-	fh = (float)(height >> 1);
-	fx2 = (fw * fx) * 0.0099999998F * (float)pos;
-	v[0].specular = 0xFF000000;
-	v[1].specular = 0xFF000000;
-	v[2].specular = 0xFF000000;
-	v[3].specular = 0xFF000000;
-	v[0].sx = (float)x * fx;
-	v[1].sx = ((float)x * fx) + fx2;
-	v[2].sx = (float)x * fx;
-	v[3].sx = ((float)x * fx) + fx2;
-	v[0].sy = (float)y * fy;
-	v[1].sy = (float)y * fy;
-	v[2].sy = ((float)y * fy) + (fh * fy);
-	v[3].sy = ((float)y * fy) + (fh * fy);
-	v[0].sz = f_mznear;
-	v[1].sz = f_mznear;
-	v[2].sz = f_mznear;
-	v[3].sz = f_mznear;
-	v[0].rhw = f_mpersp / f_mznear * f_moneopersp;
-	v[1].rhw = f_mpersp / f_mznear * f_moneopersp;
-	v[2].rhw = f_mpersp / f_mznear * f_moneopersp;
-	v[3].rhw = f_mpersp / f_mznear * f_moneopersp;
+
+	p = GetFixedScale(1);
+	y2 = y + height;
+	bar = width * pos / 100;
 
 	r1 = (float)CLRR(clr1);
 	g1 = (float)CLRG(clr1);
@@ -303,7 +245,7 @@ static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long c
 	g2 = (float)CLRG(clr2);
 	b2 = (float)CLRB(clr2);
 
-	mul = fx2 / (fw * fx);
+	mul = (float)bar / (float)width;
 	r = r1 + ((r2 - r1) * mul);
 	g = g1 + ((g2 - g1) * mul);
 	b = b1 + ((b2 - b1) * mul);
@@ -311,89 +253,42 @@ static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long c
 	lr = (long)r1;
 	lg = (long)g1;
 	lb = (long)b1;
-	clr_11 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);
-	clr_12 = RGBONLY(lr, lg, lb);
+	c0 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);
+	c2 = RGBONLY(lr, lg, lb);
 
 	lr = (long)r;
 	lg = (long)g;
 	lb = (long)b;
-	clr_21 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);
-	clr_22 = RGBONLY(lr, lg, lb);
+	c1 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);
+	c3 = RGBONLY(lr, lg, lb);
+	
+	DrawColoredRect((float)x, (float)y, float(x + bar), (float)y2, f_mznear, c0, c1, c3, c2, &tex);
+	DrawColoredRect((float)x, (float)y2, float(x + bar), float(y2 + height), f_mznear, c2, c3, c1, c0, &tex);
 
-	v[0].color = clr_11;
-	v[1].color = clr_21;
-	v[2].color = clr_12;
-	v[3].color = clr_22;
-	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//top half
-
-	v[0].color = clr_12;
-	v[1].color = clr_22;
-	v[2].color = clr_11;
-	v[3].color = clr_21;
-	v[0].sy = ((float)y * fy) + (fh * fy);
-	v[1].sy = ((float)y * fy) + (fh * fy);
-	v[2].sy = (fh * fy) + (fh * fy) + ((float)y * fy);
-	v[3].sy = (fh * fy) + (fh * fy) + ((float)y * fy);
-	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);		//bottom half
-
-	v[0].sx = (float)x * fx;
-	v[1].sx = (fw * fx) + ((float)x * fx);
-	v[2].sx = (float)x * fx;
-	v[3].sx = (fw * fx) + ((float)x * fx);
-	v[0].sy = (float)y * fy;
-	v[1].sy = (float)y * fy;
-	v[2].sy = (fh * fy) + (fh * fy) + ((float)y * fy);
-	v[3].sy = (fh * fy) + (fh * fy) + ((float)y * fy);
-	v[0].sz = f_mznear + 1;
-	v[1].sz = f_mznear + 1;
-	v[2].sz = f_mznear + 1;
-	v[3].sz = f_mznear + 1;
-	v[0].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
-	v[1].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
-	v[2].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
-	v[3].rhw = f_mpersp / (f_mznear + 1) * f_moneopersp;
-	v[0].color = 0;
-	v[1].color = 0;
-	v[2].color = 0;
-	v[3].color = 0;
-	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//black background
-
-	v[0].sx = ((float)x * fx) - 1;
-	v[1].sx = (fw * fx) + ((float)x * fx) + 1;
-	v[2].sx = ((float)x * fx) - 1;
-	v[3].sx = (fw * fx) + ((float)x * fx) + 1;
-	v[0].sy = ((float)y * fy) - 1;
-	v[1].sy = ((float)y * fy) - 1;
-	v[2].sy = (fh * fy) + (fh * fy) + ((float)y * fy) + 1;
-	v[3].sy = (fh * fy) + (fh * fy) + ((float)y * fy) + 1;
-	v[0].sz = f_mznear + 2;
-	v[1].sz = f_mznear + 2;
-	v[2].sz = f_mznear + 2;
-	v[3].sz = f_mznear + 2;
-	v[0].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
-	v[1].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
-	v[2].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
-	v[3].rhw = f_mpersp / (f_mznear + 2) * f_moneopersp;
-	v[0].color = 0xFFFFFFFF;
-	v[1].color = 0xFFFFFFFF;
-	v[2].color = 0xFFFFFFFF;
-	v[3].color = 0xFFFFFFFF;
-	AddQuadSorted(v, 0, 1, 3, 2, &tex, 1);	//white border
+	DrawColoredRect((float)x, (float)y, float(x + width), float(y2 + height), f_mznear + 1, 0, 0, 0, 0, &tex);
+	DrawColoredRect(float(x - p), float(y - p), float(x + width + p), float(y2 + height + p), f_mznear + 2, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, &tex);
 }
 
 static void S_DrawEnemyBar2(long pos)
 {
+	long x, y, w, h;
+
+	w = GetFixedScale(150);
+	h = GetFixedScale(6);
+	x = phd_centerx - GetFixedScale(75);
+	y = GetFixedScale(117);
+
 	if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(245, font_height + 32, 150, 12, pos, &enemyBarColourSet);
+		S_DrawGouraudBar(x, y, w, h, pos, &enemyBarColourSet);
 	else if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(245, font_height + 32, 150, 12, pos, 0xA00000, 0xA0A000);
+		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, 0xA0A000);
 	else
-		DoBar(245, (font_height << 1) + 48, 150, 12, pos, 0xFF000000, 0xFFFFA000);
+		DoBar(x, y, w, h, pos, 0xFF000000, 0xFFFFA000);
 }
 
 void S_DrawEnemyBar(long pos)
 {
-	long x, y;
+	long x, y, w, h;
 
 	if (BinocularRange)
 	{
@@ -401,58 +296,49 @@ void S_DrawEnemyBar(long pos)
 		return;
 	}
 
-	if (tomb4.bars_pos == 1)//original
-	{
-		x = font_height >> 2;
+	w = GetFixedScale(150);
+	h = GetFixedScale(6);
 
-		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
-			y = (font_height >> 2) + (font_height / 3);
-		else
-			y = (font_height >> 2) + (font_height >> 1);
+	if (tomb4.bars_pos == 1 || tomb4.bars_pos == 2)//original or improved
+	{
+		x = GetFixedScale(8);
+		y = GetFixedScale(25);
 	}
-	else if (tomb4.bars_pos == 2)//improved
+	else
 	{
-		x = font_height >> 2;
-
-		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
-			y = (font_height >> 2) + (font_height / 3);
-		else
-			y = (font_height >> 2) + (font_height >> 1);
-	}
-	else//PSX
-	{
-		x = 470 - (font_height >> 2);
-
-		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
-			y = (font_height >> 1) + (font_height >> 2) + (5 * font_height / 9);
-		else
-			y = (font_height >> 2) + (font_height >> 1) + font_height;
+		x = GetFixedScale(36);
+		x = phd_winwidth - w - x;
+		y = GetFixedScale(93);
 	}
 
 	if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, 150, 12, pos, &enemyBarColourSet);
+		S_DrawGouraudBar(x, y, w, h, pos, &enemyBarColourSet);
 	else if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, 150, 12, pos, 0xA00000, 0xA0A000);
+		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, 0xA0A000);
 	else
-		DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFFFFA000);
+		DoBar(x, y, w, h, pos, 0xFF000000, 0xFFFFA000);
 }
 
 static void S_DrawHealthBar2(long pos)
 {
-	if (!gfCurrentLevel)
-		return;
+	long x, y, w, h;
+
+	w = GetFixedScale(150);
+	h = GetFixedScale(6);
+	x = phd_centerx - GetFixedScale(75);
+	y = GetFixedScale(100);
 
 	if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(245, (font_height >> 1) + 32, 150, 12, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
+		S_DrawGouraudBar(x, y, w, h, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
 	else if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(245, (font_height >> 1) + 32, 150, 12, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0xA000);
+		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0x00A000);
 	else
-		DoBar(245, font_height + 48, 150, 12, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000);
+		DoBar(x, y, w, h, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000);
 }
 
 void S_DrawHealthBar(long pos)
 {
-	long x, y;
+	long x, y, w, h;
 
 	if (!gfCurrentLevel)
 		return;
@@ -463,111 +349,97 @@ void S_DrawHealthBar(long pos)
 		return;
 	}
 
+	w = GetFixedScale(150);
+	h = GetFixedScale(6);
+
 	if (tomb4.bars_pos == 1 || tomb4.bars_pos == 2)//original or improved
 	{
-		x = font_height >> 2;
-		y = font_height >> 2;
+		x = GetFixedScale(8);
+		y = GetFixedScale(8);
 	}
-	else//PSX
+	else
 	{
-		x = 470 - (font_height >> 2);
-		y = font_height >> 2;
+		x = GetFixedScale(36);
+		x = phd_winwidth - w - x;
+		y = GetFixedScale(18);
 	}
 
 	if (tomb4.bar_mode == 2)
-	{
-		if (lara.poisoned)
-			S_DoTR5Bar(x, y, 150, 12, pos, 0xA00000, 0xA0A000);
-		else
-			S_DoTR5Bar(x, y, 150, 12, pos, 0xA00000, 0x00A000);
-	}
+		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0x00A000);
 	else if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, 150, 12, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
+		S_DrawGouraudBar(x, y, w, h, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
 	else
-	{
-		if (lara.poisoned)
-			DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFFFFFF00);	//yellow
-		else
-			DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFFFF0000);	//red
-	}
+		DoBar(x, y, w, h, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000);
 }
 
 void S_DrawAirBar(long pos)
 {
-	long x, y;
+	long x, y, w, h;
 
 	if (!gfCurrentLevel)
 		return;
 
+	w = GetFixedScale(150);
+	h = GetFixedScale(6);
+
 	if (tomb4.bars_pos == 1)//original
 	{
-		x = 490 - (font_height >> 2);
-
-		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
-			y = (font_height >> 2) + (font_height / 3);
-		else
-			y = (font_height >> 2) + (font_height >> 1);
+		x = phd_winwidth - w - GetFixedScale(8);
+		y = GetFixedScale(25);
 	}
 	else if (tomb4.bars_pos == 2)//improved
 	{
-		x = 490 - (font_height >> 2);
-		y = font_height >> 2;
+		x = phd_winwidth - w - GetFixedScale(8);
+		y = GetFixedScale(8);
 	}
-	else//PSX
+	else
 	{
-		x = 470 - (font_height >> 2);
-
-		if (tomb4.bar_mode == 1)
-			y = (font_height >> 1) + (font_height >> 2);
-		else
-			y = (font_height >> 2) + (font_height / 3);
+		x = GetFixedScale(36);
+		x = phd_winwidth - w - x;
+		y = GetFixedScale(43);
 	}
 
 	if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, 150, 12, pos, 0x0000A0, 0x0050A0);
+		S_DoTR5Bar(x, y, w, h, pos, 0x0000A0, 0x0050A0);
 	else if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, 150, 12, pos, &airBarColourSet);
+		S_DrawGouraudBar(x, y, w, h, pos, &airBarColourSet);
 	else
-		DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFF0000FF);	//blue
+		DoBar(x, y, w, h, pos, 0xFF000000, 0xFF0000FF);
 }
 
 void S_DrawDashBar(long pos)
 {
-	long x, y;
+	long x, y, w, h;
 
 	if (!gfCurrentLevel)
 		return;
 
+	w = GetFixedScale(150);
+	h = GetFixedScale(6);
+
 	if (tomb4.bars_pos == 1)//original
 	{
-		x = 490 - (font_height >> 2);
-		y = font_height >> 2;
+		x = phd_winwidth - w - GetFixedScale(8);
+		y = GetFixedScale(8);
 	}
 	else if (tomb4.bars_pos == 2)//improved
 	{
-		x = 490 - (font_height >> 2);
-
-		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
-			y = (font_height >> 2) + (font_height / 3);
-		else
-			y = (font_height >> 2) + (font_height >> 1);
+		x = phd_winwidth - w - GetFixedScale(8);
+		y = GetFixedScale(25);
 	}
-	else//PSX
+	else
 	{
-		x = 470 - (font_height >> 2);
-
-		if (tomb4.bar_mode == 1)
-			y = (font_height >> 2) + font_height;
-		else
-			y = (font_height >> 2) + (font_height / 3) + (font_height / 3);
+		x = GetFixedScale(36);
+		x = phd_winwidth - w - x;
+		y = GetFixedScale(68);
 	}
 
 	if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, 150, 12, pos, 0xA0A000, 0x00A000);
+		S_DoTR5Bar(x, y, w, h, pos, 0xA0A000, 0x00A000);
 	else if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, 150, 12, pos, &dashBarColourSet);
+		S_DrawGouraudBar(x, y, w, h, pos, &dashBarColourSet);
 	else
-		DoBar(x, y, 150, 12, pos, 0xFF000000, 0xFF00FF00);	//green
+		DoBar(x, y, w, h, pos, 0xFF000000, 0xFF00FF00);
 }
 
 void S_InitLoadBar(long maxpos)
@@ -578,6 +450,8 @@ void S_InitLoadBar(long maxpos)
 
 void S_LoadBar()
 {
+	long x, y, w, h;
+
 	if (gfCurrentLevel || App.dx.Flags & 0x80)
 	{
 		_BeginScene();
@@ -590,21 +464,31 @@ void S_LoadBar()
 
 		if (tomb4.tr5_loadbar)
 		{
+			x = GetFixedScale(170);
+			w = phd_winwidth - (x << 1);
+			h = GetFixedScale(5);
+			y = phd_winheight - h - GetFixedScale(20);
+
 			if (tomb4.bar_mode == 3)
-				S_DrawGouraudBar(170, 480 - (font_height >> 1), 300, 10, (long)loadbar_pos, &loadBarColourSet);
+				S_DrawGouraudBar(x, y, w, h, (long)loadbar_pos, &loadBarColourSet);
 			else if (tomb4.bar_mode == 2)
-				S_DoTR5Bar(170, 480 - (font_height >> 1), 300, 10, (long)loadbar_pos, 0xA0, 0xF0);
+				S_DoTR5Bar(x, y, w, h, (long)loadbar_pos, 0x0000A0, 0x0000F0);
 			else
-				DoBar(170, phd_winymax - font_height, 300, 10, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
+				DoBar(x, y, w, h, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
 		}
 		else
 		{
+			x = GetFixedScale(20);
+			w = phd_winwidth - (x << 1);
+			h = GetFixedScale(7);
+			y = phd_winheight - h - GetFixedScale(20);
+
 			if (tomb4.bar_mode == 3)
-				S_DrawGouraudBar(20, 480 - (font_height >> 1), 600, 15, (long)loadbar_pos, &loadBarColourSet);
+				S_DrawGouraudBar(x, y, w, h, (long)loadbar_pos, &loadBarColourSet);
 			else if (tomb4.bar_mode == 2)
-				S_DoTR5Bar(20, 480 - (font_height >> 1), 600, 15, (long)loadbar_pos, 0xFF7F007F, 0xFF007F7F);
+				S_DoTR5Bar(x, y, w, h, (long)loadbar_pos, 0xFF7F007F, 0xFF007F7F);
 			else
-				DoBar(20, phd_winymax - font_height, 600, 15, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
+				DoBar(x, y, w, h, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
 		}
 
 		SortPolyList(SortCount, SortList);
@@ -613,130 +497,30 @@ void S_LoadBar()
 	}
 }
 
-void DoBar(long x, long y, long width, long height, long pos, long clr1, long clr2)
+void DoBar(long x, long y, long width, long height, long pos, long c1, long c2)
 {
-	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
-	long x2, sx, sy;
+	long p, xw, y2, bar;
 
 	nPolyType = 6;
 	clipflags[0] = 0;
 	clipflags[1] = 0;
 	clipflags[2] = 0;
 	clipflags[3] = 0;
-
-	x2 = (long)(x * phd_winxmax * 0.0015625F);
-	sx = (long(width * phd_winxmax * 0.0015625F) * pos) / 100;
-	sy = (long)((height >> 1) * phd_winymax * 0.0020833334F);
-
-	v[0].sx = (float)x2;
-	v[0].sy = (float)y;
-	v[0].color = clr1;
-
-	v[1].sx = (float)(x2 + sx);
-	v[1].sy = (float)y;
-	v[1].color = clr1;
-
-	v[2].sx = (float)(x2 + sx);
-	v[2].sy = (float)(y + sy);
-	v[2].color = clr2;
-
-	v[3].sx = (float)x2;
-	v[3].sy = (float)(y + sy);
-	v[3].color = clr2;
-
-	for (int i = 0; i < 4; i++)
-	{
-		v[i].specular = 0xFF000000;
-		v[i].sz = f_mznear - 6;
-		v[i].rhw = f_moneoznear - 2;
-		v[i].tu = 0;
-		v[i].tv = 0;
-	}
-
 	tex.drawtype = 0;
 	tex.flag = 0;
 	tex.tpage = 0;
-	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 
-	v[0].sx = (float)x2;
-	v[0].sy = (float)(y + sy);
-	v[0].color = clr2;
+	p = GetFixedScale(1);
+	xw = x + width;
+	y2 = y + height;
+	bar = width * pos / 100;
 
-	v[1].sx = (float)(x2 + sx);
-	v[1].sy = (float)(y + sy);
-	v[1].color = clr2;
+	DrawColoredRect((float)x, (float)y, float(x + bar), float(y2), f_mznear - 6, c1, c1, c2, c2, &tex);
+	DrawColoredRect((float)x, float(y2), float(x + bar), float(y2 + height), f_mznear - 6, c2, c2, c1, c1, &tex);
 
-	v[2].sx = (float)(x2 + sx);
-	v[2].sy = (float)(y + 2 * sy);
-	v[2].color = clr1;
-
-	v[3].sx = (float)x2;
-	v[3].sy = (float)(y + 2 * sy);
-	v[3].color = clr1;
-
-	for (int i = 0; i < 4; i++)
-	{
-		v[i].specular = 0xFF000000;
-		v[i].sz = f_mznear - 6;
-		v[i].rhw = f_moneoznear - 2;
-		v[i].tu = 0;
-		v[i].tv = 0;
-	}
-
-	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
-
-	x2 = (long)(x * phd_winxmax * 0.0015625F);
-	sx = (long)(width * phd_winxmax * 0.0015625F);
-	sy = (long)((height >> 1) * phd_winymax * 0.0020833334F);
-
-	v[0].sx = (float)(x2 - 1);
-	v[0].sy = (float)(y - 1);
-
-	v[1].sx = (float)(x2 + sx + 1);
-	v[1].sy = (float)(y - 1);
-
-	v[2].sx = (float)(x2 + sx + 1);
-	v[2].sy = (float)(y + 2 * sy + 1);
-
-	v[3].sx = (float)(x2 - 1);
-	v[3].sy = (float)(y + 2 * sy + 1);
-
-	for (int i = 0; i < 4; i++)
-	{
-		v[i].color = 0xFFFFFFFF;
-		v[i].specular = 0xFF000000;
-		v[i].sz = f_mznear - 3;
-		v[i].rhw = f_moneoznear - 4;
-		v[i].tu = 0;
-		v[i].tv = 0;
-	}
-
-	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
-
-	v[0].sx = (float)x2;
-	v[0].sy = (float)y;
-
-	v[1].sx = (float)(x2 + sx);
-	v[1].sy = (float)y;
-
-	v[2].sx = (float)(x2 + sx);
-	v[2].sy = (float)(y + 2 * sy);
-
-	v[3].sx = (float)x2;
-	v[3].sy = (float)(y + 2 * sy);
-
-	for (int i = 0; i < 4; i++)
-	{
-		v[i].color = 0xFF000000;
-		v[i].specular = 0xFF000000;
-		v[i].sz = f_mznear - 4;
-		v[i].rhw = f_moneoznear - 3;
-		v[i].tu = 0;
-		v[i].tv = 0;
-	}
-
-	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+	DrawColoredRect(float(x - p), float(y - p), float(xw + p), float(y2 + height + p), f_mznear - 3, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, &tex);
+	DrawColoredRect((float)x, (float)y, (float)xw, float(y2 + height), f_mznear - 4, 0, 0, 0, 0, &tex);
 }
 
 #pragma warning(push)

@@ -1382,3 +1382,14 @@ void SkinVerticesToScratch(long node)
 
 	DestVB->Unlock();
 }
+
+long GetFixedScale(long unit)
+{
+	long w, h, x, y;
+
+	w = 640;
+	h = 480;
+	x = (phd_winwidth > w) ? MulDiv(phd_winwidth, unit, w) : unit;
+	y = (phd_winheight > h) ? MulDiv(phd_winheight, unit, h) : unit;
+	return x < y ? x : y;
+}
