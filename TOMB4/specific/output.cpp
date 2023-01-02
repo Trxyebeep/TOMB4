@@ -868,10 +868,14 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 
 void S_DrawPickup(short object_number)
 {
+	long x, y;
+
 	phd_LookAt(0, 1024, 0, 0, 0, 0, 0);
 	SetD3DViewMatrix();
-	DrawThreeDeeObject2D(long((float)phd_winxmax / 512.0F * 448.0F + PickupX), long((float)phd_winymax / 256.0F * 216.0F),
-		convert_obj_to_invobj(object_number), 128, 0, (GnFrameCounter & 0x7F) << 9, 0, 0, 1);
+
+	x = phd_winwidth - GetFixedScale(80) + PickupX;
+	y = phd_winheight - GetFixedScale(75);
+	DrawThreeDeeObject2D(x, y, convert_obj_to_invobj(object_number), 128, 0, (GnFrameCounter & 0x7F) << 9, 0, 0, 1);
 }
 
 long S_GetObjectBounds(short* bounds)
