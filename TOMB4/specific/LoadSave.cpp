@@ -216,8 +216,9 @@ static void S_DrawGouraudBar(long x, long y, long width, long height, long pos, 
 	y1 = y + (h * 6);
 	p = GetFixedScale(1);
 
-	DrawColoredRect(x0, y0, x1, y1, f_mznear + 1, 0, 0, 0, 0, &tex);
-	DrawColoredRect(x0 - p, y0 - p, x1 + p, y1 + p, f_mznear + 2, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, &tex);
+	DrawColoredRect(x0 - p, y0, x1 + p, y1, f_mznear + 1, 0, 0, 0, 0, &tex);
+	DrawColoredRect(x0 - (2 * p), y0 - p, x1 + (2 * p), y1 + p, f_mznear + 2, 0xFF508282, 0xFFA0A0A0, 0xFF508282, 0xFFA0A0A0, &tex);
+	DrawColoredRect(x0 - (3 * p), y0 + p, x1 + (3 * p), y1 - p, f_mznear + 3, 0xFF284141, 0xFF505050, 0xFF284141, 0xFF505050, &tex);
 }
 
 static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long clr1, long clr2)
