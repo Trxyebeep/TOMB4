@@ -20,6 +20,7 @@
 #include "../game/lara.h"
 #include "../game/gameflow.h"
 #include "../tomb4/tomb4.h"
+#include "output.h"
 
 #define CIRCUMFERENCE_POINTS 32 // Number of points in the circumference
 #define LINE_POINTS	4	//number of points in each grid line
@@ -698,11 +699,12 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr
 void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long unk)	//ux and uy are not used
 {
 	D3DTLVERTEX v[2];
-	float x, y, x0, y0, x1, y1;
+	float p, x, y, x0, y0, x1, y1;
 	long rSize, rVel, rMVel, rTVel, angle;
 
-	x = (float)phd_winxmax / 512.0F * 448.0F;
-	y = (float)phd_winymax / 240.0F * 224.0F;
+	p = (float)GetFixedScale(1);
+	x = float(phd_winwidth - GetFixedScale(80));
+	y = float(phd_winheight - GetFixedScale(32));
 	rSize = (7 * size) >> 3;
 	rVel = abs(vel >> 1);
 
@@ -720,10 +722,10 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 
 	for (int i = 0; i <= rTVel; i += 2048)
 	{
-		x0 = ((rSize * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((rSize * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-		y0 = (-(rSize * phd_cos(angle + i)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
-		x1 = ((size * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-		y1 = (-(size * phd_cos(angle + i)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
+		x0 = ((rSize * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((rSize * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+		y0 = (-(rSize * phd_cos(angle + i)) >> W2V_SHIFT) * (p * 2);
+		x1 = ((size * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+		y1 = (-(size * phd_cos(angle + i)) >> W2V_SHIFT) * (p * 2);
 
 		v[0].sx = x + x0;
 		v[0].sy = y + y0;
@@ -752,10 +754,10 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	}
 
 	size -= size >> 4;
-	x0 = ((-4 * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((-4 * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-	y0 = (-(-4 * phd_cos(angle + rVel)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
-	x1 = ((size * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-	y1 = (-(size * phd_cos(angle + rVel)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
+	x0 = ((-4 * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((-4 * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+	y0 = (-(-4 * phd_cos(angle + rVel)) >> W2V_SHIFT) * (p * 2);
+	x1 = ((size * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+	y1 = (-(size * phd_cos(angle + rVel)) >> W2V_SHIFT) * (p * 2);
 
 	v[0].sx = x + x0;
 	v[0].sy = y + y0;
