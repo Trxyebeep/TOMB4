@@ -780,11 +780,12 @@ void Draw2DSprite(long x, long y, long slot, long unused, long unused2)
 	SPRITESTRUCT* sprite;
 	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
-	long x0, y0;
+	long p, x0, y0;
 
+	p = GetFixedScale(1);
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + slot];
-	x0 = long(x + (sprite->width >> 8) * ((float)phd_centerx / 320.0F));
-	y0 = long(y + 1 + (sprite->height >> 8) * ((float)phd_centery / 240.0F));
+	x0 = long(x + (sprite->width >> 8) * p);
+	y0 = long(y + 1 + (sprite->height >> 8) * p);
 	setXY4(v, x, y, x0, y, x0, y0, x, y0, (long)f_mznear, clipflags);
 	v[0].specular = 0xFF000000;
 	v[1].specular = 0xFF000000;
@@ -823,11 +824,12 @@ void Draw2DSprite(long x, long y, long slot, long unused, long unused2)
 void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long spriteSlot)	//ux and uy are not used
 {
 	D3DTLVERTEX v[2];
-	float x, y, x0, y0, x1, y1;
+	float p, x, y, x0, y0, x1, y1;
 	long rSize, rVel, rMVel, rTVel, angle, sX, sY;
 
-	x = (float)phd_winxmax / 512.0F * 448.0F;
-	y = (float)phd_winymax / 240.0F * 224.0F;
+	p = (float)GetFixedScale(1);
+	x = float(phd_winwidth - GetFixedScale(80));
+	y = float(phd_winheight - GetFixedScale(32));
 	rSize = (7 * size) >> 3;
 	rVel = abs(vel >> 1);
 
@@ -846,10 +848,10 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 
 	for (int i = 0; i <= rTVel; i += 1536)
 	{
-		x0 = ((rSize * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((rSize * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-		y0 = (-(rSize * phd_cos(angle + i)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
-		x1 = ((size * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-		y1 = (-(size * phd_cos(angle + i)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
+		x0 = ((rSize * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((rSize * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+		y0 = (-(rSize * phd_cos(angle + i)) >> W2V_SHIFT) * (p * 2);
+		x1 = ((size * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+		y1 = (-(size * phd_cos(angle + i)) >> W2V_SHIFT) * (p * 2);
 
 		v[0].sx = x + x0;
 		v[0].sy = y + y0;
@@ -878,16 +880,16 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	}
 
 	size -= size >> 4;
-	x0 = ((-4 * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((-4 * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-	y0 = (-(-4 * phd_cos(angle + rVel)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
-	x1 = ((size * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-	y1 = (-(size * phd_cos(angle + rVel)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
+	x0 = ((-4 * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((-4 * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+	y0 = (-(-4 * phd_cos(angle + rVel)) >> W2V_SHIFT) * (p * 2);
+	x1 = ((size * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+	y1 = (-(size * phd_cos(angle + rVel)) >> W2V_SHIFT) * (p * 2);
 
-	sX = long(x + 16 * ((float)phd_winxmax / 512.0F));
-	sY = long(y - 20 * ((float)phd_winymax / 240.0F));
+	sX = long(x + 16 * (p + (p / 4.0F)));
+	sY = long(y - 20 * (p * 2));
 	Draw2DSprite(sX, sY, 17, spriteSlot + 17, 0);
 
-	sY = long(y - 6 * ((float)phd_winymax / 240.0F));
+	sY = long(y - 6 * (p * 2));
 	Draw2DSprite(sX, sY, 18, spriteSlot + 17, 0);
 
 	v[0].sx = x + x0;
