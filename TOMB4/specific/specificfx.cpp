@@ -1871,6 +1871,7 @@ void ShowTitle()
 {
 	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
+	float p;
 	long x, y, w;
 
 	clipflags[0] = 0;
@@ -1878,9 +1879,10 @@ void ShowTitle()
 	clipflags[2] = 0;
 	clipflags[3] = 0;
 	nPolyType = 4;
-	x = long(phd_winxmin - float((phd_winxmax / 640.0F) * -64));
-	w = long(float((phd_winxmax / 640.0F) * 256));
-	y = long(phd_winymin + float((phd_winymax / 480.0F) * 256));
+	p = (float)GetFixedScale(1);
+	w = long(float(p * 256.0F));
+	x = phd_centerx - w;
+	y = phd_winymin + w;
 
 	v[0].sx = (float)x;
 	v[0].sy = (float)phd_winymin;
@@ -1913,14 +1915,14 @@ void ShowTitle()
 	tex.drawtype = 1;
 	tex.flag = 0;
 	tex.tpage = ushort(nTextures - 4);
-	tex.u1 = 0.00390625F;
-	tex.v1 = 0.00390625F;
-	tex.u2 = 0.99609375F;
-	tex.v2 = 0.00390625F;
-	tex.u3 = 0.99609375F;
-	tex.v3 = 0.99609375F;
-	tex.u4 = 0.00390625F;
-	tex.v4 = 0.99609375F;
+	tex.u1 = float(1.0F / 256.0F);
+	tex.v1 = float(1.0F / 256.0F);
+	tex.u2 = 1.0F - float(1.0F / 256.0F);
+	tex.v2 = float(1.0F / 256.0F);
+	tex.u3 = 1.0F - float(1.0F / 256.0F);
+	tex.v3 = 1.0F - float(1.0F / 256.0F);
+	tex.u4 = float(1.0F / 256.0F);
+	tex.v4 = 1.0F - float(1.0F / 256.0F);
 	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 
 	v[0].sx = (float)(w + x);
@@ -1954,14 +1956,14 @@ void ShowTitle()
 	tex.drawtype = 1;
 	tex.flag = 0;
 	tex.tpage = ushort(nTextures - 3);
-	tex.u1 = 0.00390625F;
-	tex.v1 = 0.00390625F;
-	tex.u2 = 0.99609375F;
-	tex.v2 = 0.00390625F;
-	tex.u3 = 0.99609375F;
-	tex.v3 = 0.99609375F;
-	tex.u4 = 0.00390625F;
-	tex.v4 = 0.99609375F;
+	tex.u1 = float(1.0F / 256.0F);
+	tex.v1 = float(1.0F / 256.0F);
+	tex.u2 = 1.0F - float(1.0F / 256.0F);
+	tex.v2 = float(1.0F / 256.0F);
+	tex.u3 = 1.0F - float(1.0F / 256.0F);
+	tex.v3 = 1.0F - float(1.0F / 256.0F);
+	tex.u4 = float(1.0F / 256.0F);
+	tex.v4 = 1.0F - float(1.0F / 256.0F);
 	AddQuadSorted(v, 0, 1, 2, 3, &tex, 1);
 }
 
