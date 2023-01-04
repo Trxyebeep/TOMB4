@@ -1871,42 +1871,40 @@ void ShowTitle()
 {
 	D3DTLVERTEX v[4];
 	TEXTURESTRUCT tex;
-	float p;
-	long x, y, w;
+	float x, y, w;
 
 	clipflags[0] = 0;
 	clipflags[1] = 0;
 	clipflags[2] = 0;
 	clipflags[3] = 0;
 	nPolyType = 4;
-	p = (float)GetFixedScale(1);
-	w = long(float(p * 256.0F));
+	w = (float)GetFixedScale(256);
 	x = phd_centerx - w;
 	y = phd_winymin + w;
 
-	v[0].sx = (float)x;
+	v[0].sx = x;
 	v[0].sy = (float)phd_winymin;
 	v[0].sz = 0;
 	v[0].rhw = f_moneoznear;
 	v[0].color = 0xFFFFFFFF;
 	v[0].specular = 0xFF000000;
 
-	v[1].sx = (float)(w + x);
+	v[1].sx = w + x;
 	v[1].sy = (float)phd_winymin;
 	v[1].sz = 0;
 	v[1].rhw = f_moneoznear;
 	v[1].color = 0xFFFFFFFF;
 	v[1].specular = 0xFF000000;
 
-	v[2].sx = (float)(w + x);
-	v[2].sy = (float)y;
+	v[2].sx = w + x;
+	v[2].sy = y;
 	v[2].sz = 0;
 	v[2].rhw = f_moneoznear;
 	v[2].color = 0xFFFFFFFF;
 	v[2].specular = 0xFF000000;
 
-	v[3].sx = (float)x;
-	v[3].sy = (float)y;
+	v[3].sx = x;
+	v[3].sy = y;
 	v[3].sz = 0;
 	v[3].rhw = f_moneoznear;
 	v[3].color = 0xFFFFFFFF;
@@ -1925,29 +1923,29 @@ void ShowTitle()
 	tex.v4 = 1.0F - float(1.0F / 256.0F);
 	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 
-	v[0].sx = (float)(w + x);
-	v[0].sy = (float)phd_winymin;
+	v[0].sx = w + x;
+	v[0].sy = phd_winymin;
 	v[0].sz = 0;
 	v[0].rhw = f_moneoznear;
 	v[0].color = 0xFFFFFFFF;
 	v[0].specular = 0xFF000000;
 
-	v[1].sx = (float)(2 * w + x);
+	v[1].sx = x + 2 * w;
 	v[1].sy = (float)phd_winymin;
 	v[1].sz = 0;
 	v[1].rhw = f_moneoznear;
 	v[1].color = 0xFFFFFFFF;
 	v[1].specular = 0xFF000000;
 
-	v[2].sx = (float)(2 * w + x);
-	v[2].sy = (float)y;
+	v[2].sx = x + 2 * w;
+	v[2].sy = y;
 	v[2].sz = 0;
 	v[2].rhw = f_moneoznear;
 	v[2].color = 0xFFFFFFFF;
 	v[2].specular = 0xFF000000;
 
-	v[3].sx = (float)(w + x);
-	v[3].sy = (float)y;
+	v[3].sx = w + x;
+	v[3].sy = y;
 	v[3].sz = 0;
 	v[3].rhw = f_moneoznear;
 	v[3].color = 0xFFFFFFFF;
