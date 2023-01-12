@@ -258,7 +258,7 @@ bool FindCDDrive()
 			if (type == DRIVE_CDROM)
 			{
 				path[0] = cd_drive;
-				file = CreateFile(path, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+				file = CreateFile(path, GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
 				if (file != INVALID_HANDLE_VALUE)
 				{

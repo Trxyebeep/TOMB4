@@ -410,7 +410,7 @@ void PrelightVerts(long nVerts, D3DTLVERTEX* v, MESH_DATA* mesh)
 		t.x += mW2V[M03];
 		t.y += mW2V[M13];
 		t.z += mW2V[M23];
-		mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&vtx, NULL);
+		mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&vtx, 0);
 	}
 
 	for (int i = 0; i < nVerts; i++)

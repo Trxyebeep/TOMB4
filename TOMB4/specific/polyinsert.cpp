@@ -1994,48 +1994,6 @@ void CalcColorSplit(D3DCOLOR s, D3DCOLOR* d)
 
 #pragma warning(push)
 #pragma warning(disable : 4799)
-void AddPrelitMMX(long prelight, D3DCOLOR* color)
-{
-	long c;
-
-	c = color[0];
-
-	__asm
-	{
-		xor eax, eax
-		movd mm3, rgbmask
-		movd mm4, prelight
-		movd mm0, c
-		paddusb mm0, mm4
-		movd ecx, mm0
-		movd mm1, rgb80h
-		psubusb mm0, mm1
-		movd mm2, eax
-		movd mm5, zero
-		punpcklbw mm5, mm0
-		psrlw mm5, 9
-		packuswb mm0, mm5
-		psrlq mm0, 0x20
-		movd ebx, mm0
-		pcmpgtb mm0, mm2
-		movd eax, mm0
-		pandn mm0, mm3
-		movd mm1, ecx
-		pand mm1, mm0
-		paddusb mm1, mm1
-		movd ecx, mm1
-		mov edx, color
-		or ecx, eax
-		mov [edx], ecx
-		mov ecx, [edx + 4]
-		and ebx, 0xFFFFFF
-		or ecx, ebx
-		mov [edx + 4], ecx
-	}
-
-	//PrelightVertsMMX does the emms
-}
-
 void CalcColorSplitMMX(D3DCOLOR s, D3DCOLOR* d)
 {
 	__asm

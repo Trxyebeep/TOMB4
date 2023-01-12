@@ -72,7 +72,7 @@ void BaboonControl(short item_number)
 			CreatureAIInfo(item, &info);
 
 			if (!baboon->hurt_by_lara && item->object_number == BABOON_NORMAL && baboon->enemy == lara_item)
-				baboon->enemy = NULL;
+				baboon->enemy = 0;
 
 			if (baboon->enemy == lara_item)
 				distance = info.distance;
@@ -250,14 +250,14 @@ void BaboonControl(short item_number)
 							for (int i = 0; i < 5; i++)
 							{
 								if (baddie_slots[i].item_num != -1 && baddie_slots[i].item_num != item_number && baddie_slots[i].enemy == baboon->enemy)
-									baddie_slots[i].enemy = NULL;
+									baddie_slots[i].enemy = 0;
 							}
 
 							if (item->ai_bits != MODIFY)
 								item->ai_bits |= MODIFY | AMBUSH;
 						}
 
-						baboon->enemy = NULL;
+						baboon->enemy = 0;
 					}
 					else if (item2->object_number == AI_AMBUSH && item->frame_number == anims[item->anim_number].frame_base + 12)
 					{
@@ -269,7 +269,7 @@ void BaboonControl(short item_number)
 						ItemNewRoom(item->carried_item, item->room_number);
 						item->carried_item = -1;
 						item2->ai_bits = GUARD;
-						baboon->enemy = NULL;
+						baboon->enemy = 0;
 					}
 					else
 					{
