@@ -320,9 +320,9 @@ void DrawSortList()
 void CreateFogPos(FOGBULB_STRUCT* FogBulb)
 {
 	FVECTOR d;
-	float* mx;
 	float dist;
 	short bounds[6];
+	short rad;
 
 	if (GlobalFogOff)
 		FogBulb->inRange = 0;
@@ -338,21 +338,23 @@ void CreateFogPos(FOGBULB_STRUCT* FogBulb)
 		else
 		{
 			FogBulb->inRange = 1;
-			bounds[0] = short(FogBulb->WorldPos.x - camera.pos.x + FogBulb->rad);
-			bounds[1] = short(FogBulb->WorldPos.x - camera.pos.x - FogBulb->rad);
-			bounds[2] = short(FogBulb->WorldPos.y - camera.pos.y + FogBulb->rad);
-			bounds[3] = short(FogBulb->WorldPos.y - camera.pos.y - FogBulb->rad);
-			bounds[4] = short(FogBulb->WorldPos.z - camera.pos.z + FogBulb->rad);
-			bounds[5] = short(FogBulb->WorldPos.z - camera.pos.z - FogBulb->rad);
-			mx = mMXPtr;
-			mMXPtr = mW2V;
+
+			rad = short(FogBulb->rad / 2);
+			phd_PushMatrix();
+			phd_TranslateAbs((long)FogBulb->WorldPos.x, (long)FogBulb->WorldPos.y, (long)FogBulb->WorldPos.z);
+			bounds[0] = rad;
+			bounds[1] = -rad;
+			bounds[2] = rad;
+			bounds[3] = -rad;
+			bounds[4] = rad;
+			bounds[5] = -rad;
 
 			if (S_GetObjectBounds(bounds))
 				NumFogBulbsInRange++;
 			else
 				FogBulb->inRange = 0;
 
-			mMXPtr = mx;
+			phd_PopMatrix();
 
 			if (FogBulb->inRange)
 			{

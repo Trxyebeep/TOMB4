@@ -935,7 +935,7 @@ long S_GetObjectBounds(short* bounds)
 	{
 		zv = vtx[i].x * mMXPtr[M20] + vtx[i].y * mMXPtr[M21] + vtx[i].z * mMXPtr[M22] + mMXPtr[M23];
 
-		if (zv > f_mznear && f_mzfar > zv)
+		if (zv > f_mznear && zv < f_mzfar)
 		{
 			numZ++;
 			zv /= f_mpersp;
