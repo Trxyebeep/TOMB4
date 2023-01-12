@@ -233,10 +233,8 @@ void WinProcessCommands(long cmd)
 		SuspendThread((HANDLE)MainThread.handle);
 		Log(5, "Game Thread Suspended");
 
-		FreeD3DLights();
 		DXToggleFullScreen();
 		HWInitialise();
-		CreateD3DLights();
 		S_InitD3DMatrix();
 		SetD3DViewMatrix();
 		ResumeThread((HANDLE)MainThread.handle);
@@ -312,8 +310,6 @@ void WinProcessCommands(long cmd)
 
 		if (odm != App.DXInfo.nDisplayMode)
 		{
-			FreeD3DLights();
-
 			if (!DXChangeVideoMode())
 			{
 				App.DXInfo.nDisplayMode = odm;
@@ -321,7 +317,6 @@ void WinProcessCommands(long cmd)
 			}
 
 			HWInitialise();
-			CreateD3DLights();
 			InitWindow(0, 0, App.dx.dwRenderWidth, App.dx.dwRenderHeight, 20, 20480, 80, App.dx.dwRenderWidth, App.dx.dwRenderHeight);
 			InitFont();
 			S_InitD3DMatrix();

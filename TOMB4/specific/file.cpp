@@ -159,8 +159,6 @@ unsigned int __stdcall LoadLevel(void* name)
 		InitTarget_2();
 		S_LoadBar();
 
-		MallocD3DLights();
-		CreateD3DLights();
 		SetupGame();
 		S_LoadBar();
 
@@ -227,7 +225,6 @@ void FreeLevel()
 	Log(5, "Free Textures");
 	FreeTextures();
 	Log(5, "Free Lights");
-	FreeD3DLights();
 	DXFreeSounds();
 	free(OutsideRoomTable);
 	free(OutsideRoomOffsets);
@@ -605,7 +602,6 @@ bool LoadRooms()
 
 	Log(2, "LoadRooms");
 	wibble = 0;
-	MaxRoomLights = 0;
 	NumLevelFogBulbs = 0;
 	FileData += sizeof(long);
 	number_rooms = *(short*)FileData;

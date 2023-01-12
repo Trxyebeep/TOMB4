@@ -789,7 +789,6 @@ void DrawRooms(short CurrentRoom)
 		}
 	}
 
-	InitDynamicLighting();
 	nPolyType = 0;
 
 	for (int i = 0; i < MAX_DYNAMICS; i++)
@@ -937,7 +936,6 @@ void RenderIt(short CurrentRoom)
 		}
 	}
 
-	InitDynamicLighting();
 	nPolyType = 0;
 
 	for (int i = 0; i < number_draw_rooms; i++)

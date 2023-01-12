@@ -17,7 +17,6 @@
 #include "../game/control.h"
 #include "../game/gameflow.h"
 
-D3DTLVERTEX MyVertexBuffer[0x4000];
 static ROOM_DYNAMIC RoomDynamics[MAX_DYNAMICS];
 static long nRoomDynamics;
 
@@ -292,55 +291,6 @@ void ProcessRoomVertices(ROOM_INFO* r)
 	}
 }
 
-void ProjectVerts(long nVerts, D3DTLVERTEX* v, short* clip)
-{
-	float zv;
-	short clip_distance;
-
-	for (int i = 0; i < nVerts; i++)
-	{
-		v->tu = v->sx;
-		v->tv = v->sy;
-		clip_distance = 0;
-
-		if (v->sz < f_mznear)
-			clip_distance = -128;
-		else
-		{
-			zv = f_mpersp / v->sz;
-
-			if (v->sz > FogEnd)
-			{
-				clip_distance = 16;
-				v->sz = f_zfar;
-			}
-
-			v->sx = zv * v->sx + f_centerx;
-			v->sy = zv * v->sy + f_centery;
-			v->rhw = f_moneopersp * zv;
-
-			if (bWaterEffect)
-			{
-				v->sx += vert_wibble_table[((wibble + (long)v->sy) >> 3) & 0x1F];
-				v->sy += vert_wibble_table[((wibble + (long)v->sx) >> 3) & 0x1F];
-			}
-
-			if (v->sx < clip_left)
-				clip_distance++;
-			else if (v->sx > clip_right)
-				clip_distance += 2;
-
-			if (v->sy < clip_top)
-				clip_distance += 4;
-			else if (v->sy > clip_bottom)
-				clip_distance += 8;
-		}
-
-		*clip++ = clip_distance;
-		v++;
-	}
-}
-
 void ProcessRoomData(ROOM_INFO* r)
 {
 	D3DVERTEX* vptr;
@@ -574,9 +524,6 @@ void ProcessRoomData(ROOM_INFO* r)
 			}
 		}
 	}
-
-	if (r->num_lights > MaxRoomLights)
-		MaxRoomLights = r->num_lights;
 
 	r->SourceVB->Optimize(App.dx._lpD3DDevice, 0);
 }

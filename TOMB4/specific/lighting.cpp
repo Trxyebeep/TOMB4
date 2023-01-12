@@ -16,10 +16,14 @@
 
 ITEM_INFO* current_item;
 long StaticMeshShade;
-long MaxRoomLights;
+long ambientR, ambientG, ambientB;
 
-static D3DLIGHT_STRUCT* D3DDynamics;
-static D3DLIGHT_STRUCT* D3DLights;
+FVECTOR lGlobalMeshPos;
+SUNLIGHT_STRUCT SunLights[64];
+POINTLIGHT_STRUCT PointLights[64];
+POINTLIGHT_STRUCT SpotLights[64];
+long nSunLights, nPointLights, nSpotLights, nShadowLights, nTotalLights;
+
 static ITEM_INFO StaticMeshLightItem;
 static long SetupLight_thing;
 
@@ -39,234 +43,132 @@ void S_CalculateStaticMeshLight(long x, long y, long z, long shade, ROOM_INFO* r
 void InitItemDynamicLighting(ITEM_INFO* item)
 {
 	DYNAMIC* dptr;
-	FVECTOR d;
-	FVECTOR vec;
-	FVECTOR l;
-	long last_off;
-
-	last_off = -1;
 
 	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
 		dptr = &dynamics[i];
 
 		if (dptr->on)
-		{
-			d.x = dptr->x - item->il.item_pos.x;
-			d.y = dptr->y - item->il.item_pos.y;
-			d.z = dptr->z - item->il.item_pos.z;
-			mApplyMatrix(mW2V, &d, &vec);
-			mApplyTransposeMatrix(mMXPtr, &vec, &d);
-			D3DDynamics[i].D3DLightx.dvPosition.x = d.x;
-			D3DDynamics[i].D3DLightx.dvPosition.y = d.y;
-			D3DDynamics[i].D3DLightx.dvPosition.z = d.z;
-			D3DDynamics[i].D3DLightx.dwFlags = D3DLIGHT_ALL;
-			D3DDynamics[i].D3DLightx.dcvColor.r = dptr->r / 255.0F;
-			D3DDynamics[i].D3DLightx.dcvColor.g = dptr->g / 255.0F;
-			D3DDynamics[i].D3DLightx.dcvColor.b = dptr->b / 255.0F;
-			D3DDynamics[i].D3DLightx.dltType = D3DLIGHT_POINT;
-			D3DDynamics[i].D3DLightx.dvAttenuation1 = 1;
-			D3DDynamics[i].D3DLightx.dvRange = (dptr->falloff >> 1) + (dptr->falloff >> 3);
-			D3DDynamics[i].D3DLight->SetLight((LPD3DLIGHT)&D3DDynamics[i].D3DLightx);
-		}
-		else 
-		{
-			if (D3DDynamics[i].D3DLightx.dwFlags & D3DLIGHT_ACTIVE)	//active but shouldn't be
-			{
-				D3DDynamics[i].D3DLightx.dwFlags = D3DLIGHT_NO_SPECULAR;
-				D3DDynamics[i].D3DLightx.dltType = D3DLIGHT_POINT;
-				D3DDynamics[i].D3DLight->SetLight((LPD3DLIGHT)&D3DDynamics[i].D3DLightx);
-			}
-
-			last_off = i;
-		}
+			SetupDynamicLight(dptr, item);
 	}
 
-	if (last_off >= 0 && bLaraTorch)
+	ambientR = CLRR(item->il.ambient);
+	ambientG = CLRG(item->il.ambient);
+	ambientB = CLRB(item->il.ambient);
+}
+
+void SetupDynamicLight(DYNAMIC* light, ITEM_INFO* item)
+{
+	POINTLIGHT_STRUCT* point;
+	float dx, dy, dz, falloff, dist, val;
+
+	dx = light->x - lGlobalMeshPos.x;
+	dy = light->y - lGlobalMeshPos.y;
+	dz = light->z - lGlobalMeshPos.z;
+	falloff = (float)(light->falloff - (light->falloff >> 3));
+	dist = sqrt(SQUARE(dz) + SQUARE(dy) + SQUARE(dx));
+	point = &PointLights[nPointLights];
+
+	if (dist <= falloff)
 	{
-		d.x = LaraTorchEnd.x - LaraTorchStart.x;
-		d.y = LaraTorchEnd.y - LaraTorchStart.y;
-		d.z = LaraTorchEnd.z - LaraTorchStart.z;
-		mApplyMatrix(mW2V, &d, &vec);
-		mApplyTransposeMatrix(mMXPtr, &vec, &d);
-		l.x = d.x;
-		l.y = d.y;
-		l.z = d.z;
-		d.x = LaraTorchStart.x - item->il.item_pos.x;
-		d.y = LaraTorchStart.y - item->il.item_pos.y;
-		d.z = LaraTorchStart.z - item->il.item_pos.z;
-		mApplyMatrix(mW2V, &d, &vec);
-		mApplyTransposeMatrix(mMXPtr, &vec, &d);
-		D3DDynamics[last_off].D3DLightx.dcvColor.r = LaraTorchIntensity / 255.0F;
-		D3DDynamics[last_off].D3DLightx.dcvColor.g = LaraTorchIntensity / 255.0F;
-		D3DDynamics[last_off].D3DLightx.dcvColor.b = 0;
-		D3DDynamics[last_off].D3DLightx.dvPosition.x = d.x;
-		D3DDynamics[last_off].D3DLightx.dvPosition.y = d.y;
-		D3DDynamics[last_off].D3DLightx.dvPosition.z = d.z;
-		D3DDynamics[last_off].D3DLightx.dvDirection.x = l.x;
-		D3DDynamics[last_off].D3DLightx.dvDirection.y = l.y;
-		D3DDynamics[last_off].D3DLightx.dvDirection.z = l.z;
-		D3DDynamics[last_off].D3DLightx.dwFlags = D3DLIGHT_ALL;
-		D3DDynamics[last_off].D3DLightx.dltType = D3DLIGHT_SPOT;
-		D3DDynamics[last_off].D3DLightx.dvAttenuation1 = 1;
-		D3DDynamics[last_off].D3DLightx.dvFalloff = 1;
-		D3DDynamics[last_off].D3DLightx.dvRange = 20480;
-		D3DDynamics[last_off].D3DLightx.dvTheta = 0.25F;
-		D3DDynamics[last_off].D3DLightx.dvPhi = 1.25F;
-		D3DDynamics[last_off].D3DLight->SetLight((LPD3DLIGHT)&D3DDynamics[last_off].D3DLightx);
+		val = 1.0F / dist;
+		point->vec.x = val * (dx * D3DLightMatrix._11 + dy * D3DLightMatrix._12 + dz * D3DLightMatrix._13);
+		point->vec.y = val * (dx * D3DLightMatrix._21 + dy * D3DLightMatrix._22 + dz * D3DLightMatrix._23);
+		point->vec.z = val * (dx * D3DLightMatrix._31 + dy * D3DLightMatrix._32 + dz * D3DLightMatrix._33);
+		point->r = light->r;
+		point->g = light->g;
+		point->b = light->b;
+		point->rad = (falloff - dist) / falloff;
+		nPointLights++;
+		nTotalLights++;
 	}
 }
 
-void InitDynamicLighting()
+void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 {
-	DYNAMIC* dptr;
-	long last_off;
-
-	last_off = -1;
-	ClearObjectLighting();
-	App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_AMBIENT, 0);
-
-	for (int i = 0; i < MAX_DYNAMICS; i++)
-	{
-		dptr = &dynamics[i];
-
-		if (dptr->on)
-		{
-			D3DDynamics[i].D3DLightx.dcvColor.r = dptr->r / 255.0F;
-			D3DDynamics[i].D3DLightx.dcvColor.g = dptr->g / 255.0F;
-			D3DDynamics[i].D3DLightx.dcvColor.b = dptr->b / 255.0F;
-			D3DDynamics[i].D3DLightx.dvPosition.x = dptr->x;
-			D3DDynamics[i].D3DLightx.dvPosition.y = dptr->y;
-			D3DDynamics[i].D3DLightx.dvPosition.z = dptr->z;
-			D3DDynamics[i].D3DLightx.dwFlags = D3DLIGHT_ALL;
-			D3DDynamics[i].D3DLightx.dltType = D3DLIGHT_POINT;
-			D3DDynamics[i].D3DLightx.dvAttenuation1 = 1;
-			D3DDynamics[i].D3DLightx.dvRange = (dptr->falloff >> 1) + (dptr->falloff >> 3);
-			D3DDynamics[i].D3DLight->SetLight((LPD3DLIGHT)&D3DDynamics[i].D3DLightx);
-		}
-		else
-		{
-			if (D3DDynamics[i].D3DLightx.dwFlags & D3DLIGHT_ACTIVE)	//active but shouldn't be
-			{
-				D3DDynamics[i].D3DLightx.dwFlags = D3DLIGHT_NO_SPECULAR;
-				D3DDynamics[i].D3DLightx.dltType = D3DLIGHT_POINT;
-				D3DDynamics[i].D3DLight->SetLight((LPD3DLIGHT)&D3DDynamics[i].D3DLightx);
-			}
-
-			last_off = i;
-		}
-	}
-
-	if (last_off >= 0 && bLaraTorch)
-	{
-		D3DDynamics[last_off].D3DLightx.dcvColor.r = LaraTorchIntensity / 255.0F;
-		D3DDynamics[last_off].D3DLightx.dcvColor.g = LaraTorchIntensity / 255.0F;
-		D3DDynamics[last_off].D3DLightx.dcvColor.b = 0;
-		D3DDynamics[last_off].D3DLightx.dvPosition.x = LaraTorchStart.x;
-		D3DDynamics[last_off].D3DLightx.dvPosition.y = LaraTorchStart.y;
-		D3DDynamics[last_off].D3DLightx.dvPosition.z = LaraTorchStart.z;
-		D3DDynamics[last_off].D3DLightx.dvDirection.x = LaraTorchEnd.x - LaraTorchStart.x;
-		D3DDynamics[last_off].D3DLightx.dvDirection.y = LaraTorchEnd.y - LaraTorchStart.y;
-		D3DDynamics[last_off].D3DLightx.dvDirection.z = LaraTorchEnd.z - LaraTorchStart.z;
-		D3DDynamics[last_off].D3DLightx.dwFlags = D3DLIGHT_ALL;
-		D3DDynamics[last_off].D3DLightx.dltType = D3DLIGHT_SPOT;
-		D3DDynamics[last_off].D3DLightx.dvAttenuation1 = 1;
-		D3DDynamics[last_off].D3DLightx.dvFalloff = 1;
-		D3DDynamics[last_off].D3DLightx.dvRange = 20480;
-		D3DDynamics[last_off].D3DLightx.dvTheta = 0.25F;
-		D3DDynamics[last_off].D3DLightx.dvPhi = 1.25F;
-		D3DDynamics[last_off].D3DLight->SetLight((LPD3DLIGHT)&D3DDynamics[last_off].D3DLightx);
-	}
-}
-
-void SetupLight(D3DLIGHT_STRUCT* d3dlight, PCLIGHT* light, long* ambient)
-{
-	FVECTOR d;
-	FVECTOR vec;
-	FVECTOR l;
-	float fVal;
-	long r, g, b, val, val2;;
-
-	d.x = light->rlp.x;
-	d.y = light->rlp.y;
-	d.z = light->rlp.z;
-	d3dlight->D3DLightx.dcvColor.r = light->r;
-	d3dlight->D3DLightx.dcvColor.g = light->g;
-	d3dlight->D3DLightx.dcvColor.b = light->b;
-	mApplyMatrix(mW2V, &d, &vec);
-	mApplyTransposeMatrix(mMXPtr, &vec, &d);
-	d3dlight->D3DLightx.dvPosition.x = d.x;
-	d3dlight->D3DLightx.dvPosition.y = d.y;
-	d3dlight->D3DLightx.dvPosition.z = d.z;
-
-	if (light->Type == LIGHT_SUN || light->Type == LIGHT_SPOT)
-	{
-		d.x = light->inx;
-		d.y = light->iny;
-		d.z = light->inz;
-		mApplyMatrix(mW2V, &d, &vec);
-		mApplyTransposeMatrix(mMXPtr, &vec, &d);
-		l.x = d.x;
-		l.y = d.y;
-		l.z = d.z;
-	}
-
-	d3dlight->D3DLightx.dwFlags = D3DLIGHT_ALL;
+	SUNLIGHT_STRUCT* sun;
+	POINTLIGHT_STRUCT* point;
+	float x, y, z, num, num2;
+	long r, g, b, val, val2;
 
 	switch (light->Type)
 	{
 	case LIGHT_SUN:
-		d3dlight->D3DLightx.dltType = D3DLIGHT_DIRECTIONAL;
-		d3dlight->D3DLightx.dvDirection.x = l.x;
-		d3dlight->D3DLightx.dvDirection.y = l.y;
-		d3dlight->D3DLightx.dvDirection.z = l.z;
+		sun = &SunLights[nSunLights];
+		x = light->nx;
+		y = light->ny;
+		z = light->nz;
+		num = -1.0F / sqrt(SQUARE(z) + SQUARE(y) + SQUARE(x));
+
+		sun->vec.x = (D3DLightMatrix._11 * x + D3DLightMatrix._12 * y + D3DLightMatrix._13 * z) * num;
+		sun->vec.y = (D3DLightMatrix._21 * x + D3DLightMatrix._22 * y + D3DLightMatrix._23 * z) * num;
+		sun->vec.z = (D3DLightMatrix._31 * x + D3DLightMatrix._32 * y + D3DLightMatrix._33 * z) * num;
+		sun->r = light->r * 255.0F;
+		sun->g = light->g * 255.0F;
+		sun->b = light->b * 255.0F;
+		nSunLights++;
+		nTotalLights++;
 		break;
 
 	case LIGHT_POINT:
-		d3dlight->D3DLightx.dltType = D3DLIGHT_POINT;
-		d3dlight->D3DLightx.dvAttenuation1 = 2;
-		d3dlight->D3DLightx.dvRange = light->Outer;
+		x = light->x - lGlobalMeshPos.x;
+		y = light->y - lGlobalMeshPos.y;
+		z = light->z - lGlobalMeshPos.z;
+		point = &PointLights[nPointLights];
+		num2 = sqrt(SQUARE(z) + SQUARE(y) + SQUARE(x));
+		num = 1.0F / num2;
+		point->vec.x = (D3DLightMatrix._11 * x + D3DLightMatrix._12 * y + D3DLightMatrix._13 * z) * num;
+		point->vec.y = (D3DLightMatrix._21 * x + D3DLightMatrix._22 * y + D3DLightMatrix._23 * z) * num;
+		point->vec.z = (D3DLightMatrix._31 * x + D3DLightMatrix._32 * y + D3DLightMatrix._33 * z) * num;
+		point->r = 2 * light->r * 255.0F;
+		point->g = 2 * light->g * 255.0F;
+		point->b = 2 * light->b * 255.0F;
+		point->rad = (light->Outer - num2) / light->Outer;
 
-		if (SetupLight_thing)
+		if (point->rad < 0)
+			point->rad = 0;
+
+		if (SetupLight_thing && point->rad < 1)
 		{
-			fVal = (light->Outer - phd_sqrt(light->Range)) / light->Outer;
+			r = CLRR(*ambient) + (point->rad * light->r * 255);
+			g = CLRG(*ambient) + (point->rad * light->g * 255);
+			b = CLRB(*ambient) + (point->rad * light->b * 255);
 
-			if (fVal < 1)
-			{
-				r = CLRR(*ambient) + (fVal * light->r * 255);
-				g = CLRG(*ambient) + (fVal * light->g * 255);
-				b = CLRB(*ambient) + (fVal * light->b * 255);
+			if (r > 255)
+				r = 255;
 
-				if (r > 255)
-					r = 255;
+			if (g > 255)
+				g = 255;
 
-				if (g > 255)
-					g = 255;
+			if (b > 255)
+				b = 255;
 
-				if (b > 255)
-					b = 255;
-
-				*ambient = RGBONLY(r, g, b);
-			}
+			*ambient = RGBONLY(r, g, b);
 		}
 
+		nPointLights++;
+		nTotalLights++;
 		break;
 
 	case LIGHT_SPOT:
-		d3dlight->D3DLightx.dltType = D3DLIGHT_SPOT;
-		d3dlight->D3DLightx.dvDirection.x = l.x;
-		d3dlight->D3DLightx.dvDirection.y = l.y;
-		d3dlight->D3DLightx.dvDirection.z = l.z;
-		d3dlight->D3DLightx.dvFalloff = 1;
+		x = light->x - lGlobalMeshPos.x;
+		y = light->y - lGlobalMeshPos.y;
+		z = light->z - lGlobalMeshPos.z;
+		point = &SpotLights[nSpotLights];
+		num = sqrt(SQUARE(z) + SQUARE(y) + SQUARE(x));
+		point->vec.x = (D3DLightMatrix._11 * x + D3DLightMatrix._12 * y + D3DLightMatrix._13 * z) / num;
+		point->vec.y = (D3DLightMatrix._21 * x + D3DLightMatrix._22 * y + D3DLightMatrix._23 * z) / num;
+		point->vec.z = (D3DLightMatrix._31 * x + D3DLightMatrix._32 * y + D3DLightMatrix._33 * z) / num;
+		point->r = 2 * light->r * 255.0F;
+		point->g = 2 * light->g * 255.0F;
+		point->b = 2 * light->b * 255.0F;
+		point->rad = 1.0F - num / light->Cutoff;
 
-		if (SetupLight_thing)
-			d3dlight->D3DLightx.dvAttenuation1 = 2;
-		else
-			d3dlight->D3DLightx.dvAttenuation1 = 1;
-		
-		d3dlight->D3DLightx.dvRange = light->Cutoff;
-		d3dlight->D3DLightx.dvTheta = light->OuterAngle;
-		d3dlight->D3DLightx.dvPhi = light->OuterAngle;
+		if (point->rad < 0)
+			point->rad = 0;
+
+		nSpotLights++;
+		nTotalLights++;
 		break;
 
 	case LIGHT_SHADOW:
@@ -282,6 +184,7 @@ void SetupLight(D3DLIGHT_STRUCT* d3dlight, PCLIGHT* light, long* ambient)
 		if (val2 < 0)
 			val2 = 0;
 
+		val2 >>= 1;
 		r -= val2;
 		g -= val2;
 		b -= val2;
@@ -296,26 +199,8 @@ void SetupLight(D3DLIGHT_STRUCT* d3dlight, PCLIGHT* light, long* ambient)
 			b = 0;
 
 		*ambient = RGBONLY(r, g, b);
-		d3dlight->D3DLightx.dwFlags = D3DLIGHT_NO_SPECULAR;
-		d3dlight->D3DLightx.dltType = D3DLIGHT_POINT;
+		nShadowLights++;
 		break;
-	}
-
-	DXAttempt(d3dlight->D3DLight->SetLight((LPD3DLIGHT)&d3dlight->D3DLightx));
-}
-
-void ClearDynamicLighting()
-{
-	App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_AMBIENT, 0);
-
-	for (int i = 0; i < MAX_DYNAMICS; i++)
-	{
-		if (D3DDynamics[i].D3DLightx.dwFlags & D3DLIGHT_ACTIVE)
-		{
-			D3DDynamics[i].D3DLightx.dwFlags = D3DLIGHT_NO_SPECULAR;
-			D3DDynamics[i].D3DLightx.dltType = D3DLIGHT_POINT;
-			D3DDynamics[i].D3DLight->SetLight((LPD3DLIGHT)&D3DDynamics[i].D3DLightx);
-		}
 	}
 }
 
@@ -331,107 +216,6 @@ void mApplyTransposeMatrix(float* matrix, FVECTOR* start, FVECTOR* dest)
 	dest->x = start->x * matrix[M00] + start->y * matrix[M10] + start->z * matrix[M20];
 	dest->y = start->x * matrix[M01] + start->y * matrix[M11] + start->z * matrix[M21];
 	dest->z = start->x * matrix[M02] + start->y * matrix[M12] + start->z * matrix[M22];
-}
-
-void MallocD3DLights()
-{
-	if (MaxRoomLights > 21)
-		Log(1, "MAX Room Lights of %d Exceeded - %d", 21, MaxRoomLights);
-
-	MaxRoomLights *= 2;
-	D3DLights = (D3DLIGHT_STRUCT*)game_malloc(sizeof(D3DLIGHT_STRUCT) * MaxRoomLights);
-	D3DDynamics = (D3DLIGHT_STRUCT*)game_malloc(sizeof(D3DLIGHT_STRUCT) * MAX_DYNAMICS);
-}
-
-void CreateD3DLights()
-{
-	D3DMATERIAL material;
-
-	Log(2, "CreateD3DLights");
-	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGCOLOR, CurrentFog);
-
-	for (int i = 0; i < MaxRoomLights; i++)
-	{
-		DXAttempt(App.dx.lpD3D->CreateLight(&D3DLights[i].D3DLight, 0));
-		memset(&D3DLights[i].D3DLightx, 0, sizeof(D3DLights[i].D3DLightx));
-		D3DLights[i].D3DLightx.dwSize = sizeof(D3DLights[i].D3DLightx);
-		D3DLights[i].D3DLightx.dltType = D3DLIGHT_POINT;
-		D3DLights[i].D3DLightx.dwFlags = D3DLIGHT_NO_SPECULAR;
-		DXAttempt(D3DLights[i].D3DLight->SetLight((LPD3DLIGHT)&D3DLights[i].D3DLightx));
-		DXAttempt(App.dx.lpViewport->AddLight(D3DLights[i].D3DLight));
-	}
-
-	if (D3DDynamics)
-	{
-		for (int i = 0; i < MAX_DYNAMICS; i++)
-		{
-			DXAttempt(App.dx.lpD3D->CreateLight(&D3DDynamics[i].D3DLight, 0));
-			memset(&D3DDynamics[i].D3DLightx, 0, sizeof(D3DDynamics[i].D3DLightx));
-			D3DDynamics[i].D3DLightx.dwSize = sizeof(D3DDynamics[i].D3DLightx);
-			D3DDynamics[i].D3DLightx.dltType = D3DLIGHT_POINT;
-			D3DDynamics[i].D3DLightx.dwFlags = D3DLIGHT_NO_SPECULAR;
-			DXAttempt(D3DDynamics[i].D3DLight->SetLight((LPD3DLIGHT)&D3DDynamics[i].D3DLightx));
-			DXAttempt(App.dx.lpViewport->AddLight(D3DDynamics[i].D3DLight));
-		}
-
-		DXAttempt(App.dx.lpD3D->CreateMaterial(&App.GlobalMaterial, 0));
-		memset(&material, 0, sizeof(material));
-		material.dwSize = sizeof(material);
-		material.ambient.a = 0;
-		material.diffuse.a = 0;
-		material.ambient.r = 1;
-		material.ambient.g = 1;
-		material.ambient.b = 1;
-		material.diffuse.r = 1;
-		material.diffuse.g = 1;
-		material.diffuse.b = 1;
-		DXAttempt(App.GlobalMaterial->SetMaterial(&material));
-		DXAttempt(App.GlobalMaterial->GetHandle(App.dx._lpD3DDevice, &App.GlobalMaterialHandle));
-		DXAttempt(App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_MATERIAL, App.GlobalMaterialHandle));
-	}
-}
-
-void FreeD3DLights()
-{
-	if (MaxRoomLights)
-	{
-		for (int i = 0; i < MaxRoomLights; i++)
-		{
-			App.dx.lpViewport->DeleteLight(D3DLights[i].D3DLight);
-
-			if (D3DLights[i].D3DLight)
-			{
-				Log(4, "Released %s @ %x - RefCnt = %d", "Room Light", D3DLights[i].D3DLight, D3DLights[i].D3DLight->Release());
-				D3DLights[i].D3DLight = 0;
-			}
-			else
-				Log(1, "%s Attempt To Release NULL Ptr", "Room Light");
-		}
-	}
-
-	if (D3DDynamics)
-	{
-		for (int i = 0; i < MAX_DYNAMICS; i++)
-		{
-			DXAttempt(App.dx.lpViewport->DeleteLight(D3DDynamics[i].D3DLight));
-
-			if (D3DDynamics[i].D3DLight)
-			{
-				Log(4, "Released %s @ %x - RefCnt = %d", "Dynamic Light", D3DDynamics[i].D3DLight, D3DDynamics[i].D3DLight->Release());
-				D3DDynamics[i].D3DLight = 0;
-			}
-			else
-				Log(1, "%s Attempt To Release NULL Ptr", "Dynamic Light");
-		}
-	}
-
-	if (App.GlobalMaterial)
-	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Global Material", App.GlobalMaterial, App.GlobalMaterial->Release());
-		App.GlobalMaterial = 0;
-	}
-	else
-		Log(1, "%s Attempt To Release NULL Ptr", "Global Material");
 }
 
 void CreateLightList(ITEM_INFO* item)
@@ -640,9 +424,8 @@ void FadeLightList(PCLIGHT* lights, long nLights)
 void InitObjectLighting(ITEM_INFO* item)
 {
 	PCLIGHT* light;
-	long node_ambient, num_active, r, g, b;
+	long node_ambient, r, g, b;
 
-	num_active = 0;
 	node_ambient = item->il.ambient;
 	SetupLight_thing = item->object_number >= GAME_PIECE1;
 	light = (PCLIGHT*)item->il.pCurrentLights;
@@ -650,10 +433,7 @@ void InitObjectLighting(ITEM_INFO* item)
 	for (int i = 0; i < item->il.nCurrentLights; i++)
 	{
 		if (light[i].Active)
-		{
-			SetupLight(&D3DLights[num_active], &light[i], &node_ambient);
-			num_active++;
-		}
+			SetupLight(&light[i], item, &node_ambient);
 	}
 
 	light = (PCLIGHT*)item->il.pPrevLights;
@@ -661,20 +441,7 @@ void InitObjectLighting(ITEM_INFO* item)
 	for (int i = 0; i < item->il.nPrevLights; i++)
 	{
 		if (light[i].Active)
-		{
-			SetupLight(&D3DLights[num_active], &light[i], &node_ambient);
-			num_active++;
-		}
-	}
-
-	for (int i = num_active; i < MaxRoomLights; i++)
-	{
-		if (D3DLights[i].D3DLightx.dwFlags & D3DLIGHT_ACTIVE)
-		{
-			D3DLights[i].D3DLightx.dwFlags = D3DLIGHT_NO_SPECULAR;
-			D3DLights[i].D3DLightx.dltType = D3DLIGHT_POINT;
-			D3DLights[i].D3DLight->SetLight((LPD3DLIGHT)&D3DLights[i].D3DLightx);
-		}
+			SetupLight(&light[i], item, &node_ambient);
 	}
 
 	InitItemDynamicLighting(item);
@@ -699,22 +466,9 @@ void InitObjectLighting(ITEM_INFO* item)
 		node_ambient = RGBA(r, g, b, 0xFF);
 	}
 
-	App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_AMBIENT, node_ambient);
-}
-
-void ClearObjectLighting()
-{
-	App.dx.lpD3DDevice->SetLightState(D3DLIGHTSTATE_AMBIENT, 0);
-
-	for (int i = 0; i < MaxRoomLights; i++)
-	{
-		if (D3DLights[i].D3DLightx.dwFlags & D3DLIGHT_ACTIVE)
-		{
-			D3DLights[i].D3DLightx.dwFlags = D3DLIGHT_NO_SPECULAR;
-			D3DLights[i].D3DLightx.dltType = D3DLIGHT_POINT;
-			D3DLights[i].D3DLight->SetLight((LPD3DLIGHT)&D3DLights[i].D3DLightx);
-		}
-	}
+	ambientR = CLRR(node_ambient);
+	ambientG = CLRG(node_ambient);
+	ambientB = CLRB(node_ambient);
 }
 
 void CalcAmbientLight(ITEM_INFO* item)
@@ -759,5 +513,28 @@ void CalcAmbientLight(ITEM_INFO* item)
 			}
 		}
 	}
+}
+
+void ResetLighting()
+{
+	D3DMATRIX view;
+	D3DMATRIX cam;
+	
+	ambientR = 0;
+	ambientG = 0;
+	ambientB = 0;
+
+	nSunLights = 0;
+	nPointLights = 0;
+	nSpotLights = 0;
+	nShadowLights = 0;
+	nTotalLights = 0;
+
+	view = D3DMView;
+	cam = D3DInvCameraMatrix;
+	D3DMultMatrix(&D3DLightMatrix, &view, &cam);
+	lGlobalMeshPos.x = CamPos.x + D3DLightMatrix._41;
+	lGlobalMeshPos.y = CamPos.y + D3DLightMatrix._42;
+	lGlobalMeshPos.z = CamPos.z + D3DLightMatrix._43;
 }
 #pragma warning(pop)

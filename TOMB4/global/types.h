@@ -2266,6 +2266,23 @@ struct ROOM_DYNAMIC
 	float inv_falloff;
 };
 
+struct SUNLIGHT_STRUCT
+{
+	FVECTOR vec;
+	float r;
+	float g;
+	float b;
+};
+
+struct POINTLIGHT_STRUCT
+{
+	FVECTOR vec;
+	float r;
+	float g;
+	float b;
+	float rad;
+};
+
 struct GouraudBarColourSet
 {
 	uchar abLeftRed[5];
