@@ -20,5 +20,5 @@ extern bool (*IsVisible)(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2);
 extern HRESULT (*_BeginScene)();
 extern HRESULT (*_EndScene)();
 
-extern D3DTLVERTEX MyVertexBuffer[0x4000];
+extern D3DTLVERTEX MyVertexBuffer[0x2000];
 extern long CurrentFog;

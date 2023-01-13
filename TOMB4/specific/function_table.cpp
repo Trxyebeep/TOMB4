@@ -15,7 +15,7 @@ bool (*IsVisible)(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2);
 HRESULT(*_BeginScene)();
 HRESULT(*_EndScene)();
 
-D3DTLVERTEX MyVertexBuffer[0x4000];
+D3DTLVERTEX MyVertexBuffer[0x2000];
 long CurrentFog;
 
 void SetFogColor(long r, long g, long b)

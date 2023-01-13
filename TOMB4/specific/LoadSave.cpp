@@ -103,7 +103,9 @@ static GouraudBarColourSet enemyBarColourSet =
 
 static void DrawColoredRect(float x0, float y0, float x1, float y1, float z, ulong c0, ulong c1, ulong c2, ulong c3, TEXTURESTRUCT* tex)
 {
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
+
+	v = MyVertexBuffer;
 
 	v[0].sx = x0;
 	v[0].sy = y0;
@@ -1654,10 +1656,12 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 
 void DoSlider(long x, long y, long width, long height, long pos, long clr1, long clr2, long clr3)
 {
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	float x2, sx, sy;
 	static float V;
+
+	v = MyVertexBuffer;
 
 	nPolyType = 4;
 	V += 0.0099999998F;

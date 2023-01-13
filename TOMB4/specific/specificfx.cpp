@@ -138,8 +138,8 @@ static long FadeEnd;
 
 static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 {
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT Tex;
-	D3DTLVERTEX v[3];
 	PHD_VECTOR pos;
 	FVECTOR cv[CIRCUMFERENCE_POINTS];
 	FVECTOR cp[CIRCUMFERENCE_POINTS];
@@ -148,6 +148,8 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 	float fx, fy, fz;
 	long x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, xSize, zSize, xDist, zDist;
 	short room_number;
+
+	v = MyVertexBuffer;
 
 	xSize = size * (box[1] - box[0]) / 192;	//x size of grid
 	zSize = size * (box[5] - box[4]) / 192;	//z size of grid
@@ -294,11 +296,13 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 
 static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 {
+	D3DTLVERTEX* v;
 	SPRITESTRUCT* sprite;
 	TEXTURESTRUCT Tex;
-	D3DTLVERTEX v[4];
 	PHD_VECTOR pos;
 	long xSize, zSize, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, opt;
+
+	v = MyVertexBuffer;
 
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 11];
 	xSize = size * (box[1] - box[0]) / 160;
@@ -358,8 +362,8 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 
 void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 {
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT Tex;
-	D3DTLVERTEX v[3];
 	PHD_VECTOR pos;
 	long* sXYZ;
 	long* hXZ;
@@ -380,6 +384,8 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 
 		return;
 	}
+
+	v = MyVertexBuffer;
 
 	xSize = size * (box[1] - box[0]) / 192;	//x size of grid
 	zSize = size * (box[5] - box[4]) / 192;	//z size of grid
@@ -528,11 +534,13 @@ void DrawTrainStrips()
 void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr)
 {
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	long x1, y1, z1, x2, y2, z2, x3, y3, x4, y4;
 	long cR, cG, cB, c1, c2, s1, s2, s1h, s2h, scale;
 	long sin, cos, sx1, sx2, sy1, sy2, cx1, cx2, cy1, cy2;
+
+	v = MyVertexBuffer;
 
 	if (sptr->Flags & 8)
 	{
@@ -698,9 +706,11 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr
 
 void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long unk)	//ux and uy are not used
 {
-	D3DTLVERTEX v[2];
+	D3DTLVERTEX* v;
 	float p, x, y, x0, y0, x1, y1;
 	long rSize, rVel, rMVel, rTVel, angle;
+
+	v = MyVertexBuffer;
 
 	p = (float)GetFixedScale(1);
 	x = float(phd_winwidth - GetFixedScale(80));
@@ -778,9 +788,11 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 void Draw2DSprite(long x, long y, long slot, long unused, long unused2)
 {
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	long p, x0, y0;
+
+	v = MyVertexBuffer;
 
 	p = GetFixedScale(1);
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + slot];
@@ -823,9 +835,11 @@ void Draw2DSprite(long x, long y, long slot, long unused, long unused2)
 
 void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long spriteSlot)	//ux and uy are not used
 {
-	D3DTLVERTEX v[2];
+	D3DTLVERTEX* v;
 	float p, x, y, x0, y0, x1, y1;
 	long rSize, rVel, rMVel, rTVel, angle, sX, sY;
+
+	v = MyVertexBuffer;
 
 	p = (float)GetFixedScale(1);
 	x = float(phd_winwidth - GetFixedScale(80));
@@ -912,13 +926,14 @@ void DrawDebris()
 {
 	DEBRIS_STRUCT* dptr;
 	TEXTURESTRUCT* tex;
-	D3DTLVERTEX v[3];
+	D3DTLVERTEX* v;
 	long* Z;
 	short* XY;
 	short* offsets;
 	long r, g, b, c;
 	ushort drawbak;
 
+	v = MyVertexBuffer;
 	XY = (short*)&scratchpad[0];
 	Z = (long*)&scratchpad[256];
 	offsets = (short*)&scratchpad[512];
@@ -1034,10 +1049,11 @@ void DrawDebris()
 
 void DoScreenFade()
 {
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	long a;
 
+	v = MyVertexBuffer;
 	a = FadeVal << 24;
 	FadeVal += FadeStep;
 	FadeCnt++;
@@ -1088,12 +1104,13 @@ void DoScreenFade()
 
 void DrawPsxTile(long x_y, long height_width, long color, long u0, long u1)
 {
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	float x, y, z, rhw, w, h;
 	long col;
 	ushort drawtype;
 
+	v = MyVertexBuffer;
 	nPolyType = 6;
 
 	if ((color & 0xFF000000) == 0x62000000)
@@ -1174,10 +1191,12 @@ void DrawFlash()
 
 void S_DrawDarts(ITEM_INFO* item)
 {
-	D3DTLVERTEX v[2];
+	D3DTLVERTEX* v;
 	float fx, fy, fz;
 	long x1, y1, z1, x2, y2, z2, num, mxx, mxy, mxz;
 	float zv;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
@@ -1260,11 +1279,13 @@ void ClipCheckPoint(D3DTLVERTEX* v, float x, float y, float z, short* clip)
 
 void DrawFlatSky(ulong color, long zpos, long ypos, long drawtype)
 {
+	D3DTLVERTEX* v;
 	FVECTOR vec[4];
-	D3DTLVERTEX v[4];
 	TEXTURESTRUCT Tex;
 	short* clip;
 	float x, y, z;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateRel(zpos, ypos, 0);
@@ -1780,7 +1801,7 @@ void SetFade(long start, long end)
 void DrawLaserSightSprite()
 {
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR vec;
 	long* Z;
@@ -1788,6 +1809,7 @@ void DrawLaserSightSprite()
 	short* pos;
 	float perspz;
 
+	v = MyVertexBuffer;
 	XY = (short*)&scratchpad[0];
 	Z = (long*)&scratchpad[256];
 	pos = (short*)&scratchpad[512];
@@ -1833,9 +1855,11 @@ void DrawLaserSightSprite()
 void DrawSprite(long x, long y, long slot, long col, long size, long z)
 {
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	long s;
+
+	v = MyVertexBuffer;
 
 	s = long(float(phd_winwidth / 640.0F) * (size << 1));
 
@@ -1869,9 +1893,11 @@ void DrawSprite(long x, long y, long slot, long col, long size, long z)
 
 void ShowTitle()
 {
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	float x, y, w;
+
+	v = MyVertexBuffer;
 
 	clipflags[0] = 0;
 	clipflags[1] = 0;
@@ -2226,12 +2252,14 @@ void DrawBinoculars()
 	MESH_DATA* mesh;
 	D3DTLVERTEX* v;
 	TEXTURESTRUCT* tex;
-	D3DTLVERTEX vtx[256];
+	D3DTLVERTEX* vtx;
 	short* clip;
 	short* quad;
 	short* tri;
 	ushort drawbak;
 	short clipdistance;
+
+	vtx = MyVertexBuffer;
 
 	if (LaserSight)
 		mesh = targetMeshP;
@@ -2348,15 +2376,17 @@ void DrawBinoculars()
 
 void DrawWraithTrail(ITEM_INFO* item)
 {
+	D3DTLVERTEX* v;
 	WRAITH_STRUCT* wraith;
 	FVECTOR pos;
-	D3DTLVERTEX v[2];
 	long* Z;
 	short* XY;
 	short* offsets;
 	float perspz;
 	ulong r, g, b;
 	long c0, c1, x0, y0, z0, x1, y1, z1;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
@@ -2454,14 +2484,16 @@ void DrawWraithTrail(ITEM_INFO* item)
 
 void DrawDrips()
 {
+	D3DTLVERTEX* v;
 	DRIP_STRUCT* drip;
 	FVECTOR vec;
-	D3DTLVERTEX v[3];
 	long* Z;
 	short* XY;
 	short* pos;
 	float perspz;
 	long x0, y0, z0, x1, y1, z1, r, g, b;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
@@ -2560,7 +2592,7 @@ void DrawBubbles()
 {
 	BUBBLE_STRUCT* bubble;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR pos;
 	long* Z;
@@ -2568,6 +2600,8 @@ void DrawBubbles()
 	short* offsets;
 	float perspz;
 	long dx, dy, dz, size, x1, y1, x2, y2;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
@@ -2676,7 +2710,7 @@ void DrawShockwaves()
 {
 	SHOCKWAVE_STRUCT* wave;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX vtx[4];
+	D3DTLVERTEX* vtx;
 	TEXTURESTRUCT tex;
 	FVECTOR p1, p2, p3;
 	long* Z;
@@ -2684,6 +2718,8 @@ void DrawShockwaves()
 	short* offsets;
 	long v, x1, y1, x2, y2, x3, y3, x4, y4, r, g, b, c;
 	short rad;
+
+	vtx = MyVertexBuffer;
 
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 8];
 	offsets = (short*)&scratchpad[768];
@@ -2815,12 +2851,14 @@ void DrawShockwaves()
 void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags)
 {
 	SVECTOR* offsets;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	FVECTOR p1, p2, p3;
 	long* Z;
 	short* XY;
 	long num, z1, z2, z3, z4, spec;
 	short x1, y1, x2, y2, x3, y3, x4, y4;
+
+	v = MyVertexBuffer;
 
 	num = 0;
 	offsets = (SVECTOR*)&scratchpad[984];
@@ -2936,7 +2974,7 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 	SPLASH_STRUCT* splash;
 	RIPPLE_STRUCT* ripple;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	long* Z;
 	short* XY;
@@ -2947,6 +2985,7 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 	short rads[6];
 	short yVals[6];
 
+	v = MyVertexBuffer;
 	offsets = (short*)&scratchpad[768];
 
 	for (int i = 0; i < 4; i++)
@@ -3317,7 +3356,7 @@ void S_DrawFireSparks(long size, long life)
 {
 	FIRE_SPARKS* sptr;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR pos;
 	long* Z;
@@ -3329,6 +3368,7 @@ void S_DrawFireSparks(long size, long life)
 	long dx, dy, dz, x1, y1, x2, y2, x3, y3, x4, y4;
 	short ang;
 
+	v = MyVertexBuffer;
 	XY = (short*)&scratchpad[0];
 	Z = (long*)&scratchpad[256];
 	offsets = (short*)&scratchpad[512];
@@ -3449,10 +3489,12 @@ void S_DrawFireSparks(long size, long life)
 void DrawRope(ROPE_STRUCT* rope)
 {
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	long dx, dy, d, b, w, spec;
 	long x1, y1, z1, x2, y2, z2, x3, y3, x4, y4;
+
+	v = MyVertexBuffer;
 
 	ProjectRopePoints(rope);
 	dx = rope->Coords[1][0] - rope->Coords[0][0];
@@ -3573,7 +3615,7 @@ void DrawBlood()
 {
 	BLOOD_STRUCT* bptr;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR pos;
 	long* Z;
@@ -3584,6 +3626,8 @@ void DrawBlood()
 	long size, s, c;
 	long dx, dy, dz, x1, y1, x2, y2, x3, y3, x4, y4;
 	short ang;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
@@ -3678,7 +3722,7 @@ void S_DrawSmokeSparks()
 {
 	SMOKE_SPARKS* sptr;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR pos;
 	long* Z;
@@ -3688,6 +3732,8 @@ void S_DrawSmokeSparks()
 	long is_mirror, size, col, s, c, ss, cs, sm, cm;
 	long dx, dy, dz, x1, y1, x2, y2, x3, y3, x4, y4;
 	short ang;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
@@ -3830,7 +3876,7 @@ void DoUwEffect()
 {
 	WATER_DUST* p;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[3];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR pos;
 	long* Z;
@@ -3839,6 +3885,7 @@ void DoUwEffect()
 	float perspz;
 	long num_alive, rad, ang, x, y, z, size, col, yv;
 
+	v = MyVertexBuffer;
 	num_alive = 0;
 
 	for (int i = 0; i < 256; i++)
@@ -3984,7 +4031,7 @@ void DrawLightning()
 	SPRITESTRUCT* sprite;
 	PHD_VECTOR* vec;
 	SVECTOR* offsets;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR p1, p2, p3;
 	long* Z;
@@ -3992,6 +4039,8 @@ void DrawLightning()
 	float perspz;
 	long c, xsize, ysize, r, g, b;
 	long x1, y1, z1, x2, y2, z2, z;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
