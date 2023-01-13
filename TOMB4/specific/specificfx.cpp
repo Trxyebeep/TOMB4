@@ -1808,6 +1808,7 @@ void DrawLaserSightSprite()
 	short* XY;
 	short* pos;
 	float perspz;
+	long s;
 
 	v = MyVertexBuffer;
 	XY = (short*)&scratchpad[0];
@@ -1828,7 +1829,8 @@ void DrawLaserSightSprite()
 	phd_PopMatrix();
 
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 14];
-	setXY4(v, XY[0] - 2, XY[1] - 2, XY[0] + 2, XY[1] - 2, XY[0] - 2, XY[1] + 2, XY[0] + 2, XY[1] + 2, (long)f_mznear, clipflags);
+	s = GetFixedScale(3);
+	setXY4(v, XY[0] - s, XY[1] - s, XY[0] + s, XY[1] - s, XY[0] + s, XY[1] + s, XY[0] - s, XY[1] + s, (long)f_mznear, clipflags);
 	v[0].color = 0xFFFF0000;
 	v[1].color = 0xFFFF0000;
 	v[2].color = 0xFFFF0000;
