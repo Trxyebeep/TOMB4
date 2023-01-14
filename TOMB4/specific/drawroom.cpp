@@ -78,7 +78,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 	short* clip;
 	static float DistanceFogStart;
 	float zv, fR, fG, fB, val, val2, zbak, num;
-	long cR, cG, cB, sR, sG, sB, dR, dG, dB, rndoff, col;
+	long cR, cG, cB, sA, sR, sG, sB, dR, dG, dB, rndoff, col;
 	short clipFlag;
 	uchar rnd, abs;
 	char shimmer;
@@ -169,6 +169,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 			cB = CLRB(r->prelight[i]);
 		}
 
+		sA = 0xFF;
 		sR = 0;
 		sG = 0;
 		sB = 0;
@@ -222,30 +223,11 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 			{
-				dR = gfLevelFlags & GF_TRAIN ? 0xD2 : 0xE2;
-				dG = gfLevelFlags & GF_TRAIN ? 0xB1 : 0x97;
-				dB = gfLevelFlags & GF_TRAIN ? 0x63 : 0x76;
+				val = (zbak - DistanceFogStart) / 512.0F;
+				sA -= long(val * (255.0F / 8.0F));
 
-				if (cR - val > dR)
-					cR -= (long)val;
-				else if (cR + val < dR)
-					cR += (long)val;
-				else
-					cR = dR;
-
-				if (cG - val > dG)
-					cG -= (long)val;
-				else if (cG + val < dG)
-					cG += (long)val;
-				else
-					cG = dG;
-
-				if (cB - val > dB)
-					cB -= (long)val;
-				else if (cB + val < dB)
-					cB += (long)val;
-				else
-					cB = dB;
+				if (sA < 0)
+					sA = 0;
 			}
 			else
 			{
@@ -287,7 +269,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 		if (cB > 255) cB = 255; else if (cB < 0) cB = 0;
 
 		MyVertexBuffer[i].color = RGBA(cR, cG, cB, 0xFF);
-		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, 0xFF);
+		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 }
 

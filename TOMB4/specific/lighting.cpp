@@ -130,9 +130,9 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 
 		if (SetupLight_thing && point->rad < 1)
 		{
-			r = CLRR(*ambient) + (point->rad * light->r * 255);
-			g = CLRG(*ambient) + (point->rad * light->g * 255);
-			b = CLRB(*ambient) + (point->rad * light->b * 255);
+			r = CLRR(*ambient) + (point->rad * point->r / 2);
+			g = CLRG(*ambient) + (point->rad * point->g / 2);
+			b = CLRB(*ambient) + (point->rad * point->b / 2);
 
 			if (r > 255)
 				r = 255;

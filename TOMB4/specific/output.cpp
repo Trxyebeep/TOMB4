@@ -50,7 +50,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 	short* clip;
 	static float DistanceFogStart;
 	float zv, fR, fG, fB, val, zbak, num;
-	long lp, cR, cG, cB, sR, sG, sB, dR, dG, dB;
+	long lp, cR, cG, cB, sA, sR, sG, sB;
 	short clipFlag;
 
 	clip = clipflags;
@@ -76,6 +76,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].tv = vPos.y;
 		zbak = vPos.z;
 
+		sA = 0xFF;
 		sR = 0;
 		sG = 0;
 		sB = 0;
@@ -149,30 +150,11 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 			{
-				dR = gfLevelFlags & GF_TRAIN ? 0xD2 : 0xE2;
-				dG = gfLevelFlags & GF_TRAIN ? 0xB1 : 0x97;
-				dB = gfLevelFlags & GF_TRAIN ? 0x63 : 0x76;
+				val = (zbak - DistanceFogStart) / 512.0F;
+				sA -= long(val * (255.0F / 8.0F));
 
-				if (cR - val > dR)
-					cR -= (long)val;
-				else if (cR + val < dR)
-					cR += (long)val;
-				else
-					cR = dR;
-
-				if (cG - val > dG)
-					cG -= (long)val;
-				else if (cG + val < dG)
-					cG += (long)val;
-				else
-					cG = dG;
-
-				if (cB - val > dB)
-					cB -= (long)val;
-				else if (cB + val < dB)
-					cB += (long)val;
-				else
-					cB = dB;
+				if (sA < 0)
+					sA = 0;
 			}
 			else
 			{
@@ -258,7 +240,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		if (cB > 255) cB = 255; else if (cB < 0) cB = 0;
 
 		MyVertexBuffer[i].color = RGBA(cR, cG, cB, CLRA(GlobalAlpha));
-		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, 0xFF);
+		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
 	mesh->SourceVB->Unlock();
@@ -275,7 +257,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 	short* clip;
 	static float DistanceFogStart;
 	float zv, val, val2, zbak, num;
-	long sR, sG, sB, cR, cG, cB, pR, pG, pB, dR, dG, dB;
+	long sA, sR, sG, sB, cR, cG, cB, pR, pG, pB;
 	short clipFlag;
 
 	clip = clipflags;
@@ -306,6 +288,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		cR = (cR * pR) >> 8;
 		cG = (cG * pG) >> 8;
 		cB = (cB * pB) >> 8;
+		sA = 0xFF;
 		sR = 0;
 		sG = 0;
 		sB = 0;
@@ -343,30 +326,11 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 			{
-				dR = gfLevelFlags & GF_TRAIN ? 0xD2 : 0xE2;
-				dG = gfLevelFlags & GF_TRAIN ? 0xB1 : 0x97;
-				dB = gfLevelFlags & GF_TRAIN ? 0x63 : 0x76;
+				val = (zbak - DistanceFogStart) / 512.0F;
+				sA -= long(val * (255.0F / 8.0F));
 
-				if (cR - val > dR)
-					cR -= (long)val;
-				else if (cR + val < dR)
-					cR += (long)val;
-				else
-					cR = dR;
-
-				if (cG - val > dG)
-					cG -= (long)val;
-				else if (cG + val < dG)
-					cG += (long)val;
-				else
-					cG = dG;
-
-				if (cB - val > dB)
-					cB -= (long)val;
-				else if (cB + val < dB)
-					cB += (long)val;
-				else
-					cB = dB;
+				if (sA < 0)
+					sA = 0;
 			}
 			else
 			{
@@ -459,7 +423,136 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		if (cB > 255) cB = 255; else if (cB < 0) cB = 0;
 
 		MyVertexBuffer[i].color = RGBA(cR, cG, cB, 0xFF);
-		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, 0xFF);
+		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
+	}
+
+	mesh->SourceVB->Unlock();
+}
+
+void ProcessTrainMeshVertices(MESH_DATA* mesh)
+{
+	FVECTOR vPos;
+	FVECTOR vtx;
+	float* v;
+	short* clip;
+	static float DistanceFogStart;
+	static float DistanceFogEnd;
+	float zv, val, zbak, num, fR, fG, fB;
+	long sA, sR, sG, sB, cR, cG, cB, dR, dG, dB;
+	short clipFlag;
+
+	clip = clipflags;
+	DistanceFogStart = 17.0F * 1024.0F;
+	DistanceFogEnd = 25.0F * 1024.0F;
+	num = 255.0F / DistanceFogStart;
+	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
+
+	for (int i = 0; i < mesh->nVerts; i++)
+	{
+		vtx.x = *v++;
+		vtx.y = *v++;
+		vtx.z = *v++;
+		v += 5;
+
+		vPos.x = vtx.x * D3DMView._11 + vtx.y * D3DMView._21 + vtx.z * D3DMView._31 + D3DMView._41;
+		vPos.y = vtx.x * D3DMView._12 + vtx.y * D3DMView._22 + vtx.z * D3DMView._32 + D3DMView._42;
+		vPos.z = vtx.x * D3DMView._13 + vtx.y * D3DMView._23 + vtx.z * D3DMView._33 + D3DMView._43;
+		MyVertexBuffer[i].tu = vPos.x;
+		MyVertexBuffer[i].tv = vPos.y;
+		zbak = vPos.z;
+
+		cR = ambientR;
+		cG = ambientG;
+		cB = ambientB;
+		sA = 0xFF;
+		sR = 0;
+		sG = 0;
+		sB = 0;
+
+		if (zbak > DistanceFogStart)
+		{
+			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+			{
+				val = (zbak - DistanceFogStart) / 512.0F;
+				sA -= long(val * (255.0F / 8.0F));
+
+				if (sA < 0)
+					sA = 0;
+
+				dR = gfLevelFlags & GF_TRAIN ? 0xD2 : 0xE2;
+				dG = gfLevelFlags & GF_TRAIN ? 0xB1 : 0x97;
+				dB = gfLevelFlags & GF_TRAIN ? 0x63 : 0x76;
+				val = (DistanceFogEnd - zbak) / (DistanceFogEnd - DistanceFogStart);
+
+				fR = (float)dR / 255.0F;
+				fG = (float)dG / 255.0F;
+				fB = (float)dB / 255.0F;
+				fR *= 1.0F - val;
+				fG *= 1.0F - val;
+				fB *= 1.0F - val;
+				fR *= 255;
+				fG *= 255;
+				fB *= 255;
+				sR = (long)fR;
+				sG = (long)fG;
+				sB = (long)fB;
+				
+				if (sR > dR) sR = dR;
+				if (sG > dG) sG = dG;
+				if (sB > dB) sB = dB;
+			}
+			else
+			{
+				val = (zbak - DistanceFogStart) * num;
+				cR -= (long)val;
+				cG -= (long)val;
+				cB -= (long)val;
+			}
+		}
+		
+		clipFlag = 0;
+
+		if (vPos.z < f_mznear)
+			clipFlag = -128;
+		else
+		{
+			zv = f_mpersp / vPos.z;
+
+			if (vPos.z > FogEnd)
+			{
+				clipFlag = 16;
+				vPos.z = f_zfar;
+			}
+
+			vPos.x = vPos.x * zv + f_centerx;
+			vPos.y = vPos.y * zv + f_centery;
+			MyVertexBuffer[i].rhw = zv * f_moneopersp;
+
+			if (vPos.x < clip_left)
+				clipFlag++;
+			else if (vPos.x > clip_right)
+				clipFlag += 2;
+
+			if (vPos.y < clip_top)
+				clipFlag += 4;
+			else if (vPos.y > clip_bottom)
+				clipFlag += 8;
+		}
+
+		*clip++ = clipFlag;
+		MyVertexBuffer[i].sx = vPos.x;
+		MyVertexBuffer[i].sy = vPos.y;
+		MyVertexBuffer[i].sz = vPos.z;
+
+		if (sR > 255) sR = 255; else if (sR < 0) sR = 0;
+		if (sG > 255) sG = 255; else if (sG < 0) sG = 0;
+		if (sB > 255) sB = 255; else if (sB < 0) sB = 0;
+		if (cR > 255) cR = 255; else if (cR < 0) cR = 0;
+		if (cG > 255) cG = 255; else if (cG < 0) cG = 0;
+		if (cB > 255) cB = 255; else if (cB < 0) cB = 0;
+
+		MyVertexBuffer[i].color = RGBA(cR, cG, cB, 0xFF);
+		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
 	mesh->SourceVB->Unlock();
@@ -687,50 +780,6 @@ void phd_PutPolygons(short* objptr, long clip)
 	}
 }
 
-static void ProjectTrainVerts(short nVerts, D3DTLVERTEX* v, short* clip, long x)
-{
-	float zv;
-	short clip_distance;
-
-	for (int i = 0; i < nVerts; i++)
-	{
-		clip_distance = 0;
-		v->tu = v->sx;
-		v->tv = v->sy;
-
-		if (v->sz < f_mznear)
-			clip_distance = -128;
-		else
-		{
-			zv = f_mpersp / v->sz;
-
-			if (v->sz > FogEnd)
-			{
-				v->sz = f_zfar;
-				clip_distance = 256;
-			}
-
-			v->sx = zv * v->sx + f_centerx;
-			v->sy = zv * v->sy + f_centery;
-			v->rhw = f_moneopersp * zv;
-
-			if (v->sx < clip_left)
-				clip_distance++;
-			else if (v->sx > clip_right)
-				clip_distance += 2;
-
-			if (v->sy < clip_top)
-				clip_distance += 4;
-			else if (v->sy > clip_bottom)
-				clip_distance += 8;
-		}
-
-		clip[0] = clip_distance;
-		clip++;
-		v++;
-	}
-}
-
 void phd_PutPolygons_train(short* objptr, long x)
 {
 	MESH_DATA* mesh;
@@ -740,27 +789,25 @@ void phd_PutPolygons_train(short* objptr, long x)
 	short* tri;
 	ushort drawbak;
 
+	if (!objptr)
+		return;
+
 	phd_PushMatrix();
 	phd_TranslateRel(x, 0, 0);
 	SetD3DViewMatrix();
 	mesh = (MESH_DATA*)objptr;
 	phd_PopMatrix();
 
-	if (!objptr)
-		return;
-
-	if (mesh->nVerts)
-		DXAttempt(DestVB->ProcessVertices(D3DVOP_TRANSFORM, 0, mesh->nVerts, mesh->SourceVB, 0, App.dx._lpD3DDevice, 0));
-
-	DestVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
+	v = MyVertexBuffer;
 	clip_left = f_left;
 	clip_top = f_top;
 	clip_right = f_right;
 	clip_bottom = f_bottom;
-
-	if (mesh->nVerts)
-		ProjectTrainVerts(mesh->nVerts, v, clipflags, x);
-
+	ResetLighting();
+	ambientR = 0xFF;
+	ambientG = 0xFF;
+	ambientB = 0xFF;
+	ProcessTrainMeshVertices(mesh);
 	quad = mesh->gt4;
 
 	for (int i = 0; i < mesh->ngt4; i++, quad += 6)
@@ -795,8 +842,6 @@ void phd_PutPolygons_train(short* objptr, long x)
 		else if (pTex->drawtype <= 2)
 			AddTriSorted(v, tri[0], tri[1], tri[2], pTex, 0);
 	}
-
-	DestVB->Unlock();
 }
 
 void _InsertRoom(ROOM_INFO* r)
