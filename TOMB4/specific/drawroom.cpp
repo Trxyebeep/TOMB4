@@ -78,7 +78,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 	short* clip;
 	static float DistanceFogStart;
 	float zv, fR, fG, fB, val, val2, zbak, num;
-	long cR, cG, cB, sA, sR, sG, sB, dR, dG, dB, rndoff, col;
+	long cR, cG, cB, sA, sR, sG, sB, rndoff, col;
 	short clipFlag;
 	uchar rnd, abs;
 	char shimmer;

@@ -60,21 +60,21 @@ void InitItemDynamicLighting(ITEM_INFO* item)
 void SetupDynamicLight(DYNAMIC* light, ITEM_INFO* item)
 {
 	POINTLIGHT_STRUCT* point;
-	float dx, dy, dz, falloff, dist, val;
+	float x, y, z, falloff, dist, val;
 
-	dx = light->x - lGlobalMeshPos.x;
-	dy = light->y - lGlobalMeshPos.y;
-	dz = light->z - lGlobalMeshPos.z;
-	falloff = (float)(light->falloff - (light->falloff >> 3));
-	dist = sqrt(SQUARE(dz) + SQUARE(dy) + SQUARE(dx));
+	x = light->x - lGlobalMeshPos.x;
+	y = light->y - lGlobalMeshPos.y;
+	z = light->z - lGlobalMeshPos.z;
+	falloff = float((light->falloff >> 1) + (light->falloff >> 3));
+	dist = sqrt(SQUARE(z) + SQUARE(y) + SQUARE(x));
 	point = &PointLights[nPointLights];
 
 	if (dist <= falloff)
 	{
 		val = 1.0F / dist;
-		point->vec.x = val * (dx * D3DLightMatrix._11 + dy * D3DLightMatrix._12 + dz * D3DLightMatrix._13);
-		point->vec.y = val * (dx * D3DLightMatrix._21 + dy * D3DLightMatrix._22 + dz * D3DLightMatrix._23);
-		point->vec.z = val * (dx * D3DLightMatrix._31 + dy * D3DLightMatrix._32 + dz * D3DLightMatrix._33);
+		point->vec.x = val * (x * D3DLightMatrix._11 + y * D3DLightMatrix._12 + z * D3DLightMatrix._13);
+		point->vec.y = val * (x * D3DLightMatrix._21 + y * D3DLightMatrix._22 + z * D3DLightMatrix._23);
+		point->vec.z = val * (x * D3DLightMatrix._31 + y * D3DLightMatrix._32 + z * D3DLightMatrix._33);
 		point->r = light->r;
 		point->g = light->g;
 		point->b = light->b;
@@ -116,23 +116,23 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 		z = light->z - lGlobalMeshPos.z;
 		point = &PointLights[nPointLights];
 		num2 = sqrt(SQUARE(z) + SQUARE(y) + SQUARE(x));
-		num = 1.0F / num2;
+		num = 2.0F / num2;
 		point->vec.x = (D3DLightMatrix._11 * x + D3DLightMatrix._12 * y + D3DLightMatrix._13 * z) * num;
 		point->vec.y = (D3DLightMatrix._21 * x + D3DLightMatrix._22 * y + D3DLightMatrix._23 * z) * num;
 		point->vec.z = (D3DLightMatrix._31 * x + D3DLightMatrix._32 * y + D3DLightMatrix._33 * z) * num;
-		point->r = 2 * light->r * 255.0F;
-		point->g = 2 * light->g * 255.0F;
-		point->b = 2 * light->b * 255.0F;
-		point->rad = (light->Outer - num2) / light->Outer;
+		point->r = light->r * 255.0F;
+		point->g = light->g * 255.0F;
+		point->b = light->b * 255.0F;
+		point->rad = (light->Outer - sqrt(light->Range)) / light->Outer;
 
 		if (point->rad < 0)
 			point->rad = 0;
 
 		if (SetupLight_thing && point->rad < 1)
 		{
-			r = CLRR(*ambient) + (point->rad * point->r / 2);
-			g = CLRG(*ambient) + (point->rad * point->g / 2);
-			b = CLRB(*ambient) + (point->rad * point->b / 2);
+			r = CLRR(*ambient) + (point->rad * point->r);
+			g = CLRG(*ambient) + (point->rad * point->g);
+			b = CLRB(*ambient) + (point->rad * point->b);
 
 			if (r > 255)
 				r = 255;
@@ -155,14 +155,20 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 		y = light->y - lGlobalMeshPos.y;
 		z = light->z - lGlobalMeshPos.z;
 		point = &SpotLights[nSpotLights];
-		num = sqrt(SQUARE(z) + SQUARE(y) + SQUARE(x));
-		point->vec.x = (D3DLightMatrix._11 * x + D3DLightMatrix._12 * y + D3DLightMatrix._13 * z) / num;
-		point->vec.y = (D3DLightMatrix._21 * x + D3DLightMatrix._22 * y + D3DLightMatrix._23 * z) / num;
-		point->vec.z = (D3DLightMatrix._31 * x + D3DLightMatrix._32 * y + D3DLightMatrix._33 * z) / num;
-		point->r = 2 * light->r * 255.0F;
-		point->g = 2 * light->g * 255.0F;
-		point->b = 2 * light->b * 255.0F;
-		point->rad = 1.0F - num / light->Cutoff;
+		num2 = sqrt(SQUARE(z) + SQUARE(y) + SQUARE(x));
+
+		if (SetupLight_thing)
+			num = 2.0F / num2;
+		else
+			num = 1.0F / num2;
+
+		point->vec.x = (D3DLightMatrix._11 * x + D3DLightMatrix._12 * y + D3DLightMatrix._13 * z) * num;
+		point->vec.y = (D3DLightMatrix._21 * x + D3DLightMatrix._22 * y + D3DLightMatrix._23 * z) * num;
+		point->vec.z = (D3DLightMatrix._31 * x + D3DLightMatrix._32 * y + D3DLightMatrix._33 * z) * num;
+		point->r = light->r * 255.0F;
+		point->g = light->g * 255.0F;
+		point->b = light->b * 255.0F;
+		point->rad = 1.0F - num2 / light->Cutoff;
 
 		if (point->rad < 0)
 			point->rad = 0;
