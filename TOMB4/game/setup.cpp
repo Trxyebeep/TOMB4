@@ -414,7 +414,7 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 		obj->control = ControlAnimatingSlots;
-		obj->collision = 0;	//AIPickupCollision
+		obj->collision = SwitchType78Collision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
