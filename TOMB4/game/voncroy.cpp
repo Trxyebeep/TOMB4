@@ -377,7 +377,7 @@ void VoncroyRaceControl(short item_number)
 	FLOOR_INFO* floor;
 	AI_INFO info;
 	long Xoffset, Zoffset, x, y, z, nearheight, midheight, farheight, dx, dz, distance, ahead, iAngle, h, c;
-	short angle, torso_x, torso_y, head_x, head_y, room_number, jump_ahead, long_jump_ahead, ifl3;
+	short tilt, angle, torso_x, torso_y, head, room_number, jump_ahead, long_jump_ahead, ifl3;
 	static short* meshpp = meshes[objects[VON_CROY].mesh_index + 42];
 	static long talk = 0;
 
@@ -386,9 +386,9 @@ void VoncroyRaceControl(short item_number)
 
 	item = &items[item_number];
 	VonCroy = (CREATURE_INFO*)item->data;
+	tilt = 0;
 	angle = 0;
-	head_x = 0;
-	head_y = 0;
+	head = 0;
 	torso_x = 0;
 	torso_y = 0;
 	ifl3 = 0;
@@ -495,7 +495,7 @@ void VoncroyRaceControl(short item_number)
 		VonCroy->LOT.is_monkeying = 0;
 		VonCroy->flags = 0;
 		VonCroy->maximum_turn = 0;
-		head_y = info.angle >> 1;
+		head = info.angle >> 1;
 
 		if (info.ahead)
 		{
@@ -511,188 +511,97 @@ void VoncroyRaceControl(short item_number)
 
 		if (VonCroy->reached_goal)
 		{
-			if (item->item_flags[2] != 6)
-				item->item_flags[2] = 0;
-
-			switch (oEnemy->flags)
+			if (oEnemy && oEnemy->flags && (distance < 0x900000 || !objects[BAT].loaded) || lara.location > item->item_flags[3])
 			{
-			case 0:
-			case 32:
-				ifl3 = -1;
+				if (item->item_flags[2] != 6)
+					item->item_flags[2] = 0;
 
-				if (oEnemy)
+				switch (oEnemy->flags)
 				{
-					room_number = oEnemy->room_number;
-					floor = GetFloor(oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos, &room_number);
-					GetHeight(floor, oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos);
-					TestTriggers(trigger_index, 1, 0);
+				case 0:
+				case 32:
+					ifl3 = -1;
+					break;
+
+				case 2:
+					item->current_anim_state = 29;
+					item->anim_number = objects[VON_CROY].anim_index + 37;
+					item->frame_number = anims[item->anim_number].frame_base;
+					item->pos = oEnemy->pos;
 					ifl3 = 1;
-				}
+					break;
 
-				VonCroy->reached_goal = 0;
-				VonCroy->enemy = 0;
-				item->item_flags[3] += ifl3;
-				item->ai_bits = FOLLOW;
-				break;
-
-			case 1:
-			case 3:
-			case 5:
-			case 7:
-			case 9:
-			case 11:
-			case 12:
-			case 13:
-			case 14:
-			case 15:
-			case 16:
-			case 17:
-			case 18:
-			case 19:
-			case 20:
-			case 21:
-			case 22:
-			case 23:
-			case 24:
-			case 25:
-			case 26:
-			case 27:
-			case 28:
-			case 29:
-			case 30:
-			case 31:
-			case 33:
-			case 35:
-			case 37:
-			case 38:
-			case 39:
-				break;
-
-			case 2:
-				item->current_anim_state = 29;
-				item->anim_number = objects[VON_CROY].anim_index + 37;
-				item->frame_number = anims[item->anim_number].frame_base;
-				item->pos.x_pos = oEnemy->pos.x_pos;
-				item->pos.y_pos = oEnemy->pos.y_pos;
-				item->pos.z_pos = oEnemy->pos.z_pos;
-				item->pos.x_rot = oEnemy->pos.x_rot;
-				item->pos.y_rot = oEnemy->pos.y_rot;
-				item->pos.z_rot = oEnemy->pos.z_rot;
-				ifl3 = 1;
-				VonCroy->reached_goal = 0;
-				VonCroy->enemy = 0;
-				item->item_flags[3] += ifl3;
-				item->ai_bits = FOLLOW;
-				break;
-
-			case 4:
-				item->current_anim_state = 26;
-				item->anim_number = objects[VON_CROY].anim_index + 36;
-				item->frame_number = anims[item->anim_number].frame_base;
-				VonCroy->LOT.is_jumping = 1;
-				item->pos.x_pos = oEnemy->pos.x_pos;
-				item->pos.y_pos = oEnemy->pos.y_pos;
-				item->pos.z_pos = oEnemy->pos.z_pos;
-				item->pos.x_rot = oEnemy->pos.x_rot;
-				item->pos.y_rot = oEnemy->pos.y_rot;
-				item->pos.z_rot = oEnemy->pos.z_rot;
-				ifl3 = 1;
-				VonCroy->reached_goal = 0;
-				VonCroy->enemy = 0;
-				item->item_flags[3] += ifl3;
-				item->ai_bits = FOLLOW;
-				break;
-
-			case 6:
-
-				if (lara.location > item->item_flags[3])
-				{
+				case 4:
+					item->current_anim_state = 26;
+					item->anim_number = objects[VON_CROY].anim_index + 36;
+					item->frame_number = anims[item->anim_number].frame_base;
+					VonCroy->LOT.is_jumping = 1;
+					item->pos = oEnemy->pos;
 					ifl3 = 1;
-					VonCroy->reached_goal = 0;
-					VonCroy->enemy = 0;
-					item->item_flags[3] += ifl3;
-					item->ai_bits = FOLLOW;
+					break;
+
+				case 6:
+
+					if (lara.location > item->item_flags[3])
+						ifl3 = 1;
+					else if (item->meshswap_meshbits & 0x40080)
+						item->goal_anim_state = 6;
+					else
+						item->goal_anim_state = 31;
+
+					break;
+
+				case 8:
+
+					if (lara.location > item->item_flags[3])
+						ifl3 = 1;
+					else
+						item->goal_anim_state = 20;
+
+					break;
+
+				case 10:
+
+					if (lara.location > item->item_flags[3])
+						ifl3 = 1;
+					else
+						item->goal_anim_state = 7;
+
+					break;
+
+				case 34:
+
+					if (lara.location > item->item_flags[3])
+						ifl3 = 2;
+					else
+						item->goal_anim_state = 32;
+
+					break;
+
+				case 36:
+
+					if (lara.location > item->item_flags[3])
+						ifl3 = 1;
+					else
+						item->goal_anim_state = 11;
+
+					break;
+
+				case 40:
+
+					if (item->item_flags[2] == 6)
+						item->goal_anim_state = 3;
+					else
+					{
+						item->goal_anim_state = 34;
+						item->pos = oEnemy->pos;
+					}
+
+					break;
 				}
-				else if (item->meshswap_meshbits & 0x40080)
-					item->goal_anim_state = 6;
-				else
-					item->goal_anim_state = 31;
-
-				break;
-
-			case 8:
-
-				if (lara.location > item->item_flags[3])
-				{
-					ifl3 = 1;
-					VonCroy->reached_goal = 0;
-					VonCroy->enemy = 0;
-					item->item_flags[3] += ifl3;
-					item->ai_bits = FOLLOW;
-				}
-
-				item->goal_anim_state = 20;
-				break;
-
-			case 10:
-
-				if (lara.location > item->item_flags[3])
-				{
-					ifl3 = 1;
-					VonCroy->reached_goal = 0;
-					VonCroy->enemy = 0;
-					item->item_flags[3] += ifl3;
-					item->ai_bits = FOLLOW;
-				}
-
-				item->goal_anim_state = 7;
-				break;
-
-			case 34:
-
-				if (lara.location > item->item_flags[3])
-				{
-					ifl3 = 2;
-					VonCroy->reached_goal = 0;
-					VonCroy->enemy = 0;
-					item->item_flags[3] += ifl3;
-					item->ai_bits = FOLLOW;
-				}
-
-				item->goal_anim_state = 32;
-				break;
-
-			case 36:
-
-				if (lara.location > item->item_flags[3])
-				{
-					ifl3 = 1;
-					VonCroy->reached_goal = 0;
-					VonCroy->enemy = 0;
-					item->item_flags[3] += ifl3;
-					item->ai_bits = FOLLOW;
-				}
-
-				item->goal_anim_state = 11;
-				break;
-
-			case 40:
-
-				if (item->item_flags[2] == 6)
-					item->goal_anim_state = 3;
-				else
-				{
-					item->goal_anim_state = 34;
-					item->pos.x_pos = oEnemy->pos.x_pos;
-					item->pos.y_pos = oEnemy->pos.y_pos;
-					item->pos.z_pos = oEnemy->pos.z_pos;
-					item->pos.x_rot = oEnemy->pos.x_rot;
-					item->pos.y_rot = oEnemy->pos.y_rot;
-					item->pos.z_rot = oEnemy->pos.z_rot;
-				}
-
-				break;
 			}
+			else
+				ifl3 = 1;
 		}
 		else if (jump_ahead || long_jump_ahead)
 		{
@@ -730,9 +639,9 @@ void VoncroyRaceControl(short item_number)
 		VonCroy->maximum_turn = 1092;
 
 		if (ahead)
-			head_y = (short)iAngle;
+			head = (short)iAngle;
 		else if (info.ahead)
-			head_y = info.angle;
+			head = info.angle;
 
 		if (!savegame.Level.Timer)
 			savegame.Level.Timer = 1;
@@ -740,7 +649,10 @@ void VoncroyRaceControl(short item_number)
 		if (lara.location < item->item_flags[3])
 			item->goal_anim_state = 1;
 		else if (jump_ahead || long_jump_ahead)
+		{
 			VonCroy->maximum_turn = 0;
+			item->goal_anim_state = 1;
+		}
 		else if (VonCroy->monkey_ahead)
 			item->goal_anim_state = 1;
 		else if (!VonCroy->reached_goal)
@@ -751,23 +663,7 @@ void VoncroyRaceControl(short item_number)
 				item->goal_anim_state = 3;
 		}
 		else if (oEnemy->flags == 32)
-		{
 			ifl3 = -1;
-
-			if (oEnemy)
-			{
-				room_number = oEnemy->room_number;
-				floor = GetFloor(oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos, &room_number);
-				GetHeight(floor, oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos);
-				TestTriggers(trigger_index, 1, 0);
-				ifl3 = 1;
-			}
-
-			VonCroy->reached_goal = 0;
-			VonCroy->enemy = 0;
-			item->item_flags[3] += ifl3;
-			item->ai_bits = FOLLOW;
-		}
 		else
 			item->goal_anim_state = 1;
 
@@ -776,7 +672,7 @@ void VoncroyRaceControl(short item_number)
 	case 3:
 
 		if (info.ahead)
-			head_y = info.angle;
+			head = info.angle;
 
 		if (item->frame_number == anims[item->anim_number].frame_base)
 		{
@@ -784,7 +680,7 @@ void VoncroyRaceControl(short item_number)
 			VonCroy->maximum_turn = 1456;
 		}
 
-		angle >>= 1;
+		tilt = angle >> 1;
 
 		if (item->item_flags[2] == 6)
 		{
@@ -803,41 +699,19 @@ void VoncroyRaceControl(short item_number)
 		else if (VonCroy->reached_goal)
 		{
 			if (oEnemy->flags == 32)
-			{
 				ifl3 = -1;
-
-				if (oEnemy)
-				{
-					room_number = oEnemy->room_number;
-					floor = GetFloor(oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos, &room_number);
-					GetHeight(floor, oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos);
-					TestTriggers(trigger_index, 1, 0);
-					ifl3 = 1;
-				}
-
-				VonCroy->reached_goal = 0;
-				VonCroy->enemy = 0;
-				item->item_flags[3] += ifl3;
-				item->ai_bits = FOLLOW;
-			}
-			else if (info.distance < 0x4000)
+			else if (info.distance >= 0x4000)
+				item->goal_anim_state = 1;
+			else if (oEnemy->flags == 40)
 			{
-				if (oEnemy->flags == 40)
-				{
-					VonCroy->maximum_turn = 0;
-					item->pos.y_rot = oEnemy->pos.y_rot;
-					item->goal_anim_state = 16;
-					item->item_flags[2] = 6;
-				}
+				VonCroy->maximum_turn = 0;
+				item->pos.y_rot = oEnemy->pos.y_rot;
+				item->goal_anim_state = 16;
+				item->item_flags[2] = 6;
 			}
-			else
-				item->goal_anim_state = 1;
 		}
-		else if (info.distance < 0x64000)
-		{
-			if (oEnemy->flags != 32 && oEnemy->flags != 40)
+		else if (info.distance < 0x64000 && oEnemy->flags != 32 && oEnemy->flags != 40)
 				item->goal_anim_state = 1;
-		}
 
 		break;
 
@@ -889,7 +763,7 @@ void VoncroyRaceControl(short item_number)
 
 	case 15:
 
-		if (item->anim_number == objects[39].anim_index + 23)
+		if (item->anim_number == objects[VON_CROY].anim_index + 23)
 			item->goal_anim_state = 3;
 
 		break;
@@ -911,32 +785,9 @@ void VoncroyRaceControl(short item_number)
 	case 20:
 
 		if (item->frame_number == anims[item->anim_number].frame_base)
-		{
-			item->pos.x_pos = oEnemy->pos.x_pos;
-			item->pos.y_pos = oEnemy->pos.y_pos;
-			item->pos.z_pos = oEnemy->pos.z_pos;
-			item->pos.x_rot = oEnemy->pos.x_rot;
-			item->pos.y_rot = oEnemy->pos.y_rot;
-			item->pos.z_rot = oEnemy->pos.z_rot;
-		}
+			item->pos = oEnemy->pos;
 		else if (item->frame_number == anims[item->anim_number].frame_base + 120)
-		{
 			ifl3 = -1;
-
-			if (oEnemy)
-			{
-				room_number = oEnemy->room_number;
-				floor = GetFloor(oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos, &room_number);
-				GetHeight(floor, oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos);
-				TestTriggers(trigger_index, 1, 0);
-				ifl3 = 1;
-			}
-
-			VonCroy->reached_goal = 0;
-			VonCroy->enemy = 0;
-			item->item_flags[3] += ifl3;
-			item->ai_bits = FOLLOW;
-		}
 
 		break;
 
@@ -955,7 +806,7 @@ void VoncroyRaceControl(short item_number)
 
 		if (info.ahead)
 		{
-			head_y = info.angle >> 1;
+			head = info.angle >> 1;
 			torso_y = info.angle >> 1;
 			torso_x = info.x_angle >> 1;
 		}
@@ -970,38 +821,19 @@ void VoncroyRaceControl(short item_number)
 			item->pos.y_rot += 1092;
 
 		if (oEnemy && oEnemy->flags == 6 && item->frame_number > anims[item->anim_number].frame_base + 21)
-		{
 			ifl3 = -1;
-
-			if (oEnemy)
-			{
-				room_number = oEnemy->room_number;
-				floor = GetFloor(oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos, &room_number);
-				GetHeight(floor, oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos);
-				TestTriggers(trigger_index, 1, 0);
-				ifl3 = 1;
-			}
-
-			VonCroy->reached_goal = 0;
-			VonCroy->enemy = 0;
-			item->item_flags[3] += ifl3;
-			item->ai_bits = FOLLOW;
-		}
-		else if (!VonCroy->flags)
+		else if (!VonCroy->flags && oEnemy)
 		{
-			if (oEnemy)
+			if (item->frame_number > anims[item->anim_number].frame_base + 15 && item->frame_number < anims[item->anim_number].frame_base + 26)
 			{
-				if (item->frame_number > anims[item->anim_number].frame_base + 15 && item->frame_number < anims[item->anim_number].frame_base + 26)
+				if (abs(oEnemy->pos.x_pos - item->pos.x_pos) < 512 &&
+					abs(oEnemy->pos.y_pos - item->pos.y_pos) <= 512 &&
+					abs(oEnemy->pos.z_pos - item->pos.z_pos) < 512)
 				{
-					if (abs(oEnemy->pos.x_pos - item->pos.x_pos) < 512 &&
-						abs(oEnemy->pos.y_pos - item->pos.y_pos) <= 512 &&
-						abs(oEnemy->pos.z_pos - item->pos.z_pos) < 512)
-					{
-						oEnemy->hit_points -= 20;
-						oEnemy->hit_status = 1;
-						VonCroy->flags = 1;
-						CreatureEffectT(item, &voncroy_hit, 8, -1, DoBloodSplat);
-					}
+					oEnemy->hit_points -= 20;
+					oEnemy->hit_status = 1;
+					VonCroy->flags = 1;
+					CreatureEffectT(item, &voncroy_hit, 8, -1, DoBloodSplat);
 				}
 			}
 		}
@@ -1010,32 +842,11 @@ void VoncroyRaceControl(short item_number)
 
 	case 33:
 
-		if (item->anim_number != objects[VON_CROY].anim_index + 52 || item->frame_number != anims[item->anim_number].frame_base)
-			ifl3 = 0;
-		else
+		if (item->anim_number == objects[VON_CROY].anim_index + 52 && item->frame_number == anims[item->anim_number].frame_base)
 			ifl3 = 1;
 
 		item->goal_anim_state = 2;
 		item->item_flags[2] = 0;
-
-		if (ifl3 == -1)
-		{
-			if (oEnemy)
-			{
-				room_number = oEnemy->room_number;
-				floor = GetFloor(oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos, &room_number);
-				GetHeight(floor, oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos);
-				TestTriggers(trigger_index, 1, 0);
-				ifl3 = 1;
-			}
-		}
-		else if (!ifl3)
-			break;
-
-		VonCroy->reached_goal = 0;
-		VonCroy->enemy = 0;
-		item->item_flags[3] += ifl3;
-		item->ai_bits = FOLLOW;
 		break;
 
 	case 34:
@@ -1049,12 +860,28 @@ void VoncroyRaceControl(short item_number)
 		break;
 	}
 
-	head_x = torso_x;
-	CreatureTilt(item, angle);
+	if (ifl3 == -1 && oEnemy)
+	{
+		room_number = oEnemy->room_number;
+		floor = GetFloor(oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos, &room_number);
+		GetHeight(floor, oEnemy->pos.x_pos, oEnemy->pos.y_pos, oEnemy->pos.z_pos);
+		TestTriggers(trigger_index, 1, 0);
+		ifl3 = 1;
+	}
+
+	if (ifl3)
+	{
+		VonCroy->reached_goal = 0;
+		VonCroy->enemy = 0;
+		item->item_flags[3] += ifl3;
+		item->ai_bits = FOLLOW;
+	}
+
+	CreatureTilt(item, tilt);
 	CreatureJoint(item, 0, torso_y);
 	CreatureJoint(item, 1, torso_x);
-	CreatureJoint(item, 2, head_y);
-	CreatureJoint(item, 3, head_x);
+	CreatureJoint(item, 2, head);
+	CreatureJoint(item, 3, torso_x);
 
 	if (item->current_anim_state >= 15 || item->current_anim_state == 5)
 		CreatureAnimation(item_number, angle, 0);
@@ -1119,7 +946,7 @@ void VoncroyControl(short item_number)
 	static AI_INFO VonCroyAI;
 	static AI_INFO VonCroyLaraAI;
 	long Xoffset, Zoffset, x, y, z, nearheight, midheight, farheight, dx, dz, dist, max_dist, h, c;
-	short tilt, angle, torso_x, torso_y, head_x, head_y, room_number, jump_ahead, long_jump_ahead, ifl3;
+	short tilt, angle, torso_x, torso_y, head, room_number, jump_ahead, long_jump_ahead, ifl3;
 
 	if (!CreatureActive(item_number))
 		return;
@@ -1128,8 +955,7 @@ void VoncroyControl(short item_number)
 	VonCroy = (CREATURE_INFO*)item->data;
 	tilt = 0;
 	angle = 0;
-	head_x = 0;
-	head_y = 0;
+	head = 0;
 	torso_x = 0;
 	torso_y = 0;
 	ifl3 = 0;
@@ -1312,7 +1138,7 @@ void VoncroyControl(short item_number)
 		VonCroy->LOT.is_monkeying = 0;
 		VonCroy->flags = 0;
 		VonCroy->maximum_turn = 0;
-		head_y = VonCroyAI.angle >> 1;
+		head = VonCroyAI.angle >> 1;
 
 		if (VonCroyAI.ahead)
 		{
@@ -1526,9 +1352,9 @@ void VoncroyControl(short item_number)
 		VonCroy->maximum_turn = 1092;
 
 		if (VonCroyLaraAI.ahead)
-			head_y = VonCroyLaraAI.angle;
+			head = VonCroyLaraAI.angle;
 		else if (VonCroyAI.ahead)
-			head_y = VonCroyAI.angle;
+			head = VonCroyAI.angle;
 
 		if (item->required_anim_state)
 			item->goal_anim_state = item->required_anim_state;
@@ -1558,7 +1384,7 @@ void VoncroyControl(short item_number)
 	case 3:
 
 		if (VonCroyAI.ahead)
-			head_y = VonCroyAI.angle;
+			head = VonCroyAI.angle;
 
 		if (item->frame_number == anims[item->anim_number].frame_base)
 		{
@@ -1689,7 +1515,7 @@ void VoncroyControl(short item_number)
 		if (VonCroyAI.ahead)
 		{
 			torso_y = VonCroyAI.angle >> 1;
-			head_y = VonCroyAI.angle >> 1;
+			head = VonCroyAI.angle >> 1;
 			torso_x = VonCroyAI.x_angle >> 1;
 		}
 
@@ -1753,7 +1579,7 @@ void VoncroyControl(short item_number)
 		if (VonCroyAI.ahead)
 		{
 			torso_y = VonCroyAI.angle >> 1;
-			head_y = VonCroyAI.angle >> 1;
+			head = VonCroyAI.angle >> 1;
 			torso_x = VonCroyAI.x_angle >> 1;
 		}
 
@@ -1792,7 +1618,7 @@ void VoncroyControl(short item_number)
 		if (VonCroyAI.ahead)
 		{
 			torso_y = VonCroyAI.angle >> 1;
-			head_y = VonCroyAI.angle >> 1;
+			head = VonCroyAI.angle >> 1;
 			torso_x = VonCroyAI.x_angle;
 		}
 
@@ -1848,12 +1674,11 @@ void VoncroyControl(short item_number)
 		item->item_flags[3] += ifl3;
 	}
 
-	head_x = torso_x;
 	CreatureTilt(item, tilt);
 	CreatureJoint(item, 0, torso_y);
 	CreatureJoint(item, 1, torso_x);
-	CreatureJoint(item, 2, head_y);
-	CreatureJoint(item, 3, head_x);
+	CreatureJoint(item, 2, head);
+	CreatureJoint(item, 3, torso_x);
 
 	if (item->current_anim_state >= 15 || item->current_anim_state == 5)
 		CreatureAnimation(item_number, angle, 0);
