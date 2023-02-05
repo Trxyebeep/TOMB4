@@ -86,7 +86,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 	clip = clipflags;
 
-	if (gfLevelFlags & GF_TRAIN)
+	if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 		DistanceFogStart = 12.0F * 1024.0F;
 	else
 		DistanceFogStart = tomb4.distance_fog * 1024.0F;

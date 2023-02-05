@@ -508,6 +508,7 @@ void InitialiseFogBulbs()
 	FOGBULB_STRUCT* FogBulb;
 
 	NumActiveFogBulbs = 0;
+	NumFogBulbsInRange = 0;
 	qsort(&FogBulbs, NumLevelFogBulbs, sizeof(FOGBULB_STRUCT), DistCompare);
 
 	for (int i = 0; i < NumLevelFogBulbs; i++)

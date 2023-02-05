@@ -815,7 +815,9 @@ void DrawRooms(short CurrentRoom)
 	if (GLOBAL_playing_cutseq)
 		DrawCutSeqActors();
 
+	nPolyType = 6;
 	DrawRopeList();
+	nPolyType = 3;
 	S_DrawSparks();
 	lx = lara_item->pos.x_pos;
 	ly = lara_item->pos.y_pos;
