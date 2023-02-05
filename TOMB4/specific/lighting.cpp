@@ -98,7 +98,7 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 		x = light->nx;
 		y = light->ny;
 		z = light->nz;
-		num = -1.0F / sqrt(SQUARE(z) + SQUARE(y) + SQUARE(x));
+		num = -1.0F / sqrt(SQUARE(x) + SQUARE(y) + SQUARE(z));
 
 		sun->vec.x = (D3DLightMatrix._11 * x + D3DLightMatrix._12 * y + D3DLightMatrix._13 * z) * num;
 		sun->vec.y = (D3DLightMatrix._21 * x + D3DLightMatrix._22 * y + D3DLightMatrix._23 * z) * num;
@@ -115,7 +115,7 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 		y = light->y - lGlobalMeshPos.y;
 		z = light->z - lGlobalMeshPos.z;
 		point = &PointLights[nPointLights];
-		num2 = sqrt(SQUARE(z) + SQUARE(y) + SQUARE(x));
+		num2 = sqrt(SQUARE(x) + SQUARE(y) + SQUARE(z));
 		num = 2.0F / num2;
 		point->vec.x = (D3DLightMatrix._11 * x + D3DLightMatrix._12 * y + D3DLightMatrix._13 * z) * num;
 		point->vec.y = (D3DLightMatrix._21 * x + D3DLightMatrix._22 * y + D3DLightMatrix._23 * z) * num;
@@ -123,7 +123,7 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 		point->r = light->r * 255.0F;
 		point->g = light->g * 255.0F;
 		point->b = light->b * 255.0F;
-		point->rad = (light->Outer - sqrt(light->Range)) / light->Outer;
+		point->rad = (light->Outer - num2) / light->Outer;
 
 		if (point->rad < 0)
 			point->rad = 0;
@@ -144,6 +144,7 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 				b = 255;
 
 			*ambient = RGBONLY(r, g, b);
+			point->rad /= 2;	//if it's this close and we're already changing ambience, ramp down radius to avoid double color
 		}
 
 		nPointLights++;
@@ -155,7 +156,7 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 		y = light->y - lGlobalMeshPos.y;
 		z = light->z - lGlobalMeshPos.z;
 		point = &SpotLights[nSpotLights];
-		num2 = sqrt(SQUARE(z) + SQUARE(y) + SQUARE(x));
+		num2 = sqrt(SQUARE(x) + SQUARE(y) + SQUARE(z));
 
 		if (SetupLight_thing)
 			num = 2.0F / num2;
