@@ -301,17 +301,37 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 	TEXTURESTRUCT Tex;
 	PHD_VECTOR pos;
 	long xSize, zSize, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, opt;
+	short room_number;
 
 	v = MyVertexBuffer;
 
-	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 11];
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 14];
 	xSize = size * (box[1] - box[0]) / 160;
 	zSize = size * (box[5] - box[4]) / 160;
 	xSize >>= 1;
 	zSize >>= 1;
 
+	if (item == lara_item)
+	{
+		pos.x = 0;
+		pos.y = 0;
+		pos.z = 0;
+		GetLaraJointPos(&pos, LM_TORSO);
+		room_number = lara_item->room_number;
+		pos.y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
+
+		if (pos.y == NO_HEIGHT)
+			pos.y = item->floor;
+	}
+	else
+	{
+		pos.x = item->pos.x_pos;
+		pos.y = item->floor;
+		pos.z = item->pos.z_pos;
+	}
+
 	phd_PushMatrix();
-	phd_TranslateAbs(item->pos.x_pos, item->floor, item->pos.z_pos);
+	phd_TranslateAbs(pos.x, pos.y, pos.z);
 	phd_RotY(item->pos.y_rot);
 
 	pos.x = -xSize;
@@ -339,7 +359,7 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 	
 	for (int i = 0; i < 4; i++)
 	{
-		v[i].color = 0xFF3C3C3C;
+		v[i].color = 0xFF2D2D2D;
 		v[i].specular = 0xFF000000;
 	}
 
