@@ -16,6 +16,7 @@
 #include "file.h"
 #include "../game/control.h"
 #include "../game/gameflow.h"
+#include "../tomb4/tomb4.h"
 
 static ROOM_DYNAMIC RoomDynamics[MAX_DYNAMICS];
 static long nRoomDynamics;
@@ -84,7 +85,12 @@ void ProcessRoomVertices(ROOM_INFO* r)
 	char shimmer;
 
 	clip = clipflags;
-	DistanceFogStart = 12.0F * 1024.0F;
+
+	if (gfLevelFlags & GF_TRAIN)
+		DistanceFogStart = 12.0F * 1024.0F;
+	else
+		DistanceFogStart = tomb4.distance_fog * 1024.0F;
+
 	num = 255.0F / DistanceFogStart;
 
 	for (int i = 0; i < r->nVerts; i++)

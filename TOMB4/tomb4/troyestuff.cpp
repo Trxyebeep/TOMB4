@@ -7,7 +7,7 @@
 #include "../specific/3dmath.h"
 
 #define PAGE0_NUM	14
-#define PAGE1_NUM	7
+#define PAGE1_NUM	8
 #define YPOS	textY + y++ * font_height
 #define CHECK_SEL(c)	selection & (1 << s++) ? 1 : c
 
@@ -403,6 +403,7 @@ bool Page1(long& num, long textY, ulong selection)
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Inv healthbar", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "static lighting", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Reverb", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "distance fog", 0);
 
 	y = 2;
 	s = 0;
@@ -426,6 +427,9 @@ bool Page1(long& num, long textY, ulong selection)
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	strcpy(buffer, tomb4.reverb == 1 ? "off" : tomb4.reverb == 2 ? "Lara room" : "Camera room");
+	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
+
+	sprintf(buffer, "%i", tomb4.distance_fog);
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	switch (selection)
@@ -516,6 +520,32 @@ bool Page1(long& num, long textY, ulong selection)
 
 			if (tomb4.reverb > 3)
 				tomb4.reverb = 1;
+
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 7:
+
+		if (dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.distance_fog++;
+
+			if (tomb4.distance_fog > 30.0F)
+				tomb4.distance_fog = 30.0F;
+
+			changed = 1;
+		}
+
+		if (dbinput & IN_LEFT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.distance_fog--;
+
+			if (tomb4.distance_fog < 3.0F)
+				tomb4.distance_fog = 3.0F;
 
 			changed = 1;
 		}

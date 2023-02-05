@@ -54,7 +54,12 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 	short clipFlag;
 
 	clip = clipflags;
-	DistanceFogStart = 12.0F * 1024.0F;
+
+	if (gfLevelFlags & GF_TRAIN)
+		DistanceFogStart = 12.0F * 1024.0F;
+	else
+		DistanceFogStart = tomb4.distance_fog * 1024.0F;
+
 	num = 255.0F / DistanceFogStart;
 	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
 
@@ -261,7 +266,12 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 	short clipFlag;
 
 	clip = clipflags;
-	DistanceFogStart = 12.0F * 1024.0F;
+
+	if (gfLevelFlags & GF_TRAIN)
+		DistanceFogStart = 12.0F * 1024.0F;
+	else
+		DistanceFogStart = tomb4.distance_fog * 1024.0F;
+
 	num = 255.0F / DistanceFogStart;
 	pR = (StaticMeshShade & 0x1F) << 3;
 	pG = ((StaticMeshShade >> 5) & 0x1F) << 3;
@@ -442,7 +452,7 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 	short clipFlag;
 
 	clip = clipflags;
-	DistanceFogStart = 17.0F * 1024.0F;
+	DistanceFogStart = 17.0F * 1024.0F;	//does not listen to custom distance fog
 	DistanceFogEnd = 25.0F * 1024.0F;
 	num = 255.0F / DistanceFogStart;
 	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
