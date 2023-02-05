@@ -124,7 +124,6 @@ long PlayFmvNow(long num)
 			}
 		}
 
-		FreeD3DLights();
 		DXChangeVideoMode();
 		HWInitialise();
 		ClearSurfaces();
@@ -170,7 +169,6 @@ long PlayFmvNow(long num)
 	{
 		App.DXInfo.nDisplayMode = dm;
 		DXChangeVideoMode();
-		CreateD3DLights();
 		InitWindow(0, 0, App.dx.dwRenderWidth, App.dx.dwRenderHeight, 20, 20480, 80, App.dx.dwRenderWidth, App.dx.dwRenderHeight);
 		InitFont();
 		S_InitD3DMatrix();

@@ -15,6 +15,10 @@
 #include "winmain.h"
 #include "file.h"
 #include "../game/control.h"
+#include "../game/gameflow.h"
+
+static ROOM_DYNAMIC RoomDynamics[MAX_DYNAMICS];
+static long nRoomDynamics;
 
 MESH_DATA** mesh_vtxbuf;
 TEXTUREBUCKET Bucket[20];
@@ -29,221 +33,243 @@ long water_color_R = 128;
 long water_color_G = 224;
 long water_color_B = 255;
 
-void ProjectVerts(long nVerts, D3DTLVERTEX* v, short* clip)
+void ProcessRoomDynamics(ROOM_INFO* r)
 {
-	float zv;
-	short clip_distance;
+	//Collect dynamic lights for room lighting
 
-	for (int i = 0; i < nVerts; i++)
+	ROOM_DYNAMIC* l;
+	DYNAMIC* d;
+	float falloff;
+	
+	nRoomDynamics = 0;
+	l = RoomDynamics;
+
+	for (int i = 0; i < MAX_DYNAMICS; i++)
 	{
-		v->tu = v->sx;
-		v->tv = v->sy;
-		clip_distance = 0;
+		d = &dynamics[i];
 
-		if (v->sz < f_mznear)
-			clip_distance = -128;
-		else
-		{
-			zv = f_mpersp / v->sz;
+		if (!d->on)
+			continue;
 
-			if (v->sz > FogEnd)
-			{
-				clip_distance = 16;
-				v->sz = f_zfar;
-			}
-
-			v->sx = zv * v->sx + f_centerx;
-			v->sy = zv * v->sy + f_centery;
-			v->rhw = f_moneopersp * zv;
-
-			if (bWaterEffect)
-			{
-				v->sx += vert_wibble_table[((wibble + (long)v->sy) >> 3) & 0x1F];
-				v->sy += vert_wibble_table[((wibble + (long)v->sx) >> 3) & 0x1F];
-			}
-
-			if (v->sx < clip_left)
-				clip_distance++;
-			else if (v->sx > clip_right)
-				clip_distance += 2;
-
-			if (v->sy < clip_top)
-				clip_distance += 4;
-			else if (v->sy > clip_bottom)
-				clip_distance += 8;
-		}
-
-		*clip++ = clip_distance;
-		v++;
+		falloff = float((d->falloff >> 1) + (d->falloff >> 3));
+		l->x = d->x - r->posx;
+		l->y = d->y - r->posy;
+		l->z = d->z - r->posz;
+		l->r = (float)d->r * (1.0F / 255.0F);
+		l->g = (float)d->g * (1.0F / 255.0F);
+		l->b = (float)d->b * (1.0F / 255.0F);
+		l->falloff = falloff;
+		l->inv_falloff = 1.0F / l->falloff;
+		l->sqr_falloff = SQUARE(l->falloff);
+		l++;
+		nRoomDynamics++;
 	}
 }
 
-void ProjectWaterVerts(long nVerts, D3DTLVERTEX* v, short* clip)
+void ProcessRoomVertices(ROOM_INFO* r)
 {
-	ROOM_INFO* r;
-	float shift, zv;
-	long x, y, z, rndoff, cR, cG, cB, col;
-	short clip_distance;
-	uchar rnd;
+	//Transform, project, and light vertices, and store them in MyVertexBuffer.
 
-	r = &room[current_room];
-
-	for (int i = 0; i < nVerts; i++)
-	{
-		clip_distance = 0;
-		x = (long)((r->x + r->verts[i].x) * 0.015625F);
-		y = (long)((r->y + r->verts[i].y) * 0.015625F);
-		z = (long)((r->z + r->verts[i].z) * 0.0078125F);
-		rndoff = (x + y + z) & 0xFC;
-		rnd = WaterTable[r->MeshEffect][rndoff & 0x3F].random;
-		shift = WaterTable[r->MeshEffect][((wibble >> 2) + rnd) & 0x3F].choppy;
-		v->sy += shift;
-
-		v->tu = v->sx;
-		v->tv = v->sy;
-
-		if (v->sz < f_mznear)
-			clip_distance = -128;
-		else
-		{
-			zv = f_mpersp / v->sz;
-
-			if (v->sz > FogEnd)
-			{
-				clip_distance = 256;
-				v->sz = f_zfar;
-			}
-
-			v->sx = zv * v->sx + f_centerx;
-			v->sy = zv * v->sy + f_centery;
-			v->rhw = f_moneopersp * zv;
-
-			if (v->sx < clip_left)
-				clip_distance++;
-			else if (v->sx > clip_right)
-				clip_distance += 2;
-
-			if (v->sy < clip_top)
-				clip_distance += 4;
-			else if (v->sy > clip_bottom)
-				clip_distance += 8;
-
-			rnd = WaterTable[r->MeshEffect][rndoff].random;
-			col = -WaterTable[r->MeshEffect][((wibble >> 2) + rnd) & 0x3F].choppy;
-			cR = CLRR(v->color) + col;
-			cG = CLRG(v->color) + col;
-			cB = CLRB(v->color) + col;
-
-			if (cR > 255)
-				cR = 255;
-
-			if (cG > 255)
-				cG = 255;
-
-			if (cB > 255)
-				cB = 255;
-
-			if (cR < 0)
-				cR = 0;
-
-			if (cG < 0)
-				cG = 0;
-
-			if (cB < 0)
-				cB = 0;
-
-			v->color = RGBA(cR, cG, cB, 0xFF);
-		}
-
-		*clip++ = clip_distance;
-		v++;
-	}
-}
-
-void ProjectShoreVerts(long nVerts, D3DTLVERTEX* v, short* clip)
-{
-	ROOM_INFO* r;
-	float zv;
-	long x, y, z, rndoff, cR, cG, cB;
-	short clip_distance, col;
+	ROOM_DYNAMIC* l;
+	FVECTOR lPos;
+	FVECTOR vPos;
+	FVECTOR vtx;
+	FVECTOR n;
+	short* clip;
+	static float DistanceFogStart;
+	float zv, fR, fG, fB, val, val2, zbak, num;
+	long cR, cG, cB, sA, sR, sG, sB, rndoff, col;
+	short clipFlag;
 	uchar rnd, abs;
 	char shimmer;
 
-	r = &room[current_room];
+	clip = clipflags;
+	DistanceFogStart = 12.0F * 1024.0F;
+	num = 255.0F / DistanceFogStart;
 
-	for (int i = 0; i < nVerts; i++)
+	for (int i = 0; i < r->nVerts; i++)
 	{
-		x = (long)((r->x + r->verts[i].x) * 0.015625F);
-		y = (long)((r->y + r->verts[i].y) * 0.015625F);
-		z = (long)((r->z + r->verts[i].z) * 0.0078125F);
-		rndoff = (x + y + z) & 0xFC;
-		v->tu = v->sx;
-		v->tv = v->sy;
-		clip_distance = 0;
+		vtx.x = r->x + r->verts[i].x;
+		vtx.y = r->y + r->verts[i].y;
+		vtx.z = r->z + r->verts[i].z;
+		n.x = r->vnormals[i].x;
+		n.y = r->vnormals[i].y;
+		n.z = r->vnormals[i].z;
 
-		if (v->sz < f_mznear)
-			clip_distance = -128;
+		rndoff = long(vtx.x + vtx.y + vtx.z) & 0xFC;
+
+		if (i < r->nWaterVerts)
+		{
+			rnd = WaterTable[r->MeshEffect][rndoff & 0x3F].random;
+			vtx.y += WaterTable[r->MeshEffect][((wibble >> 2) + rnd) & 0x3F].choppy;
+		}
+
+		vPos.x = vtx.x * D3DMView._11 + vtx.y * D3DMView._21 + vtx.z * D3DMView._31 + D3DMView._41;
+		vPos.y = vtx.x * D3DMView._12 + vtx.y * D3DMView._22 + vtx.z * D3DMView._32 + D3DMView._42;
+		vPos.z = vtx.x * D3DMView._13 + vtx.y * D3DMView._23 + vtx.z * D3DMView._33 + D3DMView._43;
+
+		MyVertexBuffer[i].tu = vPos.x;
+		MyVertexBuffer[i].tv = vPos.y;
+		zbak = vPos.z;
+
+		clipFlag = 0;
+
+		if (vPos.z < f_mznear)
+			clipFlag = -128;
 		else
 		{
-			zv = f_mpersp / v->sz;
+			zv = f_mpersp / vPos.z;
 
-			if (v->sz > FogEnd)
+			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 			{
-				clip_distance = 256;
-				v->sz = f_zfar;
+				if (vPos.z > FogEnd)
+				{
+					clipFlag = 16;
+					vPos.z = f_zfar;
+				}
 			}
 
-			v->sx = zv * v->sx + f_centerx;
-			v->sy = zv * v->sy + f_centery;
-			v->rhw = f_moneopersp * zv;
+			vPos.x = vPos.x * zv + f_centerx;
+			vPos.y = vPos.y * zv + f_centery;
 
-			if (bWaterEffect)
+			if (i > r->nWaterVerts && camera.underwater)
 			{
-				v->sx += vert_wibble_table[((wibble + (long)v->sy) >> 3) & 0x1F];
-				v->sy += vert_wibble_table[((wibble + (long)v->sx) >> 3) & 0x1F];
+				vPos.x += vert_wibble_table[((wibble + (long)vPos.y) >> 3) & 0x1F];
+				vPos.y += vert_wibble_table[((wibble + (long)vPos.x) >> 3) & 0x1F];
 			}
 
-			if (v->sx < clip_left)
-				clip_distance++;
-			else if (v->sx > clip_right)
-				clip_distance += 2;
+			MyVertexBuffer[i].rhw = zv * f_moneopersp;
 
-			if (v->sy < clip_top)
-				clip_distance += 4;
-			else if (v->sy > clip_bottom)
-				clip_distance += 8;
+			if (vPos.x < clip_left)
+				clipFlag++;
+			else if (vPos.x > clip_right)
+				clipFlag += 2;
+
+			if (vPos.y < clip_top)
+				clipFlag += 4;
+			else if (vPos.y > clip_bottom)
+				clipFlag += 8;
+		}
+
+		*clip++ = clipFlag;
+		MyVertexBuffer[i].sx = vPos.x;
+		MyVertexBuffer[i].sy = vPos.y;
+		MyVertexBuffer[i].sz = vPos.z;
+
+		if (i > r->nShoreVerts && camera.underwater)
+		{
+			cR = CLRR(r->prelightwater[i]);
+			cG = CLRG(r->prelightwater[i]);
+			cB = CLRB(r->prelightwater[i]);
+		}
+		else
+		{
+			cR = CLRR(r->prelight[i]);
+			cG = CLRG(r->prelight[i]);
+			cB = CLRB(r->prelight[i]);
+		}
+
+		sA = 0xFF;
+		sR = 0;
+		sG = 0;
+		sB = 0;
+		fR = 0;
+		fG = 0;
+		fB = 0;
+
+		for (int j = 0; j < nRoomDynamics; j++)
+		{
+			l = &RoomDynamics[j];
+
+			lPos.x = vtx.x - r->posx - l->x;
+			lPos.y = vtx.y - r->posy - l->y;
+			lPos.z = vtx.z - r->posz - l->z;
+			val = SQUARE(lPos.x) + SQUARE(lPos.y) + SQUARE(lPos.z);
+
+			if (val < l->sqr_falloff)
+			{
+				val = sqrt(val);
+				val2 = l->inv_falloff * (l->falloff - val);
+				lPos.x = (n.x * D3DMView._11 + n.y * D3DMView._21 + n.z * D3DMView._31) * (1.0F / val * lPos.x);
+				lPos.y = (n.x * D3DMView._12 + n.y * D3DMView._22 + n.z * D3DMView._32) * (1.0F / val * lPos.y);
+				lPos.z = (n.x * D3DMView._13 + n.y * D3DMView._23 + n.z * D3DMView._33) * (1.0F / val * lPos.z);
+				val = val2 * (1.0F - (lPos.x + lPos.y + lPos.z));
+				fR += l->r * val;
+				fG += l->g * val;
+				fB += l->b * val;
+			}
+		}
+
+		cR += long(fR * 128.0F);
+		cG += long(fG * 128.0F);
+		cB += long(fB * 128.0F);
+
+		if (i < r->nWaterVerts + r->nShoreVerts)
+		{
+			rndoff = long((vtx.x / 64.0F) + (vtx.y / 64.0F) + (vtx.z / 128.0F)) & 0xFC;
 
 			rnd = WaterTable[r->MeshEffect][rndoff & 0x3C].random;
 			shimmer = WaterTable[r->MeshEffect][((wibble >> 2) + rnd) & 0x3F].shimmer;
 			abs = WaterTable[r->MeshEffect][((wibble >> 2) + rnd) & 0x3F].abs;
 			col = (shimmer + abs) << 3;
-			cR = CLRR(v->color) + col;
-			cG = CLRG(v->color) + col;
-			cB = CLRB(v->color) + col;
-
-			if (cR > 255)
-				cR = 255;
-
-			if (cG > 255)
-				cG = 255;
-
-			if (cB > 255)
-				cB = 255;
-
-			if (cR < 0)
-				cR = 0;
-
-			if (cG < 0)
-				cG = 0;
-
-			if (cB < 0)
-				cB = 0;
-
-			v->color = RGBA(cR, cG, cB, 0xFF);
+			cR += col;
+			cG += col;
+			cB += col;
 		}
 
-		*clip++ = clip_distance;
-		v++;
+		if (zbak > DistanceFogStart)
+		{
+			val = (zbak - DistanceFogStart) * num;
+
+			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
+			{
+				val = (zbak - DistanceFogStart) / 512.0F;
+				sA -= long(val * (255.0F / 8.0F));
+
+				if (sA < 0)
+					sA = 0;
+			}
+			else
+			{
+				cR -= (long)val;
+				cG -= (long)val;
+				cB -= (long)val;
+			}
+		}
+
+		if (cR - 128 <= 0)
+			cR <<= 1;
+		else
+		{
+			sR = (cR - 128) >> 1;
+			cR = 255;
+		}
+
+		if (cG - 128 <= 0)
+			cG <<= 1;
+		else
+		{
+			sG = (cG - 128) >> 1;
+			cG = 255;
+		}
+
+		if (cB - 128 <= 0)
+			cB <<= 1;
+		else
+		{
+			sB = (cB - 128) >> 1;
+			cB = 255;
+		}
+
+		if (sR > 255) sR = 255; else if (sR < 0) sR = 0;
+		if (sG > 255) sG = 255; else if (sG < 0) sG = 0;
+		if (sB > 255) sB = 255; else if (sB < 0) sB = 0;
+		if (cR > 255) cR = 255; else if (cR < 0) cR = 0;
+		if (cG > 255) cG = 255; else if (cG < 0) cG = 0;
+		if (cB > 255) cB = 255; else if (cB < 0) cB = 0;
+
+		MyVertexBuffer[i].color = RGBA(cR, cG, cB, 0xFF);
+		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 }
 
@@ -262,7 +288,7 @@ void ProcessRoomData(ROOM_INFO* r)
 	ushort cR, cG, cB;
 
 	data_ptr = r->data;
-	r->nVerts =*data_ptr++;
+	r->nVerts = *data_ptr++;
 
 	if (!r->nVerts)
 	{
@@ -481,120 +507,12 @@ void ProcessRoomData(ROOM_INFO* r)
 		}
 	}
 
-	if (r->num_lights > MaxRoomLights)
-		MaxRoomLights = r->num_lights;
-
 	r->SourceVB->Optimize(App.dx._lpD3DDevice, 0);
-}
-
-void PrelightVertsNonMMX(long nVerts, D3DTLVERTEX* v, ROOM_INFO* r)
-{
-	long* prelight;
-	long pR, pG, pB, vR, vG, vB, cR, cG, cB;
-
-	if (bWaterEffect && !(r->flags & ROOM_UNDERWATER))
-		prelight = r->prelightwater;
-	else
-		prelight = r->prelight;
-
-	for (int i = 0; i < r->nWaterVerts; i++)
-	{
-		pR = r->prelight[i] & 0xFF0000;
-		pG = r->prelight[i] & 0xFF00;
-		pB = r->prelight[i] & 0xFF;
-		vR = v->color & 0xFF0000;
-		vG = v->color & 0xFF00;
-		vB = v->color & 0xFF;
-		cR = pR + vR;
-		cG = pG + vG;
-		cB = pB + vB;
-
-		if (cR > 0xFF0000)
-			cR = 0xFF0000;
-
-		if (cG > 0xFF00)
-			cG = 0xFF00;
-
-		if (cB > 0xFF)
-			cB = 0xFF;
-
-		v->specular &= 0xFF000000;
-		v->color = (v->color & 0xFF000000) | cR | cG | cB;
-		v++;
-	}
-
-	for (int i = r->nWaterVerts; i < r->nVerts; i++)
-	{
-		pR = prelight[i] & 0xFF0000;
-		pG = prelight[i] & 0xFF00;
-		pB = prelight[i] & 0xFF;
-		vR = v->color & 0xFF0000;
-		vG = v->color & 0xFF00;
-		vB = v->color & 0xFF;
-		cR = pR + vR;
-		cG = pG + vG;
-		cB = pB + vB;
-
-		if (cR > 0xFF0000)
-			cR = 0xFF0000;
-
-		if (cG > 0xFF00)
-			cG = 0xFF00;
-
-		if (cB > 0xFF)
-			cB = 0xFF;
-
-		v->color = (v->color & 0xFF000000) | cR | cG | cB;
-		CalcColorSplit(v->color, &v->color);
-		v++;
-	}
-}
-
-void PrelightVertsMMX(long nVerts, D3DTLVERTEX* v, ROOM_INFO* r)
-{
-	long* prelight;
-	long p, c;
-
-	if (bWaterEffect && !(r->flags & ROOM_UNDERWATER))
-		prelight = r->prelightwater;
-	else
-		prelight = r->prelight;
-
-	for (int i = 0; i < r->nWaterVerts; i++)
-	{
-		p = r->prelight[i];
-		c = v->color;
-
-		__asm
-		{
-			movd mm0, p
-			movd mm1, c
-			paddusb mm1, mm0
-			mov edx, v
-			add edx, 0x10
-			movd [edx], mm1
-		}
-
-		v->specular &= 0xFF000000;
-		v++;
-	}
-
-	for (int i = r->nWaterVerts; i < r->nVerts; i++)
-	{
-		AddPrelitMMX(prelight[i], &v->color);
-		v++;
-	}
-
-	__asm
-	{
-		emms
-	}
 }
 
 void InsertRoom(ROOM_INFO* r)
 {
-	TEXTURESTRUCT* pTex;
-	D3DTLVERTEX* v;
+	TEXTURESTRUCT* pTex; 
 	short* data;
 	short numQuads, numTris;
 	bool doublesided;
@@ -606,17 +524,8 @@ void InsertRoom(ROOM_INFO* r)
 
 	if (r->nVerts)
 	{
-		DXAttempt(DestVB->ProcessVertices(D3DVOP_LIGHT | D3DVOP_TRANSFORM, 0, r->nVerts, r->SourceVB, 0, App.dx._lpD3DDevice, 0));
-		DestVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
-		bWaterEffect = camera.underwater != 0;
-		ProjectWaterVerts(r->nWaterVerts, v, clipflags);
-		ProjectShoreVerts(r->nShoreVerts, &v[r->nWaterVerts], &clipflags[r->nWaterVerts]);
-		ProjectVerts(r->nVerts - r->nWaterVerts - r->nShoreVerts, &v[r->nWaterVerts + r->nShoreVerts], &clipflags[r->nWaterVerts + r->nShoreVerts]);
-
-		if (App.mmx)
-			PrelightVertsMMX(r->nVerts, v, r);
-		else
-			PrelightVertsNonMMX(r->nVerts, v, r);
+		ProcessRoomDynamics(r);
+		ProcessRoomVertices(r);
 
 		data = r->FaceData;
 		numQuads = *data++;
@@ -627,9 +536,9 @@ void InsertRoom(ROOM_INFO* r)
 			doublesided = (data[4] >> 15) & 1;
 
 			if (!pTex->drawtype)
-				AddQuadZBuffer(v, data[0], data[1], data[2], data[3], pTex, doublesided);
+				AddQuadZBuffer(MyVertexBuffer, data[0], data[1], data[2], data[3], pTex, doublesided);
 			else if (pTex->drawtype <= 2)
-				AddQuadSorted(v, data[0], data[1], data[2], data[3], pTex, doublesided);
+				AddQuadSorted(MyVertexBuffer, data[0], data[1], data[2], data[3], pTex, doublesided);
 		}
 
 		numTris = *data++;
@@ -640,12 +549,10 @@ void InsertRoom(ROOM_INFO* r)
 			doublesided = (data[3] >> 15) & 1;
 
 			if (!pTex->drawtype)
-				AddTriZBuffer(v, data[0], data[1], data[2], pTex, doublesided);
+				AddTriZBuffer(MyVertexBuffer, data[0], data[1], data[2], pTex, doublesided);
 			else if (pTex->drawtype <= 2)
-				AddTriSorted(v, data[0], data[1], data[2], pTex, doublesided);
+				AddTriSorted(MyVertexBuffer, data[0], data[1], data[2], pTex, doublesided);
 		}
-
-		DestVB->Unlock();
 	}
 }
 
@@ -678,7 +585,7 @@ void ProcessMeshData(long num_meshes)
 	num_level_meshes = num_meshes;
 	mesh_vtxbuf = (MESH_DATA**)game_malloc(4 * num_meshes);
 	mesh_base = (short*)malloc_ptr;
-	last_mesh_ptr = NULL;
+	last_mesh_ptr = 0;
 	mesh = (MESH_DATA*)num_meshes;
 
 	for (int i = 0; i < num_meshes; i++)
@@ -716,8 +623,8 @@ void ProcessMeshData(long num_meshes)
 				buf.dwSize = sizeof(D3DVERTEXBUFFERDESC);
 				buf.dwCaps = 0;
 				buf.dwFVF = D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ;
-				DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&buf, &mesh->SourceVB, 0, NULL));
-				mesh->SourceVB->Lock(DDLOCK_WRITEONLY, (LPVOID*)&vtx, NULL);
+				DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&buf, &mesh->SourceVB, 0, 0));
+				mesh->SourceVB->Lock(DDLOCK_WRITEONLY, (LPVOID*)&vtx, 0);
 
 				for (int j = 0; j < mesh->nVerts; j++)
 				{
@@ -749,11 +656,11 @@ void ProcessMeshData(long num_meshes)
 						mesh->Normals[j].z = vtx[j].nz;
 					}
 
-					mesh->prelight = NULL;
+					mesh->prelight = 0;
 				}
 				else
 				{
-					mesh->Normals = NULL;
+					mesh->Normals = 0;
 					mesh->prelight = (long*)game_malloc(4 * mesh->nVerts);
 
 					for (int j = 0; j < mesh->nVerts; j++)

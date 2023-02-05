@@ -30,12 +30,12 @@ void InitialiseWraith(short item_number)
 		data->pos.x = item->pos.x_pos;
 		data->pos.y = item->pos.y_pos;
 		data->pos.z = item->pos.z_pos;
-		data->zv = 0;
-		data->yv = 0;
 		data->xv = 0;
-		data->b = 0;
-		data->g = 0;
+		data->yv = 0;
+		data->zv = 0;
 		data->r = 0;
+		data->g = 0;
+		data->b = 0;
 		data++;
 	}
 }
@@ -188,10 +188,9 @@ void WraithControl(short item_number)
 	if (target == lara_item || target->object_number == ANIMATING10)
 	{
 		dx = target->pos.x_pos - item->pos.x_pos;
-		y = target->pos.y_pos;
 		dz = target->pos.z_pos - item->pos.z_pos;
 		dist = SQUARE(dx) + SQUARE(dz);
-		dy = abs((dist >> 13) - 512);
+		dy = (target->pos.y_pos - item->pos.y_pos - 128) - abs((dist >> 13) - 512);
 	}
 	else
 	{
@@ -199,22 +198,21 @@ void WraithControl(short item_number)
 		dx = r->x + (r->y_size << 9) - item->pos.x_pos;
 		dz = r->z + (r->x_size << 9) - item->pos.z_pos;
 		dist = SQUARE(dx) + SQUARE(dz);
-		dy = abs((dist >> 13) - 768);
 		y = r->y + ((r->minfloor - r->maxceiling) >> 1);
+		dy = y - abs((dist >> 13) - 768);
 	}
 
-	y = y - item->pos.y_pos - dy - 128;
 	rotY = short(phd_atan(dz, dx) - item->pos.y_rot);
 
 	if (abs(dx) > abs(dz))
-		rotX = short(phd_atan(abs(dx) + (abs(dz) >> 1), y));
+		rotX = short(phd_atan(abs(dx) + (abs(dz) >> 1), dy));
 	else
-		rotX = short(phd_atan(abs(dz) + (abs(dx) >> 1), y));
+		rotX = short(phd_atan(abs(dz) + (abs(dx) >> 1), dy));
 
 	rotX -= item->pos.x_rot;
 	speed = (WraithSpeed / item->speed) << 3;
 
-	if (abs(rotY) < item->item_flags[2] && (rotY > 0 == item->item_flags[2] > 0))
+	if (abs(rotY) < item->item_flags[2] && rotY > 0 == item->item_flags[2] > 0)
 		item->pos.y_rot += rotY;
 	else if (rotY >= 0)
 	{
@@ -234,7 +232,7 @@ void WraithControl(short item_number)
 		item->pos.y_rot += item->item_flags[2];
 	}
 
-	if (abs(rotX) < item->item_flags[3] && (rotX > 0 == item->item_flags[3] > 0))
+	if (abs(rotX) < item->item_flags[3] && rotX > 0 == item->item_flags[3] > 0)
 		item->pos.x_rot += rotX;
 	else if (rotX >= 0)
 	{
@@ -305,16 +303,10 @@ void WraithControl(short item_number)
 			{
 				if (item->item_flags[1] < 30)
 				{
-					if (item->object_number == WRAITH2)
+					if (item->object_number == WRAITH2 && item->trigger_flags && !flip_stats[item->trigger_flags])
 					{
-						if (item->trigger_flags)
-						{
-							if (!flip_stats[item->trigger_flags])
-							{
-								FlipMap(item->trigger_flags);
-								flip_stats[item->trigger_flags] = 1;
-							}
-						}
+						FlipMap(item->trigger_flags);
+						flip_stats[item->trigger_flags] = 1;
 					}
 
 					KillItem(item_number);
@@ -332,7 +324,7 @@ void WraithControl(short item_number)
 		}
 	}
 
-	if (dist < 28900 && abs(item->pos.y_pos - target->pos.y_pos + 384) < 256)
+	if (dist < 28900 && abs(item->pos.y_pos - (target->pos.y_pos - 384)) < 256)
 	{
 		if (item->speed > 32)
 			item->speed -= 12;
@@ -389,7 +381,7 @@ void WraithControl(short item_number)
 			if (item->speed < WraithSpeed)
 				item->speed++;
 
-			if (item->hit_points)
+			if (item->hit_points && item->ai_bits)
 				target->ai_bits--;
 		}
 	}
@@ -408,56 +400,59 @@ void WraithControl(short item_number)
 		TriggerWraithEffect(x, y, z, item->pos.y_rot + 0x8000, item->object_number);
 
 	wraith = (WRAITH_STRUCT*)item->data;
+	wraith += 7;
 
-	for (int i = 7; i > 0; i--)
+	for (int i = 0; i < 7; i++)
 	{
-		wraith[i - 1].pos.x += wraith[i - 1].xv >> 4;
-		wraith[i - 1].pos.y += wraith[i - 1].yv >> 4;
-		wraith[i - 1].pos.z += wraith[i - 1].zv >> 4;
-		wraith[i - 1].xv -= wraith[i - 1].xv >> 4;
-		wraith[i - 1].yv -= wraith[i - 1].yv >> 4;
-		wraith[i - 1].zv -= wraith[i - 1].zv >> 4;
-		wraith[i].pos.x = wraith[i - 1].pos.x;
-		wraith[i].pos.y = wraith[i - 1].pos.y;
-		wraith[i].pos.z = wraith[i - 1].pos.z;
-		wraith[i].xv = wraith[i - 1].xv;
-		wraith[i].yv = wraith[i - 1].yv;
-		wraith[i].zv = wraith[i - 1].zv;
+		wraith[-1].pos.x += wraith[-1].xv >> 4;
+		wraith[-1].pos.y += wraith[-1].yv >> 4;
+		wraith[-1].pos.z += wraith[-1].zv >> 4;
+		wraith[-1].xv -= wraith[-1].xv >> 4;
+		wraith[-1].yv -= wraith[-1].yv >> 4;
+		wraith[-1].zv -= wraith[-1].zv >> 4;
+		wraith->pos.x = wraith[-1].pos.x;
+		wraith->pos.y = wraith[-1].pos.y;
+		wraith->pos.z = wraith[-1].pos.z;
+		wraith->xv = wraith[-1].xv;
+		wraith->yv = wraith[-1].yv;
+		wraith->zv = wraith[-1].zv;
 
 		if (item->object_number == WRAITH1)
 		{
-			wraith[i].r = (GetRandomControl() & 0x3F) - 64;
-			wraith[i].g = uchar(16 * (8 - i) + (GetRandomControl() & 0x3F));
-			wraith[i].b = GetRandomControl() & 0xF;
+			wraith->r = (GetRandomControl() & 0x3F) - 64;
+			wraith->g = uchar((GetRandomControl() & 0x3F) + 16 * i + 16);
+			wraith->b = GetRandomControl() & 0xF;
 		}
 		else if (item->object_number == WRAITH2)
 		{
-			wraith[i].r = GetRandomControl() & 0xF;
-			wraith[i].g = uchar(16 * (8 - i) + (GetRandomControl() & 0x3F));
-			wraith[i].b = (GetRandomControl() & 0x3F) - 64;
+			wraith->r = GetRandomControl() & 0xF;
+			wraith->g = uchar((GetRandomControl() & 0x3F) + 16 * i + 16);
+			wraith->b = (GetRandomControl() & 0x3F) - 64;
 		}
 		else
 		{
-			wraith[i].r = uchar(8 * (9 - i) + (GetRandomControl() & 0x3F));
-			wraith[i].g = wraith[i].r;
-			wraith[i].b = wraith[i].r + (GetRandomControl() & 0xF);
+			wraith->r = uchar((GetRandomControl() & 0x3F) + 8 * i + 16);
+			wraith->g = wraith->r;
+			wraith->b = (GetRandomControl() & 0xF) + wraith->g;
 		}
+
+		wraith--;
 	}
 
-	wraith[0].pos.x = item->pos.x_pos;
-	wraith[0].pos.y = item->pos.y_pos;
-	wraith[0].pos.z = item->pos.z_pos;
-	wraith[0].xv = short((item->pos.x_pos - x) << 2);
-	wraith[0].yv = short((item->pos.y_pos - y) << 2);
-	wraith[0].zv = short((item->pos.z_pos - z) << 2);
-	TriggerWraithFlame(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, wraith[0].xv, wraith[0].yv, wraith[0].zv, item->object_number);
+	wraith->pos.x = item->pos.x_pos;
+	wraith->pos.y = item->pos.y_pos;
+	wraith->pos.z = item->pos.z_pos;
+	wraith->xv = short((item->pos.x_pos - x) << 2);
+	wraith->yv = short((item->pos.y_pos - y) << 2);
+	wraith->zv = short((item->pos.z_pos - z) << 2);
+	TriggerWraithFlame(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, wraith->xv, wraith->yv, wraith->zv, item->object_number);
 	dx = (item->pos.x_pos + x) >> 1;
 	dy = (item->pos.y_pos + y) >> 1;
 	dz = (item->pos.z_pos + z) >> 1;
-	TriggerWraithFlame(dx, dy, dz, wraith[0].xv, wraith[0].yv, wraith[0].zv, item->object_number);
+	TriggerWraithFlame(dx, dy, dz, wraith->xv, wraith->yv, wraith->zv, item->object_number);
 
 	if (item->object_number == WRAITH3)
-		TriggerDynamic(wraith[0].pos.x, wraith[0].pos.y, wraith[0].pos.z, 16, wraith[5].r, wraith[5].g, wraith[5].b);
+		TriggerDynamic(wraith->pos.x, wraith->pos.y, wraith->pos.z, 16, wraith[5].r, wraith[5].g, wraith[5].b);
 	else
-		TriggerDynamic(wraith[0].pos.x, wraith[0].pos.y, wraith[0].pos.z, 16, wraith[1].r, wraith[1].g, wraith[1].b);
+		TriggerDynamic(wraith->pos.x, wraith->pos.y, wraith->pos.z, 16, wraith[1].r, wraith[1].g, wraith[1].b);
 }

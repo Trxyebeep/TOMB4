@@ -6,6 +6,7 @@
 #include "../specific/3dmath.h"
 #include "../specific/function_stubs.h"
 #include "../specific/gamemain.h"
+#include "../specific/function_table.h"
 
 long stash_font_height;
 long smol_font_height;
@@ -397,10 +398,12 @@ long GetStringLength(const char* string, short* top, short* bottom)
 
 void DrawChar(short x, short y, ushort col, CHARDEF* def)
 {
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	float u1, v1, u2, v2;
 	long x1, y1, x2, y2, top, bottom;
+
+	v = MyVertexBuffer;
 
 	y1 = short(y + phd_winymin) + def->YOffset;
 	y2 = short(y + phd_winymin) + def->h + def->YOffset;

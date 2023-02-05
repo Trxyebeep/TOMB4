@@ -137,12 +137,7 @@ void InitResolution(HWND dlg, HWND hwnd, bool resetvms)
 				SendMessage(hwnd, CB_ADDSTRING, 0, (LPARAM)buffer);
 				SendMessage(hwnd, CB_SETITEMDATA, n, i);
 
-				if (software)
-				{
-					if (w == 320 && h == 240 && bpp == 16)
-						SendMessage(hwnd, CB_SETCURSEL, n, 0);
-				}
-				else if (w == 640 && h == 480 && bpp == 16)
+				if (w == 640 && h == 480)
 					SendMessage(hwnd, CB_SETCURSEL, n, 0);
 
 				n++;

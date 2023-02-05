@@ -325,6 +325,11 @@ void SwitchCollision2(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	}
 }
 
+void SwitchType78Collision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
+{
+
+}
+
 void UnderwaterSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
 	ITEM_INFO* item;

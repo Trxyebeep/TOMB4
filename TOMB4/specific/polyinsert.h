@@ -29,8 +29,6 @@ void SubdivideTri(D3DTLVERTEX* v0, D3DTLVERTEX* v1, D3DTLVERTEX* v2, TEXTURESTRU
 void AddTriSubdivide(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTURESTRUCT* tex, long double_sided);
 void AddQuadSubdivide(D3DTLVERTEX* v, short v0, short v1, short v2, short v3, TEXTURESTRUCT* tex, long double_sided);
 void CalcColorSplit(D3DCOLOR s, D3DCOLOR* r);
-void AddPrelitMMX(long prelight, D3DCOLOR* color);
-void CalcColorSplitMMX(D3DCOLOR s, D3DCOLOR* d);
 
 extern D3DTLBUMPVERTEX XYUVClipperBuffer[20];
 extern D3DTLBUMPVERTEX zClipperBuffer[20];

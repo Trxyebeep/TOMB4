@@ -233,10 +233,8 @@ void WinProcessCommands(long cmd)
 		SuspendThread((HANDLE)MainThread.handle);
 		Log(5, "Game Thread Suspended");
 
-		FreeD3DLights();
 		DXToggleFullScreen();
 		HWInitialise();
-		CreateD3DLights();
 		S_InitD3DMatrix();
 		SetD3DViewMatrix();
 		ResumeThread((HANDLE)MainThread.handle);
@@ -250,7 +248,7 @@ void WinProcessCommands(long cmd)
 		}
 		else
 		{
-			SetCursor(LoadCursor(App.hInstance, MAKEINTRESOURCE(104)));
+			SetCursor(LoadCursor(0, IDC_ARROW));
 			ShowCursor(1);
 		}
 	}
@@ -312,8 +310,6 @@ void WinProcessCommands(long cmd)
 
 		if (odm != App.DXInfo.nDisplayMode)
 		{
-			FreeD3DLights();
-
 			if (!DXChangeVideoMode())
 			{
 				App.DXInfo.nDisplayMode = odm;
@@ -321,7 +317,6 @@ void WinProcessCommands(long cmd)
 			}
 
 			HWInitialise();
-			CreateD3DLights();
 			InitWindow(0, 0, App.dx.dwRenderWidth, App.dx.dwRenderHeight, 20, 20480, 80, App.dx.dwRenderWidth, App.dx.dwRenderHeight);
 			InitFont();
 			S_InitD3DMatrix();
@@ -468,7 +463,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	App.WindowClass.lpfnWndProc = WinMainWndProc;
 	App.WindowClass.cbClsExtra = 0;
 	App.WindowClass.cbWndExtra = 0;
-	App.WindowClass.hCursor = LoadCursor(App.hInstance, MAKEINTRESOURCE(104));
+	App.WindowClass.hCursor = LoadCursor(0, IDC_ARROW);
 
 	if (!RegisterClass(&App.WindowClass))
 	{
@@ -548,7 +543,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	}
 
 	DXInitKeyboard(App.hWnd, App.hInstance);
-	App.hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(101));
+	App.hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDR_ACCELERATOR));
 
 	if (!App.SoundDisabled)
 	{

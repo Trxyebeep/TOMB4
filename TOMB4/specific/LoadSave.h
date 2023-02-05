@@ -6,7 +6,7 @@ void S_DrawAirBar(long pos);
 void S_DrawDashBar(long pos);
 void S_InitLoadBar(long maxpos);
 void S_LoadBar();
-void DoBar(long x, long y, long width, long height, long pos, long clr1, long clr2);
+void DoBar(long x, long y, long width, long height, long pos, long c1, long c2);
 void DoOptions();
 void DoStatScreen();
 long S_DisplayPauseMenu(long reset);

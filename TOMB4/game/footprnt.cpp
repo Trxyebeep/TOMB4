@@ -59,13 +59,15 @@ void S_DrawFootPrints()
 {
 	FOOTPRINT* print;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[3];
+	D3DTLVERTEX* v;
 	PHD_VECTOR pos[3];
 	TEXTURESTRUCT tex;
 	float u1, v1, u2, v2;
 	long x, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, col, opt;
 	short room_number;
 	
+	v = MyVertexBuffer;
+
 	for (int i = 0; i < 32; i++)
 	{
 		print = &FootPrint[i];

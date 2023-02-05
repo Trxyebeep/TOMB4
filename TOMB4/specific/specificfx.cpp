@@ -20,6 +20,7 @@
 #include "../game/lara.h"
 #include "../game/gameflow.h"
 #include "../tomb4/tomb4.h"
+#include "output.h"
 
 #define CIRCUMFERENCE_POINTS 32 // Number of points in the circumference
 #define LINE_POINTS	4	//number of points in each grid line
@@ -137,8 +138,8 @@ static long FadeEnd;
 
 static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 {
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT Tex;
-	D3DTLVERTEX v[3];
 	PHD_VECTOR pos;
 	FVECTOR cv[CIRCUMFERENCE_POINTS];
 	FVECTOR cp[CIRCUMFERENCE_POINTS];
@@ -147,6 +148,8 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 	float fx, fy, fz;
 	long x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, xSize, zSize, xDist, zDist;
 	short room_number;
+
+	v = MyVertexBuffer;
 
 	xSize = size * (box[1] - box[0]) / 192;	//x size of grid
 	zSize = size * (box[5] - box[4]) / 192;	//z size of grid
@@ -293,20 +296,42 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 
 static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 {
+	D3DTLVERTEX* v;
 	SPRITESTRUCT* sprite;
 	TEXTURESTRUCT Tex;
-	D3DTLVERTEX v[4];
 	PHD_VECTOR pos;
 	long xSize, zSize, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, opt;
+	short room_number;
 
-	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 11];
+	v = MyVertexBuffer;
+
+	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 14];
 	xSize = size * (box[1] - box[0]) / 160;
 	zSize = size * (box[5] - box[4]) / 160;
 	xSize >>= 1;
 	zSize >>= 1;
 
+	if (item == lara_item)
+	{
+		pos.x = 0;
+		pos.y = 0;
+		pos.z = 0;
+		GetLaraJointPos(&pos, LM_TORSO);
+		room_number = lara_item->room_number;
+		pos.y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
+
+		if (pos.y == NO_HEIGHT)
+			pos.y = item->floor;
+	}
+	else
+	{
+		pos.x = item->pos.x_pos;
+		pos.y = item->floor;
+		pos.z = item->pos.z_pos;
+	}
+
 	phd_PushMatrix();
-	phd_TranslateAbs(item->pos.x_pos, item->floor, item->pos.z_pos);
+	phd_TranslateAbs(pos.x, pos.y, pos.z);
 	phd_RotY(item->pos.y_rot);
 
 	pos.x = -xSize;
@@ -334,7 +359,7 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 	
 	for (int i = 0; i < 4; i++)
 	{
-		v[i].color = 0xFF3C3C3C;
+		v[i].color = 0xFF2D2D2D;
 		v[i].specular = 0xFF000000;
 	}
 
@@ -357,8 +382,8 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 
 void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 {
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT Tex;
-	D3DTLVERTEX v[3];
 	PHD_VECTOR pos;
 	long* sXYZ;
 	long* hXZ;
@@ -379,6 +404,8 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 
 		return;
 	}
+
+	v = MyVertexBuffer;
 
 	xSize = size * (box[1] - box[0]) / 192;	//x size of grid
 	zSize = size * (box[5] - box[4]) / 192;	//z size of grid
@@ -527,11 +554,13 @@ void DrawTrainStrips()
 void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr)
 {
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	long x1, y1, z1, x2, y2, z2, x3, y3, x4, y4;
 	long cR, cG, cB, c1, c2, s1, s2, s1h, s2h, scale;
 	long sin, cos, sx1, sx2, sy1, sy2, cx1, cx2, cy1, cy2;
+
+	v = MyVertexBuffer;
 
 	if (sptr->Flags & 8)
 	{
@@ -697,12 +726,15 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, short* xyptr, long* zptr
 
 void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long unk)	//ux and uy are not used
 {
-	D3DTLVERTEX v[2];
-	float x, y, x0, y0, x1, y1;
+	D3DTLVERTEX* v;
+	float p, x, y, x0, y0, x1, y1;
 	long rSize, rVel, rMVel, rTVel, angle;
 
-	x = (float)phd_winxmax / 512.0F * 448.0F;
-	y = (float)phd_winymax / 240.0F * 224.0F;
+	v = MyVertexBuffer;
+
+	p = (float)GetFixedScale(1);
+	x = float(phd_winwidth - GetFixedScale(80));
+	y = float(phd_winheight - GetFixedScale(32));
 	rSize = (7 * size) >> 3;
 	rVel = abs(vel >> 1);
 
@@ -720,10 +752,10 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 
 	for (int i = 0; i <= rTVel; i += 2048)
 	{
-		x0 = ((rSize * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((rSize * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-		y0 = (-(rSize * phd_cos(angle + i)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
-		x1 = ((size * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-		y1 = (-(size * phd_cos(angle + i)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
+		x0 = ((rSize * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((rSize * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+		y0 = (-(rSize * phd_cos(angle + i)) >> W2V_SHIFT) * (p * 2);
+		x1 = ((size * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+		y1 = (-(size * phd_cos(angle + i)) >> W2V_SHIFT) * (p * 2);
 
 		v[0].sx = x + x0;
 		v[0].sy = y + y0;
@@ -752,10 +784,10 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	}
 
 	size -= size >> 4;
-	x0 = ((-4 * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((-4 * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-	y0 = (-(-4 * phd_cos(angle + rVel)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
-	x1 = ((size * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-	y1 = (-(size * phd_cos(angle + rVel)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
+	x0 = ((-4 * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((-4 * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+	y0 = (-(-4 * phd_cos(angle + rVel)) >> W2V_SHIFT) * (p * 2);
+	x1 = ((size * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+	y1 = (-(size * phd_cos(angle + rVel)) >> W2V_SHIFT) * (p * 2);
 
 	v[0].sx = x + x0;
 	v[0].sy = y + y0;
@@ -776,13 +808,16 @@ void DrawBikeSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 void Draw2DSprite(long x, long y, long slot, long unused, long unused2)
 {
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
-	long x0, y0;
+	long p, x0, y0;
 
+	v = MyVertexBuffer;
+
+	p = GetFixedScale(1);
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + slot];
-	x0 = long(x + (sprite->width >> 8) * ((float)phd_centerx / 320.0F));
-	y0 = long(y + 1 + (sprite->height >> 8) * ((float)phd_centery / 240.0F));
+	x0 = long(x + (sprite->width >> 8) * p);
+	y0 = long(y + 1 + (sprite->height >> 8) * p);
 	setXY4(v, x, y, x0, y, x0, y0, x, y0, (long)f_mznear, clipflags);
 	v[0].specular = 0xFF000000;
 	v[1].specular = 0xFF000000;
@@ -820,12 +855,15 @@ void Draw2DSprite(long x, long y, long slot, long unused, long unused2)
 
 void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long size, long spriteSlot)	//ux and uy are not used
 {
-	D3DTLVERTEX v[2];
-	float x, y, x0, y0, x1, y1;
+	D3DTLVERTEX* v;
+	float p, x, y, x0, y0, x1, y1;
 	long rSize, rVel, rMVel, rTVel, angle, sX, sY;
 
-	x = (float)phd_winxmax / 512.0F * 448.0F;
-	y = (float)phd_winymax / 240.0F * 224.0F;
+	v = MyVertexBuffer;
+
+	p = (float)GetFixedScale(1);
+	x = float(phd_winwidth - GetFixedScale(80));
+	y = float(phd_winheight - GetFixedScale(32));
 	rSize = (7 * size) >> 3;
 	rVel = abs(vel >> 1);
 
@@ -844,10 +882,10 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 
 	for (int i = 0; i <= rTVel; i += 1536)
 	{
-		x0 = ((rSize * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((rSize * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-		y0 = (-(rSize * phd_cos(angle + i)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
-		x1 = ((size * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-		y1 = (-(size * phd_cos(angle + i)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
+		x0 = ((rSize * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((rSize * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+		y0 = (-(rSize * phd_cos(angle + i)) >> W2V_SHIFT) * (p * 2);
+		x1 = ((size * (phd_sin(angle + i)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + i)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+		y1 = (-(size * phd_cos(angle + i)) >> W2V_SHIFT) * (p * 2);
 
 		v[0].sx = x + x0;
 		v[0].sy = y + y0;
@@ -876,16 +914,16 @@ void DrawJeepSpeedo(long ux, long uy, long vel, long maxVel, long turboVel, long
 	}
 
 	size -= size >> 4;
-	x0 = ((-4 * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((-4 * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-	y0 = (-(-4 * phd_cos(angle + rVel)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
-	x1 = ((size * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * ((float)phd_winxmax / 512.0F);
-	y1 = (-(size * phd_cos(angle + rVel)) >> W2V_SHIFT) * (float)phd_winymax / 240.0F;
+	x0 = ((-4 * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((-4 * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+	y0 = (-(-4 * phd_cos(angle + rVel)) >> W2V_SHIFT) * (p * 2);
+	x1 = ((size * (phd_sin(angle + rVel)) >> (W2V_SHIFT - 1)) - ((size * phd_sin(angle + rVel)) >> (W2V_SHIFT + 1))) * (p + (p / 4.0F));
+	y1 = (-(size * phd_cos(angle + rVel)) >> W2V_SHIFT) * (p * 2);
 
-	sX = long(x + 16 * ((float)phd_winxmax / 512.0F));
-	sY = long(y - 20 * ((float)phd_winymax / 240.0F));
+	sX = long(x + 16 * (p + (p / 4.0F)));
+	sY = long(y - 20 * (p * 2));
 	Draw2DSprite(sX, sY, 17, spriteSlot + 17, 0);
 
-	sY = long(y - 6 * ((float)phd_winymax / 240.0F));
+	sY = long(y - 6 * (p * 2));
 	Draw2DSprite(sX, sY, 18, spriteSlot + 17, 0);
 
 	v[0].sx = x + x0;
@@ -908,13 +946,14 @@ void DrawDebris()
 {
 	DEBRIS_STRUCT* dptr;
 	TEXTURESTRUCT* tex;
-	D3DTLVERTEX v[3];
+	D3DTLVERTEX* v;
 	long* Z;
 	short* XY;
 	short* offsets;
 	long r, g, b, c;
 	ushort drawbak;
 
+	v = MyVertexBuffer;
 	XY = (short*)&scratchpad[0];
 	Z = (long*)&scratchpad[256];
 	offsets = (short*)&scratchpad[512];
@@ -1030,10 +1069,11 @@ void DrawDebris()
 
 void DoScreenFade()
 {
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	long a;
 
+	v = MyVertexBuffer;
 	a = FadeVal << 24;
 	FadeVal += FadeStep;
 	FadeCnt++;
@@ -1084,12 +1124,13 @@ void DoScreenFade()
 
 void DrawPsxTile(long x_y, long height_width, long color, long u0, long u1)
 {
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	float x, y, z, rhw, w, h;
 	long col;
 	ushort drawtype;
 
+	v = MyVertexBuffer;
 	nPolyType = 6;
 
 	if ((color & 0xFF000000) == 0x62000000)
@@ -1170,10 +1211,12 @@ void DrawFlash()
 
 void S_DrawDarts(ITEM_INFO* item)
 {
-	D3DTLVERTEX v[2];
+	D3DTLVERTEX* v;
 	float fx, fy, fz;
 	long x1, y1, z1, x2, y2, z2, num, mxx, mxy, mxz;
 	float zv;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
@@ -1256,11 +1299,13 @@ void ClipCheckPoint(D3DTLVERTEX* v, float x, float y, float z, short* clip)
 
 void DrawFlatSky(ulong color, long zpos, long ypos, long drawtype)
 {
-	PHD_VECTOR vec[4];
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
+	FVECTOR vec[4];
 	TEXTURESTRUCT Tex;
 	short* clip;
-	long x, y, z;
+	float x, y, z;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateRel(zpos, ypos, 0);
@@ -1283,22 +1328,22 @@ void DrawFlatSky(ulong color, long zpos, long ypos, long drawtype)
 		x = vec[i].x;
 		y = vec[i].y;
 		z = vec[i].z;
-		vec[i].x = long(mMXPtr[M00] * x + mMXPtr[M01] * y + mMXPtr[M02] * z + mMXPtr[M03]);
-		vec[i].y = long(mMXPtr[M10] * x + mMXPtr[M11] * y + mMXPtr[M12] * z + mMXPtr[M13]);
-		vec[i].z = long(mMXPtr[M20] * x + mMXPtr[M21] * y + mMXPtr[M22] * z + mMXPtr[M23]);
+		vec[i].x = mMXPtr[M00] * x + mMXPtr[M01] * y + mMXPtr[M02] * z + mMXPtr[M03];
+		vec[i].y = mMXPtr[M10] * x + mMXPtr[M11] * y + mMXPtr[M12] * z + mMXPtr[M13];
+		vec[i].z = mMXPtr[M20] * x + mMXPtr[M21] * y + mMXPtr[M22] * z + mMXPtr[M23];
 		v[i].color = color | 0xFF000000;
 		v[i].specular = 0xFF000000;
 		CalcColorSplit(color, &v[i].color);
 	}
 
 	clip = clipflags;
-	ClipCheckPoint(&v[0], (float)vec[0].x, (float)vec[0].y, (float)vec[0].z, clip);	//originally inlined
+	ClipCheckPoint(&v[0], vec[0].x, vec[0].y, vec[0].z, clip);	//originally inlined
 	clip++;
-	ClipCheckPoint(&v[1], (float)vec[1].x, (float)vec[1].y, (float)vec[1].z, clip);	//originally inlined
+	ClipCheckPoint(&v[1], vec[1].x, vec[1].y, vec[1].z, clip);	//originally inlined
 	clip++;
-	ClipCheckPoint(&v[2], (float)vec[2].x, (float)vec[2].y, (float)vec[2].z, clip);	//originally inlined
+	ClipCheckPoint(&v[2], vec[2].x, vec[2].y, vec[2].z, clip);	//originally inlined
 	clip++;
-	ClipCheckPoint(&v[3], (float)vec[3].x, (float)vec[3].y, (float)vec[3].z, clip);	//the only one that survived
+	ClipCheckPoint(&v[3], vec[3].x, vec[3].y, vec[3].z, clip);	//the only one that survived
 	Tex.drawtype = (ushort)drawtype;
 	Tex.flag = 0;
 	Tex.tpage = ushort(nTextures - 1);
@@ -1331,22 +1376,22 @@ void DrawFlatSky(ulong color, long zpos, long ypos, long drawtype)
 		x = vec[i].x;
 		y = vec[i].y;
 		z = vec[i].z;
-		vec[i].x = long(mMXPtr[M00] * x + mMXPtr[M01] * y + mMXPtr[M02] * z + mMXPtr[M03]);
-		vec[i].y = long(mMXPtr[M10] * x + mMXPtr[M11] * y + mMXPtr[M12] * z + mMXPtr[M13]);
-		vec[i].z = long(mMXPtr[M20] * x + mMXPtr[M21] * y + mMXPtr[M22] * z + mMXPtr[M23]);
+		vec[i].x = mMXPtr[M00] * x + mMXPtr[M01] * y + mMXPtr[M02] * z + mMXPtr[M03];
+		vec[i].y = mMXPtr[M10] * x + mMXPtr[M11] * y + mMXPtr[M12] * z + mMXPtr[M13];
+		vec[i].z = mMXPtr[M20] * x + mMXPtr[M21] * y + mMXPtr[M22] * z + mMXPtr[M23];
 		v[i].color |= 0xFF000000;
 		v[i].specular = 0xFF000000;
 		CalcColorSplit(color, &v[i].color);
 	}
 
 	clip = clipflags;
-	ClipCheckPoint(&v[0], (float)vec[0].x, (float)vec[0].y, (float)vec[0].z, clip);	//originally inlined
+	ClipCheckPoint(&v[0], vec[0].x, vec[0].y, vec[0].z, clip);	//originally inlined
 	clip++;
-	ClipCheckPoint(&v[1], (float)vec[1].x, (float)vec[1].y, (float)vec[1].z, clip);	//originally inlined
+	ClipCheckPoint(&v[1], vec[1].x, vec[1].y, vec[1].z, clip);	//originally inlined
 	clip++;
-	ClipCheckPoint(&v[2], (float)vec[2].x, (float)vec[2].y, (float)vec[2].z, clip);	//originally inlined
+	ClipCheckPoint(&v[2], vec[2].x, vec[2].y, vec[2].z, clip);	//originally inlined
 	clip++;
-	ClipCheckPoint(&v[3], (float)vec[3].x, (float)vec[3].y, (float)vec[3].z, clip);	//the only one that survived
+	ClipCheckPoint(&v[3], vec[3].x, vec[3].y, vec[3].z, clip);	//the only one that survived
 	AddQuadSorted(v, 3, 2, 1, 0, &Tex, 1);
 	phd_PopMatrix();
 }
@@ -1776,14 +1821,16 @@ void SetFade(long start, long end)
 void DrawLaserSightSprite()
 {
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR vec;
 	long* Z;
 	short* XY;
 	short* pos;
 	float perspz;
+	long s;
 
+	v = MyVertexBuffer;
 	XY = (short*)&scratchpad[0];
 	Z = (long*)&scratchpad[256];
 	pos = (short*)&scratchpad[512];
@@ -1802,7 +1849,8 @@ void DrawLaserSightSprite()
 	phd_PopMatrix();
 
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 14];
-	setXY4(v, XY[0] - 2, XY[1] - 2, XY[0] + 2, XY[1] - 2, XY[0] - 2, XY[1] + 2, XY[0] + 2, XY[1] + 2, (long)f_mznear, clipflags);
+	s = GetFixedScale(3);
+	setXY4(v, XY[0] - s, XY[1] - s, XY[0] + s, XY[1] - s, XY[0] + s, XY[1] + s, XY[0] - s, XY[1] + s, (long)f_mznear, clipflags);
 	v[0].color = 0xFFFF0000;
 	v[1].color = 0xFFFF0000;
 	v[2].color = 0xFFFF0000;
@@ -1829,9 +1877,11 @@ void DrawLaserSightSprite()
 void DrawSprite(long x, long y, long slot, long col, long size, long z)
 {
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	long s;
+
+	v = MyVertexBuffer;
 
 	s = long(float(phd_winwidth / 640.0F) * (size << 1));
 
@@ -1865,42 +1915,44 @@ void DrawSprite(long x, long y, long slot, long col, long size, long z)
 
 void ShowTitle()
 {
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
-	long x, y, w;
+	float x, y, w;
+
+	v = MyVertexBuffer;
 
 	clipflags[0] = 0;
 	clipflags[1] = 0;
 	clipflags[2] = 0;
 	clipflags[3] = 0;
 	nPolyType = 4;
-	x = long(phd_winxmin - float((phd_winxmax / 640.0F) * -64));
-	w = long(float((phd_winxmax / 640.0F) * 256));
-	y = long(phd_winymin + float((phd_winymax / 480.0F) * 256));
+	w = (float)GetFixedScale(256);
+	x = phd_centerx - w;
+	y = phd_winymin + w;
 
-	v[0].sx = (float)x;
+	v[0].sx = x;
 	v[0].sy = (float)phd_winymin;
 	v[0].sz = 0;
 	v[0].rhw = f_moneoznear;
 	v[0].color = 0xFFFFFFFF;
 	v[0].specular = 0xFF000000;
 
-	v[1].sx = (float)(w + x);
+	v[1].sx = w + x;
 	v[1].sy = (float)phd_winymin;
 	v[1].sz = 0;
 	v[1].rhw = f_moneoznear;
 	v[1].color = 0xFFFFFFFF;
 	v[1].specular = 0xFF000000;
 
-	v[2].sx = (float)(w + x);
-	v[2].sy = (float)y;
+	v[2].sx = w + x;
+	v[2].sy = y;
 	v[2].sz = 0;
 	v[2].rhw = f_moneoznear;
 	v[2].color = 0xFFFFFFFF;
 	v[2].specular = 0xFF000000;
 
-	v[3].sx = (float)x;
-	v[3].sy = (float)y;
+	v[3].sx = x;
+	v[3].sy = y;
 	v[3].sz = 0;
 	v[3].rhw = f_moneoznear;
 	v[3].color = 0xFFFFFFFF;
@@ -1909,39 +1961,39 @@ void ShowTitle()
 	tex.drawtype = 1;
 	tex.flag = 0;
 	tex.tpage = ushort(nTextures - 4);
-	tex.u1 = 0.00390625F;
-	tex.v1 = 0.00390625F;
-	tex.u2 = 0.99609375F;
-	tex.v2 = 0.00390625F;
-	tex.u3 = 0.99609375F;
-	tex.v3 = 0.99609375F;
-	tex.u4 = 0.00390625F;
-	tex.v4 = 0.99609375F;
+	tex.u1 = float(1.0F / 256.0F);
+	tex.v1 = float(1.0F / 256.0F);
+	tex.u2 = 1.0F - float(1.0F / 256.0F);
+	tex.v2 = float(1.0F / 256.0F);
+	tex.u3 = 1.0F - float(1.0F / 256.0F);
+	tex.v3 = 1.0F - float(1.0F / 256.0F);
+	tex.u4 = float(1.0F / 256.0F);
+	tex.v4 = 1.0F - float(1.0F / 256.0F);
 	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 
-	v[0].sx = (float)(w + x);
-	v[0].sy = (float)phd_winymin;
+	v[0].sx = w + x;
+	v[0].sy = phd_winymin;
 	v[0].sz = 0;
 	v[0].rhw = f_moneoznear;
 	v[0].color = 0xFFFFFFFF;
 	v[0].specular = 0xFF000000;
 
-	v[1].sx = (float)(2 * w + x);
+	v[1].sx = x + 2 * w;
 	v[1].sy = (float)phd_winymin;
 	v[1].sz = 0;
 	v[1].rhw = f_moneoznear;
 	v[1].color = 0xFFFFFFFF;
 	v[1].specular = 0xFF000000;
 
-	v[2].sx = (float)(2 * w + x);
-	v[2].sy = (float)y;
+	v[2].sx = x + 2 * w;
+	v[2].sy = y;
 	v[2].sz = 0;
 	v[2].rhw = f_moneoznear;
 	v[2].color = 0xFFFFFFFF;
 	v[2].specular = 0xFF000000;
 
-	v[3].sx = (float)(w + x);
-	v[3].sy = (float)y;
+	v[3].sx = w + x;
+	v[3].sy = y;
 	v[3].sz = 0;
 	v[3].rhw = f_moneoznear;
 	v[3].color = 0xFFFFFFFF;
@@ -1950,14 +2002,14 @@ void ShowTitle()
 	tex.drawtype = 1;
 	tex.flag = 0;
 	tex.tpage = ushort(nTextures - 3);
-	tex.u1 = 0.00390625F;
-	tex.v1 = 0.00390625F;
-	tex.u2 = 0.99609375F;
-	tex.v2 = 0.00390625F;
-	tex.u3 = 0.99609375F;
-	tex.v3 = 0.99609375F;
-	tex.u4 = 0.00390625F;
-	tex.v4 = 0.99609375F;
+	tex.u1 = float(1.0F / 256.0F);
+	tex.v1 = float(1.0F / 256.0F);
+	tex.u2 = 1.0F - float(1.0F / 256.0F);
+	tex.v2 = float(1.0F / 256.0F);
+	tex.u3 = 1.0F - float(1.0F / 256.0F);
+	tex.v3 = 1.0F - float(1.0F / 256.0F);
+	tex.u4 = float(1.0F / 256.0F);
+	tex.v4 = 1.0F - float(1.0F / 256.0F);
 	AddQuadSorted(v, 0, 1, 2, 3, &tex, 1);
 }
 
@@ -2222,12 +2274,14 @@ void DrawBinoculars()
 	MESH_DATA* mesh;
 	D3DTLVERTEX* v;
 	TEXTURESTRUCT* tex;
-	D3DTLVERTEX vtx[256];
+	D3DTLVERTEX* vtx;
 	short* clip;
 	short* quad;
 	short* tri;
 	ushort drawbak;
 	short clipdistance;
+
+	vtx = MyVertexBuffer;
 
 	if (LaserSight)
 		mesh = targetMeshP;
@@ -2344,15 +2398,17 @@ void DrawBinoculars()
 
 void DrawWraithTrail(ITEM_INFO* item)
 {
+	D3DTLVERTEX* v;
 	WRAITH_STRUCT* wraith;
 	FVECTOR pos;
-	D3DTLVERTEX v[2];
 	long* Z;
 	short* XY;
 	short* offsets;
 	float perspz;
 	ulong r, g, b;
 	long c0, c1, x0, y0, z0, x1, y1, z1;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
@@ -2450,14 +2506,16 @@ void DrawWraithTrail(ITEM_INFO* item)
 
 void DrawDrips()
 {
+	D3DTLVERTEX* v;
 	DRIP_STRUCT* drip;
 	FVECTOR vec;
-	D3DTLVERTEX v[3];
 	long* Z;
 	short* XY;
 	short* pos;
 	float perspz;
 	long x0, y0, z0, x1, y1, z1, r, g, b;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
@@ -2556,7 +2614,7 @@ void DrawBubbles()
 {
 	BUBBLE_STRUCT* bubble;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR pos;
 	long* Z;
@@ -2564,6 +2622,8 @@ void DrawBubbles()
 	short* offsets;
 	float perspz;
 	long dx, dy, dz, size, x1, y1, x2, y2;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
@@ -2672,7 +2732,7 @@ void DrawShockwaves()
 {
 	SHOCKWAVE_STRUCT* wave;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX vtx[4];
+	D3DTLVERTEX* vtx;
 	TEXTURESTRUCT tex;
 	FVECTOR p1, p2, p3;
 	long* Z;
@@ -2680,6 +2740,8 @@ void DrawShockwaves()
 	short* offsets;
 	long v, x1, y1, x2, y2, x3, y3, x4, y4, r, g, b, c;
 	short rad;
+
+	vtx = MyVertexBuffer;
 
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 8];
 	offsets = (short*)&scratchpad[768];
@@ -2811,12 +2873,14 @@ void DrawShockwaves()
 void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags)
 {
 	SVECTOR* offsets;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	FVECTOR p1, p2, p3;
 	long* Z;
 	short* XY;
 	long num, z1, z2, z3, z4, spec;
 	short x1, y1, x2, y2, x3, y3, x4, y4;
+
+	v = MyVertexBuffer;
 
 	num = 0;
 	offsets = (SVECTOR*)&scratchpad[984];
@@ -2932,7 +2996,7 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 	SPLASH_STRUCT* splash;
 	RIPPLE_STRUCT* ripple;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	long* Z;
 	short* XY;
@@ -2943,6 +3007,7 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 	short rads[6];
 	short yVals[6];
 
+	v = MyVertexBuffer;
 	offsets = (short*)&scratchpad[768];
 
 	for (int i = 0; i < 4; i++)
@@ -3313,7 +3378,7 @@ void S_DrawFireSparks(long size, long life)
 {
 	FIRE_SPARKS* sptr;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR pos;
 	long* Z;
@@ -3325,6 +3390,7 @@ void S_DrawFireSparks(long size, long life)
 	long dx, dy, dz, x1, y1, x2, y2, x3, y3, x4, y4;
 	short ang;
 
+	v = MyVertexBuffer;
 	XY = (short*)&scratchpad[0];
 	Z = (long*)&scratchpad[256];
 	offsets = (short*)&scratchpad[512];
@@ -3445,10 +3511,12 @@ void S_DrawFireSparks(long size, long life)
 void DrawRope(ROPE_STRUCT* rope)
 {
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	long dx, dy, d, b, w, spec;
 	long x1, y1, z1, x2, y2, z2, x3, y3, x4, y4;
+
+	v = MyVertexBuffer;
 
 	ProjectRopePoints(rope);
 	dx = rope->Coords[1][0] - rope->Coords[0][0];
@@ -3569,7 +3637,7 @@ void DrawBlood()
 {
 	BLOOD_STRUCT* bptr;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR pos;
 	long* Z;
@@ -3580,6 +3648,8 @@ void DrawBlood()
 	long size, s, c;
 	long dx, dy, dz, x1, y1, x2, y2, x3, y3, x4, y4;
 	short ang;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
@@ -3674,7 +3744,7 @@ void S_DrawSmokeSparks()
 {
 	SMOKE_SPARKS* sptr;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR pos;
 	long* Z;
@@ -3684,6 +3754,8 @@ void S_DrawSmokeSparks()
 	long is_mirror, size, col, s, c, ss, cs, sm, cm;
 	long dx, dy, dz, x1, y1, x2, y2, x3, y3, x4, y4;
 	short ang;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
@@ -3826,7 +3898,7 @@ void DoUwEffect()
 {
 	WATER_DUST* p;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[3];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR pos;
 	long* Z;
@@ -3835,6 +3907,7 @@ void DoUwEffect()
 	float perspz;
 	long num_alive, rad, ang, x, y, z, size, col, yv;
 
+	v = MyVertexBuffer;
 	num_alive = 0;
 
 	for (int i = 0; i < 256; i++)
@@ -3980,7 +4053,7 @@ void DrawLightning()
 	SPRITESTRUCT* sprite;
 	PHD_VECTOR* vec;
 	SVECTOR* offsets;
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	FVECTOR p1, p2, p3;
 	long* Z;
@@ -3988,6 +4061,8 @@ void DrawLightning()
 	float perspz;
 	long c, xsize, ysize, r, g, b;
 	long x1, y1, z1, x2, y2, z2, z;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);

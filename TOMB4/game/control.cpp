@@ -781,7 +781,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 		}
 	}
 
-	camera_item = NULL;
+	camera_item = 0;
 
 	do
 	{

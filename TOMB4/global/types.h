@@ -114,13 +114,6 @@ enum ai_bits
 	FOLLOW =	1 << 4
 };
 
-enum win_commands
-{
-	KA_ALTENTER =	8,
-	KA_ALTP =		40001,
-	KA_ALTM =		40002
-};
-
 enum languages
 {
 	ENGLISH,
@@ -2258,6 +2251,36 @@ struct TRAIN_STATIC
 {
 	short type;
 	short zoff;
+};
+
+struct ROOM_DYNAMIC
+{
+	float x;
+	float y;
+	float z;
+	float r;
+	float g;
+	float b;
+	float falloff;
+	float sqr_falloff;
+	float inv_falloff;
+};
+
+struct SUNLIGHT_STRUCT
+{
+	FVECTOR vec;
+	float r;
+	float g;
+	float b;
+};
+
+struct POINTLIGHT_STRUCT
+{
+	FVECTOR vec;
+	float r;
+	float g;
+	float b;
+	float rad;
 };
 
 struct GouraudBarColourSet

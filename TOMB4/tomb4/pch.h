@@ -26,4 +26,6 @@
 #include <mmreg.h>
 #include <MSAcm.h>
 
+#include "../../resource.h"
+
 #endif //PCH_H

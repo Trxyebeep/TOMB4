@@ -414,7 +414,7 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 		obj->control = ControlAnimatingSlots;
-		obj->collision = 0;	//AIPickupCollision
+		obj->collision = SwitchType78Collision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -767,6 +767,7 @@ void TrapObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[FLAME_EMITTER3];
+	obj->initialise = InitialiseFlameEmitter3;
 	obj->control = FlameEmitter3Control;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
