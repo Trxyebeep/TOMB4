@@ -27,15 +27,13 @@ long nSunLights, nPointLights, nSpotLights, nShadowLights, nTotalLights;
 static ITEM_INFO StaticMeshLightItem;
 static long SetupLight_thing;
 
-#pragma warning(push)
-#pragma warning(disable : 4244)
 void S_CalculateStaticMeshLight(long x, long y, long z, long shade, ROOM_INFO* r)
 {
 	StaticMeshLightItem.il.ambient = r->ambient;
 	StaticMeshLightItem.il.item_pos.x = x;
 	StaticMeshLightItem.il.item_pos.y = y;
 	StaticMeshLightItem.il.item_pos.z = z;
-	StaticMeshLightItem.room_number = current_room;
+	StaticMeshLightItem.room_number = (short)current_room;
 	StaticMeshShade = shade;
 	current_item = &StaticMeshLightItem;
 }
@@ -130,9 +128,9 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 
 		if (SetupLight_thing && point->rad < 1)
 		{
-			r = CLRR(*ambient) + (point->rad * point->r);
-			g = CLRG(*ambient) + (point->rad * point->g);
-			b = CLRB(*ambient) + (point->rad * point->b);
+			r = CLRR(*ambient) + long(point->rad * point->r);
+			g = CLRG(*ambient) + long(point->rad * point->g);
+			b = CLRB(*ambient) + long(point->rad * point->b);
 
 			if (r > 255)
 				r = 255;
@@ -186,7 +184,7 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 		val2 = light->shadow >> 3;
 
 		if (val >= light->Inner)
-			val2 = (val - light->Outer) / ((light->Outer - light->Inner) / -val2);
+			val2 = long((val - light->Outer) / ((light->Outer - light->Inner) / -val2));
 
 		if (val2 < 0)
 			val2 = 0;
@@ -336,9 +334,9 @@ void CreateLightList(ITEM_INFO* item)
 				in_range = 0;
 			else
 			{
-				vec.x = -dx;
-				vec.y = -dy;
-				vec.z = -dz;
+				vec.x = (float)-dx;
+				vec.y = (float)-dy;
+				vec.z = (float)-dz;
 				D3DNormalise(&vec);
 
 				if (current_lights[i].nx * vec.x + current_lights[i].ny * vec.y + current_lights[i].nz * vec.z <= current_lights[i].Outer)
@@ -544,4 +542,3 @@ void ResetLighting()
 	lGlobalMeshPos.y = CamPos.y + D3DLightMatrix._42;
 	lGlobalMeshPos.z = CamPos.z + D3DLightMatrix._43;
 }
-#pragma warning(pop)
