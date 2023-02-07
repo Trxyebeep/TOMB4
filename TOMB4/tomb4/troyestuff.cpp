@@ -11,8 +11,6 @@
 #define YPOS	textY + y++ * font_height
 #define CHECK_SEL(c)	selection & (1 << s++) ? 1 : c
 
-#pragma warning(push)
-#pragma warning(disable : 4244)
 void TroyeMenu(long textY, long& menu, ulong& selection)
 {
 	long num;
@@ -533,8 +531,8 @@ bool Page1(long& num, long textY, ulong selection)
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			tomb4.distance_fog++;
 
-			if (tomb4.distance_fog > 30.0F)
-				tomb4.distance_fog = 30.0F;
+			if (tomb4.distance_fog > 30)
+				tomb4.distance_fog = 30;
 
 			changed = 1;
 		}
@@ -544,8 +542,8 @@ bool Page1(long& num, long textY, ulong selection)
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			tomb4.distance_fog--;
 
-			if (tomb4.distance_fog < 3.0F)
-				tomb4.distance_fog = 3.0F;
+			if (tomb4.distance_fog < 3)
+				tomb4.distance_fog = 3;
 
 			changed = 1;
 		}
@@ -555,7 +553,6 @@ bool Page1(long& num, long textY, ulong selection)
 
 	return changed;
 }
-#pragma warning(pop)
 
 #undef PAGE0_NUM
 #undef PAGE1_NUM

@@ -1674,8 +1674,8 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2),
 			INV_EXAMINE2_ITEM, examine_mode, 0, 0, 0, 0, 0);
 		objme->scale1 = saved_scale;
-		PrintString((ushort)phd_centerx, (ushort)WANK_RULES_YPOS, 5, SCRIPT_TEXT(TXT_RULES1), FF_CENTER);
-		PrintString((ushort)phd_centerx, (ushort)(WANK_RULES_YPOS + phd_winheight / 2), 5, SCRIPT_TEXT(TXT_RULES2), FF_CENTER);
+		PrintString(phd_centerx, WANK_RULES_YPOS, 5, SCRIPT_TEXT(TXT_RULES1), FF_CENTER);
+		PrintString(phd_centerx, WANK_RULES_YPOS + phd_winheight / 2, 5, SCRIPT_TEXT(TXT_RULES2), FF_CENTER);
 		break;
 
 	case INV_EXAMINE3_ITEM:
@@ -1684,7 +1684,7 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2 - 8),
 			INV_EXAMINE3_ITEM, examine_mode, 0x8000, 0x4000, 0x4000, 96, 0);
 		objme->scale1 = saved_scale;
-		PrintString((ushort)phd_centerx, (ushort)WANK_SCROL_YPOS, 8, SCRIPT_TEXT(TXT_PETEPOO), FF_CENTER);
+		PrintString(phd_centerx, WANK_SCROL_YPOS, 8, SCRIPT_TEXT(TXT_PETEPOO), FF_CENTER);
 		break;
 	}
 
@@ -2212,7 +2212,7 @@ void draw_ammo_selector()
 				sprintf(cunter, "%d x %s", ammo_object_list[i].amount, SCRIPT_TEXT(objme->objname));
 
 			if (ammo_selector_fade_val)
-				PrintString((ushort)phd_centerx, ushort(font_height + phd_centery + 2 * font_height - 9), 8, cunter, FF_CENTER);
+				PrintString(phd_centerx, font_height + phd_centery + 2 * font_height - 9, 8, cunter, FF_CENTER);
 
 			DrawThreeDeeObject2D(long((float)phd_centerx / 256.0F * 64.0F + inventry_xpos + xpos),
 				long((float)phd_centery / 120.0F * 190.0F + inventry_ypos), ammo_object_list[i].invitem, ammo_selector_fade_val, 0, yrot, 0, 0, 0);
@@ -2232,7 +2232,7 @@ void handle_inventry_menu()
 
 	if (rings[RING_AMMO]->ringactive)
 	{
-		PrintString((ushort)phd_centerx, (ushort)phd_centery, 1, SCRIPT_TEXT(optmessages[5]), FF_CENTER);
+		PrintString(phd_centerx, phd_centery, 1, SCRIPT_TEXT(optmessages[5]), FF_CENTER);
 
 		if (rings[RING_INVENTORY]->objlistmovement || rings[RING_AMMO]->objlistmovement)
 			return;
@@ -2394,9 +2394,9 @@ void handle_inventry_menu()
 	for (int i = 0; i < num; i++)
 	{
 		if (i == current_selected_option)
-			PrintString((ushort)phd_centerx, (ushort)ypos, 1, current_options[i].text, FF_CENTER);
+			PrintString(phd_centerx, ypos, 1, current_options[i].text, FF_CENTER);
 		else
-			PrintString((ushort)phd_centerx, (ushort)ypos, 5, current_options[i].text, FF_CENTER);
+			PrintString(phd_centerx, ypos, 5, current_options[i].text, FF_CENTER);
 
 		ypos += font_height;
 	}
@@ -2779,7 +2779,7 @@ void draw_current_object_list(long ringnum)
 			else
 				objmeup = long(phd_centery + float(phd_winymax + 1) / 16.0F * 3.0F);
 
-			PrintString((ushort)phd_centerx, (ushort)objmeup, 8, textbufme, FF_CENTER);
+			PrintString(phd_centerx, objmeup, 8, textbufme, FF_CENTER);
 		}
 
 		if (!i && !rings[ringnum]->objlistmovement)

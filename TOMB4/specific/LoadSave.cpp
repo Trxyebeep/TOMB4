@@ -526,8 +526,6 @@ void DoBar(long x, long y, long width, long height, long pos, long c1, long c2)
 	DrawColoredRect((float)x, (float)y, (float)xw, float(y2 + height), f_mznear - 4, 0, 0, 0, 0, &tex);
 }
 
-#pragma warning(push)
-#pragma warning(disable : 4244)
 void DoOptions()
 {
 	JOYINFOEX joy;
@@ -782,7 +780,7 @@ void DoOptions()
 						joyButton++;
 					}
 
-					layout[1][index] = joyButton + 255;
+					layout[1][index] = short(joyButton + 255);
 					waiting_for_key = 0;
 				}
 			}
@@ -1026,8 +1024,7 @@ void DoOptions()
 
 void DoStatScreen()
 {
-	long sec, days, hours, min;
-	ushort y;
+	long sec, days, hours, min, y;
 	char buf[40];
 
 	y = phd_centery - (font_height << 2);
@@ -1144,7 +1141,8 @@ long DoLoadSave(long LoadSave)
 {
 	SAVEFILE_INFO* pSave;
 	static long selection;
-	long txt, color, l;
+	long txt, l;
+	uchar color;
 	char string[80];
 	char name[41];
 
@@ -1217,7 +1215,6 @@ long DoLoadSave(long LoadSave)
 
 	return -1;
 }
-#pragma warning(pop)
 
 long S_LoadSave(long load_or_save, long mono, long inv_active)
 {
