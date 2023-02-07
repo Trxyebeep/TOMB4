@@ -789,7 +789,7 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 
 	if (App.Volumetric)
 	{
-		if (tex->drawtype != 2)
+		if (tex->drawtype != 2 && tex->drawtype != 5)
 		{
 			OmniFog(&v[v0]);
 			OmniFog(&v[v1]);
@@ -1023,7 +1023,7 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 
 	if (App.Volumetric)
 	{
-		if (tex->drawtype != 2)
+		if (tex->drawtype != 2 && tex->drawtype != 5)
 		{
 			OmniFog(&v[v0]);
 			OmniFog(&v[v1]);

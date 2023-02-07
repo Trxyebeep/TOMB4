@@ -125,7 +125,7 @@ bool Page0(long& num, long textY, ulong selection)
 	strcpy(buffer, tomb4.footprints ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
-	strcpy(buffer, tomb4.shadow_mode == 1 ? "original" : tomb4.shadow_mode == 2 ? "circle" : tomb4.shadow_mode == 3 ? "improved PSX" : "PSX");
+	strcpy(buffer, tomb4.shadow_mode == 1 ? "original" : tomb4.shadow_mode == 2 ? "circle" : tomb4.shadow_mode == 3 ? "faded circle" : "PSX");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	strcpy(buffer, tomb4.crawltilt ? "on" : "off");
