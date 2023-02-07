@@ -22,7 +22,7 @@ void InitialiseDog(short item_number)
 	if (item->trigger_flags)
 	{
 		item->anim_number = objects[item->object_number].anim_index + 1;
-		item->status += ITEM_ACTIVE;
+		item->status -= ITEM_INVISIBLE;
 	}
 	else
 		item->anim_number = objects[item->object_number].anim_index + 8;
@@ -91,7 +91,7 @@ void DogControl(short item_number)
 			dog->maximum_turn >>= 1;
 
 		angle = CreatureTurn(item, dog->maximum_turn);
-		torso_y = 4 * angle;
+		torso_y = angle << 2;
 
 		if (dog->hurt_by_lara || lara_info.distance < 0x900000 && !(item->ai_bits & MODIFY))
 		{
@@ -109,7 +109,7 @@ void DogControl(short item_number)
 			head = 0;
 			head_x = 0;
 
-			if (dog->mood == BORED_MOOD || item->ai_bits != MODIFY)
+			if (dog->mood == BORED_MOOD || item->ai_bits == MODIFY)
 			{
 				dog->flags++;
 				dog->maximum_turn = 0;
@@ -123,6 +123,7 @@ void DogControl(short item_number)
 			break;
 
 		case 2:
+			dog->maximum_turn = 546;
 
 			if (item->ai_bits & PATROL1)
 				item->goal_anim_state = 2;
@@ -204,12 +205,22 @@ void DogControl(short item_number)
 				head = AIGuard(dog);
 
 				if (!(GetRandomControl() & 0xFF))
-					item->goal_anim_state = item->current_anim_state == 1 ? 9 : 1;
+				{
+					if (item->current_anim_state == 1)
+						item->goal_anim_state = 9;
+					else
+						item->goal_anim_state = 1;
+				}
 			}
 			else if (item->current_anim_state == 9 && random < 128)
 				item->goal_anim_state = 1;
 			else if (item->ai_bits & PATROL1)
-				item->goal_anim_state = item->current_anim_state == 1 ? 2 : 1;
+			{
+				if (item->current_anim_state == 1)
+					item->goal_anim_state = 2;
+				else
+					item->goal_anim_state = 1;
+			}
 			else if (dog->mood == ESCAPE_MOOD)
 			{
 				if (lara.target != item && info.ahead && !item->hit_status)
@@ -231,7 +242,12 @@ void DogControl(short item_number)
 					dog->flags = 0;
 				}
 				else if (random < 4096)
-					item->goal_anim_state = item->current_anim_state == 1 ? 2 : 1;
+				{
+					if (item->current_anim_state == 1)
+						item->goal_anim_state = 2;
+					else
+						item->goal_anim_state = 1;
+				}
 				else if (!(random & 0x1F))
 					item->goal_anim_state = 7;
 			}
