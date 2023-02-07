@@ -43,8 +43,8 @@ long FlashIt()
 
 void DrawGameInfo(long timed)
 {
-	long flash_state, seconds, length;
-	short ammo, btm;
+	long flash_state, seconds, length, btm;
+	short ammo;
 	char buf[80];
 
 	if (!GLOBAL_playing_cutseq && !bDisableLaraControl && gfGameMode != 1)
