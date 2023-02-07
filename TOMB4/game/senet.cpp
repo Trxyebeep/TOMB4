@@ -416,7 +416,7 @@ void GameStixCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && lara.gun_status == LG_NO_ARMS && !item->active ||
 		lara.IsMoving && lara.GeneralPtr == (void*)item_number)
 	{
-		l->pos.y_rot ^= 0x8000;
+		item->pos.y_rot ^= 0x8000;
 
 		if (TestLaraPosition(GameStixBounds, item, l))
 		{
@@ -438,7 +438,7 @@ void GameStixCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 				lara.GeneralPtr = (void*)item_number;
 		}
 
-		l->pos.y_rot ^= 0x8000;
+		item->pos.y_rot ^= 0x8000;
 	}
 	else
 		ObjectCollision(item_number, l, coll);
