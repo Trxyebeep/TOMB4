@@ -339,7 +339,8 @@ void ObjectObjects()
 	obj = &objects[SARCOPHAGUS];
 	obj->control = ControlAnimatingSlots;
 	obj->collision = SarcophagusCollision;
-
+	obj->save_flags = 1;
+	obj->save_anim = 1;
 
 	for (int i = ANIMATING1; i <= ANIMATING12; i++)
 	{
