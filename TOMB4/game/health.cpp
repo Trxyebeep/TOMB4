@@ -65,6 +65,13 @@ void DrawGameInfo(long timed)
 					S_DrawEnemyBar(lara_item->hit_points / 10);
 				else if (lara.target->object_number == SKELETON)
 					S_DrawEnemyBar(100);
+				else if (lara.target->object_number == HORSEMAN)
+				{
+					if (lara.target->dynamic_light)
+						S_DrawEnemyBar(100 * lara.target->hit_points / 100);
+					else
+						S_DrawEnemyBar(100 * lara.target->hit_points / objects[lara.target->object_number].hit_points);
+				}
 				else
 					S_DrawEnemyBar(100 * lara.target->hit_points / objects[lara.target->object_number].hit_points);
 			}
