@@ -56,7 +56,7 @@ do \
 #define NO_HEIGHT	-32512
 #define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
-#define WINDOW_STYLE	(WS_OVERLAPPED | WS_BORDER | WS_CAPTION)
+#define WINDOW_STYLE	WS_OVERLAPPEDWINDOW
 #define W2V_SHIFT	14
 #define MAX_SAMPLES	370
 #define MAX_DYNAMICS	64
@@ -1232,7 +1232,7 @@ struct DXPTR
 	RECT rViewport;
 	RECT rScreen;
 	long Flags;
-	long WindowStyle;
+	ulong WindowStyle;
 	long CoopLevel;
 	LPDIRECTINPUTX lpDirectInput;
 	LPDIRECTINPUTDEVICEX Keyboard;
