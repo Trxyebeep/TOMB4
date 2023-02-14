@@ -34,7 +34,8 @@
 Determines shadow shape
 - Original: Original octagon shape.
 - Circle: A flat semi-transparent circle.
-- PSX: A faded circle similar to the shadow present in the PSX version.
+- Faded circle: A strong faded circle.
+- PSX: The PSX Sprite shadow.
 
 ### 3. Crawl Tilting:
 - Toggles Lara tilting while crawling on sloped surfaces.

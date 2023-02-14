@@ -43,8 +43,8 @@ long FlashIt()
 
 void DrawGameInfo(long timed)
 {
-	long flash_state, seconds, length;
-	short ammo, btm;
+	long flash_state, seconds, length, btm;
+	short ammo;
 	char buf[80];
 
 	if (!GLOBAL_playing_cutseq && !bDisableLaraControl && gfGameMode != 1)
@@ -65,6 +65,13 @@ void DrawGameInfo(long timed)
 					S_DrawEnemyBar(lara_item->hit_points / 10);
 				else if (lara.target->object_number == SKELETON)
 					S_DrawEnemyBar(100);
+				else if (lara.target->object_number == HORSEMAN)
+				{
+					if (lara.target->dynamic_light)
+						S_DrawEnemyBar(100 * lara.target->hit_points / 100);
+					else
+						S_DrawEnemyBar(100 * lara.target->hit_points / objects[lara.target->object_number].hit_points);
+				}
 				else
 					S_DrawEnemyBar(100 * lara.target->hit_points / objects[lara.target->object_number].hit_points);
 			}
@@ -74,7 +81,7 @@ void DrawGameInfo(long timed)
 		{
 			seconds = savegame.Level.Timer / 30;
 			sprintf(buf, "%.2d:%.2d:%.2d", seconds / 60, seconds % 60, (334 * (savegame.Level.Timer % 30)) / 100);
-			PrintString(ushort(phd_winwidth >> 1), (ushort)font_height, 0, buf, 0x8000);
+			PrintString(phd_winwidth >> 1, font_height, 0, buf, 0x8000);
 		}
 
 		if (tomb4.ammo_counter)
@@ -90,7 +97,7 @@ void DrawGameInfo(long timed)
 
 					sprintf(buf, "%i", ammo);
 					length = GetStringLength(buf, 0, &btm);
-					PrintString(ushort(LaserSight ? phd_centerx + 30 : (phd_winxmax - length - 80)), phd_winymax - btm - 70, 0, buf, 0);
+					PrintString(LaserSight ? phd_centerx + 30 : (phd_winxmax - length - 80), phd_winymax - btm - 70, 0, buf, 0);
 				}
 			}
 		}
@@ -98,7 +105,7 @@ void DrawGameInfo(long timed)
 		if (ammo_change_timer)
 		{
 			ammo_change_timer--;
-			PrintString(ushort(phd_winwidth >> 1), (ushort)font_height, 5, ammo_change_buf, 0x8000);
+			PrintString(phd_winwidth >> 1, font_height, 5, ammo_change_buf, 0x8000);
 
 			if (ammo_change_timer <= 0)
 				ammo_change_timer = 0;

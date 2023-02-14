@@ -136,9 +136,9 @@ static long S_Death()
 		{
 			if (!menu)	//"main" menu
 			{
-				PrintString((ushort)phd_centerx, (ushort)phd_centery, 3, SCRIPT_TEXT(TXT_GAME_OVER), FF_CENTER);
-				PrintString((ushort)phd_centerx, ushort(phd_centery + 2 * font_height), !selection ? 1 : 2, SCRIPT_TEXT(TXT_Load_Game), FF_CENTER);
-				PrintString((ushort)phd_centerx, ushort(phd_centery + 3 * font_height), selection == 1 ? 1 : 2, SCRIPT_TEXT(TXT_Exit_to_Title), FF_CENTER);
+				PrintString(phd_centerx, phd_centery, 3, SCRIPT_TEXT(TXT_GAME_OVER), FF_CENTER);
+				PrintString(phd_centerx, phd_centery + 2 * font_height, !selection ? 1 : 2, SCRIPT_TEXT(TXT_Load_Game), FF_CENTER);
+				PrintString(phd_centerx, phd_centery + 3 * font_height, selection == 1 ? 1 : 2, SCRIPT_TEXT(TXT_Exit_to_Title), FF_CENTER);
 
 				if (selection)
 				{
@@ -189,7 +189,7 @@ static long S_Death()
 		}
 		else
 		{
-			PrintString((ushort)phd_centerx, (ushort)phd_centery, 3, SCRIPT_TEXT(TXT_GAME_OVER), FF_CENTER);
+			PrintString(phd_centerx, phd_centery, 3, SCRIPT_TEXT(TXT_GAME_OVER), FF_CENTER);
 
 			if (lara.death_count > 300 || (lara.death_count > 150 && input != IN_NONE))
 				return 1;
@@ -1596,7 +1596,7 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 			break;
 
 		default:
-			S_ExitSystem("GetHeight(): Unknown type");
+			Log(0, "GetHeight(): Unknown type");
 			break;
 		}
 
@@ -1803,7 +1803,7 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 				break;
 
 			default:
-				S_ExitSystem("GetCeiling(): Unknown type");
+				Log(0, "GetCeiling(): Unknown type");
 				break;
 			}
 		} while (!(type & 0x8000));

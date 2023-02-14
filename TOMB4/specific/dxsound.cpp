@@ -394,6 +394,9 @@ void S_SoundSetPitch(long num, long pitch)
 
 void S_SetReverbType(long reverb)
 {
+	if (App.SoundDisabled)
+		return;
+
 	if (tomb4.reverb == 1)
 		reverb = 0;
 
@@ -421,6 +424,9 @@ void S_SetReverbType(long reverb)
 
 void DXDSClose()
 {
+	if (App.SoundDisabled)
+		return;
+
 	for (int i = 0; i < 32; i++)
 	{
 		if (XA_Voices[i])

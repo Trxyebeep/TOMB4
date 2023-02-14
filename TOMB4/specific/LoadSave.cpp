@@ -526,8 +526,6 @@ void DoBar(long x, long y, long width, long height, long pos, long c1, long c2)
 	DrawColoredRect((float)x, (float)y, (float)xw, float(y2 + height), f_mznear - 4, 0, 0, 0, 0, &tex);
 }
 
-#pragma warning(push)
-#pragma warning(disable : 4244)
 void DoOptions()
 {
 	JOYINFOEX joy;
@@ -782,7 +780,7 @@ void DoOptions()
 						joyButton++;
 					}
 
-					layout[1][index] = joyButton + 255;
+					layout[1][index] = short(joyButton + 255);
 					waiting_for_key = 0;
 				}
 			}
@@ -1026,8 +1024,7 @@ void DoOptions()
 
 void DoStatScreen()
 {
-	long sec, days, hours, min;
-	ushort y;
+	long sec, days, hours, min, y;
 	char buf[40];
 
 	y = phd_centery - (font_height << 2);
@@ -1144,7 +1141,8 @@ long DoLoadSave(long LoadSave)
 {
 	SAVEFILE_INFO* pSave;
 	static long selection;
-	long txt, color, l;
+	long txt, l;
+	uchar color;
 	char string[80];
 	char name[41];
 
@@ -1217,7 +1215,6 @@ long DoLoadSave(long LoadSave)
 
 	return -1;
 }
-#pragma warning(pop)
 
 long S_LoadSave(long load_or_save, long mono, long inv_active)
 {
@@ -1416,101 +1413,6 @@ void RGBM_Mono(uchar * r, uchar * g, uchar * b)
 		*r = c;
 		*g = c;
 		*b = c;
-	}
-}
-
-void MemBltSurf(void* dest, long x, long y, long w, long h, long dadd, void* source, long x2, long y2, DDSURFACEDESCX surface, float xsize, float ysize)
-{
-	ulong* pDest;
-	short* psSrc;
-	char* pSrc;
-	long xadd, yadd, rx2, ry2, xoff, yoff, curY;
-	short andVal;
-	uchar r, g, b, rshift, gshift, bshift, rcount, gcount, bcount;
-
-	xadd = long(((float)App.dx.dwRenderWidth / 640.0F) * xsize * 65536.0);
-	yadd = long(((float)App.dx.dwRenderHeight / 480.0F) * ysize * 65536.0);
-	rx2 = long(x2 * ((float)App.dx.dwRenderWidth / 639.0F));
-	ry2 = long(y2 * ((float)App.dx.dwRenderHeight / 479.0F));
-
-	if (App.dx.Flags & 2)
-	{
-		rx2 += App.dx.rScreen.left;
-		ry2 += App.dx.rScreen.top;
-	}
-
-	DXBitMask2ShiftCnt(surface.ddpfPixelFormat.dwRBitMask, &rshift, &rcount);
-	DXBitMask2ShiftCnt(surface.ddpfPixelFormat.dwGBitMask, &gshift, &gcount);
-	DXBitMask2ShiftCnt(surface.ddpfPixelFormat.dwBBitMask, &bshift, &bcount);
-	pDest = (ulong*)dest + 4 * h * y + x;
-	pSrc = (char*)source + rx2 * (surface.ddpfPixelFormat.dwRGBBitCount >> 3) + (ry2 * surface.lPitch);
-	psSrc = (short*)pSrc;
-	curY = 0;
-	yoff = 0;
-
-	if (surface.ddpfPixelFormat.dwRGBBitCount == 16)
-	{
-		for (int i = 0; i < h; i++)
-		{
-			xoff = 0;
-
-			for (int j = 0; j < w; j++)
-			{
-				andVal = psSrc[curY + (xoff >> 16)];
-				r = uchar(((surface.ddpfPixelFormat.dwRBitMask & andVal) >> rshift) << (8 - rcount));
-				g = uchar(((surface.ddpfPixelFormat.dwGBitMask & andVal) >> gshift) << (8 - gcount));
-				b = uchar(((surface.ddpfPixelFormat.dwBBitMask & andVal) >> bshift) << (8 - bcount));
-				*pDest = RGBA(r, g, b, 0xFF);
-				pDest++;
-				xoff += xadd;
-			}
-
-			yoff += yadd;
-			curY = (surface.lPitch >> 1) * (yoff >> 16);
-			pDest += dadd - w;
-		}
-	}
-	else if (surface.ddpfPixelFormat.dwRGBBitCount == 24)
-	{
-		for (int i = 0; i < h; i++)
-		{
-			xoff = 0;
-
-			for (int j = 0; j < w; j++)
-			{
-				r = pSrc[curY + (xoff >> 16)];
-				g = pSrc[curY + 1 + (xoff >> 16)];
-				b = pSrc[curY + 2 + (xoff >> 16)];
-				*pDest = RGBA(r, g, b, 0xFF);
-				pDest++;
-				xoff += 3 * xadd;
-			}
-
-			yoff += yadd;
-			curY = surface.lPitch * (yoff >> 16);
-			pDest += dadd - w;
-		}
-	}
-	else if (surface.ddpfPixelFormat.dwRGBBitCount == 32)
-	{
-		for (int i = 0; i < h; i++)
-		{
-			xoff = 0;
-
-			for (int j = 0; j < w; j++)
-			{
-				r = pSrc[curY + (xoff >> 16)];
-				g = pSrc[curY + 1 + (xoff >> 16)];
-				b = pSrc[curY + 2 + (xoff >> 16)];
-				*pDest = RGBA(r, g, b, 0xFF);
-				pDest++;
-				xoff += xadd << 2;
-			}
-
-			yoff += yadd;
-			curY = surface.lPitch * (yoff >> 16);
-			pDest += dadd - w;
-		}
 	}
 }
 

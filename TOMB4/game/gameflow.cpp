@@ -525,7 +525,7 @@ void DoLevel(uchar Name, uchar Audio)
 
 		if (gfLegendTime && !DestFadeScreenHeight && !FadeScreenHeight && !cutseq_num)
 		{
-			PrintString((ushort)(phd_winwidth >> 1), (ushort)(phd_winymax - font_height), 2, SCRIPT_TEXT(gfLegend), FF_CENTER);
+			PrintString(phd_winwidth >> 1, phd_winymax - font_height, 2, SCRIPT_TEXT(gfLegend), FF_CENTER);
 			gfLegendTime--;
 		}
 
@@ -617,8 +617,6 @@ void DoLevel(uchar Name, uchar Audio)
 	reset_flag = 0;
 }
 
-#pragma warning(push)
-#pragma warning(disable : 4244)
 long TitleOptions()
 {
 	static __int64 selected_option = 1;
@@ -849,7 +847,6 @@ long TitleOptions()
 
 	return ret;
 }
-#pragma warning(pop)
 
 void DoTitle(uchar Name, uchar Audio)
 {
@@ -1090,9 +1087,9 @@ long DoCredits()
 		if (y < font_height + phd_winheight + 1 && y > -font_height)
 		{
 			if (*s == '%')
-				PrintString(ushort(phd_winwidth >> 1), (ushort)y, 6, SCRIPT_TEXT(CreditGroups[atoi(s + 1)]), FF_CENTER);
+				PrintString(phd_winwidth >> 1, y, 6, SCRIPT_TEXT(CreditGroups[atoi(s + 1)]), FF_CENTER);
 			else if (*s != '0')
-				PrintString(ushort(phd_winwidth >> 1), (ushort)y, 2 + (i == 72 ? 4 : 0), s, FF_CENTER);
+				PrintString(phd_winwidth >> 1, y, 2 + (i == 72 ? 4 : 0), s, FF_CENTER);
 
 			num_drawn++;
 		}

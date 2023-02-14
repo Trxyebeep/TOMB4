@@ -18,21 +18,6 @@ static long malloc_used;
 static long rand_1 = 0xD371F947;
 static long rand_2 = 0xD371F947;
 
-void other_log(char* format, ...)
-{
-	va_list arglist;
-	char buffer[4096];
-
-	va_start(arglist, format);
-	vsprintf(buffer, format, arglist);
-	Log(0, buffer);
-}
-
-void S_ExitSystem(const char* string)
-{
-	Log(0, "**** %s ****", string);
-}
-
 long GetRandomControl()
 {
 	rand_1 = 0x41C64E6D * rand_1 + 12345;

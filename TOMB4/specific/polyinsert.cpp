@@ -361,7 +361,7 @@ void CreateFogPos(FOGBULB_STRUCT* FogBulb)
 				FogBulb->vec.x = FogBulb->WorldPos.x - camera.pos.x;
 				FogBulb->vec.y = FogBulb->WorldPos.y - camera.pos.y;
 				FogBulb->vec.z = FogBulb->WorldPos.z - camera.pos.z;
-				mSetD3DMatrix(&D3DMView, mW2V);
+				SetD3DMatrix(&D3DMView, mW2V);
 				mD3DTransform(&FogBulb->vec, &D3DMView);
 				FogBulb->pos.x = FogBulb->vec.x;
 				FogBulb->pos.y = FogBulb->vec.y;
@@ -508,6 +508,7 @@ void InitialiseFogBulbs()
 	FOGBULB_STRUCT* FogBulb;
 
 	NumActiveFogBulbs = 0;
+	NumFogBulbsInRange = 0;
 	qsort(&FogBulbs, NumLevelFogBulbs, sizeof(FOGBULB_STRUCT), DistCompare);
 
 	for (int i = 0; i < NumLevelFogBulbs; i++)
@@ -788,7 +789,7 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 
 	if (App.Volumetric)
 	{
-		if (tex->drawtype != 2)
+		if (tex->drawtype != 2 && tex->drawtype != 5)
 		{
 			OmniFog(&v[v0]);
 			OmniFog(&v[v1]);
@@ -1022,7 +1023,7 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 
 	if (App.Volumetric)
 	{
-		if (tex->drawtype != 2)
+		if (tex->drawtype != 2 && tex->drawtype != 5)
 		{
 			OmniFog(&v[v0]);
 			OmniFog(&v[v1]);

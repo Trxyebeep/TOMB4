@@ -194,7 +194,7 @@ void WinDisplayString(long x, long y, char* string, ...)
 
 	va_start(list, string);
 	vsprintf(buf, string, list);
-	PrintString((ushort)x, (ushort)y, 6, buf, 0);
+	PrintString(x, y, 6, buf, 0);
 }
 
 void WinProcMsg()
