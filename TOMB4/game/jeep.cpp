@@ -1732,7 +1732,7 @@ void InitialiseEnemyJeep(short item_number)
 	item->frame_number = anims[item->anim_number].frame_base;
 	item->current_anim_state = 0;
 	item->goal_anim_state = 0;
-	item->mesh_bits = ~0x24000;
+	item->mesh_bits = 0xFFFDBFF;
 	item->status -= ITEM_INVISIBLE;
 }
 
@@ -1744,7 +1744,7 @@ void EnemyJeepControl(short item_number)
 	AIOBJECT* aiobj;
 	AI_INFO info;
 	PHD_VECTOR pos;
-	long Xoffset, Zoffset, x, y, z, h1, h2, iAngle, iDist;
+	long Xoffset, Zoffset, x, y, z, h1, h2, _h1, _h2, iAngle, iDist;
 	short room_number, xrot, zrot;
 
 	if (!CreatureActive(item_number))
@@ -1790,6 +1790,7 @@ void EnemyJeepControl(short item_number)
 	room_number = item->room_number;
 	floor = GetFloor(x, y, z, &room_number);
 	h1 = GetHeight(floor, x, y, z);
+	_h1 = h1;
 
 	if (abs(y - h1) > 768)
 		h1 = y;
@@ -1799,6 +1800,7 @@ void EnemyJeepControl(short item_number)
 	room_number = item->room_number;
 	floor = GetFloor(x, y, z, &room_number);
 	h2 = GetHeight(floor, x, y, z);
+	_h2 = h2;
 
 	if (abs(y - h2) > 768)
 		h2 = y;
@@ -1819,10 +1821,10 @@ void EnemyJeepControl(short item_number)
 
 		iAngle = phd_atan(z, x) - item->pos.y_rot;
 
-		if (z > 32000 || z < -32000 || x > 32000 || x < -32000)
+		if (x > 32000 || x < -32000 || z > 32000 || z < -32000)
 			iDist = 0x7FFFFFFF;
 		else
-			iDist = SQUARE(z) + SQUARE(x);
+			iDist = SQUARE(x) + SQUARE(z);
 	}
 
 	switch (item->current_anim_state)
@@ -1830,7 +1832,7 @@ void EnemyJeepControl(short item_number)
 	case 0:
 	case 2:
 		item->item_flags[0] -= 128;
-		item->mesh_bits = ~0x18000;
+		item->mesh_bits = 0xFFFE7FFF;
 
 		if (item->item_flags[0] < 0)
 			item->item_flags[0] = 0;
@@ -1850,8 +1852,8 @@ void EnemyJeepControl(short item_number)
 		
 	case 1:
 		jeep->maximum_turn = item->item_flags[0] >> 4;
-		item->item_flags[0] += 37;
-		item->mesh_bits = ~0x24000;
+		item->item_flags[0] += 37;		//34 in debug exe
+		item->mesh_bits = 0xFFFDBFFF;
 
 		if (item->item_flags[0] > 0x2200)
 			item->item_flags[0] = 0x2200;
@@ -1865,7 +1867,7 @@ void EnemyJeepControl(short item_number)
 
 	case 3:
 	case 4:
-		item->item_flags[0] += 18;
+		item->item_flags[0] += 18;		//17 in debug exe
 
 		if (item->item_flags[0] > 0x2200)
 			item->item_flags[0] = 0x2200;
@@ -1881,7 +1883,7 @@ void EnemyJeepControl(short item_number)
 		break;
 	}
 
-	if (h1 > item->floor + 512)
+	if (_h1 > item->floor + 512)
 	{
 		jeep->LOT.is_jumping = 1;
 
@@ -1907,7 +1909,7 @@ void EnemyJeepControl(short item_number)
 			item->goal_anim_state = 1;
 		}
 	}
-	else if (h2 > item->floor + 512 && item->current_anim_state != 5)
+	else if (_h2 > item->floor + 512 && item->current_anim_state != 5)
 	{
 		item->item_flags[1] = 0;
 		item->anim_number = objects[item->object_number].anim_index + 8;
@@ -2011,7 +2013,8 @@ void EnemyJeepControl(short item_number)
 	else if (zrot < item->pos.z_rot)
 		item->pos.z_rot -= 256;
 
-	item->item_flags[0] += -2 - (xrot >> 9);
+	item->item_flags[0] -= xrot >> 9;
+	item->item_flags[0] -= 2;
 
 	if (item->item_flags[0] < 0)
 		item->item_flags[0] = 0;

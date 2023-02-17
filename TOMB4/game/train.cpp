@@ -161,6 +161,7 @@ void InitialiseTrainJeep(short item_number)
 			item->item_flags[1] = i;
 			item2->item_flags[0] = -80;
 			item2->pos.y_pos = item->pos.y_pos - 1024;
+			return;
 		}
 	}
 }
@@ -188,7 +189,7 @@ void TrainJeepControl(short item_number)
 	room_number = item->room_number;
 	GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 
-	if (room_number != item->room_number)
+	if (item->room_number != room_number)
 		ItemNewRoom(item_number, room_number);
 
 	if (item2->item_flags[0] > -40 || item2->hit_points < 1)
