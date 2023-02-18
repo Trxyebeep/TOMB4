@@ -568,6 +568,17 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 	mesh->SourceVB->Unlock();
 }
 
+static void RGB_M(ulong& c, long m)	//Original was a macro.
+{
+	long r, g, b, a;
+
+	a = CLRA(c);
+	r = (CLRR(c) * m) >> 8;
+	g = (CLRG(c) * m) >> 8;
+	b = (CLRB(c) * m) >> 8;
+	c = RGBA(r, g, b, a);
+}
+
 void phd_PutPolygons(short* objptr, long clip)
 {
 	MESH_DATA* mesh;
@@ -636,6 +647,7 @@ void phd_PutPolygons(short* objptr, long clip)
 		{
 			envmap = 1;
 			num = (quad[5] >> 2) & 0x1F;
+			num <<= 3;
 			normals[0] = mesh->Normals[quad[0]];
 			normals[1] = mesh->Normals[quad[1]];
 			normals[2] = mesh->Normals[quad[2]];
@@ -725,6 +737,7 @@ void phd_PutPolygons(short* objptr, long clip)
 		{
 			envmap = 1;
 			num = (tri[4] >> 2) & 0x1F;
+			num <<= 3;
 			normals[0] = mesh->Normals[tri[0]];
 			normals[1] = mesh->Normals[tri[1]];
 			normals[2] = mesh->Normals[tri[2]];
@@ -1018,6 +1031,7 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 		{
 			envmap = 1;
 			num = (quad[5] >> 2) & 0x1F;
+			num <<= 3;
 			normals[0] = mesh->Normals[quad[0]];
 			normals[1] = mesh->Normals[quad[1]];
 			normals[2] = mesh->Normals[quad[2]];
@@ -1099,6 +1113,7 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 		{
 			envmap = 1;
 			num = (tri[4] >> 2) & 0x1F;
+			num <<= 3;
 			normals[0] = mesh->Normals[tri[0]];
 			normals[1] = mesh->Normals[tri[1]];
 			normals[2] = mesh->Normals[tri[2]];
