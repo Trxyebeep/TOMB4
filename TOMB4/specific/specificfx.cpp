@@ -175,12 +175,24 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 		pos.x = 0;
 		pos.y = 0;
 		pos.z = 0;
-		GetLaraJointPos(&pos, LM_TORSO);
-		room_number = lara_item->room_number;
-		y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
+		GetLaraJointPos(&pos, LM_HIPS);
 
-		if (y == NO_HEIGHT)
+		if (cutseq_trig || ((abs(item->pos.x_pos - pos.x) > 128 || abs(item->pos.z_pos - pos.z) > 128) &&
+			(item->current_anim_state != AS_ALL4S && item->current_anim_state != AS_CRAWL && item->current_anim_state != AS_CRAWLBACK &&
+				item->current_anim_state != AS_ALL4TURNL && item->current_anim_state != AS_ALL4TURNR)))
+		{
+			room_number = lara_item->room_number;
+			y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
+
+			if (y == NO_HEIGHT)
+				y = item->floor;
+		}
+		else
+		{
+			pos.x = item->pos.x_pos;
 			y = item->floor;
+			pos.z = item->pos.z_pos;
+		}
 	}
 	else
 	{
@@ -341,19 +353,29 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 
 	phd_PushUnitMatrix();
 
-	if (item == lara_item && (cutseq_trig || (item->anim_number == ANIM_PULL || item->anim_number == ANIM_PUSH ||
-		item->anim_number == ANIM_TURNSWITCHC || item->anim_number == ANIM_TURNSWITCHA ||
-		(item->anim_number >= ANIM_TURNSWITCHCB && item->anim_number <= ANIM_TURNSWITCHAD))))
+	if (item == lara_item)
 	{
 		pos.x = 0;
 		pos.y = 0;
 		pos.z = 0;
 		GetLaraJointPos(&pos, LM_HIPS);
-		room_number = lara_item->room_number;
-		pos.y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
 
-		if (pos.y == NO_HEIGHT)
+		if (cutseq_trig || ((abs(item->pos.x_pos - pos.x) > 128 || abs(item->pos.z_pos - pos.z) > 128) &&
+			(item->current_anim_state != AS_ALL4S && item->current_anim_state != AS_CRAWL && item->current_anim_state != AS_CRAWLBACK &&
+				item->current_anim_state != AS_ALL4TURNL && item->current_anim_state != AS_ALL4TURNR)))
+		{
+			room_number = lara_item->room_number;
+			pos.y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
+
+			if (pos.y == NO_HEIGHT)
+				pos.y = item->floor;
+		}
+		else
+		{
+			pos.x = item->pos.x_pos;
 			pos.y = item->floor;
+			pos.z = item->pos.z_pos;
+		}
 	}
 	else
 	{
@@ -514,12 +536,24 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 		pos.x = 0;
 		pos.y = 0;
 		pos.z = 0;
-		GetLaraJointPos(&pos, LM_TORSO);
-		room_number = lara_item->room_number;
-		y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
+		GetLaraJointPos(&pos, LM_HIPS);
 
-		if (y == NO_HEIGHT)
+		if (cutseq_trig || ((abs(item->pos.x_pos - pos.x) > 128 || abs(item->pos.z_pos - pos.z) > 128) &&
+			(item->current_anim_state != AS_ALL4S && item->current_anim_state != AS_CRAWL && item->current_anim_state != AS_CRAWLBACK &&
+				item->current_anim_state != AS_ALL4TURNL && item->current_anim_state != AS_ALL4TURNR)))
+		{
+			room_number = lara_item->room_number;
+			y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
+
+			if (y == NO_HEIGHT)
+				y = item->floor;
+		}
+		else
+		{
+			pos.x = item->pos.x_pos;
 			y = item->floor;
+			pos.z = item->pos.z_pos;
+		}
 	}
 	else
 	{
