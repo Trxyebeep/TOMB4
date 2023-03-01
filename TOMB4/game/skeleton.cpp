@@ -214,7 +214,7 @@ void SkeletonControl(short item_number)
 		larainfo.distance = SQUARE(dx) + SQUARE(dz);
 	}
 
-	larainfo.ahead = larainfo.angle > -0x4000 && larainfo.angle < 0x4000;	//uninitialized
+//	larainfo.ahead = larainfo.angle > -0x4000 && larainfo.angle < 0x4000;	//Keep uninitialized
 	GetCreatureMood(item, &info, 1);
 
 	if (!(item->mesh_bits & 0x200))
@@ -289,83 +289,83 @@ void SkeletonControl(short item_number)
 		else
 			skelly->maximum_turn = 364;
 
-		if (item->ai_bits & GUARD || (!(GetRandomControl() & 0x1F) && info.distance > 0x100000 || skelly->mood != ATTACK_MOOD))
+		if (!(item->ai_bits & GUARD) && (GetRandomControl() & 0x1F || info.distance <= 0x100000 && skelly->mood == ATTACK_MOOD))
 		{
-			if (!(GetRandomControl() & 0x3F))
+			if (item->ai_bits & PATROL1)
+				item->goal_anim_state = 15;
+			else if (jump_ahead || long_jump_ahead)
+			{
+				skelly->maximum_turn = 0;
+				item->anim_number = objects[SKELETON].anim_index + 40;
+				item->frame_number = anims[item->anim_number].frame_base;
+				item->current_anim_state = 21;
+
+				if (long_jump_ahead)
+					item->goal_anim_state = 22;
+				else
+					item->goal_anim_state = 21;
+
+				skelly->LOT.is_jumping = 1;
+			}
+			else if (jump_left)
+			{
+				item->anim_number = objects[SKELETON].anim_index + 34;
+				item->frame_number = anims[item->anim_number].frame_base;
+				item->current_anim_state = 19;
+				item->goal_anim_state = 19;
+			}
+			else if (jump_right)
+			{
+				item->anim_number = objects[SKELETON].anim_index + 37;
+				item->frame_number = anims[item->anim_number].frame_base;
+				item->current_anim_state = 20;
+				item->goal_anim_state = 20;
+			}
+			else if (skelly->mood == ESCAPE_MOOD)
+			{
+				if (lara.target == item || !info.ahead || item->hit_status || !(item->mesh_bits & 0x200))
+					item->goal_anim_state = 15;
+				else
+					item->goal_anim_state = 2;
+			}
+			else if (skelly->mood == BORED_MOOD || item->ai_bits & FOLLOW && (skelly->reached_goal || larainfo.distance > 0x400000))
+			{
+				if (item->required_anim_state)
+					item->goal_anim_state = item->required_anim_state;
+				else if (!(GetRandomControl() & 0x3F))
+					item->goal_anim_state = 15;
+			}
+			else if (lara.target == item && larainfo.ahead && larainfo.distance < 0x400000 && GetRandomControl() & 1 &&
+				(lara.gun_type == WEAPON_SHOTGUN || !(GetRandomControl() & 0xF)) && item->mesh_bits == -1)
+				item->goal_anim_state = 7;
+			else if (info.bite && info.distance < 0x718E4)
+			{
+				if (!(GetRandomControl() & 3) || lara_item->hit_points <= 0)
+					item->goal_anim_state = 10;
+				else if (GetRandomControl() & 1)
+					item->goal_anim_state = 8;
+				else
+					item->goal_anim_state = 9;
+			}
+			else if (item->hit_status || item->required_anim_state)
 			{
 				if (GetRandomControl() & 1)
-					item->goal_anim_state = 3;
+					item->goal_anim_state = 5;
 				else
-					item->goal_anim_state = 4;
+					item->goal_anim_state = 6;
+
+				item->required_anim_state = item->goal_anim_state;
 			}
-		}
-		else if (item->ai_bits & PATROL1)
-			item->goal_anim_state = 15;
-		else if (jump_ahead || long_jump_ahead)
-		{
-			skelly->maximum_turn = 0;
-			item->anim_number = objects[SKELETON].anim_index + 40;
-			item->frame_number = anims[item->anim_number].frame_base;
-			item->current_anim_state = 21;
-
-			if (long_jump_ahead)
-				item->goal_anim_state = 22;
 			else
-				item->goal_anim_state = 21;
-
-			skelly->LOT.is_jumping = 1;
-		}
-		else if (jump_left)
-		{
-			item->anim_number = objects[SKELETON].anim_index + 34;
-			item->frame_number = anims[item->anim_number].frame_base;
-			item->current_anim_state = 19;
-			item->goal_anim_state = 19;
-		}
-		else if (jump_right)
-		{
-			item->anim_number = objects[SKELETON].anim_index + 37;
-			item->frame_number = anims[item->anim_number].frame_base;
-			item->current_anim_state = 20;
-			item->goal_anim_state = 20;
-		}
-		else if (skelly->mood == ESCAPE_MOOD)
-		{
-			if (lara.target == item || !info.ahead || item->hit_status || !(item->mesh_bits & 0x200))
-				item->goal_anim_state = 15;
-			else
-				item->goal_anim_state = 2;
-		}
-		else if (skelly->mood == BORED_MOOD || item->ai_bits & FOLLOW && (skelly->reached_goal || larainfo.distance > 0x400000))
-		{
-			if (item->required_anim_state)
-				item->goal_anim_state = item->required_anim_state;
-			else if (!(GetRandomControl() & 0x3F))
 				item->goal_anim_state = 15;
 		}
-		else if (lara.target == item && larainfo.ahead && larainfo.distance < 0x400000 && GetRandomControl() & 1 &&
-			(lara.gun_type == WEAPON_SHOTGUN || !(GetRandomControl() & 0xF)) && item->mesh_bits == -1)
-			item->goal_anim_state = 7;
-		else if (info.bite && info.distance < 0x718E4)
-		{
-			if (!(GetRandomControl() & 3) || lara_item->hit_points <= 0)
-				item->goal_anim_state = 10;
-			else if (GetRandomControl() & 1)
-				item->goal_anim_state = 8;
-			else
-				item->goal_anim_state = 9;
-		}
-		else if (item->hit_status || item->required_anim_state)
+		else if (!(GetRandomControl() & 0x3F))
 		{
 			if (GetRandomControl() & 1)
-				item->goal_anim_state = 5;
+				item->goal_anim_state = 3;
 			else
-				item->goal_anim_state = 6;
-
-			item->required_anim_state = item->goal_anim_state;
+				item->goal_anim_state = 4;
 		}
-		else
-			item->goal_anim_state = 15;
 
 		break;
 
@@ -553,7 +553,7 @@ void SkeletonControl(short item_number)
 			}
 			else
 			{
-				room_number = item->room_number;
+				skelly->LOT.is_jumping = 1;
 				floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 				h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 
