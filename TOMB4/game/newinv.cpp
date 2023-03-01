@@ -704,20 +704,22 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 					{
 						lara.num_large_medipack = -1;
 						lara.num_small_medipack = -1;
-						lara.num_revolver_ammo = -1;
-						lara.num_uzi_ammo = -1;
-						lara.num_crossbow_ammo1 = -1;
-						lara.num_crossbow_ammo2 = -1;
-						lara.num_crossbow_ammo3 = -1;
-						lara.num_grenade_ammo1 = -1;
-						lara.num_grenade_ammo2 = -1;
-						lara.num_grenade_ammo3 = -1;
-						lara.num_flares = -1;
-						lara.num_shotgun_ammo1 = -1;
-						lara.num_shotgun_ammo2 = -1;
 
 						if (!(gfLevelFlags & GF_YOUNGLARA))
 						{
+							lara.num_revolver_ammo = -1;
+							lara.num_uzi_ammo = -1;
+							lara.num_crossbow_ammo1 = -1;
+							lara.num_crossbow_ammo2 = -1;
+							lara.num_crossbow_ammo3 = -1;
+							lara.num_grenade_ammo1 = -1;
+							lara.num_grenade_ammo2 = -1;
+							lara.num_grenade_ammo3 = -1;
+							lara.num_flares = -1;
+							lara.num_shotgun_ammo1 = -1;
+							lara.num_shotgun_ammo2 = -1;
+
+							lara.lasersight = 1;
 							lara.pistols_type_carried |= W_PRESENT;
 							lara.uzis_type_carried |= W_PRESENT;
 							lara.shotgun_type_carried |= W_PRESENT;
