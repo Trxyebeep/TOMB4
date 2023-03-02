@@ -1732,7 +1732,7 @@ void InitialiseEnemyJeep(short item_number)
 	item->frame_number = anims[item->anim_number].frame_base;
 	item->current_anim_state = 0;
 	item->goal_anim_state = 0;
-	item->mesh_bits = 0xFFFDBFF;
+	item->mesh_bits = 0xFFFDBFFF;
 	item->status -= ITEM_INVISIBLE;
 }
 
