@@ -542,7 +542,7 @@ void TurnSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		}
 		else
 		{
-			item->pos.y_rot ^= 0x8000;
+			l->pos.y_rot ^= 0x8000;
 
 			if (TestLaraPosition(TurnSwitchBoundsC, item, l))
 			{
@@ -564,7 +564,7 @@ void TurnSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 				lara.gun_status = LG_NO_ARMS;
 			}
 
-			item->pos.y_rot ^= 0x8000;
+			l->pos.y_rot ^= 0x8000;
 		}
 	}
 
