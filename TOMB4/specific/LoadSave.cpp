@@ -118,7 +118,7 @@ void DoOptions()
 
 		for (lp = 0; lp < 16; lp++)
 		{
-			txt = (waiting_for_key && sel2 & 2) ? SCRIPT_TEXT(TXT_Waiting) : keyboard_buttons[layout[1][lp]];
+			txt = (waiting_for_key && sel2 & (1 << i)) ? SCRIPT_TEXT(TXT_Waiting) : keyboard_buttons[layout[1][lp]];
 			PrintString(phd_centerx + (phd_centerx >> 2), f + y++ * font_height, sel2 & (1 << i++) ? 1 : 6, txt, 0);
 		}
 
