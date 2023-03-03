@@ -1,5 +1,64 @@
 # tomb4 changelog
 
+## [2.1.0](https://github.com/Trxyebeep/TOMB4/tree/V2.1.0) (Mar. 3 2023)
+
+### Original bug fixes
+
+- Fix fog wrongly affecting rope.
+- Fix Lara performing the wrong walk animation when interacting with some objects.
+- Fix multiple lara hand deadlocks after certain actions.
+- Fix combine SFX not playing when combining the small waterskin with the big one.
+- Fix some menuing sounds not playing underwater.
+
+### tomb4 bug fixes
+
+- Fix keyboard accelerators (ALT + key keyboard hotkeys).
+- Fix joint lighting/rotation.
+- Fix raising floor lighting in Tomb of Seth.
+- Fix cursor in windowed mode.
+- Fix the seperate option appearing on grenade gun and crashing.
+- Fix block pulling test (Fixes the shelf in Sphinx Complex).
+- Fix lightning effect corruption in Sacred Lake.
+- Fix baddy death on monkeyswing.
+- Fix object bound detection.
+- Fix moveable blocks possibly wrongly blocking enemies.
+- Fix fog bulb bound detection, stops fog from randomly disappearing.
+- Fix shoot switch collision detection.
+- Fix camera shaking strength.
+- Fix VonCroy excess tilt while running.
+- Fix Senet objects disappearing sometimes.
+- Fix triggering track 061_in_the_pyramid_part_i.wav
+- Fix not being able to have distance fog and volumetric fog in the same level.
+- Fix crash on exit if sound disabled through setup.
+- Fix dog not waking up.
+- Fix PSX shadow not moving with Lara in some animations.
+- Improve shadow disappearing on some tilted geometry.
+- Fix possible matrix stack corruption.
+- Fix crashing when reloading some saves.
+- Fix enemy bar for horseman.
+- Fix window creation.
+- Fix skeleton behavior.
+- Fix enemy jeep movement.
+- Fix planet effect drawing.
+- Fix possible issues with jeeps carrying baddies in train level.
+
+### new tomb4 features
+
+- Add new scaling system.
+- Refactor bars to use the new scaling system, fixing overlap issues.
+- Rework pickup display to use the new scaling system.
+- Use floating points in sky drawing for more accurate positioning/movement.
+- Rework Bike/Jeep speedometers to use the new scaling system, stops them from stretching in widescreen.
+- Rework the main menu logo to use the new scaling system to stop stretching in widescreen.
+- Implement a more accurate frame for PSX bars.
+- Remove 16 bit texture bit support.
+- Implement completely new manual (Non dx-reliant) drawing system for rooms and objects.
+- Use the new scale system for lasersight sprite, making it visible and consistent on every resolution.
+- Use proper PSX shadow sprite.
+- Add customizable distance fog.
+- Add lasersight to items cheat.
+
+
 ## [2.0.0](https://github.com/Trxyebeep/TOMB4/tree/V2.0.0) (Oct. 17 2022)
 
 ### Original bug fixes

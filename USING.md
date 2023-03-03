@@ -120,3 +120,6 @@ Toggles static lighting.
 
 ### 21. Reverb:
 Toggles Reverb and allows choosing its room.
+
+### 22. Distance fog:
+Controls the distance at which vertices start to fade to black. Note: this value is in blocks/squares, meaning a value of 12 makes the distance fog start 12 game blocks away from the current camera position.
