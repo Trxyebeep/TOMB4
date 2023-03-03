@@ -23,6 +23,7 @@
 #include "savegame.h"
 #include "../tomb4/tomb4.h"
 #include "../specific/dxsound.h"
+#include "../specific/drawbars.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)
