@@ -66,7 +66,6 @@ short FadeScreenHeight = 0;
 short DestFadeScreenHeight = 0;
 short FadeClipSpeed = 0;
 short ScreenFadeSpeed = 8;
-char scratchpad[1024];
 char tsv_buffer[16384];
 
 static PHD_VECTOR NodeVectors[16];
@@ -741,7 +740,7 @@ void S_DrawFires()
 	short* bounds;
 	short size;
 
-	bounds = (short*)&scratchpad[0];
+	bounds = (short*)&tsv_buffer[0];
 
 	for (int i = 0; i < 32; i++)
 	{
@@ -2060,9 +2059,9 @@ void S_DrawSparks()
 	ITEM_INFO* item;
 	PHD_VECTOR pos;
 	FVECTOR fPos;
+	long* XY;
 	long* Z;
-	short* XY;
-	short* offsets;
+	long* offsets;
 	float perspz;
 	long x, y, z, smallest_size;
 
@@ -2073,9 +2072,9 @@ void S_DrawSparks()
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
-	XY = (short*)&scratchpad[0];
-	Z = (long*)&scratchpad[256];
-	offsets = (short*)&scratchpad[512];
+	XY = (long*)&tsv_buffer[0];
+	Z = (long*)&tsv_buffer[512];
+	offsets = (long*)&tsv_buffer[1024];
 
 	for (int i = 0; i < 256; i++)
 	{
@@ -2164,15 +2163,15 @@ void S_DrawSparks()
 			continue;
 		}
 
-		offsets[0] = (short)x;
-		offsets[1] = (short)y;
-		offsets[2] = (short)z;
+		offsets[0] = x;
+		offsets[1] = y;
+		offsets[2] = z;
 		fPos.x = mMXPtr[M00] * offsets[0] + mMXPtr[M01] * offsets[1] + mMXPtr[M02] * offsets[2] + mMXPtr[M03];
 		fPos.y = mMXPtr[M10] * offsets[0] + mMXPtr[M11] * offsets[1] + mMXPtr[M12] * offsets[2] + mMXPtr[M13];
 		fPos.z = mMXPtr[M20] * offsets[0] + mMXPtr[M21] * offsets[1] + mMXPtr[M22] * offsets[2] + mMXPtr[M23];
 		perspz = f_persp / fPos.z;
-		XY[0] = short(fPos.x * perspz + f_centerx);
-		XY[1] = short(fPos.y * perspz + f_centery);
+		XY[0] = long(fPos.x * perspz + f_centerx);
+		XY[1] = long(fPos.y * perspz + f_centery);
 		Z[0] = (long)fPos.z;
 
 		if (sptr->Flags & 8)
@@ -2182,15 +2181,15 @@ void S_DrawSparks()
 		}
 		else
 		{
-			offsets[0] = short(x - (sptr->Xvel >> 4));
-			offsets[1] = short(y - (sptr->Yvel >> 4));
-			offsets[2] = short(z - (sptr->Zvel >> 4));
+			offsets[0] = x - (sptr->Xvel >> 4);
+			offsets[1] = y - (sptr->Yvel >> 4);
+			offsets[2] = z - (sptr->Zvel >> 4);
 			fPos.x = mMXPtr[M00] * offsets[0] + mMXPtr[M01] * offsets[1] + mMXPtr[M02] * offsets[2] + mMXPtr[M03];
 			fPos.y = mMXPtr[M10] * offsets[0] + mMXPtr[M11] * offsets[1] + mMXPtr[M12] * offsets[2] + mMXPtr[M13];
 			fPos.z = mMXPtr[M20] * offsets[0] + mMXPtr[M21] * offsets[1] + mMXPtr[M22] * offsets[2] + mMXPtr[M23];
 			perspz = f_persp / fPos.z;
-			XY[2] = short(fPos.x * perspz + f_centerx);
-			XY[3] = short(fPos.y * perspz + f_centery);
+			XY[2] = long(fPos.x * perspz + f_centerx);
+			XY[3] = long(fPos.y * perspz + f_centery);
 			Z[1] = (long)fPos.z;
 		}
 
