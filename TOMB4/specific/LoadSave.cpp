@@ -511,7 +511,6 @@ void DoBar(long x, long y, long width, long height, long pos, long c1, long c2)
 	clipflags[2] = 0;
 	clipflags[3] = 0;
 	tex.drawtype = 0;
-	tex.flag = 0;
 	tex.tpage = 0;
 
 	p = GetFixedScale(1);
@@ -519,11 +518,11 @@ void DoBar(long x, long y, long width, long height, long pos, long c1, long c2)
 	y2 = y + height;
 	bar = width * pos / 100;
 
-	DrawColoredRect((float)x, (float)y, float(x + bar), float(y2), f_mznear - 6, c1, c1, c2, c2, &tex);
-	DrawColoredRect((float)x, float(y2), float(x + bar), float(y2 + height), f_mznear - 6, c2, c2, c1, c1, &tex);
+	DrawColoredRect((float)x, (float)y, float(x + bar), float(y2), f_mznear, c1, c1, c2, c2, &tex);
+	DrawColoredRect((float)x, (float)y2, float(x + bar), float(y2 + height), f_mznear, c2, c2, c1, c1, &tex);
 
-	DrawColoredRect(float(x - p), float(y - p), float(xw + p), float(y2 + height + p), f_mznear - 3, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, &tex);
-	DrawColoredRect((float)x, (float)y, (float)xw, float(y2 + height), f_mznear - 4, 0, 0, 0, 0, &tex);
+	DrawColoredRect((float)x, (float)y, (float)xw, float(y2 + height), f_mznear + 1, 0, 0, 0, 0, &tex);
+	DrawColoredRect(float(x - p), float(y - p), float(xw + p), float(y2 + height + p), f_mznear + 2, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, &tex);
 }
 
 void DoOptions()
