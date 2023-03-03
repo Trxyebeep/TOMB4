@@ -798,7 +798,7 @@ void DrawThreeDeeObject2D(long x, long y, long num, long shade, long xrot, long 
 	else if (bright == 1)
 		pcbright = 0x2F2F2F;
 	else
-		pcbright = bright | ((bright | (bright << 8)) << 8);
+		pcbright = RGBONLY(bright, bright, bright);
 
 	SetD3DViewMatrix();
 	phd_PushUnitMatrix();
@@ -1213,7 +1213,7 @@ void handle_object_changeover(long ringnum)
 
 void fade_ammo_selector()
 {
-	if (rings[0]->ringactive && (right_repeat >= 8 || left_repeat >= 8))
+	if (rings[RING_INVENTORY]->ringactive && (right_repeat >= 8 || left_repeat >= 8))
 		ammo_selector_fade_val = 0;
 	else if (ammo_selector_fade_dir == 1)
 	{
@@ -2519,7 +2519,7 @@ void draw_current_object_list(long ringnum)
 	if (rings[ringnum]->numobjectsinlist <= 0)
 		return;
 
-	if (ringnum == 1)
+	if (ringnum == RING_AMMO)
 	{
 		ammo_selector_fade_val = 0;
 		ammo_selector_fade_dir = 0;
