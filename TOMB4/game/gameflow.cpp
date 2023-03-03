@@ -619,28 +619,26 @@ void DoLevel(uchar Name, uchar Audio)
 
 long TitleOptions()
 {
-	static __int64 selected_option = 1;
-	static __int64 selected_option_bak = 0;
-	__int64 i, flag;
-	long ret, ret2, ii, n, n2, load, num, height;
+	static __int64 selection = 1;
+	static __int64 selection_bak = 0;
+	__int64 flag, sel;
+	long nLevels, nFirst, lp;
+	long ret, n, load, y;
 	static long load_or_new;
-	static long always0 = 0;//leftover debug thing? if it's ever 1, the menu and logo don't show.
-	static long gfLevelComplete_bak;
-	static long menu_to_display = 0;//0 main menu, 1 level select, 2 the reload menu, 3 the options menu
-	static long selected_level = 0;
+	static long goto_level;
+	static long menu = 0;	//0 main menu, 1 level select, 2 the reload menu, 3 the options menu
 
 	ret = 0;
 
 	if (load_or_new)
 	{
-		ret2 = load_or_new;
-
 		if (DoFade == 2)
 		{
-			gfLevelComplete = (uchar)gfLevelComplete_bak;
-			gfLevelComplete_bak = 0;
+			ret = load_or_new;
+			gfLevelComplete = (uchar)goto_level;
+			goto_level = 0;
 			load_or_new = 0;
-			return ret2;
+			return ret;
 		}
 
 		input = 0;
@@ -655,181 +653,176 @@ long TitleOptions()
 		bDoCredits = 0;
 	}
 
-	if (!always0)
+	switch (menu)
 	{
-		switch (menu_to_display)
+	case 1:
+		PrintString(phd_centerx, font_height + phd_winymin, 6, SCRIPT_TEXT(TXT_Select_Level), FF_CENTER);
+
+		if (Gameflow->nLevels < 10)
 		{
-		case 1:
-			PrintString(phd_centerx, font_height + phd_winymin, 6, SCRIPT_TEXT(TXT_Select_Level), FF_CENTER);
-
-			if (Gameflow->nLevels < 10)
-			{
-				n2 = 1;
-				num = Gameflow->nLevels - 1;
-			}
-			else
-			{
-				i = selected_option;
-				n = 0;
-				num = 10;
-
-				while (i)
-				{
-					i >>= 1;
-					n++;
-				}
-
-				n2 = n - 9;
-
-				if (n2 < 1)
-					n2 = 1;
-				else if (n2 > 1)
-				{
-					PrintString(32, 3 * font_height + phd_winymin, 6, "\x18", 0);
-					PrintString(phd_winxmax - 48, 3 * font_height + phd_winymin, 6, "\x18", 0);
-				}
-
-				if (n != Gameflow->nLevels - 1)
-				{
-					PrintString(32, 12 * font_height + phd_winymin, 6, "\x1a", 0);
-					PrintString(phd_winxmax - 48, 12 * font_height + phd_winymin, 6, "\x1a", 0);
-				}
-			}
-
-			height = 2 * font_height + phd_winymin;
-
-			for (ii = n2; ii < num + n2; ii++)
-			{
-				n = ii - 1;
-				height += font_height;
-				PrintString(phd_centerx, height, (selected_option & ((__int64)1 << n)) ? 1 : 2, SCRIPT_TEXT(gfLevelNames[ii]), FF_CENTER);
-			}
-
-			ret = 0;
-			flag = 1i64 << (Gameflow->nLevels - 2);
-			break;
-
-		case 2:
-
-			if (Gameflow->LoadSaveEnabled)
-			{
-				load = DoLoadSave(IN_LOAD);
-
-				if (load >= 0)
-				{
-					S_LoadGame(load);
-					ret = 2;
-				}
-
-				break;
-			}
-
-			SoundEffect(SFX_LARA_NO, 0, SFX_ALWAYS);
-			menu_to_display = 0;
-
-		case 0:
-			ShowTitle();
-			Chris_Menu = 0;
-			PrintString(phd_centerx, phd_winymax - 4 * font_height, (selected_option & 1) ? 1 : 2, SCRIPT_TEXT(TXT_New_Game), FF_CENTER);
-			PrintString(phd_centerx, phd_winymax - 3 * font_height, (selected_option & 2) ? 1 : 2, SCRIPT_TEXT(TXT_Load_Game), FF_CENTER);
-			PrintString(phd_centerx, phd_winymax - 2 * font_height, (selected_option & 4) ? 1 : 2, SCRIPT_TEXT(TXT_Options), FF_CENTER);
-			PrintString(phd_centerx, phd_winymax - 1 * font_height, (selected_option & 8) ? 1 : 2, SCRIPT_TEXT(TXT_Exit), FF_CENTER);
-			flag = 8;
-			break;
-
-		case 3:
-			DoOptions();
-			break;
+			nFirst = 1;
+			nLevels = Gameflow->nLevels - 1;
 		}
-
-		if (menu_to_display < 2)
+		else
 		{
-			if (dbinput & IN_FORWARD)
-			{
-				if (selected_option > 1)
-					selected_option >>= 1;
+			sel = selection;
+			n = 0;
+			nLevels = 10;
 
-				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+			while (sel)
+			{
+				sel >>= 1;
+				n++;
 			}
 
-			if (dbinput & IN_BACK)
-			{
-				if (selected_option < flag)
-					selected_option <<= 1;
+			nFirst = n - 9;
 
-				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+			if (nFirst < 1)
+				nFirst = 1;
+			else if (nFirst > 1)
+			{
+				PrintString(32, 3 * font_height + phd_winymin, 6, "\x18", 0);
+				PrintString(phd_winxmax - 48, 3 * font_height + phd_winymin, 6, "\x18", 0);
+			}
+
+			if (n != Gameflow->nLevels - 1)
+			{
+				PrintString(32, 12 * font_height + phd_winymin, 6, "\x1a", 0);
+				PrintString(phd_winxmax - 48, 12 * font_height + phd_winymin, 6, "\x1a", 0);
 			}
 		}
 
-		if (dbinput & IN_DESELECT && menu_to_display > 0)
+		y = 2 * font_height;
+
+		for (lp = nFirst; lp < nLevels + nFirst; lp++)
 		{
-			menu_to_display = 0;
-			selected_option = selected_option_bak;
-			S_SoundStopAllSamples();
-			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			y += font_height;
+			PrintString(phd_centerx, y, selection & (1i64 << (lp - 1)) ? 1 : 2, SCRIPT_TEXT(gfLevelNames[lp]), FF_CENTER);
 		}
 
-		if (dbinput & IN_SELECT && !keymap[DIK_LALT] && menu_to_display < 2)
-		{
-			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+		flag = 1i64 << (Gameflow->nLevels - 2);
+		break;
 
-			if (!menu_to_display)
+	case 2:
+
+		if (Gameflow->LoadSaveEnabled)
+		{
+			load = DoLoadSave(IN_LOAD);
+
+			if (load >= 0)
 			{
-				if (selected_option > 0 && selected_option <= 8)
+				S_LoadGame(load);
+				ret = 2;
+			}
+
+			break;
+		}
+
+		SoundEffect(SFX_LARA_NO, 0, SFX_ALWAYS);
+		menu = 0;
+
+	case 0:
+		ShowTitle();
+		Chris_Menu = 0;
+		PrintString(phd_centerx, phd_winymax - 4 * font_height, (selection & 1) ? 1 : 2, SCRIPT_TEXT(TXT_New_Game), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 3 * font_height, (selection & 2) ? 1 : 2, SCRIPT_TEXT(TXT_Load_Game), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 2 * font_height, (selection & 4) ? 1 : 2, SCRIPT_TEXT(TXT_Options), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 1 * font_height, (selection & 8) ? 1 : 2, SCRIPT_TEXT(TXT_Exit), FF_CENTER);
+		flag = 8;
+		break;
+
+	case 3:
+		DoOptions();
+		break;
+	}
+
+	if (menu < 2)
+	{
+		if (dbinput & IN_FORWARD)
+		{
+			if (selection > 1)
+				selection >>= 1;
+
+			SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+		}
+
+		if (dbinput & IN_BACK)
+		{
+			if (selection < flag)
+				selection <<= 1;
+
+			SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+		}
+	}
+
+	if (dbinput & IN_DESELECT && menu > 0)
+	{
+		menu = 0;
+		selection = selection_bak;
+		S_SoundStopAllSamples();
+		SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+	}
+
+	if (dbinput & IN_SELECT && !keymap[DIK_LALT] && menu < 2)
+	{
+		SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+
+		if (!menu)
+		{
+			if (selection > 0 && selection <= 8)
+			{
+				switch (selection)
 				{
-					switch (selected_option)
+				case 1:
+
+					if (Gameflow->PlayAnyLevel)
 					{
-					case 1:
-
-						if (Gameflow->PlayAnyLevel)
-						{
-							selected_option_bak = selected_option;
-							menu_to_display = 1;
-						}
-						else
-						{
-							gfLevelComplete = 1;
-							ret = 3;
-						}
-
-						break;
-
-					case 2:
-						GetSaveLoadFiles();
-						selected_option_bak = selected_option;
-						menu_to_display = 2;
-						break;
-
-					case 3:
-					case 5:
-					case 6:
-					case 7:
-						break;
-
-					case 4:
-						selected_option_bak = selected_option;
-						menu_to_display = 3;
-						break;
-
-					case 8:
-						ret = 4;
-						break;
+						selection_bak = selection;
+						menu = 1;
 					}
+					else
+					{
+						gfLevelComplete = 1;
+						ret = 3;
+					}
+
+					break;
+
+				case 2:
+					GetSaveLoadFiles();
+					selection_bak = selection;
+					menu = 2;
+					break;
+
+				case 3:
+				case 5:
+				case 6:
+				case 7:
+					break;
+
+				case 4:
+					selection_bak = selection;
+					menu = 3;
+					break;
+
+				case 8:
+					ret = 4;
+					break;
 				}
 			}
-			else if (menu_to_display == 1)
+		}
+		else if (menu == 1)
+		{
+			gfLevelComplete = 0;
+			sel = selection;
+
+			while (sel)
 			{
-				gfLevelComplete = 0;
-				i = selected_option;
-
-				while (i)
-				{
-					i >>= 1;
-					gfLevelComplete++;
-				}
-
-				ret = 3;
+				sel >>= 1;
+				gfLevelComplete++;
 			}
+
+			ret = 3;
 		}
 	}
 
@@ -839,7 +832,7 @@ long TitleOptions()
 	if (ret)
 	{
 		load_or_new = ret;
-		gfLevelComplete_bak = gfLevelComplete;
+		goto_level = gfLevelComplete;
 		gfLevelComplete = 0;
 		ret = 0;
 		SetFade(0, 255);

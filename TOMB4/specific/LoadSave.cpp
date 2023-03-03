@@ -966,7 +966,7 @@ void DoOptions()
 				{
 					S_SoundStopAllSamples();
 					sfx_bak = SFXVolume;
-					sfx_breath_db = SoundEffect(SFX_LARA_BREATH, 0, SFX_DEFAULT);
+					sfx_breath_db = SoundEffect(SFX_LARA_BREATH, 0, SFX_ALWAYS);
 					DSChangeVolume(0, -100 * ((100 - SFXVolume) >> 1));
 				}
 				else if (sfx_breath_db != -1 && DSIsChannelPlaying(0))
@@ -1102,7 +1102,7 @@ long S_DisplayPauseMenu(long reset)
 
 			if (dbinput & IN_SELECT && !keymap[DIK_LALT])
 			{
-				SoundEffect(SFX_MENU_SELECT, 0, SFX_DEFAULT);
+				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 
 				if (selection & 1)
 					menu = 2;
@@ -1191,13 +1191,13 @@ long DoLoadSave(long LoadSave)
 	if (dbinput & IN_FORWARD)
 	{
 		selection--;
-		SoundEffect(SFX_MENU_CHOOSE, 0, SFX_DEFAULT);
+		SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
 	}
 
 	if (dbinput & IN_BACK)
 	{
 		selection++;
-		SoundEffect(SFX_MENU_CHOOSE, 0, SFX_DEFAULT);
+		SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
 	}
 
 	if (selection < 0)
@@ -1210,7 +1210,7 @@ long DoLoadSave(long LoadSave)
 		if (SaveGames[selection].valid || LoadSave == IN_SAVE)
 			return selection;
 
-		SoundEffect(SFX_LARA_NO, 0, SFX_DEFAULT);
+		SoundEffect(SFX_LARA_NO, 0, SFX_ALWAYS);
 	}
 
 	return -1;
