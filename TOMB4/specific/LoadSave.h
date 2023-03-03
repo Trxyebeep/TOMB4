@@ -8,7 +8,7 @@ void S_InitLoadBar(long maxpos);
 void S_LoadBar();
 void DoBar(long x, long y, long width, long height, long pos, long c1, long c2);
 void DoOptions();
-void DoStatScreen();
+void DisplayStatsUCunt();
 long S_DisplayPauseMenu(long reset);
 long DoLoadSave(long LoadSave);
 long S_LoadSave(long load_or_save, long mono, long inv_active);
