@@ -56,11 +56,12 @@ void SphinxControl(short item_number)
 		{
 			mesh = &r->mesh[i];
 
-			if ((z & ~1023) != (mesh->z & ~1023) && (x & ~1023) != (mesh->x & ~1023) && mesh->static_number >= SHATTER0)
+			if (mesh->z >> 10 == z >> 10 && mesh->x >> 10 == x >> 10 && mesh->static_number >= SHATTER0)
 			{
 				ShatterObject(0, mesh, -64, item->room_number, 0);
 				SoundEffect(SFX_HIT_ROCK, &item->pos, SFX_DEFAULT);
 				mesh->Flags &= ~1;
+				floor->stopper = 0;
 				TestTriggers(trigger_index, 1, 0);
 			}
 		}
@@ -68,7 +69,6 @@ void SphinxControl(short item_number)
 
 	x = item->pos.x_pos - s;
 	z = item->pos.z_pos - c;
-	room_number = item->room_number;
 	floor = GetFloor(x, item->pos.y_pos, z, &room_number);
 	h2 = GetHeight(floor, x, item->pos.y_pos, z);
 	phd_atan(1228, h2 - h1);
@@ -86,8 +86,8 @@ void SphinxControl(short item_number)
 	GetCreatureMood(item, &info, 1);
 	CreatureMood(item, &info, 1);
 	angle = CreatureTurn(item, sphinx->maximum_turn);
-	x = abs(item->item_flags[2] - short(item->pos.x_pos));
-	z = abs(item->item_flags[3] - short(item->pos.z_pos));
+	x = abs(item->item_flags[2] - (short)item->pos.x_pos);
+	z = abs(item->item_flags[3] - (short)item->pos.z_pos);
 
 	switch (item->current_anim_state)
 	{
@@ -114,17 +114,13 @@ void SphinxControl(short item_number)
 	case 4:
 		sphinx->maximum_turn = 546;
 
-		if (info.distance > 0x400000 && abs(info.angle) <= 512)
+		if (info.distance > 0x400000 && abs(info.angle) <= 512 || item->required_anim_state == 5)
 			item->goal_anim_state = 5;
-		else if (item->required_anim_state == 5)
-			item->goal_anim_state = 5;
-		else if (info.distance < 0x400000 && item->goal_anim_state != 5)
+		else if (info.distance < 0x400000 && item->goal_anim_state != 5 &&
+			h2 <= item->pos.y_pos + 256 && h2 >= item->pos.y_pos - 256)
 		{
-			if (h2 <= item->pos.y_pos + 256 && h2 >= item->pos.y_pos - 256)
-			{
-				item->goal_anim_state = 9;
-				item->required_anim_state = 6;
-			}
+			item->goal_anim_state = 9;
+			item->required_anim_state = 6;
 		}
 
 		break;

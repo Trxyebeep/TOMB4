@@ -949,6 +949,7 @@ long DXToggleFullScreen()
 	G_dxptr->lpD3D->EvictManagedTextures();
 	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
 	DXCreate(dm->w, dm->h, dm->bpp, G_dxptr->Flags, G_dxptr, G_dxptr->hWnd, G_dxptr->WindowStyle);
+	WinSetStyle(G_dxptr->Flags & 1, G_dxptr->WindowStyle);
 	G_dxptr->Flags ^= 64;
 	return 1;
 }

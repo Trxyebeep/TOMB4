@@ -713,11 +713,7 @@ void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 	{
 		index = boxes[item->box_number].overlap_index & 0x3FFF;
 
-		do
-		{
-			box_no = overlap[index];
-			index++;
-		} while (box_no != 2047 && box_no >= 0 && (box_no & 0x7FF) != LOT->node[item->box_number].exit_box);
+		do box_no = overlap[index++]; while (box_no != 2047 && !(box_no & 0x8000) && (box_no & 0x7FF) != LOT->node[item->box_number].exit_box);
 
 		if ((box_no & 0x7FF) == LOT->node[item->box_number].exit_box)
 		{

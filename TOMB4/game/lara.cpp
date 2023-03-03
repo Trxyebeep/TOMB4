@@ -2479,6 +2479,11 @@ void lara_as_pickup(ITEM_INFO* item, COLL_INFO* coll)
 	camera.target_angle = -23660;
 	camera.target_elevation = -2730;
 	camera.target_distance = 1024;
+
+	if (item->frame_number == anims[ANIM_PLINTHLO].frame_end - 1 ||
+		item->frame_number == anims[ANIM_PLINTHHI].frame_end - 1 ||
+		item->frame_number == anims[ANIM_CROWBAR].frame_end - 1)
+		lara.gun_status = LG_NO_ARMS;
 }
 
 void lara_as_pickupflare(ITEM_INFO* item, COLL_INFO* coll)
@@ -2503,6 +2508,10 @@ void lara_as_switchon(ITEM_INFO* item, COLL_INFO* coll)
 	camera.target_elevation = -4550;
 	camera.target_distance = 1024;
 	camera.speed = 6;
+
+	if (item->frame_number == anims[ANIM_BLOCKSWITCH].frame_end - 1 ||
+		item->frame_number == anims[ANIM_CROWSWITCH].frame_end - 1)
+		lara.gun_status = LG_NO_ARMS;
 }
 
 void lara_as_usekey(ITEM_INFO* item, COLL_INFO* coll)
@@ -2847,7 +2856,7 @@ void lara_as_pulley(ITEM_INFO* item, COLL_INFO* coll)
 		}
 	}
 
-	if (item->anim_number == ANIM_PULLEY2STAT && item->frame_number == anims[ANIM_PULLEY2STAT].frame_end - 1)
+	if (item->frame_number == anims[ANIM_PULLEY2STAT].frame_end - 1)
 		lara.gun_status = LG_NO_ARMS;
 }
 
@@ -3339,6 +3348,9 @@ void lara_as_fastfall(ITEM_INFO* item, COLL_INFO* coll)
 
 	if (item->fallspeed == 154)
 		SoundEffect(SFX_LARA_FALL, &item->pos, SFX_DEFAULT);
+
+	if (item->frame_number == anims[330].frame_end - 1)		//fall off pole
+		lara.gun_status = LG_NO_ARMS;
 }
 
 void lara_col_fastfall(ITEM_INFO* item, COLL_INFO* coll)
@@ -3911,6 +3923,9 @@ void lara_col_polestat(ITEM_INFO* item, COLL_INFO* coll)
 
 	coll->enable_spaz = 0;
 	coll->enable_baddie_push = 0;
+
+	if (item->frame_number == anims[327].frame_end - 1)		//jumping off
+		lara.gun_status = LG_NO_ARMS;
 
 	if (item->anim_number != ANIM_POLESTAT)
 		return;

@@ -49,7 +49,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 	float* v;
 	short* clip;
 	static float DistanceFogStart;
-	float zv, fR, fG, fB, val, zbak, num;
+	float zv, fR, fG, fB, val, num;
 	long lp, cR, cG, cB, sA, sR, sG, sB;
 	short clipFlag;
 
@@ -79,7 +79,6 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 
 		MyVertexBuffer[i].tu = vPos.x;
 		MyVertexBuffer[i].tv = vPos.y;
-		zbak = vPos.z;
 
 		sA = 0xFF;
 		sR = 0;
@@ -149,13 +148,13 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 			cB = ambientB;
 		}
 		
-		if (zbak > DistanceFogStart)
+		if (vPos.z > DistanceFogStart)
 		{
-			val = (zbak - DistanceFogStart) * num;
+			val = (vPos.z - DistanceFogStart) * num;
 
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 			{
-				val = (zbak - DistanceFogStart) / 512.0F;
+				val = (vPos.z - DistanceFogStart) / 512.0F;
 				sA -= long(val * (255.0F / 8.0F));
 
 				if (sA < 0)
@@ -261,7 +260,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 	float* v;
 	short* clip;
 	static float DistanceFogStart;
-	float zv, val, val2, zbak, num;
+	float zv, val, val2, num;
 	long sA, sR, sG, sB, cR, cG, cB, pR, pG, pB;
 	short clipFlag;
 
@@ -290,7 +289,6 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		vPos.z = vtx.x * D3DMView._13 + vtx.y * D3DMView._23 + vtx.z * D3DMView._33 + D3DMView._43;
 		MyVertexBuffer[i].tu = vPos.x;
 		MyVertexBuffer[i].tv = vPos.y;
-		zbak = vPos.z;
 
 		cR = CLRR(mesh->prelight[i]);
 		cG = CLRG(mesh->prelight[i]);
@@ -330,13 +328,13 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 			}
 		}
 
-		if (zbak > DistanceFogStart)
+		if (vPos.z > DistanceFogStart)
 		{
-			val = (zbak - DistanceFogStart) * num;
+			val = (vPos.z - DistanceFogStart) * num;
 
 			if (gfLevelFlags & GF_TRAIN || gfCurrentLevel == 5 || gfCurrentLevel == 6)
 			{
-				val = (zbak - DistanceFogStart) / 512.0F;
+				val = (vPos.z - DistanceFogStart) / 512.0F;
 				sA -= long(val * (255.0F / 8.0F));
 
 				if (sA < 0)
@@ -568,6 +566,17 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 	mesh->SourceVB->Unlock();
 }
 
+static void RGB_M(ulong& c, long m)	//Original was a macro.
+{
+	long r, g, b, a;
+
+	a = CLRA(c);
+	r = (CLRR(c) * m) >> 8;
+	g = (CLRG(c) * m) >> 8;
+	b = (CLRB(c) * m) >> 8;
+	c = RGBA(r, g, b, a);
+}
+
 void phd_PutPolygons(short* objptr, long clip)
 {
 	MESH_DATA* mesh;
@@ -636,6 +645,7 @@ void phd_PutPolygons(short* objptr, long clip)
 		{
 			envmap = 1;
 			num = (quad[5] >> 2) & 0x1F;
+			num <<= 3;
 			normals[0] = mesh->Normals[quad[0]];
 			normals[1] = mesh->Normals[quad[1]];
 			normals[2] = mesh->Normals[quad[2]];
@@ -725,6 +735,7 @@ void phd_PutPolygons(short* objptr, long clip)
 		{
 			envmap = 1;
 			num = (tri[4] >> 2) & 0x1F;
+			num <<= 3;
 			normals[0] = mesh->Normals[tri[0]];
 			normals[1] = mesh->Normals[tri[1]];
 			normals[2] = mesh->Normals[tri[2]];
@@ -1018,6 +1029,7 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 		{
 			envmap = 1;
 			num = (quad[5] >> 2) & 0x1F;
+			num <<= 3;
 			normals[0] = mesh->Normals[quad[0]];
 			normals[1] = mesh->Normals[quad[1]];
 			normals[2] = mesh->Normals[quad[2]];
@@ -1099,6 +1111,7 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 		{
 			envmap = 1;
 			num = (tri[4] >> 2) & 0x1F;
+			num <<= 3;
 			normals[0] = mesh->Normals[tri[0]];
 			normals[1] = mesh->Normals[tri[1]];
 			normals[2] = mesh->Normals[tri[2]];

@@ -704,20 +704,22 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 					{
 						lara.num_large_medipack = -1;
 						lara.num_small_medipack = -1;
-						lara.num_revolver_ammo = -1;
-						lara.num_uzi_ammo = -1;
-						lara.num_crossbow_ammo1 = -1;
-						lara.num_crossbow_ammo2 = -1;
-						lara.num_crossbow_ammo3 = -1;
-						lara.num_grenade_ammo1 = -1;
-						lara.num_grenade_ammo2 = -1;
-						lara.num_grenade_ammo3 = -1;
-						lara.num_flares = -1;
-						lara.num_shotgun_ammo1 = -1;
-						lara.num_shotgun_ammo2 = -1;
 
 						if (!(gfLevelFlags & GF_YOUNGLARA))
 						{
+							lara.num_revolver_ammo = -1;
+							lara.num_uzi_ammo = -1;
+							lara.num_crossbow_ammo1 = -1;
+							lara.num_crossbow_ammo2 = -1;
+							lara.num_crossbow_ammo3 = -1;
+							lara.num_grenade_ammo1 = -1;
+							lara.num_grenade_ammo2 = -1;
+							lara.num_grenade_ammo3 = -1;
+							lara.num_flares = -1;
+							lara.num_shotgun_ammo1 = -1;
+							lara.num_shotgun_ammo2 = -1;
+
+							lara.lasersight = 1;
 							lara.pistols_type_carried |= W_PRESENT;
 							lara.uzis_type_carried |= W_PRESENT;
 							lara.shotgun_type_carried |= W_PRESENT;
@@ -1493,7 +1495,7 @@ void combine_ClockWorkBeetle(long flag)
 
 long do_special_waterskin_combine_bullshit(long flag)
 {
-	long n;
+	long lp;
 	short small_liters, big_liters, small_capacity, big_capacity;
 
 	small_liters = lara.small_water_skin - 1;
@@ -1505,9 +1507,7 @@ long do_special_waterskin_combine_bullshit(long flag)
 	{
 		if (lara.big_water_skin != 1 && small_capacity)
 		{
-			n = lara.big_water_skin - 1;
-
-			do
+			for (lp = big_liters; lp; lp--)
 			{
 				if (small_capacity)
 				{
@@ -1515,10 +1515,7 @@ long do_special_waterskin_combine_bullshit(long flag)
 					small_liters++;
 					small_capacity--;
 				}
-
-				n--;
-
-			} while (n);
+			}
 
 			lara.small_water_skin = small_liters + 1;
 			lara.big_water_skin = big_liters + 1;
@@ -1526,30 +1523,22 @@ long do_special_waterskin_combine_bullshit(long flag)
 			return 1;
 		}
 	}
-	else
+	else if (lara.small_water_skin != 1 && big_capacity)
 	{
-		if (lara.small_water_skin != 1 && big_capacity)
+		for (lp = small_liters; lp; lp--)
 		{
-			n = lara.small_water_skin - 1;
-
-			do
+			if (big_capacity)
 			{
-				if (big_capacity)
-				{
-					small_liters--;
-					big_liters++;
-					big_capacity--;
-				}
-
-				n--;
-
-			} while (n);
-
-			lara.small_water_skin = small_liters + 1;
-			lara.big_water_skin = big_liters + 1;
-			combine_obj1 = lara.big_water_skin + INV_WATERSKIN2_EMPTY_ITEM - 1;
-			return 1;
+				small_liters--;
+				big_liters++;
+				big_capacity--;
+			}
 		}
+
+		lara.small_water_skin = small_liters + 1;
+		lara.big_water_skin = big_liters + 1;
+		combine_obj1 = lara.big_water_skin + INV_WATERSKIN2_EMPTY_ITEM - 1;
+		return 1;
 	}
 
 	return 0;
@@ -2248,7 +2237,8 @@ void handle_inventry_menu()
 				if (do_special_waterskin_combine_bullshit(0))
 				{
 					combine_type_flag = 2;
-					combine_ring_fade_dir = 2;	//they forgot the SoundEffect call here
+					combine_ring_fade_dir = 2;
+					SoundEffect(SFX_MENU_COMBINE, 0, SFX_ALWAYS);
 				}
 			}
 			else if (ammo_item >= INV_WATERSKIN1_EMPTY_ITEM && ammo_item <= INV_WATERSKIN1_3_ITEM &&	//big one selected

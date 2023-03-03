@@ -3,34 +3,6 @@
 
 #pragma pack(push, 1)
 
-/*typedefs*/
-typedef unsigned char uchar;
-typedef unsigned short ushort;
-typedef unsigned long ulong;
-
-/*Injection macro, originally by Arsunt, modified by ChocolateFan to allow deinjection*/
-struct JMP
-{
-	BYTE opCode;	// must be 0xE9;
-	DWORD offset;	// jump offset
-};
-
-#define INJECT(from,to,replace) \
-do \
-{ \
-	if (replace) \
-		INJECT_JMP(from,to); \
-	else \
-		INJECT_JMP(to,from); \
-} while (false)
-
-#define INJECT_JMP(from,to) \
-do \
-{ \
-	((JMP*)(from))->opCode = 0xE9; \
-	((JMP*)(from))->offset = (DWORD)(to) - ((DWORD)(from) + sizeof(JMP)); \
-} while (false)
-
 /*math*/
 #define SQUARE(x) ((x)*(x))
 #define	TRIGMULT2(a,b)		(((a) * (b)) >> W2V_SHIFT)
@@ -45,7 +17,6 @@ do \
 #define	CLRR(clr)	((clr >> 16) & 0xFF)	//shift g and b out of the way and 0xFF
 #define	CLRG(clr)	((clr >> 8) & 0xFF)		//shift b out of the way and 0xFF
 #define	CLRB(clr)	((clr) & 0xFF)			//and 0xFF
-#define RGB_M(clr, m)	(clr = (clr & 0xFF000000) | (((CLRR(clr) * 8 * m) >> 8) << 16) | (((CLRG(clr) * 8 * m) >> 8) << 8) | ((CLRB(clr) * 8 * m) >> 8))
 
 /*misc*/
 #define SCRIPT_TEXT(num)		(&gfStringWad[gfStringOffset[num]])
@@ -56,7 +27,7 @@ do \
 #define NO_HEIGHT	-32512
 #define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
-#define WINDOW_STYLE	(WS_OVERLAPPED | WS_BORDER | WS_CAPTION)
+#define WINDOW_STYLE	WS_OVERLAPPEDWINDOW
 #define W2V_SHIFT	14
 #define MAX_SAMPLES	370
 #define MAX_DYNAMICS	64
@@ -82,6 +53,11 @@ do \
 #define DIDGUID					IID_IDirectInputDevice8
 #define DSNGUID					IID_IDirectSoundNotify
 /***********************************************/
+
+/*typedefs*/
+typedef unsigned char uchar;
+typedef unsigned short ushort;
+typedef unsigned long ulong;
 
 enum carried_weapon_flags
 {
@@ -1232,7 +1208,7 @@ struct DXPTR
 	RECT rViewport;
 	RECT rScreen;
 	long Flags;
-	long WindowStyle;
+	ulong WindowStyle;
 	long CoopLevel;
 	LPDIRECTINPUTX lpDirectInput;
 	LPDIRECTINPUTDEVICEX Keyboard;

@@ -590,10 +590,7 @@ void InitialisePlanetEffect(short item_number)
 			item2 = &items[i];
 
 			if (item2->object_number == PLANET_EFFECT && item_number != i)
-			{
-				others[j] = i;
-				j++;
-			}
+				others[j++] = i;
 		}
 
 		pifl = (char*)&item->item_flags[2];
@@ -718,11 +715,12 @@ void DrawPlanetEffect(ITEM_INFO* item)
 	{
 		poppush = bone[0];
 
+		//These look inverted..
 		if (poppush & 1)
-			phd_PushMatrix();
+			phd_PopMatrix();
 
 		if (poppush & 2)
-			phd_PopMatrix();
+			phd_PushMatrix();
 
 		phd_TranslateRel(bone[1], bone[2], bone[3]);
 		gar_RotYXZsuperpack(&rot, 0);

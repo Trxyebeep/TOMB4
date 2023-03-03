@@ -149,7 +149,7 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 	FVECTOR ccp;
 	float fx, fy, fz;
 	long x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, xSize, zSize, xDist, zDist;
-	short room_number;
+	short s;
 
 	v = MyVertexBuffer;
 
@@ -169,15 +169,16 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 	}
 
 	phd_PushUnitMatrix();
+	s = item->current_anim_state;
 
-	if (item == lara_item)	//position the grid
+	if (item == lara_item && s != AS_ALL4S && s != AS_ALL4TURNL && s != AS_ALL4TURNR && s != AS_CRAWL && s != AS_CRAWLBACK)	//position the grid
 	{
 		pos.x = 0;
 		pos.y = 0;
 		pos.z = 0;
-		GetLaraJointPos(&pos, LM_TORSO);
-		room_number = lara_item->room_number;
-		y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
+		GetLaraJointPos(&pos, LM_HIPS);
+		s = lara_item->room_number;
+		y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &s), pos.x, pos.y, pos.z);
 
 		if (y == NO_HEIGHT)
 			y = item->floor;
@@ -207,15 +208,15 @@ static void S_PrintCircleShadow(short size, short* box, ITEM_INFO* item)
 
 	for (int i = 0; i < CIRCUMFERENCE_POINTS; i++)
 	{
-		room_number = item->room_number;
-		cp[i].y = (float)GetHeight(GetFloor((long)cp[i].x, item->floor, (long)cp[i].z, &room_number), (long)cp[i].x, item->floor, (long)cp[i].z);
+		s = item->room_number;
+		cp[i].y = (float)GetHeight(GetFloor((long)cp[i].x, item->floor, (long)cp[i].z, &s), (long)cp[i].x, item->floor, (long)cp[i].z);
 
 		if (abs(cp[i].y - item->floor) > POINT_HEIGHT_CORRECTION)
 			cp[i].y = (float)item->floor;
 	}
 
-	room_number = item->room_number;
-	ccp.y = (float)GetHeight(GetFloor((long)ccp.x, item->floor, (long)ccp.z, &room_number), (long)ccp.x, item->floor, (long)ccp.z);
+	s = item->room_number;
+	ccp.y = (float)GetHeight(GetFloor((long)ccp.x, item->floor, (long)ccp.z, &s), (long)ccp.x, item->floor, (long)ccp.z);
 
 	if (abs(ccp.y - item->floor) > POINT_HEIGHT_CORRECTION)
 		ccp.y = (float)item->floor;
@@ -310,7 +311,7 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 	long hxz[GRID_POINTS * 2];
 	long hy[GRID_POINTS];
 	long p, x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, xSize, zSize, xDist, zDist;
-	short room_number;
+	short s;
 
 	v = MyVertexBuffer;
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 14];
@@ -340,17 +341,16 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 	}
 
 	phd_PushUnitMatrix();
+	s = item->current_anim_state;
 
-	if (item == lara_item && (cutseq_trig || (item->anim_number == ANIM_PULL || item->anim_number == ANIM_PUSH ||
-		item->anim_number == ANIM_TURNSWITCHC || item->anim_number == ANIM_TURNSWITCHA ||
-		(item->anim_number >= ANIM_TURNSWITCHCB && item->anim_number <= ANIM_TURNSWITCHAD))))
+	if (item == lara_item && s != AS_ALL4S && s != AS_ALL4TURNL && s != AS_ALL4TURNR && s != AS_CRAWL && s != AS_CRAWLBACK)
 	{
 		pos.x = 0;
 		pos.y = 0;
 		pos.z = 0;
 		GetLaraJointPos(&pos, LM_HIPS);
-		room_number = lara_item->room_number;
-		pos.y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
+		s = lara_item->room_number;
+		pos.y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &s), pos.x, pos.y, pos.z);
 
 		if (pos.y == NO_HEIGHT)
 			pos.y = item->floor;
@@ -382,8 +382,8 @@ static void S_PrintSpriteShadow(short size, short* box, ITEM_INFO* item)
 
 	for (int i = 0; i < GRID_POINTS; i++, hXZ += 2, hY++)
 	{
-		room_number = item->room_number;
-		*hY = GetHeight(GetFloor(hXZ[0], item->floor, hXZ[1], &room_number), hXZ[0], item->floor, hXZ[1]);
+		s = item->room_number;
+		*hY = GetHeight(GetFloor(hXZ[0], item->floor, hXZ[1], &s), hXZ[0], item->floor, hXZ[1]);
 
 		if (abs(*hY - item->floor) > POINT_HEIGHT_CORRECTION)
 			*hY = item->floor;
@@ -471,7 +471,7 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 	long hy[GRID_POINTS];
 	long triA, triB, triC;
 	long x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, xSize, zSize, xDist, zDist;
-	short room_number;
+	short s;
 
 	if (tomb4.shadow_mode != 1)
 	{
@@ -508,15 +508,16 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 	}
 
 	phd_PushUnitMatrix();
+	s = item->current_anim_state;
 
-	if (item == lara_item)	//position the grid
+	if (item == lara_item && s != AS_ALL4S && s != AS_ALL4TURNL && s != AS_ALL4TURNR && s != AS_CRAWL && s != AS_CRAWLBACK)	//position the grid
 	{
 		pos.x = 0;
 		pos.y = 0;
 		pos.z = 0;
-		GetLaraJointPos(&pos, LM_TORSO);
-		room_number = lara_item->room_number;
-		y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &room_number), pos.x, pos.y, pos.z);
+		GetLaraJointPos(&pos, LM_HIPS);
+		s = lara_item->room_number;
+		y = GetHeight(GetFloor(pos.x, pos.y, pos.z, &s), pos.x, pos.y, pos.z);
 
 		if (y == NO_HEIGHT)
 			y = item->floor;
@@ -548,8 +549,8 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 
 	for (int i = 0; i < GRID_POINTS; i++, hXZ += 2, hY++)	//Get height on each grid point and store it in hy array
 	{
-		room_number = item->room_number;
-		*hY = GetHeight(GetFloor(hXZ[0], item->floor, hXZ[1], &room_number), hXZ[0], item->floor, hXZ[1]);
+		s = item->room_number;
+		*hY = GetHeight(GetFloor(hXZ[0], item->floor, hXZ[1], &s), hXZ[0], item->floor, hXZ[1]);
 
 		if (abs(*hY - item->floor) > POINT_HEIGHT_CORRECTION)
 			*hY = item->floor;
