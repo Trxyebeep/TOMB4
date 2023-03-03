@@ -21,8 +21,8 @@
 #include "delstuff.h"
 #include "camera.h"
 #include "../specific/input.h"
-#include "debris.h"
 #include "gameflow.h"
+#include "tomb4fx.h"
 #include "../tomb4/tomb4.h"
 
 void(*lara_control_routines[118])(ITEM_INFO* item, COLL_INFO* coll) =

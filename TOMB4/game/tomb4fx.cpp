@@ -67,6 +67,7 @@ short DestFadeScreenHeight = 0;
 short FadeClipSpeed = 0;
 short ScreenFadeSpeed = 8;
 char scratchpad[1024];
+char tsv_buffer[16384];
 
 static PHD_VECTOR NodeVectors[16];
 

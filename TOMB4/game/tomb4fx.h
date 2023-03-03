@@ -82,3 +82,4 @@ extern short DestFadeScreenHeight;
 extern short FadeClipSpeed;
 extern short ScreenFadeSpeed;
 extern char scratchpad[1024];
+extern char tsv_buffer[16384];
