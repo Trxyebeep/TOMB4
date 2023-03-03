@@ -44,7 +44,6 @@
 #define DDSURFACEDESCX			DDSURFACEDESC2
 #define LPDDSURFACEDESCX		DDSURFACEDESCX*
 #define LPDIRECT3DMATERIALX		LPDIRECT3DMATERIAL3
-#define D3DLIGHTX				D3DLIGHT2
 #define LPDIRECT3DTEXTUREX		LPDIRECT3DTEXTURE2
 #define TEXGUID					IID_IDirect3DTexture2
 #define DDGUID					IID_IDirectDraw4
@@ -1280,9 +1279,9 @@ struct DXDIRECTDRAWINFO
 	GUID Guid;
 	DDCAPS DDCaps;
 	DDDEVICEIDENTIFIER DDIdentifier;
-	int	 nDisplayModes;
+	long nDisplayModes;
 	DXDISPLAYMODE* DisplayModes;
-	int nD3DDevices;
+	long nD3DDevices;
 	DXD3DDEVICE* D3DDevices;
 };
 
@@ -1401,12 +1400,6 @@ struct LIGHTNING_STRUCT
 	uchar Rand;
 	uchar Segments;
 	uchar Pad[3];
-};
-
-struct D3DLIGHT_STRUCT
-{
-	LPDIRECT3DLIGHT D3DLight;
-	D3DLIGHTX D3DLightx;
 };
 
 struct DYNAMIC
@@ -2173,13 +2166,6 @@ struct SCARAB_STRUCT
 	short fallspeed;
 	uchar On;
 	uchar flags;
-};
-
-struct MAP_STRUCT
-{
-	char unk[3592];
-	short visited;
-	short room_number;
 };
 
 struct SPLASH_SETUP
