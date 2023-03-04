@@ -1,5 +1,19 @@
 # tomb4 changelog
 
+## Unreleased:
+
+### Original bug fixes
+
+- Fix the random fires on screen bug.
+- Fix Ahmet/Scale save crashes in Temple of Horus.
+
+### tomb4 bug fixes
+
+- Fix original style bar drawing on certain GPUs.
+
+### new tomb4 features
+
+
 ## [2.1.0](https://github.com/Trxyebeep/TOMB4/tree/V2.1.0) (Mar. 3 2023)
 
 ### Original bug fixes
