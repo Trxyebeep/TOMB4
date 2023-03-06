@@ -10,6 +10,7 @@
 ### tomb4 bug fixes
 
 - Fix original style bar drawing on certain GPUs.
+- Fix Rail/Crowbar switch interaction.
 
 ### new tomb4 features
 
