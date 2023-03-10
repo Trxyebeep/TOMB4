@@ -1449,6 +1449,15 @@ struct OBJLIST
 	ushort bright;
 };
 
+struct INVDRAWITEM
+{
+	short xrot;
+	short yrot;
+	short zrot;
+	short object_number;
+	ulong mesh_bits;
+};
+
 struct RINGME
 {
 	OBJLIST current_object_list[119];
