@@ -566,6 +566,104 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 	mesh->SourceVB->Unlock();
 }
 
+void ProcessPickupMeshVertices(MESH_DATA* mesh)
+{
+	FVECTOR vPos;
+	FVECTOR vtx;
+	float* v;
+	short* clip;
+	float zv;
+	long cR, cG, cB, sR, sG, sB;
+	short clipFlag;
+
+	clip = clipflags;
+	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
+
+	for (int i = 0; i < mesh->nVerts; i++)
+	{
+		vtx.x = *v++;
+		vtx.y = *v++;
+		vtx.z = *v++;
+		v += 5;
+
+		vPos.x = vtx.x * D3DMView._11 + vtx.y * D3DMView._21 + vtx.z * D3DMView._31 + D3DMView._41;
+		vPos.y = vtx.x * D3DMView._12 + vtx.y * D3DMView._22 + vtx.z * D3DMView._32 + D3DMView._42;
+		vPos.z = vtx.x * D3DMView._13 + vtx.y * D3DMView._23 + vtx.z * D3DMView._33 + D3DMView._43;
+		MyVertexBuffer[i].tu = vPos.x;
+		MyVertexBuffer[i].tv = vPos.y;
+
+		sR = 0;
+		sG = 0;
+		sB = 0;
+		cR = ambientR;
+		cG = ambientG;
+		cB = ambientB;
+
+		if (cR - 128 <= 0)
+			cR <<= 1;
+		else
+		{
+			sR = (cR - 128) >> 1;
+			cR = 255;
+		}
+
+		if (cG - 128 <= 0)
+			cG <<= 1;
+		else
+		{
+			sG = (cG - 128) >> 1;
+			cG = 255;
+		}
+
+		if (cB - 128 <= 0)
+			cB <<= 1;
+		else
+		{
+			sB = (cB - 128) >> 1;
+			cB = 255;
+		}
+
+		clipFlag = 0;
+
+		if (vPos.z < f_mznear)
+			clipFlag = -128;
+		else
+		{
+			zv = f_mpersp / vPos.z;
+			vPos.x = vPos.x * zv + f_centerx;
+			vPos.y = vPos.y * zv + f_centery;
+			MyVertexBuffer[i].rhw = zv * f_moneopersp;
+
+			if (vPos.x < clip_left)
+				clipFlag++;
+			else if (vPos.x > clip_right)
+				clipFlag += 2;
+
+			if (vPos.y < clip_top)
+				clipFlag += 4;
+			else if (vPos.y > clip_bottom)
+				clipFlag += 8;
+		}
+
+		*clip++ = clipFlag;
+		MyVertexBuffer[i].sx = vPos.x;
+		MyVertexBuffer[i].sy = vPos.y;
+		MyVertexBuffer[i].sz = vPos.z;
+
+		if (sR > 255) sR = 255; else if (sR < 0) sR = 0;
+		if (sG > 255) sG = 255; else if (sG < 0) sG = 0;
+		if (sB > 255) sB = 255; else if (sB < 0) sB = 0;
+		if (cR > 255) cR = 255; else if (cR < 0) cR = 0;
+		if (cG > 255) cG = 255; else if (cG < 0) cG = 0;
+		if (cB > 255) cB = 255; else if (cB < 0) cB = 0;
+
+		MyVertexBuffer[i].color = RGBA(cR, cG, cB, CLRA(GlobalAlpha));
+		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, 0xFF);
+	}
+
+	mesh->SourceVB->Unlock();
+}
+
 static void RGB_M(ulong& c, long m)	//Original was a macro.
 {
 	long r, g, b, a;
@@ -1005,12 +1103,7 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 	f_centery = y;
 
 	if (mesh->nVerts)
-	{
-		if (mesh->prelight)
-			ProcessStaticMeshVertices(mesh);
-		else
-			ProcessObjectMeshVertices(mesh);
-	}
+		ProcessPickupMeshVertices(mesh);
 
 	f_centerx = fcx;
 	f_centery = fcy;

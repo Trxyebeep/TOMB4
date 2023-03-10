@@ -11,6 +11,7 @@
 
 - Fix original style bar drawing on certain GPUs.
 - Fix Rail/Crowbar switch interaction.
+- Fix inventory items drawing.
 
 ### new tomb4 features
 

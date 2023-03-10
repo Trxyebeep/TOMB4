@@ -664,7 +664,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 			alpha = GlobalAlpha;
 
 			if (shade > 127)
-				shade = 0xFF;
+				shade = 255;
 			else
 				shade <<= 1;
 
@@ -768,7 +768,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 				alpha = GlobalAlpha;
 
 				if (shade > 127)
-					shade = 0xFF;
+					shade = 255;
 				else
 					shade <<= 1;
 
