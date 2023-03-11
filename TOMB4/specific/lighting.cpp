@@ -112,6 +112,15 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 		x = light->x - lGlobalMeshPos.x;
 		y = light->y - lGlobalMeshPos.y;
 		z = light->z - lGlobalMeshPos.z;
+
+		if (!x || !y || !z)
+		{
+			//in the rare case of the light being placed on the exact same spot as the mesh, make sure it gets some lighting, otherwise weird stuff happen
+			x++;
+			y++;
+			z++;
+		}
+
 		point = &PointLights[nPointLights];
 		num2 = sqrt(SQUARE(x) + SQUARE(y) + SQUARE(z));
 		num = 2.0F / num2;
@@ -153,6 +162,14 @@ void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient)
 		x = light->x - lGlobalMeshPos.x;
 		y = light->y - lGlobalMeshPos.y;
 		z = light->z - lGlobalMeshPos.z;
+
+		if (!x || !y || !z)
+		{
+			x++;
+			y++;
+			z++;
+		}
+
 		point = &SpotLights[nSpotLights];
 		num2 = sqrt(SQUARE(x) + SQUARE(y) + SQUARE(z));
 
