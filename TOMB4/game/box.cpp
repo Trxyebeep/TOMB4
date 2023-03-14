@@ -1766,7 +1766,7 @@ void CreatureYRot(PHD_3DPOS* srcpos, short angle, short angadd)
 		srcpos->y_rot += angle;
 }
 
-long MoveCreature3DPos(PHD_3DPOS* srcpos, struct PHD_3DPOS* destpos, long velocity, short angdif, long angadd)
+long MoveCreature3DPos(PHD_3DPOS* srcpos, PHD_3DPOS* destpos, long velocity, short angdif, long angadd)
 {
 	long x, y, z, dist;
 

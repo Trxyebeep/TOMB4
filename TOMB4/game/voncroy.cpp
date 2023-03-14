@@ -955,40 +955,38 @@ void VoncroyControl(short item_number)
 
 	item = &items[item_number];
 	VonCroy = (CREATURE_INFO*)item->data;
+
 	tilt = 0;
 	angle = 0;
 	head = 0;
 	torso_x = 0;
 	torso_y = 0;
 	ifl3 = 0;
+
 	room_number = item->room_number;
 	Xoffset = 808 * phd_sin(item->pos.y_rot) >> W2V_SHIFT;
 	Zoffset = 808 * phd_cos(item->pos.y_rot) >> W2V_SHIFT;
+
 	x = item->pos.x_pos + Xoffset;
 	y = item->pos.y_pos;
 	z = item->pos.z_pos + Zoffset;
 	floor = GetFloor(x, y, z, &room_number);
 	nearheight = GetHeight(floor, x, y, z);
+
 	room_number = item->room_number;
 	x += Xoffset;
 	z += Zoffset;
 	floor = GetFloor(x, y, z, &room_number);
 	midheight = GetHeight(floor, x, y, z);
+
 	room_number = item->room_number;
 	x += Xoffset;
 	z += Zoffset;
 	floor = GetFloor(x, y, z, &room_number);
 	farheight = GetHeight(floor, x, y, z);
 
-	if (y >= nearheight - 384 || y >= midheight + 256 || y <= midheight - 256)
-		jump_ahead = 0;
-	else
-		jump_ahead = 1;
-
-	if (y >= nearheight - 384 || y >= midheight - 384 || y >= farheight + 256 || y <= farheight - 256)
-		long_jump_ahead = 0;
-	else
-		long_jump_ahead = 1;
+	jump_ahead = y < nearheight - 384 && y < midheight + 256 && y > midheight - 256;
+	long_jump_ahead = y < nearheight - 384 && y < midheight - 384 && y < farheight + 256 && y > farheight - 256;
 
 	item->ai_bits = FOLLOW;
 	GetAITarget(VonCroy);
@@ -1002,27 +1000,23 @@ void VoncroyControl(short item_number)
 		{
 			baddie = &baddie_slots[i];
 
-			if (baddie->item_num != NO_ITEM && baddie->item_num != item_number)
+			if (baddie->item_num == NO_ITEM || baddie->item_num == item_number)
+				continue;
+
+			candidate = &items[baddie->item_num];
+
+			if (candidate->object_number != VON_CROY)
 			{
-				candidate = &items[baddie->item_num];
+				dx = candidate->pos.x_pos - item->pos.x_pos;
+				dz = candidate->pos.z_pos - item->pos.z_pos;
+				dist = SQUARE(dx) + SQUARE(dz);
 
-				if (candidate->object_number != VON_CROY)
+				if (abs(dx) <= 5120 && abs(dz) <= 5120 && dist < max_dist)
 				{
-					dx = candidate->pos.x_pos - item->pos.x_pos;
-					dz = candidate->pos.z_pos - item->pos.z_pos;
-
-					if (abs(dx) <= 5120 && abs(dz) <= 5120)
-					{
-						dist = SQUARE(dx) + SQUARE(dz);
-
-						if (dist < max_dist)
-						{
-							VonCroy->reached_goal = 0;
-							target = candidate;
-							max_dist = dist;
-							item->item_flags[2] = 0;
-						}
-					}
+					VonCroy->reached_goal = 0;
+					target = candidate;
+					max_dist = dist;
+					item->item_flags[2] = 0;
 				}
 			}
 		}
@@ -1055,36 +1049,30 @@ void VoncroyControl(short item_number)
 	CreatureMood(item, &VonCroyAI, 1);
 
 	if (VonCroy->enemy == lara_item)
-		VonCroyLaraAI = VonCroyAI;
+		memcpy(&VonCroyLaraAI, &VonCroyAI, sizeof(VonCroyLaraAI));
 	else
 	{
 		dx = lara_item->pos.x_pos - item->pos.x_pos;
 		dz = lara_item->pos.z_pos - item->pos.z_pos;
 		VonCroyLaraAI.angle = short(phd_atan(dz, dx) - item->pos.y_rot);
-
-		if (VonCroyLaraAI.angle > -0x4000 && VonCroyLaraAI.angle < 0x4000)
-			VonCroyLaraAI.ahead = 1;
-		else
-			VonCroyLaraAI.ahead = 0;
-
-		VonCroyLaraAI.enemy_facing = VonCroyLaraAI.angle - lara_item->pos.y_rot + 0x8000;
+		VonCroyLaraAI.ahead = VonCroyLaraAI.angle > -0x4000 && VonCroyLaraAI.angle < 0x4000;
+		VonCroyLaraAI.enemy_facing = VonCroyLaraAI.angle + 0x8000 - lara_item->pos.y_rot;
 
 		if (dx > 32000 || dx < -32000 || dz > 32000 || dz < -32000)
 			VonCroyLaraAI.distance = 0x7FFFFFFF;
 		else
 			VonCroyLaraAI.distance = SQUARE(dx) + SQUARE(dz);
 
-		if (abs(dx) > abs(dz))
-			VonCroyLaraAI.x_angle = (short)phd_atan(abs(dx) + (abs(dz) >> 1), item->pos.y_pos - lara_item->pos.y_pos);
+		dx = abs(dx);
+		dz = abs(dz);
+
+		if (dx > dz)
+			VonCroyLaraAI.x_angle = (short)phd_atan(dx + (dz >> 1), item->pos.y_pos - lara_item->pos.y_pos);
 		else
-			VonCroyLaraAI.x_angle = (short)phd_atan(abs(dz) + (abs(dx) >> 1), item->pos.y_pos - lara_item->pos.y_pos);
+			VonCroyLaraAI.x_angle = (short)phd_atan(dz + (dx >> 1), item->pos.y_pos - lara_item->pos.y_pos);
 	}
 
-	if (VonCroyLaraAI.angle > -6144 && VonCroyLaraAI.angle < 6144 && VonCroyLaraAI.distance < 0x100000)
-		VonCroyLaraAI.bite = 1;
-	else
-		VonCroyLaraAI.bite = 0;
-
+	VonCroyLaraAI.bite = VonCroyLaraAI.angle > -0x1800 && VonCroyLaraAI.angle < 0x1800 && VonCroyLaraAI.distance < 0x100000;
 	angle = CreatureTurn(item, VonCroy->maximum_turn);
 
 	if (target)
@@ -1097,15 +1085,15 @@ void VoncroyControl(short item_number)
 	{
 		VonCroy->reached_goal = 0;
 		VonCroy->enemy = 0;
+		item->ai_bits = FOLLOW;
 		item->item_flags[3] = 53;
 		lara.location = 53;
-		item->ai_bits = FOLLOW;
 	}
 
 	if ((lara.locationPad == 9 || lara.locationPad == 10) && item->item_flags[3] == 11)
 		lara.locationPad = 11;
-	else if (lara.locationPad == 10 && item->item_flags[3] == 12 && (item->item_flags[0] || lara_item->anim_number == objects[LARA].anim_index + 90 &&
-			lara_item->frame_number == anims[lara_item->anim_number].frame_end))
+	else if (lara.locationPad == 10 && item->item_flags[3] == 12 &&
+		(item->item_flags[0] || lara_item->anim_number == objects[LARA].anim_index + 90 && lara_item->frame_number == anims[lara_item->anim_number].frame_end))
 	{
 		lara.locationPad = (char)item->item_flags[3];
 		item->item_flags[0] = 1;
@@ -1174,7 +1162,7 @@ void VoncroyControl(short item_number)
 				item->goal_anim_state = 31;
 			else if (enemy->hit_points > 0 && VonCroyAI.ahead)
 			{
-				if (abs(enemy->pos.y_pos - item->pos.y_pos + 512) < 512)
+				if (abs(enemy->pos.y_pos + 512 - item->pos.y_pos) < 512)
 					item->goal_anim_state = 21;
 			}
 		}
@@ -1339,7 +1327,7 @@ void VoncroyControl(short item_number)
 				item->goal_anim_state = 31;
 			else if (enemy->hit_points > 0 && VonCroyAI.ahead)
 			{
-				if (abs(enemy->pos.y_pos - item->pos.y_pos + 512) < 512)
+				if (abs(enemy->pos.y_pos + 512 - item->pos.y_pos) < 512)
 					item->goal_anim_state = 21;
 			}
 		}
@@ -1524,23 +1512,21 @@ void VoncroyControl(short item_number)
 		VonCroy->maximum_turn = 0;
 		CreatureYRot(&item->pos, VonCroyAI.angle, 1092);
 
-		if (!VonCroy->flags && enemy)
+		if (!VonCroy->flags && enemy &&
+			item->frame_number > anims[item->anim_number].frame_base + 20 && item->frame_number < anims[item->anim_number].frame_base + 45)
 		{
-			if (item->frame_number > anims[item->anim_number].frame_base + 20 && item->frame_number < anims[item->anim_number].frame_base + 45)
+			if (abs(enemy->pos.x_pos - item->pos.x_pos) < 512 &&
+				abs(enemy->pos.y_pos + 768 - item->pos.y_pos) <= 512 &&
+				abs(enemy->pos.z_pos - item->pos.z_pos) < 512)
 			{
-				if (abs(enemy->pos.x_pos - item->pos.x_pos) < 512 &&
-					abs(enemy->pos.y_pos - item->pos.y_pos + 768) <= 512 &&
-					abs(enemy->pos.z_pos - item->pos.z_pos) < 512)
-				{
-					enemy->hit_points -= 40;
+				enemy->hit_points -= 40;
 
-					if (enemy->hit_points <= 0)
-						item->ai_bits = FOLLOW;
+				if (enemy->hit_points <= 0)
+					item->ai_bits = FOLLOW;
 
-					enemy->hit_status = 1;
-					VonCroy->flags = 1;
-					CreatureEffectT(item, &voncroy_hit, 2, -1, DoBloodSplat);
-				}
+				enemy->hit_status = 1;
+				VonCroy->flags = 1;
+				CreatureEffectT(item, &voncroy_hit, 2, -1, DoBloodSplat);
 			}
 		}
 
@@ -1593,23 +1579,21 @@ void VoncroyControl(short item_number)
 			ifl3 = -1;
 			VonCroy->flags = 1;
 		}
-		else if (!VonCroy->flags && enemy)
+		else if (!VonCroy->flags && enemy &&
+			item->frame_number > anims[item->anim_number].frame_base + 15 && item->frame_number < anims[item->anim_number].frame_base + 26)
 		{
-			if (item->frame_number > anims[item->anim_number].frame_base + 15 && item->frame_number < anims[item->anim_number].frame_base + 26)
+			if (abs(enemy->pos.x_pos - item->pos.x_pos) < 512 &&
+				abs(enemy->pos.y_pos - item->pos.y_pos) <= 512 &&
+				abs(enemy->pos.z_pos - item->pos.z_pos) < 512)
 			{
-				if (abs(enemy->pos.x_pos - item->pos.x_pos) < 512 &&
-					abs(enemy->pos.y_pos - item->pos.y_pos) <= 512 &&
-					abs(enemy->pos.z_pos - item->pos.z_pos) < 512)
-				{
-					enemy->hit_points -= 20;
+				enemy->hit_points -= 20;
 
-					if (enemy->hit_points <= 0)
-						item->ai_bits = FOLLOW;
+				if (enemy->hit_points <= 0)
+					item->ai_bits = FOLLOW;
 
-					enemy->hit_status = 1;
-					VonCroy->flags = 1;
-					CreatureEffectT(item, &voncroy_hit, 8, -1, DoBloodSplat);
-				}
+				enemy->hit_status = 1;
+				VonCroy->flags = 1;
+				CreatureEffectT(item, &voncroy_hit, 8, -1, DoBloodSplat);
 			}
 		}
 
@@ -1663,6 +1647,7 @@ void VoncroyControl(short item_number)
 
 	if (ifl3 == -1)
 	{
+		enemy = &VonCroy->ai_target;
 		TestTriggersAtXYZ(VonCroy->ai_target.pos.x_pos, VonCroy->ai_target.pos.y_pos, VonCroy->ai_target.pos.z_pos, 
 			VonCroy->ai_target.room_number, 1, 0);
 		ifl3 = 1;
