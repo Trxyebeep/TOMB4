@@ -21,29 +21,29 @@
 
 static BITE_INFO voncroy_hit = { 0, 35, 130, 18 };
 
-static uchar VonCroyCutIndices[64] =	//indices in VonCroyCutscenes depending on lara.locationPad
+static uchar VonCroyCutIndices[68] =	//indices in VonCroyCutscenes depending on lara.locationPad
 {
 	1, 2, 255, 0, 3, 255, 0, 4, 0, 0, 0, 0, 5, 6, 0, 0, 0, 255, 0, 0, 7, 0, 255, 255, 0, 8, 0, 255, 255, 255, 255, 255, 255, 255,
-	9, 0, 10, 255, 255, 255, 255, 255, 255, 0, 255, 255, 0, 0, 11, 12, 255, 255, 255, 0, 255, 255, 0, 0, 13, 14, 255, 0, 0, 0
+	9, 0, 10, 255, 255, 255, 255, 255, 255, 0, 255, 255, 0, 0, 11, 12, 255, 255, 255, 0, 255, 255, 0, 0, 13, 14, 255, 0, 0, 0, 0, 0, 0, 0
 };
 
 static VonCroyCutData VonCroyCutscenes[15] =
 {
-	{ {256, -386, 256}, {0, 0, 0}, 80, 2 },
-	{ {8845, 453, 5245}, {0, 0, 0}, 0, 4, },
-	{ {0, -1024, 0}, {0, 0, 0}, 0, 2, },
-	{ {17435, 2500, 61472}, {0, 0, 0}, 0, 4, },
-	{ {30199, 1029, 51933}, {0, 0, 0}, 0, 6, },
-	{ {38047, 468, 52008}, {27190, 1280, 60752}, 0, 12 },
-	{ {37130, 314, 61563}, {41883, -1291, 59413}, 0, 12 },
-	{ {55203, -3083, 53155}, {0, 0, 0}, 0, 4, },
-	{ {60944, 601, 50535}, {62163, -432, 47405}, 0, 12 },
-	{ {94354, 366, 65718}, {92461, -432, 60717}, 0, 12 },
-	{ {94567, -2081, 63235}, {0, 0, 0}, 0, 6, },
-	{ {79376, 219, 30345}, {0, 0, 0}, 0, 4, },
-	{ {78067, -3375, 36470}, {0, 0, 0}, 0, 4, },
-	{ {72648, 195, 41947}, {0, 0, 0}, 0, 4, },
-	{ {66935, -3372, 40726}, {0, 0, 0}, 0, 4, }
+	{ {256, -386, 256}, {0, 0, 0}, 0x20050 },
+	{ {8845, 453, 83931}, {0, 0, 0}, 0x40000 },
+	{ {0, -1024, 0}, {0, 0, 0}, 0x20000 },
+	{ {17435, 2500, 61472}, {0, 0, 0}, 0x40000 },
+	{ {30199, 1029, 51933}, {0, 0, 0}, 0x60000 },
+	{ {38047, 468, 52008}, {27190, 1280, 60752}, 0xC0000 },
+	{ {37130, 314, 61563}, {41883, -1291, 59413}, 0xC0000 },
+	{ {55203, -3083, 53155}, {0, 0, 0}, 0x40000 },
+	{ {60944, 601, 50535}, {62163, -432, 47405}, 0xC0000 },
+	{ {94354, 366, 65718}, {92461, -432, 60717}, 0xC0000 },
+	{ {94567, -2081, 63235}, {0, 0, 0}, 0x60000 },
+	{ {79376, 219, 30345}, {0, 0, 0}, 0x40000 },
+	{ {78067, -3375, 36470}, {0, 0, 0}, 0x40000 },
+	{ {72648, 195, 41947}, {0, 0, 0}, 0x40000 },
+	{ {66935, -3372, 40726}, {0, 0, 0}, 0x40000 }
 };
 
 static short VonCroyCutTracks[64] =
@@ -63,6 +63,7 @@ static long actualRoomNumber;
 void SetCutSceneCamera(ITEM_INFO* item)
 {
 	VonCroyCutData* cut;
+	long f;
 
 	bVoncroyCutScene = 1;
 	camera.old_type = FIXED_CAMERA;
@@ -79,11 +80,12 @@ void SetCutSceneCamera(ITEM_INFO* item)
 	actualCameraPos.y = camera.pos.y;
 	actualCameraPos.z = camera.pos.z;
 	cut = &VonCroyCutscenes[VonCroyCutIndices[lara.locationPad]];
+	f = cut->f;
 
-	if (cut->FOV)
-		AlterFOV(182 * cut->FOV);
+	if (f & 0xFFFF)
+		AlterFOV(182 * (f & 0xFFFF));
 
-	if (cut->flags & 4)
+	if (f & 0x40000)
 	{
 		camera.pos.x = cut->CameraPos.x;
 		camera.pos.y = cut->CameraPos.y;
@@ -96,7 +98,7 @@ void SetCutSceneCamera(ITEM_INFO* item)
 		camera.pos.z += cut->CameraPos.z;
 	}
 
-	if (cut->flags & 8)
+	if (f & 0x80000)
 	{
 		camera.target.x = cut->CameraTarget.x;
 		camera.target.y = cut->CameraTarget.y;
@@ -109,7 +111,7 @@ void SetCutSceneCamera(ITEM_INFO* item)
 		camera.target.z += cut->CameraTarget.z;
 	}
 
-	if (cut->flags & 2)
+	if (f & 0x20000)
 	{
 		camera.target.x = item->pos.x_pos;
 		camera.target.y = item->pos.y_pos - 256;

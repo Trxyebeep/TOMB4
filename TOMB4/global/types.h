@@ -1819,8 +1819,7 @@ struct VonCroyCutData
 {
 	PHD_VECTOR CameraPos;
 	PHD_VECTOR CameraTarget;
-	short FOV;
-	short flags;
+	long f;
 };
 
 struct DEBRIS_STRUCT

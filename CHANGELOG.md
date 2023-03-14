@@ -13,6 +13,7 @@
 - Fix Rail/Crowbar switch interaction.
 - Fix inventory items drawing.
 - Improve lighting in some edge cases.
+- Fix first voncroy cut camera.
 
 ### new tomb4 features
 

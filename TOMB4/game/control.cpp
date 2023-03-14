@@ -2438,8 +2438,8 @@ long IsRoomOutside(long x, long y, long z)
 		r = &room[offset & 0x7FFF];
 
 		if (y >= r->maxceiling && y <= r->minfloor &&
-			z >= r->z + 1024 && z <= (r->x_size << 10) + r->z - 1024 &&
-			x >= r->x + 1024 && x <= (r->y_size << 10) + r->x - 1024)
+			z >= r->z + 1024 && z <= ((r->x_size - 1) << 10) + r->z &&
+			x >= r->x + 1024 && x <= ((r->y_size - 1) << 10) + r->x)
 		{
 			IsRoomOutsideNo = offset & 0x7FFF;
 			room_no = IsRoomOutsideNo;
@@ -2465,8 +2465,8 @@ long IsRoomOutside(long x, long y, long z)
 			r = &room[*pTable];
 
 			if (y >= r->maxceiling && y <= r->minfloor &&
-				z >= r->z + 1024 && z <= (r->x_size << 10) + r->z - 1024 &&
-				x >= r->x + 1024 && x <= (r->y_size << 10) + r->x - 1024)
+				z >= r->z + 1024 && z <= ((r->x_size - 1) << 10) + r->z &&
+				x >= r->x + 1024 && x <= ((r->y_size - 1) << 10) + r->x)
 			{
 				IsRoomOutsideNo = *pTable;
 				room_no = IsRoomOutsideNo;
