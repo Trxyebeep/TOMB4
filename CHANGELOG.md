@@ -14,6 +14,7 @@
 - Fix inventory items drawing.
 - Improve lighting in some edge cases.
 - Fix first voncroy cut camera.
+- Fix AI (VonCroy, Guide, etc.) interaction position.
 
 ### new tomb4 features
 
