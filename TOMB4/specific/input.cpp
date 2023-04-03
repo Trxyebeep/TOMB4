@@ -327,7 +327,6 @@ long S_UpdateInput()
 {
 	static long LookCnt;
 	static long med_hotkey_timer;
-	static long cheat_code;
 	short state;
 	static bool flare_no_db = 0;
 	bool debounce;
@@ -521,9 +520,6 @@ long S_UpdateInput()
 	else if (med_hotkey_timer)
 		med_hotkey_timer--;
 
-	if (keymap[DIK_F10])
-		linput |= IN_E;
-
 	if (linput & IN_WALK && !(linput & (IN_FORWARD | IN_BACK)))
 	{
 		if (linput & IN_LEFT)
@@ -551,43 +547,6 @@ long S_UpdateInput()
 
 		if (keymap[DIK_F6])
 			linput |= IN_LOAD;
-	}
-
-	if (Gameflow->CheatEnabled)
-	{
-		if (linput)
-			cheat_code = 0;
-
-		switch (cheat_code)
-		{
-		case 0:
-
-			if (keymap[DIK_D])
-				cheat_code = 1;
-
-			break;
-
-		case 1:
-
-			if (keymap[DIK_O])
-				cheat_code = 2;
-
-			break;
-
-		case 2:
-
-			if (keymap[DIK_Z])
-				cheat_code = 3;
-
-			break;
-
-		case 3:
-
-			if (keymap[DIK_Y])
-				linput = IN_C;
-
-			break;
-		}
 	}
 
 	if (keymap[DIK_APOSTROPHE])

@@ -9,7 +9,6 @@
 DEBRIS_STRUCT debris[256];
 long next_debris;
 short DebrisFlags;
-char tsv_buffer[16384];
 
 static MESH_DATA* DebrisMesh;
 static long DebrisMeshC1;

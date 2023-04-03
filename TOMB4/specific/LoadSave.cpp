@@ -25,9 +25,7 @@
 #include "../game/lara.h"
 #include "../tomb4/tomb4.h"
 #include "../tomb4/troyestuff.h"
-
-static long MonoScreenX[4] = { 0, 256, 512, 640 };
-static long MonoScreenY[3] = { 0, 256, 480 };
+#include "drawbars.h"
 
 long sfx_frequencies[3] = { 11025, 22050, 44100 };
 long SoundQuality = 1;
@@ -38,493 +36,6 @@ char MonoScreenOn;
 
 static MONOSCREEN_STRUCT MonoScreen[5];
 static SAVEFILE_INFO SaveGames[15];
-static float loadbar_pos;
-static long loadbar_maxpos;
-
-static GouraudBarColourSet healthBarColourSet =
-{
-	{ 64, 96, 128, 96, 64 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 128, 192, 255, 192, 128 },
-	{ 0, 0, 0, 0, 0 }
-};
-
-static GouraudBarColourSet poisonBarColourSet =
-{
-	{ 64, 96, 128, 96, 64 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 64, 96, 128, 96, 64 },
-	{ 0, 0, 0, 0, 0 },
-	{ 128, 192, 255, 192, 128 }
-};
-
-static GouraudBarColourSet airBarColourSet =
-{
-	{ 0, 0, 0, 0, 0 },
-	{ 113, 146, 113, 93, 74 },
-	{ 123, 154, 123, 107, 91 },
-	{ 0, 0, 0, 0, 0 },
-	{ 113, 146, 113, 93, 74 },
-	{ 0, 0, 0, 0, 0 }
-};
-
-static GouraudBarColourSet dashBarColourSet =
-{
-	{ 144, 192, 240, 192, 144 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 144, 192, 240, 192, 144 },
-	{ 144, 192, 240, 192, 144 },
-	{ 0, 0, 0, 0, 0 }
-};
-
-static GouraudBarColourSet loadBarColourSet =
-{
-	{ 48, 96, 127, 80, 32 },
-	{ 0, 0, 0, 0, 0 },
-	{ 48, 96, 127, 80, 32 },
-	{ 0, 0, 0, 0, 0 },
-	{ 48, 96, 127, 80, 32 },
-	{ 48, 96, 127, 80, 32 }
-};
-
-static GouraudBarColourSet enemyBarColourSet =
-{
-	{ 128, 192, 255, 192, 128 },
-	{ 64, 96, 128, 96, 64 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 123, 154, 123, 107, 91 },
-	{ 0, 0, 0, 0, 0 }
-};
-
-static void DrawColoredRect(float x0, float y0, float x1, float y1, float z, ulong c0, ulong c1, ulong c2, ulong c3, TEXTURESTRUCT* tex)
-{
-	D3DTLVERTEX* v;
-
-	v = MyVertexBuffer;
-
-	v[0].sx = x0;
-	v[0].sy = y0;
-	v[0].color = RGBA_SETALPHA(c0, 0xFF);
-
-	v[1].sx = x1;
-	v[1].sy = y0;
-	v[1].color = RGBA_SETALPHA(c1, 0xFF);
-
-	v[2].sx = x1;
-	v[2].sy = y1;
-	v[2].color = RGBA_SETALPHA(c2, 0xFF);
-
-	v[3].sx = x0;
-	v[3].sy = y1;
-	v[3].color = RGBA_SETALPHA(c3, 0xFF);
-
-	for (int i = 0; i < 4; i++)
-	{
-		v[i].sz = z;
-		v[i].rhw = f_mpersp / z * f_moneopersp;
-		v[i].specular = 0xFF000000;
-	}
-
-	AddQuadSorted(v, 0, 1, 2, 3, tex, 0);
-}
-
-static void S_DrawGouraudBar(long x, long y, long width, long height, long pos, GouraudBarColourSet* colour)
-{
-	TEXTURESTRUCT tex;
-	float bar, max, h, x0, y0, x1, y1;
-	long p, r, g, b, c0, c1, c2, c3;
-
-	nPolyType = 6;
-	clipflags[0] = 0;
-	clipflags[1] = 0;
-	clipflags[2] = 0;
-	clipflags[3] = 0;
-	tex.drawtype = 0;
-	tex.tpage = 0;
-
-	h = (float)height / 3.0F;
-	max = (float)pos / 100.0F;
-	bar = (float)width * max;
-
-	x0 = (float)x;
-	y0 = (float)y;
-	x1 = x + bar;
-	y1 = y + h;
-
-	r = colour->abLeftRed[0];
-	g = colour->abLeftGreen[0];
-	b = colour->abLeftBlue[0];
-	r -= r >> 2;
-	g -= g >> 2;
-	b -= b >> 2;
-	c2 = RGBONLY(r, g, b);
-
-	r = (long)((1 - max) * colour->abLeftRed[0] + max * colour->abRightRed[0]);
-	g = (long)((1 - max) * colour->abLeftGreen[0] + max * colour->abRightGreen[0]);
-	b = (long)((1 - max) * colour->abLeftBlue[0] + max * colour->abRightBlue[0]);
-	r -= r >> 2;
-	g -= g >> 2;
-	b -= b >> 2;
-	c3 = RGBONLY(r, g, b);
-
-	DrawColoredRect(x0, y0, x1, y1, f_mznear, 0, 0, c3, c2, &tex);
-
-	for (int i = 0; i < 4; i++)
-	{
-		c0 = RGBONLY(colour->abLeftRed[i], colour->abLeftGreen[i], colour->abLeftBlue[i]);
-		r = (long)((1 - max) * colour->abLeftRed[i] + max * colour->abRightRed[i]);
-		g = (long)((1 - max) * colour->abLeftGreen[i] + max * colour->abRightGreen[i]);
-		b = (long)((1 - max) * colour->abLeftBlue[i] + max * colour->abRightBlue[i]);
-		c1 = RGBONLY(r, g, b);
-		c2 = RGBONLY(colour->abLeftRed[i + 1], colour->abLeftGreen[i + 1], colour->abLeftBlue[i + 1]);
-		r = (long)((1 - max) * colour->abLeftRed[i + 1] + max * colour->abRightRed[i + 1]);
-		g = (long)((1 - max) * colour->abLeftGreen[i + 1] + max * colour->abRightGreen[i + 1]);
-		b = (long)((1 - max) * colour->abLeftBlue[i + 1] + max * colour->abRightBlue[i + 1]);
-		c3 = RGBONLY(r, g, b);
-
-		y0 += h;
-		y1 += h;
-		DrawColoredRect(x0, y0, x1, y1, f_mznear, c0, c1, c3, c2, &tex);
-	}
-
-	r = colour->abLeftRed[4];
-	g = colour->abLeftGreen[4];
-	b = colour->abLeftBlue[4];
-	r -= r >> 2;
-	g -= g >> 2;
-	b -= b >> 2;
-	c0 = RGBONLY(r, g, b);
-
-	r = (long)((1 - max) * colour->abLeftRed[4] + max * colour->abRightRed[4]);
-	g = (long)((1 - max) * colour->abLeftGreen[4] + max * colour->abRightGreen[4]);
-	b = (long)((1 - max) * colour->abLeftBlue[4] + max * colour->abRightBlue[4]);
-	r -= r >> 2;
-	g -= g >> 2;
-	b -= b >> 2;
-	c1 = RGBONLY(r, g, b);
-
-	y0 += h;
-	y1 += h;
-	DrawColoredRect(x0, y0, x1, y1, f_mznear, c0, c1, 0, 0, &tex);
-
-	x0 = (float)x;
-	y0 = (float)y;
-	x1 = float(x + width);
-	y1 = y + (h * 6);
-	p = GetFixedScale(1);
-
-	DrawColoredRect(x0 - p, y0, x1 + p, y1, f_mznear + 1, 0, 0, 0, 0, &tex);
-	DrawColoredRect(x0 - (2 * p), y0 - p, x1 + (2 * p), y1 + p, f_mznear + 2, 0xFF508282, 0xFFA0A0A0, 0xFF508282, 0xFFA0A0A0, &tex);
-	DrawColoredRect(x0 - (3 * p), y0 + p, x1 + (3 * p), y1 - p, f_mznear + 3, 0xFF284141, 0xFF505050, 0xFF284141, 0xFF505050, &tex);
-}
-
-static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long clr1, long clr2)
-{
-	TEXTURESTRUCT tex;
-	float r1, g1, b1, r2, g2, b2, r, g, b, mul;
-	long bar, y2, p, lr, lg, lb, c0, c1, c2, c3;
-
-	nPolyType = 6;
-	clipflags[0] = 0;
-	clipflags[1] = 0;
-	clipflags[2] = 0;
-	clipflags[3] = 0;
-	tex.drawtype = 0;
-	tex.tpage = 0;
-
-	p = GetFixedScale(1);
-	y2 = y + height;
-	bar = width * pos / 100;
-
-	r1 = (float)CLRR(clr1);
-	g1 = (float)CLRG(clr1);
-	b1 = (float)CLRB(clr1);
-	r2 = (float)CLRR(clr2);
-	g2 = (float)CLRG(clr2);
-	b2 = (float)CLRB(clr2);
-
-	mul = (float)bar / (float)width;
-	r = r1 + ((r2 - r1) * mul);
-	g = g1 + ((g2 - g1) * mul);
-	b = b1 + ((b2 - b1) * mul);
-
-	lr = (long)r1;
-	lg = (long)g1;
-	lb = (long)b1;
-	c0 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);
-	c2 = RGBONLY(lr, lg, lb);
-
-	lr = (long)r;
-	lg = (long)g;
-	lb = (long)b;
-	c1 = RGBONLY(lr >> 1, lg >> 1, lb >> 1);
-	c3 = RGBONLY(lr, lg, lb);
-	
-	DrawColoredRect((float)x, (float)y, float(x + bar), (float)y2, f_mznear, c0, c1, c3, c2, &tex);
-	DrawColoredRect((float)x, (float)y2, float(x + bar), float(y2 + height), f_mznear, c2, c3, c1, c0, &tex);
-
-	DrawColoredRect((float)x, (float)y, float(x + width), float(y2 + height), f_mznear + 1, 0, 0, 0, 0, &tex);
-	DrawColoredRect(float(x - p), float(y - p), float(x + width + p), float(y2 + height + p), f_mznear + 2, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, &tex);
-}
-
-static void S_DrawEnemyBar2(long pos)
-{
-	long x, y, w, h;
-
-	w = GetFixedScale(150);
-	h = GetFixedScale(6);
-	x = phd_centerx - GetFixedScale(75);
-	y = GetFixedScale(117);
-
-	if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, w, h, pos, &enemyBarColourSet);
-	else if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, 0xA0A000);
-	else
-		DoBar(x, y, w, h, pos, 0xFF000000, 0xFFFFA000);
-}
-
-void S_DrawEnemyBar(long pos)
-{
-	long x, y, w, h;
-
-	if (BinocularRange)
-	{
-		S_DrawEnemyBar2(pos);
-		return;
-	}
-
-	w = GetFixedScale(150);
-	h = GetFixedScale(6);
-
-	if (tomb4.bars_pos == 1 || tomb4.bars_pos == 2)//original or improved
-	{
-		x = GetFixedScale(8);
-		y = GetFixedScale(25);
-	}
-	else
-	{
-		x = GetFixedScale(36);
-		x = phd_winwidth - w - x;
-		y = GetFixedScale(93);
-	}
-
-	if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, w, h, pos, &enemyBarColourSet);
-	else if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, 0xA0A000);
-	else
-		DoBar(x, y, w, h, pos, 0xFF000000, 0xFFFFA000);
-}
-
-static void S_DrawHealthBar2(long pos)
-{
-	long x, y, w, h;
-
-	w = GetFixedScale(150);
-	h = GetFixedScale(6);
-	x = phd_centerx - GetFixedScale(75);
-	y = GetFixedScale(100);
-
-	if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, w, h, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
-	else if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0x00A000);
-	else
-		DoBar(x, y, w, h, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000);
-}
-
-void S_DrawHealthBar(long pos)
-{
-	long x, y, w, h;
-
-	if (!gfCurrentLevel)
-		return;
-
-	if (BinocularRange)
-	{
-		S_DrawHealthBar2(pos);
-		return;
-	}
-
-	w = GetFixedScale(150);
-	h = GetFixedScale(6);
-
-	if (tomb4.bars_pos == 1 || tomb4.bars_pos == 2)//original or improved
-	{
-		x = GetFixedScale(8);
-		y = GetFixedScale(8);
-	}
-	else
-	{
-		x = GetFixedScale(36);
-		x = phd_winwidth - w - x;
-		y = GetFixedScale(18);
-	}
-
-	if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0x00A000);
-	else if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, w, h, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
-	else
-		DoBar(x, y, w, h, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000);
-}
-
-void S_DrawAirBar(long pos)
-{
-	long x, y, w, h;
-
-	if (!gfCurrentLevel)
-		return;
-
-	w = GetFixedScale(150);
-	h = GetFixedScale(6);
-
-	if (tomb4.bars_pos == 1)//original
-	{
-		x = phd_winwidth - w - GetFixedScale(8);
-		y = GetFixedScale(25);
-	}
-	else if (tomb4.bars_pos == 2)//improved
-	{
-		x = phd_winwidth - w - GetFixedScale(8);
-		y = GetFixedScale(8);
-	}
-	else
-	{
-		x = GetFixedScale(36);
-		x = phd_winwidth - w - x;
-		y = GetFixedScale(43);
-	}
-
-	if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, w, h, pos, 0x0000A0, 0x0050A0);
-	else if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, w, h, pos, &airBarColourSet);
-	else
-		DoBar(x, y, w, h, pos, 0xFF000000, 0xFF0000FF);
-}
-
-void S_DrawDashBar(long pos)
-{
-	long x, y, w, h;
-
-	if (!gfCurrentLevel)
-		return;
-
-	w = GetFixedScale(150);
-	h = GetFixedScale(6);
-
-	if (tomb4.bars_pos == 1)//original
-	{
-		x = phd_winwidth - w - GetFixedScale(8);
-		y = GetFixedScale(8);
-	}
-	else if (tomb4.bars_pos == 2)//improved
-	{
-		x = phd_winwidth - w - GetFixedScale(8);
-		y = GetFixedScale(25);
-	}
-	else
-	{
-		x = GetFixedScale(36);
-		x = phd_winwidth - w - x;
-		y = GetFixedScale(68);
-	}
-
-	if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, w, h, pos, 0xA0A000, 0x00A000);
-	else if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, w, h, pos, &dashBarColourSet);
-	else
-		DoBar(x, y, w, h, pos, 0xFF000000, 0xFF00FF00);
-}
-
-void S_InitLoadBar(long maxpos)
-{
-	loadbar_pos = 0;
-	loadbar_maxpos = maxpos;
-}
-
-void S_LoadBar()
-{
-	long x, y, w, h;
-
-	if (gfCurrentLevel || App.dx.Flags & 0x80)
-	{
-		_BeginScene();
-		InitBuckets();
-		InitialiseSortList();
-		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
-		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
-		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
-		loadbar_pos += 100 / loadbar_maxpos;
-
-		if (tomb4.tr5_loadbar)
-		{
-			x = GetFixedScale(170);
-			w = phd_winwidth - (x << 1);
-			h = GetFixedScale(5);
-			y = phd_winheight - h - GetFixedScale(20);
-
-			if (tomb4.bar_mode == 3)
-				S_DrawGouraudBar(x, y, w, h, (long)loadbar_pos, &loadBarColourSet);
-			else if (tomb4.bar_mode == 2)
-				S_DoTR5Bar(x, y, w, h, (long)loadbar_pos, 0x0000A0, 0x0000F0);
-			else
-				DoBar(x, y, w, h, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
-		}
-		else
-		{
-			x = GetFixedScale(20);
-			w = phd_winwidth - (x << 1);
-			h = GetFixedScale(7);
-			y = phd_winheight - h - GetFixedScale(20);
-
-			if (tomb4.bar_mode == 3)
-				S_DrawGouraudBar(x, y, w, h, (long)loadbar_pos, &loadBarColourSet);
-			else if (tomb4.bar_mode == 2)
-				S_DoTR5Bar(x, y, w, h, (long)loadbar_pos, 0xFF7F007F, 0xFF007F7F);
-			else
-				DoBar(x, y, w, h, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
-		}
-
-		SortPolyList(SortCount, SortList);
-		DrawSortList();
-		S_DumpScreen();
-	}
-}
-
-void DoBar(long x, long y, long width, long height, long pos, long c1, long c2)
-{
-	TEXTURESTRUCT tex;
-	long p, xw, y2, bar;
-
-	nPolyType = 6;
-	clipflags[0] = 0;
-	clipflags[1] = 0;
-	clipflags[2] = 0;
-	clipflags[3] = 0;
-	tex.drawtype = 0;
-	tex.flag = 0;
-	tex.tpage = 0;
-
-	p = GetFixedScale(1);
-	xw = x + width;
-	y2 = y + height;
-	bar = width * pos / 100;
-
-	DrawColoredRect((float)x, (float)y, float(x + bar), float(y2), f_mznear - 6, c1, c1, c2, c2, &tex);
-	DrawColoredRect((float)x, float(y2), float(x + bar), float(y2 + height), f_mznear - 6, c2, c2, c1, c1, &tex);
-
-	DrawColoredRect(float(x - p), float(y - p), float(xw + p), float(y2 + height + p), f_mznear - 3, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, &tex);
-	DrawColoredRect((float)x, (float)y, (float)xw, float(y2 + height), f_mznear - 4, 0, 0, 0, 0, &tex);
-}
 
 void DoOptions()
 {
@@ -532,16 +43,15 @@ void DoOptions()
 	char** keyboard_buttons;
 	char* txt;
 	static long menu;
-	static ulong selection = 1;	//selection
-	static ulong controls_selection;	//selection for when mapping keys
-	static long music_volume_bar_shade = 0xFF3F3F3F;
-	static long sfx_volume_bar_shade = 0xFF3F3F3F;
-	static long sfx_bak;	//backup sfx volume
-	static long sfx_quality_bak;	//backup sfx quality
+	static ulong sel = 1;	//selection
+	static ulong sel2;		//selection for when mapping keys
+	static long mSliderCol = 0xFF3F3F3F;
+	static long sSliderCol = 0xFF3F3F3F;
+	static long sfx_bak;
+	static long sfx_quality_bak;
 	static long sfx_breath_db = -1;
-	long textY, joystick, joystick_x, joystick_y, index, joyButton;
-	uchar num, num2;
-	char quality_text[80];
+	ulong nMask;
+	long f, y, i, jread, jx, jy, lp;
 	static char sfx_backup_flag;	//have we backed sfx stuff up?
 	static bool waiting_for_key = 0;
 
@@ -557,13 +67,13 @@ void DoOptions()
 		sfx_quality_bak = SoundQuality;
 	}
 
-	textY = font_height - 4;
+	f = font_height - 4;
 
 	if (menu)	//controls menu
 	{
 		if (menu == 200)
 		{
-			TroyeMenu(textY, menu, selection);
+			TroyeMenu(f, menu, sel);
 			return;
 		}
 
@@ -572,143 +82,46 @@ void DoOptions()
 		else
 			keyboard_buttons = (char**)KeyboardButtons;
 
+		nMask = 17;
 		small_font = 1;
-		PrintString(phd_centerx >> 2, textY, selection & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Control_Method), 0);
-		PrintString(phd_centerx >> 2, textY + font_height, selection & 2 ? 1 : 2, "\x18", 0);
-		PrintString(phd_centerx >> 2, textY + 2 * font_height, selection & 4 ? 1 : 2, "\x1A", 0);
-		PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 8 ? 1 : 2, "\x19", 0);
-		PrintString(phd_centerx >> 2, textY + 4 * font_height, selection & 0x10 ? 1 : 2, "\x1B", 0);
-		PrintString(phd_centerx >> 2, textY + 5 * font_height, selection & 0x20 ? 1 : 2, SCRIPT_TEXT(TXT_Duck), 0);
-		PrintString(phd_centerx >> 2, textY + 6 * font_height, selection & 0x40 ? 1 : 2, SCRIPT_TEXT(TXT_Dash), 0);
-		PrintString(phd_centerx >> 2, textY + 7 * font_height, selection & 0x80 ? 1 : 2, SCRIPT_TEXT(TXT_Walk), 0);
-		PrintString(phd_centerx >> 2, textY + 8 * font_height, selection & 0x100 ? 1 : 2, SCRIPT_TEXT(TXT_Jump), 0);
-		PrintString(phd_centerx >> 2, textY + 9 * font_height, selection & 0x200 ? 1 : 2, SCRIPT_TEXT(TXT_Action), 0);
-		PrintString(phd_centerx >> 2, textY + 10 * font_height, selection & 0x400 ? 1 : 2, SCRIPT_TEXT(TXT_Draw_Weapon), 0);
-		PrintString(phd_centerx >> 2, textY + 11 * font_height, selection & 0x800 ? 1 : 2, SCRIPT_TEXT(TXT_Use_Flare), 0);
-		PrintString(phd_centerx >> 2, textY + 12 * font_height, selection & 0x1000 ? 1 : 2, SCRIPT_TEXT(TXT_Look), 0);
-		PrintString(phd_centerx >> 2, textY + 13 * font_height, selection & 0x2000 ? 1 : 2, SCRIPT_TEXT(TXT_Roll), 0);
-		PrintString(phd_centerx >> 2, textY + 14 * font_height, selection & 0x4000 ? 1 : 2, SCRIPT_TEXT(TXT_Inventory), 0);
-		PrintString(phd_centerx >> 2, textY + 15 * font_height, selection & 0x8000 ? 1 : 2, SCRIPT_TEXT(TXT_Step_Left), 0);
-		PrintString(phd_centerx >> 2, textY + 16 * font_height, selection & 0x10000 ? 1 : 2, SCRIPT_TEXT(TXT_Step_Right), 0);
+		PrintString(phd_centerx >> 2, f, sel & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Control_Method), 0);
+
+		y = 1;
+		i = 1;
+
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, "\x18", 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, "\x1A", 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, "\x19", 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, "\x1B", 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Duck), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Dash), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Walk), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Jump), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Action), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Draw_Weapon), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Use_Flare), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Look), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Roll), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Inventory), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Step_Left), 0);
+		PrintString(phd_centerx >> 2, f + y++ * font_height, sel & (1 << i++) ? 1 : 2, SCRIPT_TEXT(TXT_Step_Right), 0);
 
 		if (!ControlMethod)
-			PrintString(phd_centerx + (phd_centerx >> 2), textY, controls_selection & 1 ? 1 : 6, SCRIPT_TEXT(TXT_Keyboard), 0);
+			PrintString(phd_centerx + (phd_centerx >> 2), f, sel2 & 1 ? 1 : 6, SCRIPT_TEXT(TXT_Keyboard), 0);
 		else if (ControlMethod == 1)
-			PrintString(phd_centerx + (phd_centerx >> 2), textY, controls_selection & 1 ? 1 : 6, SCRIPT_TEXT(TXT_Joystick), 0);
+			PrintString(phd_centerx + (phd_centerx >> 2), f, sel2 & 1 ? 1 : 6, SCRIPT_TEXT(TXT_Joystick), 0);
 		else if (ControlMethod == 2)
-			PrintString(phd_centerx + (phd_centerx >> 2), textY, controls_selection & 1 ? 1 : 6, SCRIPT_TEXT(TXT_Reset), 0);
+			PrintString(phd_centerx + (phd_centerx >> 2), f, sel2 & 1 ? 1 : 6, SCRIPT_TEXT(TXT_Reset), 0);
 
-		if (waiting_for_key && controls_selection & 2)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][0]];
+		y = 1;
+		i = 1;
 
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + font_height, controls_selection & 2 ? 1 : 6, txt, 0);
+		for (lp = 0; lp < 16; lp++)
+		{
+			txt = (waiting_for_key && sel2 & (1 << i)) ? SCRIPT_TEXT(TXT_Waiting) : keyboard_buttons[layout[1][lp]];
+			PrintString(phd_centerx + (phd_centerx >> 2), f + y++ * font_height, sel2 & (1 << i++) ? 1 : 6, txt, 0);
+		}
 
-		if (waiting_for_key && controls_selection & 4)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][1]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 2 * font_height, controls_selection & 4 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 8)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][2]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 3 * font_height, controls_selection & 8 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x10)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][3]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 4 * font_height, controls_selection & 0x10 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x20)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][4]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 5 * font_height, controls_selection & 0x20 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x40)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][5]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 6 * font_height, controls_selection & 0x40 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x80)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][6]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 7 * font_height, controls_selection & 0x80 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x100)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][7]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 8 * font_height, controls_selection & 0x100 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x200)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][8]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 9 * font_height, controls_selection & 0x200 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x400)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][9]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 10 * font_height, controls_selection & 0x400 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x800)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][10]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 11 * font_height, controls_selection & 0x800 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x1000)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][11]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 12 * font_height, controls_selection & 0x1000 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x2000)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][12]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 13 * font_height, controls_selection & 0x2000 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x4000)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][13]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 14 * font_height, controls_selection & 0x4000 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x8000)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][14]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 15 * font_height, controls_selection & 0x8000 ? 1 : 6, txt, 0);
-
-		if (waiting_for_key && controls_selection & 0x10000)
-			txt = SCRIPT_TEXT(TXT_Waiting);
-		else
-			txt = keyboard_buttons[layout[1][15]];
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 16 * font_height, controls_selection & 0x10000 ? 1 : 6, txt, 0);
 		small_font = 0;
 
 		if (ControlMethod < 2 && !waiting_for_key)
@@ -716,71 +129,76 @@ void DoOptions()
 			if (dbinput & IN_FORWARD)
 			{
 				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
-				selection >>= 1;
+				sel >>= 1;
 			}
 
 			if (dbinput & IN_BACK)
 			{
 				SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
-				selection <<= 1;
+				sel <<= 1;
 			}
 		}
 
 		if (waiting_for_key)
 		{
-			num2 = 0;
+			i = 0;
 
 			if (keymap[DIK_ESCAPE])
 			{
 				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-				controls_selection = 0;
+				sel2 = 0;
 				dbinput = 0;
 				waiting_for_key = 0;
 				return;
 			}
 
-			for (int i = 0; i < 255; i++)
+			for (lp = 0; lp < 255; lp++)
 			{
-				if (keymap[i] && keyboard_buttons[i])
+				if (keymap[lp] && keyboard_buttons[lp])
 				{
-					if (i != DIK_RETURN && i != DIK_LEFT && i != DIK_RIGHT && i != DIK_UP && i != DIK_DOWN)
+					if (lp != DIK_RETURN && lp != DIK_LEFT && lp != DIK_RIGHT && lp != DIK_UP && lp != DIK_DOWN)
 					{
 						waiting_for_key = 0;
 
-						for (int j = controls_selection >> 2; j; num2++)
-							j >>= 1;
+						sel2 >>= 2;
 
-						controls_selection = 0;
-						layout[1][num2] = i;
+						while (sel2)
+						{
+							i++;
+							sel2 >>= 1;
+						}
+
+						sel2 = 0;
+						layout[1][i] = (short)lp;
 					}
 				}
 			}
 
 			if (ControlMethod == 1)
 			{
-				joystick = ReadJoystick(joystick_x, joystick_y);
+				jread = ReadJoystick(jx, jy);
 
-				if (joystick)
+				if (jread)
 				{
-					controls_selection >>= 2;
-					index = 0;
+					i = 0;
+					sel2 >>= 2;
 
-					while (controls_selection)
+					while (sel2)
 					{
-						controls_selection >>= 1;
-						index++;
+						i++;
+						sel2 >>= 1;
 					}
 
-					controls_selection = 0;
-					joyButton = 0;
+					sel2 = 0;
+					lp = 0;
 
-					while (joystick)
+					while (jread)
 					{
-						joystick >>= 1;
-						joyButton++;
+						jread >>= 1;
+						lp++;
 					}
 
-					layout[1][index] = short(joyButton + 255);
+					layout[1][i] = short(lp + 255);
 					waiting_for_key = 0;
 				}
 			}
@@ -789,10 +207,10 @@ void DoOptions()
 			dbinput = 0;
 		}
 
-		if (dbinput & IN_SELECT && selection > 1 && ControlMethod < 2)
+		if (dbinput & IN_SELECT && sel > 1 && ControlMethod < 2)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			controls_selection = selection;
+			sel2 = sel;
 			waiting_for_key = 1;
 			memset(keymap, 0, sizeof(keymap));
 		}
@@ -804,7 +222,7 @@ void DoOptions()
 			memcpy(layout[1], layout, 72);
 		}
 
-		if (selection & 1)
+		if (sel & 1)
 		{
 			if (dbinput & IN_LEFT)
 			{
@@ -839,11 +257,11 @@ void DoOptions()
 			}
 		}
 
-		if (!selection)
-			selection = 1;
+		if (!sel)
+			sel = 1;
 
-		if (selection > (ulong)(1 << (17 - 1)))
-			selection = 1 << (17 - 1);
+		if (sel > ulong(1 << (nMask - 1)))
+			sel = 1 << (nMask - 1);
 
 		if (dbinput & IN_DESELECT)
 		{
@@ -853,82 +271,71 @@ void DoOptions()
 				menu = 0;
 
 			dbinput = 0;
-			selection = 1;
+			sel = 1;
 		}
 	}
 	else	//'main' menu
 	{
-		num = 6;
-		textY = 3 * font_height;
-		PrintString(phd_centerx, textY, 6, SCRIPT_TEXT(TXT_Options), FF_CENTER);
-		PrintString(phd_centerx, textY + font_height + (font_height >> 1), selection & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Control_Configuration), FF_CENTER);
-		PrintString(phd_centerx >> 2, textY + 3 * font_height, selection & 0x2 ? 1 : 2, SCRIPT_TEXT(TXT_Music_Volume), 0);
-		PrintString(phd_centerx >> 2, textY + 4 * font_height, selection & 0x4 ? 1 : 2, SCRIPT_TEXT(TXT_SFX_Volume), 0);
-		PrintString(phd_centerx >> 2, textY + 5 * font_height, selection & 0x8 ? 1 : 2, SCRIPT_TEXT(TXT_Sound_Quality), 0);
-		PrintString(phd_centerx >> 2, textY + 6 * font_height, selection & 0x10 ? 1 : 2, SCRIPT_TEXT(TXT_Targeting), 0);
-		DoSlider(400, 3 * font_height - (font_height >> 1) + textY + 4, 200, 16, MusicVolume, 0xFF1F1F1F, 0xFF3F3FFF, music_volume_bar_shade);
-		DoSlider(400, textY + 4 * font_height + 4 - (font_height >> 1), 200, 16, SFXVolume, 0xFF1F1F1F, 0xFF3F3FFF, sfx_volume_bar_shade);
+		nMask = 6;
+		f = 3 * font_height;
+		PrintString(phd_centerx, f, 6, SCRIPT_TEXT(TXT_Options), FF_CENTER);
+		PrintString(phd_centerx, f + font_height + (font_height >> 1), sel & 1 ? 1 : 2, SCRIPT_TEXT(TXT_Control_Configuration), FF_CENTER);
+		PrintString(phd_centerx >> 2, f + 3 * font_height, sel & 0x2 ? 1 : 2, SCRIPT_TEXT(TXT_Music_Volume), 0);
+		PrintString(phd_centerx >> 2, f + 4 * font_height, sel & 0x4 ? 1 : 2, SCRIPT_TEXT(TXT_SFX_Volume), 0);
+		PrintString(phd_centerx >> 2, f + 5 * font_height, sel & 0x8 ? 1 : 2, SCRIPT_TEXT(TXT_Sound_Quality), 0);
+		PrintString(phd_centerx >> 2, f + 6 * font_height, sel & 0x10 ? 1 : 2, SCRIPT_TEXT(TXT_Targeting), 0);
+		DoSlider(400, 3 * font_height - (font_height >> 1) + f + 4, 200, 16, MusicVolume, 0xFF1F1F1F, 0xFF3F3FFF, mSliderCol);
+		DoSlider(400, f + 4 * font_height + 4 - (font_height >> 1), 200, 16, SFXVolume, 0xFF1F1F1F, 0xFF3F3FFF, sSliderCol);
 
-		switch (SoundQuality)
-		{
-		case 0:
-			strcpy(quality_text, SCRIPT_TEXT(TXT_Low));
-			break;
+		if (!SoundQuality)
+			PrintString(phd_centerx + (phd_centerx >> 2), f + 5 * font_height, sel & 8 ? 1 : 6, SCRIPT_TEXT(TXT_Low), 0);
+		else if (SoundQuality == 1)
+			PrintString(phd_centerx + (phd_centerx >> 2), f + 5 * font_height, sel & 8 ? 1 : 6, SCRIPT_TEXT(TXT_Medium), 0);
+		else if (SoundQuality == 2)
+			PrintString(phd_centerx + (phd_centerx >> 2), f + 5 * font_height, sel & 8 ? 1 : 6, SCRIPT_TEXT(TXT_High), 0);
 
-		case 1:
-			strcpy(quality_text, SCRIPT_TEXT(TXT_Medium));
-			break;
-
-		case 2:
-			strcpy(quality_text, SCRIPT_TEXT(TXT_High));
-			break;
-		}
-
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 5 * font_height, selection & 8 ? 1 : 6, quality_text, 0);
-		
 		if (App.AutoTarget)
-			strcpy(quality_text, SCRIPT_TEXT(TXT_Automatic));
+			PrintString(phd_centerx + (phd_centerx >> 2), f + 6 * font_height, sel & 0x10 ? 1 : 6, SCRIPT_TEXT(TXT_Automatic), 0);
 		else
-			strcpy(quality_text, SCRIPT_TEXT(TXT_Manual));
+			PrintString(phd_centerx + (phd_centerx >> 2), f + 6 * font_height, sel & 0x10 ? 1 : 6, SCRIPT_TEXT(TXT_Manual), 0);
 
-		PrintString(phd_centerx + (phd_centerx >> 2), textY + 6 * font_height, selection & 0x10 ? 1 : 6, quality_text, 0);
-		PrintString(phd_centerx, (font_height >> 1) + textY + 7 * font_height, selection & 0x20 ? 1 : 2, "tomb4 options", FF_CENTER);
+		PrintString(phd_centerx, (font_height >> 1) + f + 7 * font_height, sel & 0x20 ? 1 : 2, "tomb4 options", FF_CENTER);
 
 		if (dbinput & IN_FORWARD)
 		{
 			SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
-			selection >>= 1;
+			sel >>= 1;
 		}
 
 		if (dbinput & IN_BACK)
 		{
 			SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
-			selection <<= 1;
+			sel <<= 1;
 		}
 
-		if (dbinput & IN_SELECT && selection & 1)
+		if (dbinput & IN_SELECT && sel & 1)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			menu = 1;
 		}
 
-		if (dbinput & IN_SELECT && selection & 0x20)
+		if (dbinput & IN_SELECT && sel & 0x20)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			selection = 1;
+			sel = 1;
 			menu = 200;
 		}
 
-		if (!selection)
-			selection = 1;
+		if (!sel)
+			sel = 1;
 
-		if (selection > (ulong)(1 << (num - 1)))
-			selection = 1 << (num - 1);
+		if (sel > ulong(1 << (nMask - 1)))
+			sel = 1 << (nMask - 1);
 
-		music_volume_bar_shade = 0xFF3F3F3F;
-		sfx_volume_bar_shade = 0xFF3F3F3F;
+		mSliderCol = 0xFF3F3F3F;
+		sSliderCol = 0xFF3F3F3F;
 
-		if (selection & 2)
+		if (sel & 2)
 		{
 			sfx_bak = SFXVolume;
 
@@ -943,11 +350,11 @@ void DoOptions()
 			else if (MusicVolume < 0)
 				MusicVolume = 0;
 
-			sfx_volume_bar_shade = 0xFF3F3F3F;
-			music_volume_bar_shade = 0xFF7F7F7F;
+			sSliderCol = 0xFF3F3F3F;
+			mSliderCol = 0xFF7F7F7F;
 			ACMSetVolume();
 		}
-		else if (selection & 4)
+		else if (sel & 4)
 		{
 			if (linput & IN_LEFT)
 				SFXVolume--;
@@ -973,10 +380,10 @@ void DoOptions()
 					DSChangeVolume(0, -100 * ((100 - SFXVolume) >> 1));
 			}
 
-			music_volume_bar_shade = 0xFF3F3F3F;
-			sfx_volume_bar_shade = 0xFF7F7F7F;
+			mSliderCol = 0xFF3F3F3F;
+			sSliderCol = 0xFF7F7F7F;
 		}
-		else if (selection & 8)
+		else if (sel & 8)
 		{
 			sfx_bak = SFXVolume;
 
@@ -999,7 +406,7 @@ void DoOptions()
 				SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
 			}
 		}
-		else if (selection & 16)
+		else if (sel & 16)
 		{
 			if (dbinput & IN_LEFT)
 			{
@@ -1022,7 +429,7 @@ void DoOptions()
 	}
 }
 
-void DoStatScreen()
+void DisplayStatsUCunt()
 {
 	long sec, days, hours, min, y;
 	char buf[40];
@@ -1125,7 +532,7 @@ long S_DisplayPauseMenu(long reset)
 	}
 	else if (menu == 2)
 	{
-		DoStatScreen();
+		DisplayStatsUCunt();
 
 		if (dbinput & IN_DESELECT)
 		{
@@ -1554,166 +961,6 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 	MonoScreen[0].surface->Unlock(0);
 	DXAttempt(MonoScreen[0].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[0].tex));
 	surface->Unlock(0);
-}
-
-void DoSlider(long x, long y, long width, long height, long pos, long clr1, long clr2, long clr3)
-{
-	D3DTLVERTEX* v;
-	TEXTURESTRUCT tex;
-	float x2, sx, sy;
-	static float V;
-
-	v = MyVertexBuffer;
-
-	nPolyType = 4;
-	V += 0.0099999998F;
-
-	if (V > 0.99000001F)
-		V = 0;
-
-	clipflags[0] = 0;
-	clipflags[1] = 0;
-	clipflags[2] = 0;
-	clipflags[3] = 0;
-	x2 = (float)phd_winxmax / 640.0F;
-	sx = width * x2;
-	sy = ((float)phd_winymax / 480.0F) * (height >> 1);
-	x2 *= x;
-
-	v[0].sx = x2;
-	v[0].sy = (float)y;
-	v[0].sz = f_mznear;
-	v[0].rhw = f_moneoznear - 2.0F;
-	v[0].color = clr1;
-	v[0].specular = 0xFF000000;
-
-	v[1].sx = sx + x2;
-	v[1].sy = (float)y;
-	v[1].sz = f_mznear;
-	v[1].rhw = f_moneoznear - 2.0F;
-	v[1].color = clr1;
-	v[1].specular = 0xFF000000;
-
-	v[2].sx = sx + x2;
-	v[2].sy = (float)y + sy;
-	v[2].sz = f_mznear;
-	v[2].rhw = f_moneoznear - 2.0F;
-	v[2].color = clr2;
-	v[2].specular = 0xFF000000;
-
-	v[3].sx = x2;
-	v[3].sy = (float)y + sy;
-	v[3].sz = f_mznear;
-	v[3].rhw = f_moneoznear - 2.0F;
-	v[3].color = clr2;
-	v[3].specular = 0xFF000000;
-
-	tex.tpage = ushort(nTextures - 1);
-	tex.drawtype = 0;
-	tex.flag = 0;
-	tex.u1 = 0;
-	tex.v1 = V;
-	tex.u2 = 1;
-	tex.v2 = V;
-	tex.u3 = 1;
-	tex.v3 = V + 0.0099999998F;
-	tex.u4 = 0;
-	tex.v4 = V + 0.0099999998F;
-	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
-
-	v[0].sx = x2;
-	v[0].sy = (float)y + sy;
-	v[0].sz = f_mznear;
-	v[0].rhw = f_moneoznear - 2.0F;
-	v[0].color = clr2;
-	v[0].specular = 0xFF000000;
-
-	v[1].sx = sx + x2;
-	v[1].sy = (float)y + sy;
-	v[1].sz = f_mznear;
-	v[1].rhw = f_moneoznear - 2.0F;
-	v[1].color = clr2;
-	v[1].specular = 0xFF000000;
-	
-
-	v[2].sx = sx + x2;
-	v[2].sy = (float)y + 2 * sy;
-	v[2].sz = f_mznear;
-	v[2].rhw = f_moneoznear - 2.0F;
-	v[2].color = clr1;
-	v[2].specular = 0xFF000000;
-
-	v[3].sx = x2;
-	v[3].sy = (float)y + 2 * sy;
-	v[3].sz = f_moneoznear - 2.0F;
-	v[3].rhw = v[0].rhw;
-	v[3].color = clr1;
-	v[3].specular = 0xFF000000;
-	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
-
-	v[0].sx = x2 - 1;
-	v[0].sy = float(y - 1);
-	v[0].sz = f_mznear + 2.0F;
-	v[0].rhw = f_moneoznear - 3.0F;
-	v[0].color = 0xFFFFFFFF;
-	v[0].specular = 0xFF000000;
-
-	v[1].sx = sx + x2 + 1;
-	v[1].sy = float(y - 1);
-	v[1].sz = f_mznear + 2.0F;
-	v[1].rhw = f_moneoznear - 3.0F;
-	v[1].color = 0xFFFFFFFF;
-	v[1].specular = 0xFF000000;
-
-	v[2].sx = sx + x2 + 1;
-	v[2].sy = ((float)y + 2 * sy) + 1;
-	v[2].sz = f_mznear + 2.0F;
-	v[2].rhw = f_moneoznear - 3.0F;
-	v[2].color = 0xFFFFFFFF;
-	v[2].specular = 0xFF000000;
-
-	v[3].sx = x2 - 1;
-	v[3].sy = ((float)y + 2 * sy) + 1;
-	v[3].sz = f_mznear + 2.0F;
-	v[3].rhw = f_moneoznear - 3.0F;
-	v[3].color = 0xFFFFFFFF;
-	v[3].specular = 0xFF000000;
-	tex.tpage = 0;
-	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
-
-	sx = pos * sx / 100 + x2;
-
-	v[0].sx = x2;
-	v[0].sy = (float)y;
-	v[0].sz = f_mznear - 1.0F;
-	v[0].rhw = f_moneoznear - 1.0F;
-	v[0].color = clr3;
-	v[0].specular = 0xFF000000;
-
-	v[1].sx = sx + 1;
-	v[1].sy = (float)y;
-	v[1].sz = f_mznear - 1.0F;
-	v[1].rhw = f_moneoznear - 1.0F;
-	v[1].color = clr3;
-	v[1].specular = 0xFF000000;
-	
-	v[2].sx = sx;
-	v[2].sy = (float)y + 2 * sy;
-	v[2].sz = f_mznear - 1.0F;
-	v[2].rhw = f_moneoznear - 1.0F;
-	v[2].color = clr3;
-	v[2].specular = 0xFF000000;
-
-	v[3].sx = x2 - 1;
-	v[3].sy = (float)y + 2 * sy;
-	v[3].sz = f_mznear - 1.0F;
-	v[3].rhw = f_moneoznear - 1.0F;
-	v[3].color = clr3;
-	v[3].specular = 0xFF000000;
-
-	tex.tpage = 0;
-	tex.drawtype = 2;
-	AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 }
 
 void CheckKeyConflicts()

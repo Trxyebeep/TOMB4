@@ -23,6 +23,7 @@
 #include "savegame.h"
 #include "../tomb4/tomb4.h"
 #include "../specific/dxsound.h"
+#include "../specific/drawbars.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)
@@ -607,7 +608,7 @@ void do_debounced_joystick_poo()
 	}
 }
 
-void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagflag)
+void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagflag)
 {
 	ANIM_STRUCT* anim;
 	OBJECT_INFO* object;
@@ -619,12 +620,11 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 	ulong bit;
 	long poppush, alpha, compass;
 
-	anim = &anims[item->anim_number];
+	anim = &anims[objects[item->object_number].anim_index];
 	frmptr = anim->frame_ptr;
 	object = &objects[item->object_number];
 	phd_PushMatrix();
-	phd_TranslateRel(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+	phd_RotYXZ(item->yrot, item->xrot, item->zrot);
 
 	if (item->object_number >= EXAMINE1 && item->object_number <= EXAMINE3 && examine_mode)
 	{
@@ -663,7 +663,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 			alpha = GlobalAlpha;
 
 			if (shade > 127)
-				shade = 0xFF;
+				shade = 255;
 			else
 				shade <<= 1;
 
@@ -692,7 +692,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 		{
 			compass = (compass_settle_thang * phd_sin(1024 * (GnFrameCounter & 0x3F))) >> W2V_SHIFT;
 			compass += lara_item->pos.y_rot;
-			phd_RotY((short)(compass - 0x8000));
+			phd_RotY(short(compass - 0x8000));
 
 			if (lara_item->pos.y_rot > -48 && lara_item->pos.y_rot <= 48 && tomb4.cheats)
 			{
@@ -767,7 +767,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 				alpha = GlobalAlpha;
 
 				if (shade > 127)
-					shade = 0xFF;
+					shade = 255;
 				else
 					shade <<= 1;
 
@@ -784,13 +784,14 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 void DrawThreeDeeObject2D(long x, long y, long num, long shade, long xrot, long yrot, long zrot, long bright, long overlay)
 {
 	INVOBJ* objme;
-	ITEM_INFO item;
+	INVDRAWITEM item;
 
 	objme = &inventry_objects_list[num];
-	item.pos.x_rot = (short)xrot + objme->xrot;
-	item.pos.y_rot = (short)yrot + objme->yrot;
-	item.pos.z_rot = (short)zrot + objme->zrot;
+	item.xrot = (short)xrot + objme->xrot;
+	item.yrot = (short)yrot + objme->yrot;
+	item.zrot = (short)zrot + objme->zrot;
 	item.object_number = objme->object_number;
+	item.mesh_bits = objme->meshbits;
 	phd_LookAt(0, 1024, 0, 0, 0, 0, 0);
 
 	if (!bright)
@@ -798,23 +799,13 @@ void DrawThreeDeeObject2D(long x, long y, long num, long shade, long xrot, long 
 	else if (bright == 1)
 		pcbright = 0x2F2F2F;
 	else
-		pcbright = bright | ((bright | (bright << 8)) << 8);
+		pcbright = RGBONLY(bright, bright, bright);
 
 	SetD3DViewMatrix();
 	phd_PushUnitMatrix();
 	phd_TranslateRel(0, 0, objme->scale1);
 	xoffset = x;
 	yoffset = objme->yoff + y;
-	item.mesh_bits = objme->meshbits;
-	item.shade = -1;
-	item.pos.x_pos = 0;
-	item.pos.y_pos = 0;
-	item.pos.z_pos = 0;
-	item.room_number = 0;
-	item.il.nCurrentLights = 0;
-	item.il.nPrevLights = 0;
-	item.il.ambient = 0x7F7F7F;
-	item.anim_number = objects[item.object_number].anim_index;
 	DrawInventoryItemMe(&item, shade, overlay, objme->flags & 8);
 	phd_PopMatrix();
 	xoffset = phd_centerx;
@@ -1213,7 +1204,7 @@ void handle_object_changeover(long ringnum)
 
 void fade_ammo_selector()
 {
-	if (rings[0]->ringactive && (right_repeat >= 8 || left_repeat >= 8))
+	if (rings[RING_INVENTORY]->ringactive && (right_repeat >= 8 || left_repeat >= 8))
 		ammo_selector_fade_val = 0;
 	else if (ammo_selector_fade_dir == 1)
 	{
@@ -2519,7 +2510,7 @@ void draw_current_object_list(long ringnum)
 	if (rings[ringnum]->numobjectsinlist <= 0)
 		return;
 
-	if (ringnum == 1)
+	if (ringnum == RING_AMMO)
 	{
 		ammo_selector_fade_val = 0;
 		ammo_selector_fade_dir = 0;

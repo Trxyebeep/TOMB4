@@ -3,6 +3,8 @@
 
 void ProcessObjectMeshVertices(MESH_DATA* mesh);
 void ProcessStaticMeshVertices(MESH_DATA* mesh);
+void ProcessTrainMeshVertices(MESH_DATA* mesh);
+void ProcessPickupMeshVertices(MESH_DATA* mesh);
 void phd_PutPolygons(short* objptr, long clip);
 void phd_PutPolygons_train(short* objptr, long x);
 void _InsertRoom(ROOM_INFO* r);

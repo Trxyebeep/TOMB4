@@ -1,5 +1,24 @@
 # tomb4 changelog
 
+## Unreleased:
+
+### Original bug fixes
+
+- Fix the random fires on screen bug.
+- Fix Ahmet/Scale save crashes in Temple of Horus.
+
+### tomb4 bug fixes
+
+- Fix original style bar drawing on certain GPUs.
+- Fix Rail/Crowbar switch interaction.
+- Fix inventory items drawing.
+- Improve lighting in some edge cases.
+- Fix first voncroy cut camera.
+- Fix AI (VonCroy, Guide, etc.) interaction position.
+
+### new tomb4 features
+
+
 ## [2.1.0](https://github.com/Trxyebeep/TOMB4/tree/V2.1.0) (Mar. 3 2023)
 
 ### Original bug fixes

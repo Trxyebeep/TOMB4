@@ -1,7 +1,6 @@
 #pragma once
 #include "../global/types.h"
 
-void LaraCheatGetStuff();
 void LaraCheatyBits();
 void InitialiseLaraLoad(short item_number);
 void InitialiseLaraAnims(ITEM_INFO* item);

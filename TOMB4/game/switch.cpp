@@ -629,7 +629,7 @@ void RailSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	{
 		if (item->current_anim_state == 1)
 		{
-			item->pos.y_rot ^= 0x8000;
+			l->pos.y_rot ^= 0x8000;
 
 			if (TestLaraPosition(RailSwitchBounds2, item, l))
 			{
@@ -647,7 +647,7 @@ void RailSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 				lara.gun_status = LG_NO_ARMS;
 			}
 
-			item->pos.y_rot ^= 0x8000;
+			l->pos.y_rot ^= 0x8000;
 		}
 		else if (item->current_anim_state == 0)
 		{
@@ -728,7 +728,7 @@ void CrowbarSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	{
 		if (item->current_anim_state == 1)
 		{
-			item->pos.y_rot ^= 0x8000;
+			l->pos.y_rot ^= 0x8000;
 
 			if (TestLaraPosition(CrowbarBounds2, item, l))
 			{
@@ -755,7 +755,7 @@ void CrowbarSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 				lara.gun_status = LG_NO_ARMS;
 			}
 
-			item->pos.y_rot ^= 0x8000;
+			l->pos.y_rot ^= 0x8000;
 		}
 		else if (!item->current_anim_state)
 		{

@@ -228,9 +228,6 @@ long ControlPhase(long nframes, long demo_mode)
 		UpdateSky();
 		RPC_Update();
 
-	//	if (cdtrack > 0)
-			//empty func call here
-
 		if (S_UpdateInput() == IN_ALL)
 			return 0;
 
@@ -318,7 +315,7 @@ long ControlPhase(long nframes, long demo_mode)
 			return 4;
 
 		if (input & IN_LOOK && (lara_item->current_anim_state == AS_STOP && lara_item->anim_number == ANIM_BREATH ||
-			(lara.IsDucked && input & IN_DUCK && lara_item->anim_number == ANIM_DUCKBREATHE && lara_item->goal_anim_state == AS_DUCK)))
+			(lara.IsDucked && !(input & IN_DUCK) && lara_item->anim_number == ANIM_DUCKBREATHE && lara_item->goal_anim_state == AS_DUCK)))
 		{
 			if (!BinocularRange)
 			{
@@ -348,9 +345,9 @@ long ControlPhase(long nframes, long demo_mode)
 				lara_item->mesh_bits = -1;
 				lara.Busy = 0;
 				camera.type = BinocularOldCamera;
-				lara.move_angle = 0;
+				lara.head_x_rot = 0;
 				lara.head_y_rot = 0;
-				lara.head_z_rot = 0;
+				lara.torso_x_rot = 0;
 				lara.torso_y_rot = 0;
 				BinocularOn = -8;
 			}
@@ -470,23 +467,23 @@ long ControlPhase(long nframes, long demo_mode)
 			GLOBAL_inventoryitemchosen = -1;
 		}
 
-		if (GLOBAL_playing_cutseq)
-		{
-			camera.type = CINEMATIC_CAMERA;
-			CalculateCamera();
-		}
-		else
+		if (!GLOBAL_playing_cutseq)
 		{
 			HairControl(0, 0, 0);
 
 			if (gfLevelFlags & GF_YOUNGLARA)
 				HairControl(0, 1, 0);
-
-			if (bUseSpotCam)
-				CalculateSpotCams();
-			else if (!bVoncroyCutScene)
-				CalculateCamera();
 		}
+
+		if (GLOBAL_playing_cutseq)
+		{
+			camera.type = CINEMATIC_CAMERA;
+			CalculateCamera();
+		}
+		else if (bUseSpotCam)
+			CalculateSpotCams();
+		else if (!bVoncroyCutScene)
+			CalculateCamera();
 
 		CamRot.y = (mGetAngle(camera.pos.z, camera.pos.x, camera.target.z, camera.target.x) >> 4) & 0xFFF;
 		wibble = (wibble + 4) & 0xFC;
@@ -2441,8 +2438,8 @@ long IsRoomOutside(long x, long y, long z)
 		r = &room[offset & 0x7FFF];
 
 		if (y >= r->maxceiling && y <= r->minfloor &&
-			z >= r->z + 1024 && z <= (r->x_size << 10) + r->z - 1024 &&
-			x >= r->x + 1024 && x <= (r->y_size << 10) + r->x - 1024)
+			z >= r->z + 1024 && z <= ((r->x_size - 1) << 10) + r->z &&
+			x >= r->x + 1024 && x <= ((r->y_size - 1) << 10) + r->x)
 		{
 			IsRoomOutsideNo = offset & 0x7FFF;
 			room_no = IsRoomOutsideNo;
@@ -2468,8 +2465,8 @@ long IsRoomOutside(long x, long y, long z)
 			r = &room[*pTable];
 
 			if (y >= r->maxceiling && y <= r->minfloor &&
-				z >= r->z + 1024 && z <= (r->x_size << 10) + r->z - 1024 &&
-				x >= r->x + 1024 && x <= (r->y_size << 10) + r->x - 1024)
+				z >= r->z + 1024 && z <= ((r->x_size - 1) << 10) + r->z &&
+				x >= r->x + 1024 && x <= ((r->y_size - 1) << 10) + r->x)
 			{
 				IsRoomOutsideNo = *pTable;
 				room_no = IsRoomOutsideNo;

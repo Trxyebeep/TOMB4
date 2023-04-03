@@ -168,7 +168,7 @@ void ScalesControl(short item_number)
 				item->status = ITEM_INACTIVE;
 				item->item_flags[1] = 0;
 			}
-			else if (ReTriggerAhmet(short((long)lara.GeneralPtr)))	//sort this out
+			else if (ReTriggerAhmet(lara.spaz_effect_count))
 			{
 				for (numTriggers = GetSwitchTrigger(item, itemNos, 0); numTriggers > 0; numTriggers--)
 				{
@@ -279,7 +279,7 @@ void AhmetControl(short item_number)
 			item->anim_number = objects[item->object_number].anim_index + 10;
 			item->frame_number = anims[item->anim_number].frame_base;
 			item->current_anim_state = 7;
-			lara.GeneralPtr = (void*)item_number;
+			lara.spaz_effect_count = item_number;
 		}
 
 		ExplodeAhmet(item);

@@ -5,7 +5,7 @@
 #include "texture.h"
 #include "lighting.h"
 #include "dxsound.h"
-#include "LoadSave.h"
+#include "drawbars.h"
 #include "dxshell.h"
 #include "drawroom.h"
 #include "../game/setup.h"

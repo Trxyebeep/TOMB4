@@ -27,7 +27,6 @@
 #define NO_HEIGHT	-32512
 #define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
-#define WINDOW_STYLE	WS_OVERLAPPEDWINDOW
 #define W2V_SHIFT	14
 #define MAX_SAMPLES	370
 #define MAX_DYNAMICS	64
@@ -44,7 +43,6 @@
 #define DDSURFACEDESCX			DDSURFACEDESC2
 #define LPDDSURFACEDESCX		DDSURFACEDESCX*
 #define LPDIRECT3DMATERIALX		LPDIRECT3DMATERIAL3
-#define D3DLIGHTX				D3DLIGHT2
 #define LPDIRECT3DTEXTUREX		LPDIRECT3DTEXTURE2
 #define TEXGUID					IID_IDirect3DTexture2
 #define DDGUID					IID_IDirectDraw4
@@ -1280,9 +1278,9 @@ struct DXDIRECTDRAWINFO
 	GUID Guid;
 	DDCAPS DDCaps;
 	DDDEVICEIDENTIFIER DDIdentifier;
-	int	 nDisplayModes;
+	long nDisplayModes;
 	DXDISPLAYMODE* DisplayModes;
-	int nD3DDevices;
+	long nD3DDevices;
 	DXD3DDEVICE* D3DDevices;
 };
 
@@ -1403,12 +1401,6 @@ struct LIGHTNING_STRUCT
 	uchar Pad[3];
 };
 
-struct D3DLIGHT_STRUCT
-{
-	LPDIRECT3DLIGHT D3DLight;
-	D3DLIGHTX D3DLightx;
-};
-
 struct DYNAMIC
 {
 	long x;
@@ -1455,6 +1447,15 @@ struct OBJLIST
 	short invitem;
 	ushort yrot;
 	ushort bright;
+};
+
+struct INVDRAWITEM
+{
+	short xrot;
+	short yrot;
+	short zrot;
+	short object_number;
+	ulong mesh_bits;
 };
 
 struct RINGME
@@ -1818,8 +1819,7 @@ struct VonCroyCutData
 {
 	PHD_VECTOR CameraPos;
 	PHD_VECTOR CameraTarget;
-	short FOV;
-	short flags;
+	long f;
 };
 
 struct DEBRIS_STRUCT
@@ -2173,13 +2173,6 @@ struct SCARAB_STRUCT
 	short fallspeed;
 	uchar On;
 	uchar flags;
-};
-
-struct MAP_STRUCT
-{
-	char unk[3592];
-	short visited;
-	short room_number;
 };
 
 struct SPLASH_SETUP

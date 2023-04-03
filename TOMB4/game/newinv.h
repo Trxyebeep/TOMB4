@@ -5,7 +5,7 @@ long LoadGame();
 long SaveGame();
 void init_new_inventry();
 void do_debounced_joystick_poo();
-void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagflag);
+void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagflag);
 void DrawThreeDeeObject2D(long x, long y, long num, long shade, long xrot, long yrot, long zrot, long bright, long overlay);
 long go_and_load_game();
 long go_and_save_game();
