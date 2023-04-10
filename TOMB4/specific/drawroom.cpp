@@ -102,7 +102,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 		n.y = r->vnormals[i].y;
 		n.z = r->vnormals[i].z;
 
-		rndoff = long(vtx.x + vtx.y + vtx.z) & 0xFC;
+		rndoff = long((vtx.x / 64.0F) + (vtx.y / 64.0F) + (vtx.z / 128.0F)) & 0xFC;
 
 		if (i < r->nWaterVerts)
 		{
