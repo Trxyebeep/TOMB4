@@ -1266,20 +1266,20 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 
 	} while (door != 255);
 
-	if (y < floor->floor << 8)
+	if (y < GetMaximumFloor(floor, x, z))
 	{
-		if (y < floor->ceiling << 8 && floor->sky_room != 255)
+		if (y < GetMinimumCeiling(floor, x, z) && floor->sky_room != 255)
 		{
 			do
 			{
-				if (CheckNoColCeilingTriangle(floor, x, z) == 1 || CheckNoColCeilingTriangle(floor, x, z) == -1 && y >= r->maxceiling)
+				if (CheckNoColCeilingTriangle(floor, x, z) == 1)
 					break;
 
 				*room_number = floor->sky_room;
 				r = &room[floor->sky_room];
 				floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
 
-				if (y >= floor->ceiling << 8)
+				if (y >= GetMinimumCeiling(floor, x, z))
 					break;
 
 			} while (floor->sky_room != 255);
@@ -1289,14 +1289,14 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 	{
 		while (1)
 		{
-			if (CheckNoColFloorTriangle(floor, x, z) == 1 || CheckNoColFloorTriangle(floor, x, z) == -1 && y < r->minfloor)
+			if (CheckNoColFloorTriangle(floor, x, z) == 1)
 				break;
 
 			*room_number = floor->pit_room;
 			r = &room[floor->pit_room];
 			floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
 
-			if (y < floor->floor << 8)
+			if (y < GetMaximumFloor(floor, x, z))
 				break;
 
 			if (floor->pit_room == 255)
@@ -1365,12 +1365,12 @@ long GetWaterHeight(long x, long y, long z, short room_number)
 			r = &room[floor->sky_room];
 
 			if (!(r->flags & ROOM_UNDERWATER))
-				return r->minfloor;
+				break;
 
 			floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
 		}
 
-		return r->maxceiling;
+		return GetMinimumCeiling(floor, x, z);
 	}
 	else
 	{
@@ -1382,7 +1382,7 @@ long GetWaterHeight(long x, long y, long z, short room_number)
 			r = &room[floor->pit_room];
 
 			if (r->flags & ROOM_UNDERWATER)
-				return r->maxceiling;
+				return GetMaximumFloor(floor, x, z);
 
 			floor = &r->floor[((z - r->z) >> 10) + r->x_size * ((x - r->x) >> 10)];
 		}
@@ -3168,4 +3168,167 @@ long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS*
 	}
 
 	return 0;
+}
+
+long GetMaximumFloor(FLOOR_INFO* floor, long x, long z)
+{
+	long height, h1, h2;
+	short* data, type, dx, dz, t0, t1, t2, t3, hadj;
+
+	height = floor->floor << 8;
+
+	if (height != NO_HEIGHT && floor->index)
+	{
+		data = &floor_data[floor->index];
+		type = *data++;
+		h1 = 0;
+		h2 = 0;
+
+		if ((type & 0x1F) != TILT_TYPE)
+		{
+			if ((type & 0x1F) == SPLIT1 || (type & 0x1F) == SPLIT2 || (type & 0x1F) == NOCOLF1T || (type & 0x1F) == NOCOLF1B || (type & 0x1F) == NOCOLF2T || (type & 0x1F) == NOCOLF2B)
+			{
+				dx = x & 0x3FF;
+				dz = z & 0x3FF;
+				t0 = *data & 0xF;
+				t1 = *data >> 4 & 0xF;
+				t2 = *data >> 8 & 0xF;
+				t3 = *data >> 12 & 0xF;
+
+				if ((type & 0x1F) == SPLIT1 || (type & 0x1F) == NOCOLF1T || (type & 0x1F) == NOCOLF1B)
+				{
+					if (dx <= 1024 - dz)
+					{
+						hadj = type >> 10 & 0x1F;
+						h1 = t2 - t1;
+						h2 = t0 - t1;
+					}
+					else
+					{
+						hadj = type >> 5 & 0x1F;
+						h1 = t3 - t0;
+						h2 = t3 - t2;
+					}
+				}
+				else
+				{
+					if (dx <= dz)
+					{
+						hadj = type >> 10 & 0x1F;
+						h1 = t2 - t1;
+						h2 = t3 - t2;
+					}
+					else
+					{
+						hadj = type >> 5 & 0x1F;
+						h1 = t3 - t0;
+						h2 = t0 - t1;
+					}
+				}
+
+				if (hadj & 0x10)
+					hadj |= 0xFFF0;
+
+				height += hadj << 8;
+			}
+		}
+		else
+		{
+			h1 = *data >> 8;
+			h2 = *(char*)data;
+		}
+
+		height += 256 * (abs(h1) + abs(h2));
+	}
+
+	return height;
+}
+
+long GetMinimumCeiling(FLOOR_INFO* floor, long x, long z)
+{
+	long height, h1, h2;
+	short* data, type, dx, dz, t0, t1, t2, t3, hadj, ended;
+
+	height = floor->ceiling << 8;
+
+	if (height != NO_HEIGHT && floor->index)
+	{
+		data = &floor_data[floor->index];
+		type = *data++;
+		ended = 0;
+
+		if ((type & 0x1F) == TILT_TYPE || (type & 0x1F) == SPLIT1 || (type & 0x1F) == SPLIT2 || (type & 0x1F) == NOCOLF1T || (type & 0x1F) == NOCOLF1B || (type & 0x1F) == NOCOLF2T || (type & 0x1F) == NOCOLF2B)
+		{
+			data++;
+
+			if (type & 0x8000)
+				ended = 1;
+
+			type = *data++;
+		}
+
+		if (!ended)
+		{
+			h1 = 0;
+			h2 = 0;
+
+			if ((type & 0x1F) != ROOF_TYPE)
+			{
+				if ((type & 0x1F) == SPLIT3 || (type & 0x1F) == SPLIT4 || (type & 0x1F) == NOCOLC1T || (type & 0x1F) == NOCOLC1B || (type & 0x1F) == NOCOLC2T || (type & 0x1F) == NOCOLC2B)
+				{
+					dx = x & 0x3FF;
+					dz = z & 0x3FF;
+					t0 = -(*data & 0xF);
+					t1 = -(*data >> 4 & 0xF);
+					t2 = -(*data >> 8 & 0xF);
+					t3 = -(*data >> 12 & 0xF);
+
+					if ((type & 0x1F) == SPLIT3 || (type & 0x1F) == NOCOLC1T || (type & 0x1F) == NOCOLC1B)
+					{
+						if (dx <= 1024 - dz)
+						{
+							hadj = type >> 10 & 0x1F;
+							h1 = t2 - t1;
+							h2 = t3 - t2;
+						}
+						else
+						{
+							hadj = type >> 5 & 0x1F;
+							h1 = t3 - t0;
+							h2 = t0 - t1;
+						}
+					}
+					else
+					{
+						if (dx <= dz)
+						{
+							hadj = type >> 10 & 0x1F;
+							h1 = t2 - t1;
+							h2 = t0 - t1;
+						}
+						else
+						{
+							hadj = type >> 5 & 0x1F;
+							h1 = t3 - t0;
+							h2 = t3 - t2;
+						}
+					}
+
+					if (hadj & 0x10)
+						hadj |= 0xFFF0;
+
+					height += hadj << 8;
+				}
+			}
+			else
+			{
+				h1 = *data >> 8;
+				h2 = *(char*)data;
+			}
+
+			height -= 256 * (abs(h1) + abs(h2));
+		}
+	}
+
+	return height;
 }
