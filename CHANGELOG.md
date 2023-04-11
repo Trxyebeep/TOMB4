@@ -15,6 +15,7 @@
 - Improve lighting in some edge cases.
 - Fix first voncroy cut camera.
 - Fix AI (VonCroy, Guide, etc.) interaction position.
+- Fix water surface waves.
 
 ### new tomb4 features
 
