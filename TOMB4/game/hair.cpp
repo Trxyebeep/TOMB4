@@ -409,35 +409,22 @@ void HairControl(long in_cutscene, long pigtail, short* cutscenething)
 				hair->pos.z_pos += SmokeWindZ;
 			}
 
-			switch (lara.water_status)
+			if (water == NO_HEIGHT || hair->pos.y_pos < water)
 			{
-			case LW_ABOVE_WATER:
-			case LW_WADE:	//here instead of the other case to fix stiff hair during wade
 				hair->pos.y_pos += 10;
 
 				if (water != NO_HEIGHT && hair->pos.y_pos > water)
 					hair->pos.y_pos = water;
-				else if (hair->pos.y_pos > height)
-				{
-					hair->pos.x_pos = pos.x;
+			}
 
-					if (hair->pos.y_pos - height <= 256)	//snap to floor if it goes below, no more than 1 click to avoid hairection when going through corners
-						hair->pos.y_pos = height;
+			if (hair->pos.y_pos > height)
+			{
+				hair->pos.x_pos = pos.x;
 
-					hair->pos.z_pos = pos.z;
-				}
-
-				break;
-
-			case LW_UNDERWATER:
-			case LW_SURFACE:
-
-				if (hair->pos.y_pos < water)
-					hair->pos.y_pos = water;
-				else if (hair->pos.y_pos > height)
+				if (hair->pos.y_pos - height <= 256)	//snap to floor if it goes below, no more than 1 click to avoid hairection when going through corners
 					hair->pos.y_pos = height;
 
-				break;
+				hair->pos.z_pos = pos.z;
 			}
 
 			for (int j = 0; j < 6; j++)	//6 instead of 5 for new sphere
