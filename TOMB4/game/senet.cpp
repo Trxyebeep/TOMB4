@@ -29,36 +29,41 @@ static PHD_VECTOR GameStixPos = { 0, 0, -100 };
 void InitialiseSenet(short item_number)
 {
 	ITEM_INFO* item;
+	short lp;
 
 	if (senet_item[0])
 		return;
 
-	memset(senet_board, 0, 17);
-	memset(senet_piece, 0, 6);
+	for (lp = 0; lp < 6; lp++)
+		senet_piece[lp] = 0;
+
+	for (lp = 1; lp < 17; lp++)
+		senet_board[lp] = 0;
+
 	senet_board[0] = 3;
 
-	for (int i = 0; i < level_items; i++)
+	for (lp = 0; lp < level_items; lp++)
 	{
-		item = &items[i];
+		item = &items[lp];
 
 		switch (item->object_number)
 		{
 		case GAME_PIECE1:
-			senet_item[0] = i;
+			senet_item[0] = lp;
 			SenetTargetX = item->pos.x_pos + 1024;
 			SenetTargetZ = item->pos.z_pos;
 			break;
 
 		case GAME_PIECE2:
-			senet_item[1] = i;
+			senet_item[1] = lp;
 			break;
 
 		case GAME_PIECE3:
-			senet_item[2] = i;
+			senet_item[2] = lp;
 			break;
 
 		case ENEMY_PIECE:
-			senet_item[item->trigger_flags + 3] = i;
+			senet_item[item->trigger_flags + 3] = lp;
 			break;
 		}
 	}
@@ -66,51 +71,51 @@ void InitialiseSenet(short item_number)
 
 void MakeMove(long piece, long displacement)
 {
-	long num;
+	short num, spot, lp;
 
-	num = piece >= 3 ? 2 : 1;
+	spot = short(senet_piece[piece] + displacement);
+	num = (piece >= 3) + 1;
 
-	if (senet_piece[piece] == NO_ITEM || !displacement ||
-		senet_piece[piece] + displacement > 16 || senet_board[senet_piece[piece] + displacement] & num)
+	if (senet_piece[piece] == NO_ITEM || !displacement || spot > 16 || senet_board[spot] & num)
 		return;
 
 	senet_board[senet_piece[piece]] &= ~num;
 
 	if (!senet_piece[piece])
 	{
-		for (int i = 3 * num - 3; i < 3 * num; i++)
+		for (lp = 3 * (piece >= 3); lp < short(3 * (piece >= 3)) + 3; lp++)
 		{
-			if (i != piece && !senet_piece[i])
-				senet_board[0] |= num;
+			if (lp != piece && !senet_piece[lp])
+				senet_board[senet_piece[piece]] |= num;
 		}
 	}
 
+	senet_piece[piece] = (char)spot;
 	piece_moving = (char)piece;
-	senet_piece[piece_moving] += (char)displacement;
 
-	if (senet_piece[piece_moving] > 4)
+	if (spot > 4)
 	{
-		senet_board[senet_piece[piece_moving]] = 0;
+		senet_board[spot] = 0;
 
-		for (int i = 6 - 3 * num; i < 9 - 3 * num; i++)
+		for (lp = 3 - 3 * (piece >= 3); lp < short(3 - 3 * (piece >= 3)) + 3; lp++)
 		{
-			if (senet_piece[i] == senet_piece[piece_moving])
+			if (senet_piece[lp] == spot)
 			{
-				senet_piece[i] = 0;
+				senet_piece[lp] = 0;
 				senet_board[0] |= 3 - num;
 			}
 		}
 	}
 
-	if (!(senet_piece[piece_moving] & 3) || last_throw == 6)
-		last_throw = 0;
+	if (spot >= 16)
+		senet_piece[piece] = -1;
 	else
-		last_throw = -1;
+		senet_board[spot] |= num;
 
-	if (senet_piece[piece_moving] < 16)
-		senet_board[senet_piece[piece_moving]] |= num;
+	if (spot & 3 && last_throw != 6)
+		last_throw = -1;
 	else
-		senet_piece[piece_moving] = -1;
+		last_throw = 0;
 }
 
 void SenetControl(short item_number)
@@ -127,44 +132,34 @@ void SenetControl(short item_number)
 
 long CheckSenetWinner(long ourPiece)
 {
-	long num;
+	long lp;
 
 	if (ourPiece == 1)
 	{
-		num = 0;
-
-		while (senet_piece[num] == NO_ITEM)			//if our piece is dead
+		for (lp = 0; lp < 3; lp++)
 		{
-			num++;
-
-			if (num >= 3)									//all 3 dead?
-			{
-				trigger_item_in_room(0, RAISING_BLOCK2);	//lara wins
-				trigger_item_in_room(19, RAISING_BLOCK2);
-				return 1;
-			}
+			if (senet_piece[lp] != NO_ITEM)
+				return 0;
 		}
+
+		trigger_item_in_room(0, RAISING_BLOCK2);
+		trigger_item_in_room(19, RAISING_BLOCK2);
+		return 1;
 	}
 	else
 	{
-		num = 3;
-
-		while (senet_piece[num] == NO_ITEM)
+		for (lp = 3; lp < 6; lp++)
 		{
-			num++;
-
-			if (num >= 6)									//all 3 dead?
-			{
-				trigger_item_in_room(20, TRAPDOOR1);		//semerkhet wins	
-				trigger_item_in_room(21, TRAPDOOR1);
-				trigger_item_in_room(22, TRAPDOOR1);
-				trigger_item_in_room(81, TRAPDOOR1);
-				return 1;
-			}
+			if (senet_piece[lp] != NO_ITEM)
+				return 0;
 		}
-	}
 
-	return 0;
+		trigger_item_in_room(20, TRAPDOOR1);
+		trigger_item_in_room(21, TRAPDOOR1);
+		trigger_item_in_room(22, TRAPDOOR1);
+		trigger_item_in_room(81, TRAPDOOR1);
+		return 1;
+	}
 }
 
 void InitialiseGameStix(short item_number)
@@ -172,24 +167,25 @@ void InitialiseGameStix(short item_number)
 	ITEM_INFO* item;
 
 	item = &items[item_number];
-	item->trigger_flags = NO_ITEM;
 	item->data = item->item_flags;
+	item->trigger_flags = NO_ITEM;
 }
 
 void ThrowSticks(ITEM_INFO* item)
 {
+	long lp;
 	char rnd;
 
 	last_throw = 0;
 	item->trigger_flags = 0;
 
-	for (int i = 0; i < 4; i++)
+	for (lp = 0; lp < 4; lp++)
 	{
 		rnd = GetRandomControl() & 1;
 		last_throw += rnd;
 
 		if (rnd)
-			item->trigger_flags |= 1 << i;
+			item->trigger_flags |= 1 << lp;
 	}
 
 	if (!last_throw)
@@ -197,8 +193,8 @@ void ThrowSticks(ITEM_INFO* item)
 
 	item->hit_points = 120;
 
-	for (int i = 0; i < 3; i++)
-		items[senet_item[i]].trigger_flags = 1;
+	for (lp = 0; lp < 3; lp++)
+		items[senet_item[lp]].trigger_flags = 1;
 }
 
 void GameStixControl(short item_number)
@@ -218,13 +214,13 @@ void GameStixControl(short item_number)
 
 		for (int i = 0; i < 4; i++)
 		{
-			if (item->hit_points < 100 - 2 * i)
+			if (item->hit_points < 120 - (2 * i + 20))
 			{
 				item->item_flags[i] -= item->hit_points << 7;
 
-				if (item->hit_points < 40 - 2 * i)
+				if (item->hit_points < 120 - (2 * i + 80))
 				{
-					if (abs(item->item_flags[i]) < 4096 && item->trigger_flags & 1 << i)
+					if (item->item_flags[i] > -4096 && item->item_flags[i] < 4096 && item->trigger_flags & 1 << i)
 						item->item_flags[i] = 0;
 					else if ((item->item_flags[i] > 28672 || item->item_flags[i] < -28672) && !(item->trigger_flags & 1 << i))
 						item->item_flags[i] = -0x8000;
@@ -239,9 +235,9 @@ void GameStixControl(short item_number)
 			for (int i = 0; i < 3; i++)
 				items[senet_item[i]].trigger_flags = 0;
 
-			item->trigger_flags = -1;
+			item->trigger_flags = NO_ITEM;
 
-			if (piece_moving == -1 && !last_throw)
+			if (piece_moving == NO_ITEM && !last_throw)
 			{
 				RemoveActiveItem(item_number);
 				item->status = ITEM_INACTIVE;
@@ -253,23 +249,23 @@ void GameStixControl(short item_number)
 
 	if (piece_moving > -1)
 	{
-		num = piece_moving >= 3 ? 2 : 1;	//>= 3 means it's not our piece
+		num = (piece_moving >= 3) + 1;
 		piece = &items[senet_item[piece_moving]];
 		piece->flags |= IFL_TRIGGERED;
 		piece->after_death = 48;
 		piece_num = senet_piece[piece_moving];
 
-		if (piece_num == -1 || piece_num >= 5)
-		{
-			if (piece_num == -1)
-				piece_num = 16;
+		if (piece_num == -1)
+			piece_num = 16;
 
+		if (piece_num >= 5)
+		{
 			x = SenetTargetX + 1024;
 			z = SenetTargetZ + ((piece_num - 5) << 10);
 		}
 		else
 		{
-			x = SenetTargetX + (num << 11) - 2048;
+			x = ((num - 1) << 11) + SenetTargetX;
 			z = SenetTargetZ + ((4 - piece_num) << 10);
 		}
 
@@ -343,13 +339,14 @@ void GameStixControl(short item_number)
 							else
 								ShockwaveExplosion(piece, 0x6060E0, -64);
 
-							piece->pos.x_pos = SenetTargetX - (num << 12) + 7168;
+							piece->pos.x_pos = SenetTargetX + ((2 - num) << 12) - 1024;
 							piece->pos.z_pos = SenetTargetZ + ((i % 3) << 10);
+
 							room_number = piece->room_number;
 							GetFloor(piece->pos.x_pos, piece->pos.y_pos - 32, piece->pos.z_pos, &room_number);
 
 							if (piece->room_number != room_number)
-								ItemNewRoom(senet_item[piece_moving], room_number);
+								ItemNewRoom(senet_item[i], room_number);
 
 							if (num == 1)
 								ShockwaveExplosion(piece, 0xFF8020, -64);
@@ -384,10 +381,10 @@ void GameStixControl(short item_number)
 				break;
 		}
 
-		if (!last_throw || last_throw == 6)
-			last_throw = -1;
-		else
+		if (last_throw && last_throw != 6)
 			last_throw = 0;
+		else
+			last_throw = -1;
 	}
 	else if (!last_throw)
 	{
@@ -419,7 +416,7 @@ void GameStixCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && lara.gun_status == LG_NO_ARMS && !item->active ||
 		lara.IsMoving && lara.GeneralPtr == (void*)item_number)
 	{
-		l->pos.y_rot ^= 0x8000;
+		item->pos.y_rot ^= 0x8000;
 
 		if (TestLaraPosition(GameStixBounds, item, l))
 		{
@@ -441,7 +438,7 @@ void GameStixCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 				lara.GeneralPtr = (void*)item_number;
 		}
 
-		l->pos.y_rot ^= 0x8000;
+		item->pos.y_rot ^= 0x8000;
 	}
 	else
 		ObjectCollision(item_number, l, coll);

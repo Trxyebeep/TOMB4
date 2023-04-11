@@ -1047,7 +1047,7 @@ void CalcLaraMatrices(long flag)
 	short* frame;
 	short* frmptr[2];
 	long rate, frac;
-	short jerk;
+	short spaz;
 
 	bone = &bones[objects[lara_item->object_number].bone_index];
 	frac = GetFrames(lara_item, frmptr, &rate);
@@ -1066,16 +1066,16 @@ void CalcLaraMatrices(long flag)
 		frame = *frmptr;
 	else
 	{
-		if (lara.hit_direction == 0)
-			jerk = lara.IsDucked ? ANIM_JERK_DUCKF : ANIM_JERK_FORWARD;
+		if (!lara.hit_direction)
+			spaz = lara.IsDucked ? ANIM_SPAZ_DUCKF : ANIM_SPAZ_FORWARD;
 		else if (lara.hit_direction == 1)
-			jerk = lara.IsDucked ? ANIM_JERK_DUCKR : ANIM_JERK_RIGHT;
+			spaz = lara.IsDucked ? ANIM_SPAZ_DUCKR : ANIM_SPAZ_RIGHT;
 		else if (lara.hit_direction == 2)
-			jerk = lara.IsDucked ? ANIM_JERK_DUCKB : ANIM_JERK_BACK;
+			spaz = lara.IsDucked ? ANIM_SPAZ_DUCKB : ANIM_SPAZ_BACK;
 		else
-			jerk = lara.IsDucked ? ANIM_JERK_DUCKL : ANIM_JERK_LEFT;
+			spaz = lara.IsDucked ? ANIM_SPAZ_DUCKL : ANIM_SPAZ_LEFT;
 
-		frame = &anims[jerk].frame_ptr[lara.hit_frame * (anims[jerk].interpolation >> 8)];
+		frame = &anims[spaz].frame_ptr[lara.hit_frame * (anims[spaz].interpolation >> 8)];
 	}
 
 	Rich_CalcLaraMatrices_Normal(frame, bone, flag);

@@ -30,6 +30,7 @@ void InitialiseHorseman(short item_number)
 	item->goal_anim_state = 9;
 	item->current_anim_state = 9;
 	item->item_flags[0] = -1;
+	item->dynamic_light = 0;
 }
 
 #pragma warning(push)
@@ -115,6 +116,7 @@ void HorsemanControl(short item_number)
 				item->frame_number = anims[item->anim_number].frame_base;
 				item->current_anim_state = 8;
 				item2->goal_anim_state = 1;
+				item->dynamic_light = 1;	//Flag for enemy bar to use the new health. bite me.
 			}
 		}
 		else

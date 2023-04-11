@@ -6,6 +6,7 @@
 #include "../specific/3dmath.h"
 #include "../specific/function_stubs.h"
 #include "../specific/gamemain.h"
+#include "../specific/function_table.h"
 
 long stash_font_height;
 long smol_font_height;
@@ -269,9 +270,9 @@ void InitFont()
 		CharDef[i].YOffset = yoff;
 	}
 
-	font_height = short(float(3.0F * phd_winymax / 40.0F));
+	font_height = long(float(3.0F * phd_winymax / 40.0F));
 	stash_font_height = font_height;
-	smol_font_height = short(float(7.0F * phd_winymax / 120.0F));
+	smol_font_height = long(float(7.0F * phd_winymax / 120.0F));
 }
 
 void UpdatePulseColour()
@@ -308,11 +309,10 @@ void UpdatePulseColour()
 	}
 }
 
-long GetStringLength(const char* string, short* top, short* bottom)
+long GetStringLength(const char* string, long* top, long* bottom)
 {
 	CHARDEF* def;
-	long s, accent, length;
-	short lowest, highest, y;
+	long s, accent, length, lowest, highest, y;
 
 	s = *string++;
 	length = 0;
@@ -395,15 +395,17 @@ long GetStringLength(const char* string, short* top, short* bottom)
 	return length;
 }
 
-void DrawChar(short x, short y, ushort col, CHARDEF* def)
+void DrawChar(long x, long y, ushort col, CHARDEF* def)
 {
-	D3DTLVERTEX v[4];
+	D3DTLVERTEX* v;
 	TEXTURESTRUCT tex;
 	float u1, v1, u2, v2;
 	long x1, y1, x2, y2, top, bottom;
 
-	y1 = short(y + phd_winymin) + def->YOffset;
-	y2 = short(y + phd_winymin) + def->h + def->YOffset;
+	v = MyVertexBuffer;
+
+	y1 = y + phd_winymin + def->YOffset;
+	y2 = y + phd_winymin + def->h + def->YOffset;
 
 	if (small_font)
 	{
@@ -411,7 +413,7 @@ void DrawChar(short x, short y, ushort col, CHARDEF* def)
 		y2 = long((float)y2 * 0.75F);
 	}
 
-	x1 = short(x + phd_winxmin);
+	x1 = x + phd_winxmin;
 	x2 = x1 + def->w;
 	setXY4(v, x1, y1, x2, y1, x2, y2, x1, y2, (long)f_mznear, clipflags);
 
@@ -449,18 +451,18 @@ void DrawChar(short x, short y, ushort col, CHARDEF* def)
 	AddQuadClippedSorted(v, 0, 1, 2, 3, &tex, 0);
 }
 
-void PrintString(ushort x, ushort y, uchar col, const char* string, ushort flags)
+void PrintString(long x, long y, uchar col, const char* string, ushort flags)
 {
 	CHARDEF* def;
 	CHARDEF* accent;
-	short x2, bottom, l, top, bottom2;
+	long x2, bottom, l, top, bottom2;
 	uchar s;
 
 	if (flags & FF_BLINK && GnFrameCounter & 0x10)
 		return;
 
 	ScaleFlag = (flags & FF_SMALL) != 0;
-	x2 = (short)GetStringLength(string, 0, &bottom);
+	x2 = GetStringLength(string, 0, &bottom);
 
 	if (flags & FF_CENTER)
 		x2 = x - (x2 >> 1);
@@ -482,7 +484,7 @@ void PrintString(ushort x, ushort y, uchar col, const char* string, ushort flags
 			}
 			else
 			{
-				l = (short)GetStringLength(string, &top, &bottom2);
+				l = GetStringLength(string, &top, &bottom2);
 
 				if (flags & FF_CENTER)
 					x2 = x - (l >> 1);
@@ -504,7 +506,7 @@ void PrintString(ushort x, ushort y, uchar col, const char* string, ushort flags
 			if (ScaleFlag)
 				x2 += 6;
 			else
-				x2 += short(float(phd_winxmax + 1) / 640.0F * 8.0F);
+				x2 += long(float(phd_winxmax + 1) / 640.0F * 8.0F);
 
 			s = *string++;
 			continue;

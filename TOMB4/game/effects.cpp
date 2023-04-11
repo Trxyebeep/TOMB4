@@ -148,16 +148,16 @@ void turn180_effect(ITEM_INFO* item)
 
 void floor_shake_effect(ITEM_INFO* item)
 {
-	long x, y, z, dist;
+	long dx, dy, dz, dist;
 
-	x = item->pos.x_pos - camera.pos.x;
-	y = item->pos.y_pos - camera.pos.y;
-	z = item->pos.z_pos - camera.pos.z;
+	dx = item->pos.x_pos - camera.pos.x;
+	dy = item->pos.y_pos - camera.pos.y;
+	dz = item->pos.z_pos - camera.pos.z;
 
-	if ((abs(x) < 16384) && (abs(y) < 16384) && (abs(z) < 16384))
+	if (abs(dx) < 0x4000 && abs(dy) < 0x4000 && abs(dz) < 0x4000)
 	{
-		dist = (SQUARE(x) + SQUARE(y) + SQUARE(z)) / 256;
-		camera.bounce = ((SQUARE(1024) - dist) * 100) / SQUARE(1024);
+		dist = SQUARE(dx) + SQUARE(dy) + SQUARE(dz);
+		camera.bounce = -66 * (0x100000 - dist / 256) / 0x100000;
 	}
 }
 

@@ -4,11 +4,9 @@
 
 ## [Releases page](https://github.com/Trxyebeep/TOMB4/releases)
 
-### *first time installs:*
-
 #### Steam/GoG version:
-1. Get the latest release package that says "exe + dll"
-2. unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
+1. Get the latest release package.
+2. Unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
 3. Enjoy!
 
 #### CD version:
@@ -19,15 +17,10 @@
 - Entire fmv folder
 - SCRIPT.DAT
 - <language.dat> (whichever language your game version is in, typically English.dat or US/UK.dat
-3. Get the latest release package that says "exe + dll"
-4. unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
+3. Get the latest release package.
+4. Unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
 5. Enjoy!
 
-
-### *Updating/Non-first time installing:*
-1. Get the latest release package that says "dll only"
-2. unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
-3. Enjoy!
 ------------------------
 
 ## New options menu:
@@ -41,7 +34,8 @@
 Determines shadow shape
 - Original: Original octagon shape.
 - Circle: A flat semi-transparent circle.
-- PSX: A faded circle similar to the shadow present in the PSX version.
+- Faded circle: A strong faded circle.
+- PSX: The PSX Sprite shadow.
 
 ### 3. Crawl Tilting:
 - Toggles Lara tilting while crawling on sloped surfaces.
@@ -123,3 +117,9 @@ Toggles the healthbar appearing in the inventory when looking over the medipacks
 
 ### 20. static lighting:
 Toggles static lighting.
+
+### 21. Reverb:
+Toggles Reverb and allows choosing its room.
+
+### 22. Distance fog:
+Controls the distance at which vertices start to fade to black. Note: this value is in blocks/squares, meaning a value of 12 makes the distance fog start 12 game blocks away from the current camera position.

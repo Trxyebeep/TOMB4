@@ -23,6 +23,7 @@
 #include "savegame.h"
 #include "../tomb4/tomb4.h"
 #include "../specific/dxsound.h"
+#include "../specific/drawbars.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4838)
@@ -200,7 +201,7 @@ static short options_table[NUM_INVOBJ] =
 	OPT_EQUIP | OPT_SEPARATE | OPT_REVOLVER,	//INV_REVOLVER_LASER_ITEM
 	OPT_EQUIP | OPT_COMBINE | OPT_CROSSBOW,		//INV_CROSSBOW_ITEM
 	OPT_EQUIP | OPT_SEPARATE | OPT_CROSSBOW,	//INV_CROSSBOW_LASER_ITEM
-	OPT_EQUIP | OPT_SEPARATE | OPT_GRENADE,		//INV_GRENADEGUN_ITEM
+	OPT_EQUIP | OPT_COMBINE | OPT_GRENADE,		//INV_GRENADEGUN_ITEM
 	OPT_USE,									//INV_SHOTGUN_AMMO1_ITEM
 	OPT_USE,									//INV_SHOTGUN_AMMO2_ITEM
 	OPT_USE,									//INV_GRENADEGUN_AMMO1_ITEM
@@ -607,7 +608,7 @@ void do_debounced_joystick_poo()
 	}
 }
 
-void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagflag)
+void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagflag)
 {
 	ANIM_STRUCT* anim;
 	OBJECT_INFO* object;
@@ -619,12 +620,11 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 	ulong bit;
 	long poppush, alpha, compass;
 
-	anim = &anims[item->anim_number];
+	anim = &anims[objects[item->object_number].anim_index];
 	frmptr = anim->frame_ptr;
 	object = &objects[item->object_number];
 	phd_PushMatrix();
-	phd_TranslateRel(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
+	phd_RotYXZ(item->yrot, item->xrot, item->zrot);
 
 	if (item->object_number >= EXAMINE1 && item->object_number <= EXAMINE3 && examine_mode)
 	{
@@ -663,7 +663,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 			alpha = GlobalAlpha;
 
 			if (shade > 127)
-				shade = 0xFF;
+				shade = 255;
 			else
 				shade <<= 1;
 
@@ -692,7 +692,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 		{
 			compass = (compass_settle_thang * phd_sin(1024 * (GnFrameCounter & 0x3F))) >> W2V_SHIFT;
 			compass += lara_item->pos.y_rot;
-			phd_RotY((short)(compass - 0x8000));
+			phd_RotY(short(compass - 0x8000));
 
 			if (lara_item->pos.y_rot > -48 && lara_item->pos.y_rot <= 48 && tomb4.cheats)
 			{
@@ -704,20 +704,22 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 					{
 						lara.num_large_medipack = -1;
 						lara.num_small_medipack = -1;
-						lara.num_revolver_ammo = -1;
-						lara.num_uzi_ammo = -1;
-						lara.num_crossbow_ammo1 = -1;
-						lara.num_crossbow_ammo2 = -1;
-						lara.num_crossbow_ammo3 = -1;
-						lara.num_grenade_ammo1 = -1;
-						lara.num_grenade_ammo2 = -1;
-						lara.num_grenade_ammo3 = -1;
-						lara.num_flares = -1;
-						lara.num_shotgun_ammo1 = -1;
-						lara.num_shotgun_ammo2 = -1;
 
 						if (!(gfLevelFlags & GF_YOUNGLARA))
 						{
+							lara.num_revolver_ammo = -1;
+							lara.num_uzi_ammo = -1;
+							lara.num_crossbow_ammo1 = -1;
+							lara.num_crossbow_ammo2 = -1;
+							lara.num_crossbow_ammo3 = -1;
+							lara.num_grenade_ammo1 = -1;
+							lara.num_grenade_ammo2 = -1;
+							lara.num_grenade_ammo3 = -1;
+							lara.num_flares = -1;
+							lara.num_shotgun_ammo1 = -1;
+							lara.num_shotgun_ammo2 = -1;
+
+							lara.lasersight = 1;
 							lara.pistols_type_carried |= W_PRESENT;
 							lara.uzis_type_carried |= W_PRESENT;
 							lara.shotgun_type_carried |= W_PRESENT;
@@ -765,7 +767,7 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 				alpha = GlobalAlpha;
 
 				if (shade > 127)
-					shade = 0xFF;
+					shade = 255;
 				else
 					shade <<= 1;
 
@@ -782,13 +784,14 @@ void DrawInventoryItemMe(ITEM_INFO* item, long shade, long overlay, long shagfla
 void DrawThreeDeeObject2D(long x, long y, long num, long shade, long xrot, long yrot, long zrot, long bright, long overlay)
 {
 	INVOBJ* objme;
-	ITEM_INFO item;
+	INVDRAWITEM item;
 
 	objme = &inventry_objects_list[num];
-	item.pos.x_rot = (short)xrot + objme->xrot;
-	item.pos.y_rot = (short)yrot + objme->yrot;
-	item.pos.z_rot = (short)zrot + objme->zrot;
+	item.xrot = (short)xrot + objme->xrot;
+	item.yrot = (short)yrot + objme->yrot;
+	item.zrot = (short)zrot + objme->zrot;
 	item.object_number = objme->object_number;
+	item.mesh_bits = objme->meshbits;
 	phd_LookAt(0, 1024, 0, 0, 0, 0, 0);
 
 	if (!bright)
@@ -796,23 +799,13 @@ void DrawThreeDeeObject2D(long x, long y, long num, long shade, long xrot, long 
 	else if (bright == 1)
 		pcbright = 0x2F2F2F;
 	else
-		pcbright = bright | ((bright | (bright << 8)) << 8);
+		pcbright = RGBONLY(bright, bright, bright);
 
 	SetD3DViewMatrix();
 	phd_PushUnitMatrix();
 	phd_TranslateRel(0, 0, objme->scale1);
 	xoffset = x;
 	yoffset = objme->yoff + y;
-	item.mesh_bits = objme->meshbits;
-	item.shade = -1;
-	item.pos.x_pos = 0;
-	item.pos.y_pos = 0;
-	item.pos.z_pos = 0;
-	item.room_number = 0;
-	item.il.nCurrentLights = 0;
-	item.il.nPrevLights = 0;
-	item.il.ambient = 0x7F7F7F;
-	item.anim_number = objects[item.object_number].anim_index;
 	DrawInventoryItemMe(&item, shade, overlay, objme->flags & 8);
 	phd_PopMatrix();
 	xoffset = phd_centerx;
@@ -1211,7 +1204,7 @@ void handle_object_changeover(long ringnum)
 
 void fade_ammo_selector()
 {
-	if (rings[0]->ringactive && (right_repeat >= 8 || left_repeat >= 8))
+	if (rings[RING_INVENTORY]->ringactive && (right_repeat >= 8 || left_repeat >= 8))
 		ammo_selector_fade_val = 0;
 	else if (ammo_selector_fade_dir == 1)
 	{
@@ -1493,7 +1486,7 @@ void combine_ClockWorkBeetle(long flag)
 
 long do_special_waterskin_combine_bullshit(long flag)
 {
-	long n;
+	long lp;
 	short small_liters, big_liters, small_capacity, big_capacity;
 
 	small_liters = lara.small_water_skin - 1;
@@ -1505,9 +1498,7 @@ long do_special_waterskin_combine_bullshit(long flag)
 	{
 		if (lara.big_water_skin != 1 && small_capacity)
 		{
-			n = lara.big_water_skin - 1;
-
-			do
+			for (lp = big_liters; lp; lp--)
 			{
 				if (small_capacity)
 				{
@@ -1515,10 +1506,7 @@ long do_special_waterskin_combine_bullshit(long flag)
 					small_liters++;
 					small_capacity--;
 				}
-
-				n--;
-
-			} while (n);
+			}
 
 			lara.small_water_skin = small_liters + 1;
 			lara.big_water_skin = big_liters + 1;
@@ -1526,30 +1514,22 @@ long do_special_waterskin_combine_bullshit(long flag)
 			return 1;
 		}
 	}
-	else
+	else if (lara.small_water_skin != 1 && big_capacity)
 	{
-		if (lara.small_water_skin != 1 && big_capacity)
+		for (lp = small_liters; lp; lp--)
 		{
-			n = lara.small_water_skin - 1;
-
-			do
+			if (big_capacity)
 			{
-				if (big_capacity)
-				{
-					small_liters--;
-					big_liters++;
-					big_capacity--;
-				}
-
-				n--;
-
-			} while (n);
-
-			lara.small_water_skin = small_liters + 1;
-			lara.big_water_skin = big_liters + 1;
-			combine_obj1 = lara.big_water_skin + INV_WATERSKIN2_EMPTY_ITEM - 1;
-			return 1;
+				small_liters--;
+				big_liters++;
+				big_capacity--;
+			}
 		}
+
+		lara.small_water_skin = small_liters + 1;
+		lara.big_water_skin = big_liters + 1;
+		combine_obj1 = lara.big_water_skin + INV_WATERSKIN2_EMPTY_ITEM - 1;
+		return 1;
 	}
 
 	return 0;
@@ -1674,8 +1654,8 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2),
 			INV_EXAMINE2_ITEM, examine_mode, 0, 0, 0, 0, 0);
 		objme->scale1 = saved_scale;
-		PrintString((ushort)phd_centerx, (ushort)WANK_RULES_YPOS, 5, SCRIPT_TEXT(TXT_RULES1), FF_CENTER);
-		PrintString((ushort)phd_centerx, (ushort)(WANK_RULES_YPOS + phd_winheight / 2), 5, SCRIPT_TEXT(TXT_RULES2), FF_CENTER);
+		PrintString(phd_centerx, WANK_RULES_YPOS, 5, SCRIPT_TEXT(TXT_RULES1), FF_CENTER);
+		PrintString(phd_centerx, WANK_RULES_YPOS + phd_winheight / 2, 5, SCRIPT_TEXT(TXT_RULES2), FF_CENTER);
 		break;
 
 	case INV_EXAMINE3_ITEM:
@@ -1684,7 +1664,7 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2 - 8),
 			INV_EXAMINE3_ITEM, examine_mode, 0x8000, 0x4000, 0x4000, 96, 0);
 		objme->scale1 = saved_scale;
-		PrintString((ushort)phd_centerx, (ushort)WANK_SCROL_YPOS, 8, SCRIPT_TEXT(TXT_PETEPOO), FF_CENTER);
+		PrintString(phd_centerx, WANK_SCROL_YPOS, 8, SCRIPT_TEXT(TXT_PETEPOO), FF_CENTER);
 		break;
 	}
 
@@ -2212,7 +2192,7 @@ void draw_ammo_selector()
 				sprintf(cunter, "%d x %s", ammo_object_list[i].amount, SCRIPT_TEXT(objme->objname));
 
 			if (ammo_selector_fade_val)
-				PrintString((ushort)phd_centerx, ushort(font_height + phd_centery + 2 * font_height - 9), 8, cunter, FF_CENTER);
+				PrintString(phd_centerx, font_height + phd_centery + 2 * font_height - 9, 8, cunter, FF_CENTER);
 
 			DrawThreeDeeObject2D(long((float)phd_centerx / 256.0F * 64.0F + inventry_xpos + xpos),
 				long((float)phd_centery / 120.0F * 190.0F + inventry_ypos), ammo_object_list[i].invitem, ammo_selector_fade_val, 0, yrot, 0, 0, 0);
@@ -2232,7 +2212,7 @@ void handle_inventry_menu()
 
 	if (rings[RING_AMMO]->ringactive)
 	{
-		PrintString((ushort)phd_centerx, (ushort)phd_centery, 1, SCRIPT_TEXT(optmessages[5]), FF_CENTER);
+		PrintString(phd_centerx, phd_centery, 1, SCRIPT_TEXT(optmessages[5]), FF_CENTER);
 
 		if (rings[RING_INVENTORY]->objlistmovement || rings[RING_AMMO]->objlistmovement)
 			return;
@@ -2248,7 +2228,8 @@ void handle_inventry_menu()
 				if (do_special_waterskin_combine_bullshit(0))
 				{
 					combine_type_flag = 2;
-					combine_ring_fade_dir = 2;	//they forgot the SoundEffect call here
+					combine_ring_fade_dir = 2;
+					SoundEffect(SFX_MENU_COMBINE, 0, SFX_ALWAYS);
 				}
 			}
 			else if (ammo_item >= INV_WATERSKIN1_EMPTY_ITEM && ammo_item <= INV_WATERSKIN1_3_ITEM &&	//big one selected
@@ -2394,9 +2375,9 @@ void handle_inventry_menu()
 	for (int i = 0; i < num; i++)
 	{
 		if (i == current_selected_option)
-			PrintString((ushort)phd_centerx, (ushort)ypos, 1, current_options[i].text, FF_CENTER);
+			PrintString(phd_centerx, ypos, 1, current_options[i].text, FF_CENTER);
 		else
-			PrintString((ushort)phd_centerx, (ushort)ypos, 5, current_options[i].text, FF_CENTER);
+			PrintString(phd_centerx, ypos, 5, current_options[i].text, FF_CENTER);
 
 		ypos += font_height;
 	}
@@ -2529,7 +2510,7 @@ void draw_current_object_list(long ringnum)
 	if (rings[ringnum]->numobjectsinlist <= 0)
 		return;
 
-	if (ringnum == 1)
+	if (ringnum == RING_AMMO)
 	{
 		ammo_selector_fade_val = 0;
 		ammo_selector_fade_dir = 0;
@@ -2779,7 +2760,7 @@ void draw_current_object_list(long ringnum)
 			else
 				objmeup = long(phd_centery + float(phd_winymax + 1) / 16.0F * 3.0F);
 
-			PrintString((ushort)phd_centerx, (ushort)objmeup, 8, textbufme, FF_CENTER);
+			PrintString(phd_centerx, objmeup, 8, textbufme, FF_CENTER);
 		}
 
 		if (!i && !rings[ringnum]->objlistmovement)

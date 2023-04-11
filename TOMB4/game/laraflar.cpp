@@ -13,9 +13,9 @@
 #include "sound.h"
 #include "larafire.h"
 #include "lara.h"
-#include "debris.h"
 #include "gameflow.h"
 #include "draw.h"
+#include "tomb4fx.h"
 
 void DrawFlareInAir(ITEM_INFO* item)
 {

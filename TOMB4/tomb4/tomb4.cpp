@@ -98,8 +98,12 @@ void init_tomb4_stuff()
 		REG_WriteBool(buf, tomb4.static_lighting);
 
 		sprintf(buf, "reverb");
-		tomb4.reverb = 1;								//on
-		REG_WriteBool(buf, tomb4.reverb);
+		tomb4.reverb = 2;								//Lara room
+		REG_WriteLong(buf, tomb4.reverb);
+
+		sprintf(buf, "distance_fog");
+		tomb4.distance_fog = 12;						//default is 12
+		REG_WriteLong(buf, tomb4.distance_fog);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -164,7 +168,10 @@ void init_tomb4_stuff()
 		REG_ReadBool(buf, tomb4.static_lighting, 1);
 
 		sprintf(buf, "reverb");
-		REG_ReadBool(buf, tomb4.reverb, 1);
+		REG_ReadLong(buf, tomb4.reverb, 1);
+
+		sprintf(buf, "distance_fog");
+		REG_ReadLong(buf, tomb4.distance_fog, 12);
 	}
 
 	CloseRegistry();
@@ -237,7 +244,10 @@ void save_new_tomb4_settings()
 	REG_WriteBool(buf, tomb4.static_lighting);
 
 	sprintf(buf, "reverb");
-	REG_WriteBool(buf, tomb4.reverb);
+	REG_WriteLong(buf, tomb4.reverb);
+
+	sprintf(buf, "distance_fog");
+	REG_WriteLong(buf, tomb4.distance_fog);
 
 	CloseRegistry();
 }

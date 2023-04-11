@@ -318,6 +318,24 @@ static void mGenerateW2V(PHD_3DPOS* viewPos)
 	mMXPtr[M10] = mW2V[M10];
 	mMXPtr[M11] = mW2V[M11];
 	mMXPtr[M12] = mW2V[M12];
+
+	SetD3DMatrix(&D3DMW2VMatrix, mW2V);
+	D3DInvCameraMatrix._11 = D3DMW2VMatrix._11;
+	D3DInvCameraMatrix._12 = D3DMW2VMatrix._21;
+	D3DInvCameraMatrix._13 = D3DMW2VMatrix._31;
+	D3DInvCameraMatrix._14 = D3DMW2VMatrix._41;
+	D3DInvCameraMatrix._21 = D3DMW2VMatrix._12;
+	D3DInvCameraMatrix._22 = D3DMW2VMatrix._22;
+	D3DInvCameraMatrix._23 = D3DMW2VMatrix._32;
+	D3DInvCameraMatrix._24 = D3DMW2VMatrix._42;
+	D3DInvCameraMatrix._31 = D3DMW2VMatrix._13;
+	D3DInvCameraMatrix._32 = D3DMW2VMatrix._23;
+	D3DInvCameraMatrix._33 = D3DMW2VMatrix._33;
+	D3DInvCameraMatrix._34 = D3DMW2VMatrix._43;
+	D3DInvCameraMatrix._41 = D3DMW2VMatrix._14;
+	D3DInvCameraMatrix._42 = D3DMW2VMatrix._24;
+	D3DInvCameraMatrix._43 = D3DMW2VMatrix._34;
+	D3DInvCameraMatrix._44 = D3DMW2VMatrix._44;
 }
 
 static void mScaleCurrentMatrix(PHD_VECTOR* vec)
@@ -933,8 +951,6 @@ void phd_GenerateW2V(PHD_3DPOS* viewPos)
 	phd_mxptr[M10] = w2v_matrix[M10];
 	phd_mxptr[M11] = w2v_matrix[M11];
 	phd_mxptr[M12] = w2v_matrix[M12];
-	SetD3DMatrix(&D3DMW2VMatrix, w2v_matrix);
-
 	mGenerateW2V(viewPos);
 }
 

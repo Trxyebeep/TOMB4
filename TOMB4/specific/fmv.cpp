@@ -24,6 +24,7 @@ static long (__stdcall* BinkDoFrame)(BINK_STRUCT*);
 static void (__stdcall* BinkNextFrame)(BINK_STRUCT*);
 static long (__stdcall* BinkWait)(BINK_STRUCT*);
 static void (__stdcall* BinkClose)(BINK_STRUCT*);
+static HMODULE hBinkW32;
 
 static BINK_STRUCT* Bink;
 static LPDIRECTDRAWSURFACEX BinkSurface;
@@ -37,8 +38,6 @@ static long BinkSurfaceType;
 
 bool LoadBinkStuff()
 {
-	static HMODULE hBinkW32;
-
 	hBinkW32 = LoadLibrary("binkw32.dll");
 
 	if (!hBinkW32)
@@ -46,7 +45,6 @@ bool LoadBinkStuff()
 
 	try
 	{	
-		//ugh
 		GET_DLL_PROC(hBinkW32, BinkCopyToBuffer, "_BinkCopyToBuffer@28");
 		GET_DLL_PROC(hBinkW32, BinkOpenDirectSound, "_BinkOpenDirectSound@4");
 		GET_DLL_PROC(hBinkW32, BinkSetSoundSystem, "_BinkSetSoundSystem@8");
@@ -56,7 +54,6 @@ bool LoadBinkStuff()
 		GET_DLL_PROC(hBinkW32, BinkNextFrame, "_BinkNextFrame@4");
 		GET_DLL_PROC(hBinkW32, BinkWait, "_BinkWait@4");
 		GET_DLL_PROC(hBinkW32, BinkClose, "_BinkClose@4");
-		//end of ugh
 	}
 	catch (LPCTSTR)
 	{
@@ -66,6 +63,15 @@ bool LoadBinkStuff()
 	}
 
 	return 1;
+}
+
+void FreeBinkStuff()
+{
+	if (hBinkW32)
+	{
+		FreeLibrary(hBinkW32);
+		hBinkW32 = 0;
+	}
 }
 
 void ShowBinkFrame()
@@ -124,7 +130,6 @@ long PlayFmvNow(long num)
 			}
 		}
 
-		FreeD3DLights();
 		DXChangeVideoMode();
 		HWInitialise();
 		ClearSurfaces();
@@ -170,7 +175,6 @@ long PlayFmvNow(long num)
 	{
 		App.DXInfo.nDisplayMode = dm;
 		DXChangeVideoMode();
-		CreateD3DLights();
 		InitWindow(0, 0, App.dx.dwRenderWidth, App.dx.dwRenderHeight, 20, 20480, 80, App.dx.dwRenderWidth, App.dx.dwRenderHeight);
 		InitFont();
 		S_InitD3DMatrix();

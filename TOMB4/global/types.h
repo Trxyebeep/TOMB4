@@ -3,34 +3,6 @@
 
 #pragma pack(push, 1)
 
-/*typedefs*/
-typedef unsigned char uchar;
-typedef unsigned short ushort;
-typedef unsigned long ulong;
-
-/*Injection macro, originally by Arsunt, modified by ChocolateFan to allow deinjection*/
-struct JMP
-{
-	BYTE opCode;	// must be 0xE9;
-	DWORD offset;	// jump offset
-};
-
-#define INJECT(from,to,replace) \
-do \
-{ \
-	if (replace) \
-		INJECT_JMP(from,to); \
-	else \
-		INJECT_JMP(to,from); \
-} while (false)
-
-#define INJECT_JMP(from,to) \
-do \
-{ \
-	((JMP*)(from))->opCode = 0xE9; \
-	((JMP*)(from))->offset = (DWORD)(to) - ((DWORD)(from) + sizeof(JMP)); \
-} while (false)
-
 /*math*/
 #define SQUARE(x) ((x)*(x))
 #define	TRIGMULT2(a,b)		(((a) * (b)) >> W2V_SHIFT)
@@ -45,7 +17,6 @@ do \
 #define	CLRR(clr)	((clr >> 16) & 0xFF)	//shift g and b out of the way and 0xFF
 #define	CLRG(clr)	((clr >> 8) & 0xFF)		//shift b out of the way and 0xFF
 #define	CLRB(clr)	((clr) & 0xFF)			//and 0xFF
-#define RGB_M(clr, m)	(clr = (clr & 0xFF000000) | (((CLRR(clr) * 8 * m) >> 8) << 16) | (((CLRG(clr) * 8 * m) >> 8) << 8) | ((CLRB(clr) * 8 * m) >> 8))
 
 /*misc*/
 #define SCRIPT_TEXT(num)		(&gfStringWad[gfStringOffset[num]])
@@ -56,7 +27,6 @@ do \
 #define NO_HEIGHT	-32512
 #define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
-#define WINDOW_STYLE	(WS_OVERLAPPED | WS_BORDER | WS_CAPTION)
 #define W2V_SHIFT	14
 #define MAX_SAMPLES	370
 #define MAX_DYNAMICS	64
@@ -73,7 +43,6 @@ do \
 #define DDSURFACEDESCX			DDSURFACEDESC2
 #define LPDDSURFACEDESCX		DDSURFACEDESCX*
 #define LPDIRECT3DMATERIALX		LPDIRECT3DMATERIAL3
-#define D3DLIGHTX				D3DLIGHT2
 #define LPDIRECT3DTEXTUREX		LPDIRECT3DTEXTURE2
 #define TEXGUID					IID_IDirect3DTexture2
 #define DDGUID					IID_IDirectDraw4
@@ -82,6 +51,11 @@ do \
 #define DIDGUID					IID_IDirectInputDevice8
 #define DSNGUID					IID_IDirectSoundNotify
 /***********************************************/
+
+/*typedefs*/
+typedef unsigned char uchar;
+typedef unsigned short ushort;
+typedef unsigned long ulong;
 
 enum carried_weapon_flags
 {
@@ -112,13 +86,6 @@ enum ai_bits
 	PATROL1 =	1 << 2,
 	MODIFY =	1 << 3,
 	FOLLOW =	1 << 4
-};
-
-enum win_commands
-{
-	KA_ALTENTER =	8,
-	KA_ALTP =		40001,
-	KA_ALTM =		40002
 };
 
 enum languages
@@ -1239,7 +1206,7 @@ struct DXPTR
 	RECT rViewport;
 	RECT rScreen;
 	long Flags;
-	long WindowStyle;
+	ulong WindowStyle;
 	long CoopLevel;
 	LPDIRECTINPUTX lpDirectInput;
 	LPDIRECTINPUTDEVICEX Keyboard;
@@ -1311,9 +1278,9 @@ struct DXDIRECTDRAWINFO
 	GUID Guid;
 	DDCAPS DDCaps;
 	DDDEVICEIDENTIFIER DDIdentifier;
-	int	 nDisplayModes;
+	long nDisplayModes;
 	DXDISPLAYMODE* DisplayModes;
-	int nD3DDevices;
+	long nD3DDevices;
 	DXD3DDEVICE* D3DDevices;
 };
 
@@ -1434,12 +1401,6 @@ struct LIGHTNING_STRUCT
 	uchar Pad[3];
 };
 
-struct D3DLIGHT_STRUCT
-{
-	LPDIRECT3DLIGHT D3DLight;
-	D3DLIGHTX D3DLightx;
-};
-
 struct DYNAMIC
 {
 	long x;
@@ -1486,6 +1447,15 @@ struct OBJLIST
 	short invitem;
 	ushort yrot;
 	ushort bright;
+};
+
+struct INVDRAWITEM
+{
+	short xrot;
+	short yrot;
+	short zrot;
+	short object_number;
+	ulong mesh_bits;
 };
 
 struct RINGME
@@ -1849,8 +1819,7 @@ struct VonCroyCutData
 {
 	PHD_VECTOR CameraPos;
 	PHD_VECTOR CameraTarget;
-	short FOV;
-	short flags;
+	long f;
 };
 
 struct DEBRIS_STRUCT
@@ -2206,13 +2175,6 @@ struct SCARAB_STRUCT
 	uchar flags;
 };
 
-struct MAP_STRUCT
-{
-	char unk[3592];
-	short visited;
-	short room_number;
-};
-
 struct SPLASH_SETUP
 {
 	long x;
@@ -2258,6 +2220,36 @@ struct TRAIN_STATIC
 {
 	short type;
 	short zoff;
+};
+
+struct ROOM_DYNAMIC
+{
+	float x;
+	float y;
+	float z;
+	float r;
+	float g;
+	float b;
+	float falloff;
+	float sqr_falloff;
+	float inv_falloff;
+};
+
+struct SUNLIGHT_STRUCT
+{
+	FVECTOR vec;
+	float r;
+	float g;
+	float b;
+};
+
+struct POINTLIGHT_STRUCT
+{
+	FVECTOR vec;
+	float r;
+	float g;
+	float b;
+	float rad;
 };
 
 struct GouraudBarColourSet
@@ -2308,6 +2300,7 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool combat_cam_tilt;
 	bool hpbar_inv;
 	bool static_lighting;
-	bool reverb;
+	ulong reverb;				//1-> off, 2-> Lara room, 3->camera room
+	ulong distance_fog;			//value in blocks
 };
 #pragma pack(pop)

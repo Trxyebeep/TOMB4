@@ -339,7 +339,8 @@ void ObjectObjects()
 	obj = &objects[SARCOPHAGUS];
 	obj->control = ControlAnimatingSlots;
 	obj->collision = SarcophagusCollision;
-
+	obj->save_flags = 1;
+	obj->save_anim = 1;
 
 	for (int i = ANIMATING1; i <= ANIMATING12; i++)
 	{
@@ -414,7 +415,7 @@ void ObjectObjects()
 	{
 		obj = &objects[i];
 		obj->control = ControlAnimatingSlots;
-		obj->collision = 0;	//AIPickupCollision
+		obj->collision = SwitchType78Collision;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 	}
@@ -767,6 +768,7 @@ void TrapObjects()
 	obj->save_flags = 1;
 
 	obj = &objects[FLAME_EMITTER3];
+	obj->initialise = InitialiseFlameEmitter3;
 	obj->control = FlameEmitter3Control;
 	obj->draw_routine = 0;
 	obj->using_drawanimating_item = 0;
@@ -1741,9 +1743,9 @@ void BaddyObjects()
 void BuildOutsideTable()
 {
 	ROOM_INFO* r;
-	char* pTable;
-	char* oTable;
-	char* cTable;
+	uchar* pTable;
+	uchar* oTable;
+	uchar* cTable;
 	long max_slots, roomx, roomy, cont, offset, z, z2;
 	char flipped[256];
 
@@ -1772,39 +1774,39 @@ void BuildOutsideTable()
 			{
 				r = &room[i];
 
-				if (!flipped[i])
-				{
-					roomx = (r->z >> 10) + 1;
-					roomy = (r->x >> 10) + 1;
-					cont = 0;
+				if (flipped[i])
+					continue;
 
-					for (int ry = 0; ry < 4; ry++)
+				roomx = (r->z >> 10) + 1;
+				roomy = (r->x >> 10) + 1;
+				cont = 0;
+
+				for (int ry = 0; ry < 4; ry++)
+				{
+					for (int rx = 0; rx < 4; rx++)
 					{
-						for (int rx = 0; rx < 4; rx++)
+						if (x + rx >= roomx && x + rx < roomx + r->x_size - 2 && y + ry >= roomy && y + ry < roomy + r->y_size - 2)
 						{
-							if (x + rx >= roomx && x + rx < roomx + r->x_size - 2 && y + ry >= roomy && y + ry < roomy + r->y_size - 2)
-							{
-								cont = 1;
-								break;
-							}
+							cont = 1;
+							break;
 						}
 					}
+				}
 
-					if (cont)
+				if (cont)
+				{
+					pTable = (uchar*)&OutsideRoomTable[1728 * (y >> 2) + 64 * (x >> 2)];
+
+					for (int j = 0; j < 64; j++)
 					{
-						pTable = &OutsideRoomTable[64 * ((x >> 2) + 27 * (y >> 2))];
-
-						for (int j = 0; j < 64; j++)
+						if (pTable[j] == 255)
 						{
-							if (pTable[j] == -1)
-							{
-								pTable[j] = i;
+							pTable[j] = i;
 
-								if (j > max_slots)
-									max_slots = j;
+							if (j > max_slots)
+								max_slots = j;
 
-								break;
-							}
+							break;
 						}
 					}
 				}
@@ -1812,24 +1814,25 @@ void BuildOutsideTable()
 		}
 	}
 
-	oTable = OutsideRoomTable;
+	oTable = (uchar*)OutsideRoomTable;
 
 	for (int y = 0; y < 27; y++)
 	{
 		for (int x = 0; x < 27; x++)
 		{
 			z = 0;
-			offset = x + y * 27;
-			pTable = &OutsideRoomTable[64 * (x + 27 * y)];
-			while (pTable[z] != -1) z++;
+			offset = x + 27 * y;
+			pTable = (uchar*)&OutsideRoomTable[1728 * y + 64 * x];
+
+			while (pTable[z] != 255) z++;
 
 			if (!z)
 				OutsideRoomOffsets[offset] = -1;
-			else if (z==1)
+			else if (z == 1)
 				OutsideRoomOffsets[offset] = *pTable | 0x8000;
 			else
 			{
-				cTable = OutsideRoomTable;
+				cTable = (uchar*)OutsideRoomTable;
 
 				while (cTable < oTable)
 				{
@@ -1840,28 +1843,24 @@ void BuildOutsideTable()
 					}
 
 					z2 = 0;
-					while (cTable[z2] != -1) z2++;
+
+					while (cTable[z2] != 255) z2++;
+
 					cTable += z2 + 1;
 				}
 
 				if (cTable >= oTable)
 				{
 					OutsideRoomOffsets[offset] = short((long)oTable - (long)OutsideRoomTable);
-
-					do
-					{
-						*oTable++ = *pTable++;
-						z--;
-
-					} while (z);
-
+					memcpy(oTable, pTable, z);
+					oTable += z;
 					*oTable++ = -1;
 				}
 			}
 		}
 	}
 
-	printf("Ouside room table = %d bytes, max_slots = %d\n", oTable - OutsideRoomTable, max_slots);
+	printf("Ouside room table = %d bytes, max_slots = %d\n", oTable - (uchar*)OutsideRoomTable, max_slots);
 }
 
 void reset_cutseq_vars()

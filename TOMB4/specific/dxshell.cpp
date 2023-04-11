@@ -312,6 +312,9 @@ HRESULT __stdcall DXEnumDisplayModes(LPDDSURFACEDESCX lpDDSurfaceDesc2, LPVOID l
 	DXDISPLAYMODE* DM;
 	long nDisplayModes;
 
+	if (lpDDSurfaceDesc2->ddpfPixelFormat.dwRGBBitCount == 16)
+		return DDENUMRET_OK;
+
 	DDInfo = (DXDIRECTDRAWINFO*)lpContext;
 	nDisplayModes = DDInfo->nDisplayModes;
 	DDInfo->DisplayModes = (DXDISPLAYMODE*)AddStruct(DDInfo->DisplayModes, nDisplayModes, sizeof(DXDISPLAYMODE));
@@ -374,6 +377,9 @@ HRESULT __stdcall DXEnumTextureFormats(LPDDPIXELFORMAT lpDDPixFmt, LPVOID lpCont
 	long nTextureInfos;
 
 	if (!(lpDDPixFmt->dwFlags & DDPF_ALPHAPIXELS) || !(lpDDPixFmt->dwFlags & DDPF_RGB))
+		return DDENUMRET_OK;
+
+	if (lpDDPixFmt->dwRGBBitCount == 16)
 		return DDENUMRET_OK;
 
 	d3d = (DXD3DDEVICE*)lpContext;
@@ -943,6 +949,7 @@ long DXToggleFullScreen()
 	G_dxptr->lpD3D->EvictManagedTextures();
 	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
 	DXCreate(dm->w, dm->h, dm->bpp, G_dxptr->Flags, G_dxptr, G_dxptr->hWnd, G_dxptr->WindowStyle);
+	WinSetStyle(G_dxptr->Flags & 1, G_dxptr->WindowStyle);
 	G_dxptr->Flags ^= 64;
 	return 1;
 }

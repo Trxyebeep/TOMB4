@@ -1471,9 +1471,9 @@ void FlameEmitter3Control(short item_number)
 
 		if (!(GlobalCounter & 3) && (item->trigger_flags == 2 || item->trigger_flags == 4))
 		{
-			d.x = item->pos.x_pos + (phd_sin(item->pos.y_rot - 0x8000) >> 3);
+			d.x = item->pos.x_pos + (2048 * phd_sin(item->pos.y_rot - 0x8000) >> W2V_SHIFT);
 			d.y = item->pos.y_pos;
-			d.z = item->pos.z_pos + (phd_cos(item->pos.y_rot - 0x8000) >> 3);
+			d.z = item->pos.z_pos + (2048 * phd_cos(item->pos.y_rot - 0x8000) >> W2V_SHIFT);
 
 			if (GetRandomControl() & 3)
 				TriggerLightning(&s, &d, (GetRandomControl() & 0x1F) + 64, RGBA(0, g, b, 24), 0, 32, 3);

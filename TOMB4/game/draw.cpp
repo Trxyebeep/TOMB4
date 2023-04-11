@@ -789,7 +789,6 @@ void DrawRooms(short CurrentRoom)
 		}
 	}
 
-	InitDynamicLighting();
 	nPolyType = 0;
 
 	for (int i = 0; i < MAX_DYNAMICS; i++)
@@ -816,7 +815,9 @@ void DrawRooms(short CurrentRoom)
 	if (GLOBAL_playing_cutseq)
 		DrawCutSeqActors();
 
+	nPolyType = 6;
 	DrawRopeList();
+	nPolyType = 3;
 	S_DrawSparks();
 	lx = lara_item->pos.x_pos;
 	ly = lara_item->pos.y_pos;
@@ -937,7 +938,6 @@ void RenderIt(short CurrentRoom)
 		}
 	}
 
-	InitDynamicLighting();
 	nPolyType = 0;
 
 	for (int i = 0; i < number_draw_rooms; i++)

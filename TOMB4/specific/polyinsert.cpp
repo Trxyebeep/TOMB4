@@ -320,9 +320,9 @@ void DrawSortList()
 void CreateFogPos(FOGBULB_STRUCT* FogBulb)
 {
 	FVECTOR d;
-	float* mx;
 	float dist;
 	short bounds[6];
+	short rad;
 
 	if (GlobalFogOff)
 		FogBulb->inRange = 0;
@@ -338,28 +338,30 @@ void CreateFogPos(FOGBULB_STRUCT* FogBulb)
 		else
 		{
 			FogBulb->inRange = 1;
-			bounds[0] = short(FogBulb->WorldPos.x - camera.pos.x + FogBulb->rad);
-			bounds[1] = short(FogBulb->WorldPos.x - camera.pos.x - FogBulb->rad);
-			bounds[2] = short(FogBulb->WorldPos.y - camera.pos.y + FogBulb->rad);
-			bounds[3] = short(FogBulb->WorldPos.y - camera.pos.y - FogBulb->rad);
-			bounds[4] = short(FogBulb->WorldPos.z - camera.pos.z + FogBulb->rad);
-			bounds[5] = short(FogBulb->WorldPos.z - camera.pos.z - FogBulb->rad);
-			mx = mMXPtr;
-			mMXPtr = mW2V;
+
+			rad = short(FogBulb->rad / 2);
+			phd_PushMatrix();
+			phd_TranslateAbs((long)FogBulb->WorldPos.x, (long)FogBulb->WorldPos.y, (long)FogBulb->WorldPos.z);
+			bounds[0] = rad;
+			bounds[1] = -rad;
+			bounds[2] = rad;
+			bounds[3] = -rad;
+			bounds[4] = rad;
+			bounds[5] = -rad;
 
 			if (S_GetObjectBounds(bounds))
 				NumFogBulbsInRange++;
 			else
 				FogBulb->inRange = 0;
 
-			mMXPtr = mx;
+			phd_PopMatrix();
 
 			if (FogBulb->inRange)
 			{
 				FogBulb->vec.x = FogBulb->WorldPos.x - camera.pos.x;
 				FogBulb->vec.y = FogBulb->WorldPos.y - camera.pos.y;
 				FogBulb->vec.z = FogBulb->WorldPos.z - camera.pos.z;
-				mSetD3DMatrix(&D3DMView, mW2V);
+				SetD3DMatrix(&D3DMView, mW2V);
 				mD3DTransform(&FogBulb->vec, &D3DMView);
 				FogBulb->pos.x = FogBulb->vec.x;
 				FogBulb->pos.y = FogBulb->vec.y;
@@ -506,6 +508,7 @@ void InitialiseFogBulbs()
 	FOGBULB_STRUCT* FogBulb;
 
 	NumActiveFogBulbs = 0;
+	NumFogBulbsInRange = 0;
 	qsort(&FogBulbs, NumLevelFogBulbs, sizeof(FOGBULB_STRUCT), DistCompare);
 
 	for (int i = 0; i < NumLevelFogBulbs; i++)
@@ -786,7 +789,7 @@ void AddTriClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, TEXTUREST
 
 	if (App.Volumetric)
 	{
-		if (tex->drawtype != 2)
+		if (tex->drawtype != 2 && tex->drawtype != 5)
 		{
 			OmniFog(&v[v0]);
 			OmniFog(&v[v1]);
@@ -1020,7 +1023,7 @@ void AddQuadClippedSorted(D3DTLVERTEX* v, short v0, short v1, short v2, short v3
 
 	if (App.Volumetric)
 	{
-		if (tex->drawtype != 2)
+		if (tex->drawtype != 2 && tex->drawtype != 5)
 		{
 			OmniFog(&v[v0]);
 			OmniFog(&v[v1]);
@@ -1989,87 +1992,3 @@ void CalcColorSplit(D3DCOLOR s, D3DCOLOR* d)
 	sb >>= 1;
 	d[1] = (d[1] & 0xFF000000) | RGBONLY(sr, sg, sb);	//specular
 }
-
-#pragma warning(push)
-#pragma warning(disable : 4799)
-void AddPrelitMMX(long prelight, D3DCOLOR* color)
-{
-	long c;
-
-	c = color[0];
-
-	__asm
-	{
-		xor eax, eax
-		movd mm3, rgbmask
-		movd mm4, prelight
-		movd mm0, c
-		paddusb mm0, mm4
-		movd ecx, mm0
-		movd mm1, rgb80h
-		psubusb mm0, mm1
-		movd mm2, eax
-		movd mm5, zero
-		punpcklbw mm5, mm0
-		psrlw mm5, 9
-		packuswb mm0, mm5
-		psrlq mm0, 0x20
-		movd ebx, mm0
-		pcmpgtb mm0, mm2
-		movd eax, mm0
-		pandn mm0, mm3
-		movd mm1, ecx
-		pand mm1, mm0
-		paddusb mm1, mm1
-		movd ecx, mm1
-		mov edx, color
-		or ecx, eax
-		mov [edx], ecx
-		mov ecx, [edx + 4]
-		and ebx, 0xFFFFFF
-		or ecx, ebx
-		mov [edx + 4], ecx
-	}
-
-	//PrelightVertsMMX does the emms
-}
-
-void CalcColorSplitMMX(D3DCOLOR s, D3DCOLOR* d)
-{
-	__asm
-	{
-		xor eax, eax
-		mov ecx, s
-		movd mm3, rgbmask
-		movd mm0, ecx
-		movd mm1, rgb80h
-		psubusb mm0, mm1
-		movd mm2, eax
-		movd mm5, zero
-		punpcklbw mm5, mm0
-		psrlw mm5, 9
-		packuswb mm0, mm5
-		psrlq mm0, 0x20
-		movd ebx, mm0
-		pcmpgtb mm0, mm2
-		movd eax, mm0
-		pandn mm0, mm3
-		movd mm1, ecx
-		pand mm1, mm0
-		paddusb mm1, mm1
-		movd ecx, mm1
-		mov edx, d
-		or ecx, eax
-		mov [edx], ecx
-		mov ecx, [edx + 4]
-		and ebx, 0xFFFFFF
-		or ecx, ebx
-		mov [edx + 4], ecx
-	}
-
-	//CalcVertsColorSplitMMX does the emms
-
-	d[0] &= 0xFFFFFF;
-	d[0] |= GlobalAlpha;
-}
-#pragma warning(pop)

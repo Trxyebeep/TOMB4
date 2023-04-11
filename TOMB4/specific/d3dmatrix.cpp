@@ -5,6 +5,8 @@
 #include "winmain.h"
 
 D3DMATRIX D3DMView;
+D3DMATRIX D3DLightMatrix;
+D3DMATRIX D3DInvCameraMatrix;
 
 static D3DMATRIX D3DMWorld;
 static D3DMATRIX D3DMProjection;
@@ -33,7 +35,7 @@ D3DMATRIX* D3DIdentityMatrix(D3DMATRIX* mx)
 	return mx;
 }
 
-void mSetD3DMatrix(D3DMATRIX* mx, float* imx)
+void SetD3DMatrix(D3DMATRIX* mx, float* imx)
 {
 	D3DIdentityMatrix(mx);
 	mx->_11 = imx[M00];
@@ -50,27 +52,9 @@ void mSetD3DMatrix(D3DMATRIX* mx, float* imx)
 	mx->_43 = imx[M23];
 }
 
-void SetD3DMatrix(D3DMATRIX* mx, long* imx)
-{
-	D3DIdentityMatrix(mx);
-
-	mx->_11 = (float)imx[M00] / 16384;
-	mx->_12 = (float)imx[M10] / 16384;
-	mx->_13 = (float)imx[M20] / 16384;
-	mx->_21 = (float)imx[M01] / 16384;
-	mx->_22 = (float)imx[M11] / 16384;
-	mx->_23 = (float)imx[M21] / 16384;
-	mx->_31 = (float)imx[M02] / 16384;
-	mx->_32 = (float)imx[M12] / 16384;
-	mx->_33 = (float)imx[M22] / 16384;
-	mx->_41 = float(imx[M03] >> W2V_SHIFT);
-	mx->_42 = float(imx[M13] >> W2V_SHIFT);
-	mx->_43 = float(imx[M23] >> W2V_SHIFT);
-}
-
 void SetD3DViewMatrix()
 {
-	mSetD3DMatrix(&D3DMView, mMXPtr);
+	SetD3DMatrix(&D3DMView, mMXPtr);
 	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, &D3DMView));
 }
 
@@ -108,4 +92,89 @@ void S_InitD3DMatrix()
 	D3DMProjection._22 = -1;
 	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_WORLD, &D3DMWorld));
 	DXAttempt(App.dx.lpD3DDevice->SetTransform(D3DTRANSFORMSTATE_PROJECTION, &D3DMProjection));
+}
+
+LPD3DMATRIX D3DMultMatrix(LPD3DMATRIX d, LPD3DMATRIX a, LPD3DMATRIX b)
+{
+	d->_11 = a->_11 * b->_11;
+	d->_11 += a->_12 * b->_21;
+	d->_11 += a->_13 * b->_31;
+	d->_11 += a->_14 * b->_41;
+
+	d->_12 = a->_11 * b->_12;
+	d->_12 += a->_12 * b->_22;
+	d->_12 += a->_13 * b->_32;
+	d->_12 += a->_14 * b->_42;
+
+	d->_13 = a->_11 * b->_13;
+	d->_13 += a->_12 * b->_23;
+	d->_13 += a->_13 * b->_33;
+	d->_13 += a->_14 * b->_43;
+
+	d->_14 = a->_11 * b->_14;
+	d->_14 += a->_12 * b->_24;
+	d->_14 += a->_13 * b->_34;
+	d->_14 += a->_14 * b->_44;
+
+	d->_21 = a->_21 * b->_11;
+	d->_21 += a->_22 * b->_21;
+	d->_21 += a->_23 * b->_31;
+	d->_21 += a->_24 * b->_41;
+
+	d->_22 = a->_21 * b->_12;
+	d->_22 += a->_22 * b->_22;
+	d->_22 += a->_23 * b->_32;
+	d->_22 += a->_24 * b->_42;
+
+	d->_23 = a->_21 * b->_13;
+	d->_23 += a->_22 * b->_23;
+	d->_23 += a->_23 * b->_33;
+	d->_23 += a->_24 * b->_43;
+
+	d->_24 = a->_21 * b->_14;
+	d->_24 += a->_22 * b->_24;
+	d->_24 += a->_23 * b->_34;
+	d->_24 += a->_24 * b->_44;
+
+	d->_31 = a->_31 * b->_11;
+	d->_31 += a->_32 * b->_21;
+	d->_31 += a->_33 * b->_31;
+	d->_31 += a->_34 * b->_41;
+
+	d->_32 = a->_31 * b->_12;
+	d->_32 += a->_32 * b->_22;
+	d->_32 += a->_33 * b->_32;
+	d->_32 += a->_34 * b->_42;
+
+	d->_33 = a->_31 * b->_13;
+	d->_33 += a->_32 * b->_23;
+	d->_33 += a->_33 * b->_33;
+	d->_33 += a->_34 * b->_43;
+
+	d->_34 = a->_31 * b->_14;
+	d->_34 += a->_32 * b->_24;
+	d->_34 += a->_33 * b->_34;
+	d->_34 += a->_34 * b->_44;
+
+	d->_41 = a->_41 * b->_11;
+	d->_41 += a->_42 * b->_21;
+	d->_41 += a->_43 * b->_31;
+	d->_41 += a->_44 * b->_41;
+
+	d->_42 = a->_41 * b->_12;
+	d->_42 += a->_42 * b->_22;
+	d->_42 += a->_43 * b->_32;
+	d->_42 += a->_44 * b->_42;
+
+	d->_43 = a->_41 * b->_13;
+	d->_43 += a->_42 * b->_23;
+	d->_43 += a->_43 * b->_33;
+	d->_43 += a->_44 * b->_43;
+
+	d->_44 = a->_41 * b->_14;
+	d->_44 += a->_42 * b->_24;
+	d->_44 += a->_43 * b->_34;
+	d->_44 += a->_44 * b->_44;
+
+	return d;
 }

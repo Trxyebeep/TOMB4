@@ -17,7 +17,6 @@
 #include "box.h"
 #include "../specific/input.h"
 #include "lara.h"
-#include "debris.h"
 
 static short MovingBlockBounds[12] = { 0, 0, -256, 0, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 
@@ -34,7 +33,7 @@ static void ClearMovableBlockSplitters(long x, long y, long z, short room_number
 	room_num = room_number;
 	floor = GetFloor(x + 1024, y, z, &room_number);
 
-	if (floor->box != 32752)
+	if (floor->box != 0x7FF)
 	{
 		if (boxes[floor->box].height == height && boxes[floor->box].overlap_index & 0x8000 && boxes[floor->box].overlap_index & 0x4000)
 			ClearMovableBlockSplitters(x + 1024, y, z, room_number);
@@ -43,7 +42,7 @@ static void ClearMovableBlockSplitters(long x, long y, long z, short room_number
 	room_number = room_num;
 	floor = GetFloor(x - 1024, y, z, &room_number);
 
-	if (floor->box != 32752)
+	if (floor->box != 0x7FF)
 	{
 		if (boxes[floor->box].height == height && boxes[floor->box].overlap_index & 0x8000 && boxes[floor->box].overlap_index & 0x4000)
 			ClearMovableBlockSplitters(x - 1024, y, z, room_number);
@@ -52,7 +51,7 @@ static void ClearMovableBlockSplitters(long x, long y, long z, short room_number
 	room_number = room_num;
 	floor = GetFloor(x, y, z + 1024, &room_number);
 
-	if (floor->box != 32752)
+	if (floor->box != 0x7FF)
 	{
 		if (boxes[floor->box].height == height && boxes[floor->box].overlap_index & 0x8000 && boxes[floor->box].overlap_index & 0x4000)
 			ClearMovableBlockSplitters(x, y, z + 1024, room_number);
@@ -61,7 +60,7 @@ static void ClearMovableBlockSplitters(long x, long y, long z, short room_number
 	room_number = room_num;
 	floor = GetFloor(x, y, z - 1024, &room_number);
 
-	if (floor->box != 32752)
+	if (floor->box != 0x7FF)
 	{
 		if (boxes[floor->box].height == height && boxes[floor->box].overlap_index & 0x8000 && boxes[floor->box].overlap_index & 0x4000)
 			ClearMovableBlockSplitters(x, y, z - 1024, room_number);
@@ -210,6 +209,8 @@ static long TestBlockPull(ITEM_INFO* item, long height, ushort quadrant)
 
 	rx = item->pos.x_pos;
 	rz = item->pos.z_pos;
+	item->pos.x_pos = x;
+	item->pos.z_pos = z;
 	GetCollidedObjects(item, 256, 1, itemlist, 0, 0);
 	item->pos.x_pos = rx;
 	item->pos.z_pos = rz;
@@ -588,10 +589,7 @@ void InitialisePlanetEffect(short item_number)
 			item2 = &items[i];
 
 			if (item2->object_number == PLANET_EFFECT && item_number != i)
-			{
-				others[j] = i;
-				j++;
-			}
+				others[j++] = i;
 		}
 
 		pifl = (char*)&item->item_flags[2];
@@ -716,11 +714,12 @@ void DrawPlanetEffect(ITEM_INFO* item)
 	{
 		poppush = bone[0];
 
+		//These look inverted..
 		if (poppush & 1)
-			phd_PushMatrix();
+			phd_PopMatrix();
 
 		if (poppush & 2)
-			phd_PopMatrix();
+			phd_PushMatrix();
 
 		phd_TranslateRel(bone[1], bone[2], bone[3]);
 		gar_RotYXZsuperpack(&rot, 0);

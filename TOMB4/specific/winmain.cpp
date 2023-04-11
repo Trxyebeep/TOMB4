@@ -134,6 +134,7 @@ void WinClose()
 	DXFreeInfo(&App.DXInfo);
 	DestroyAcceleratorTable(App.hAccel);
 	DXClose();
+	FreeBinkStuff();
 
 	if (!G_dxptr)
 		return;
@@ -194,7 +195,7 @@ void WinDisplayString(long x, long y, char* string, ...)
 
 	va_start(list, string);
 	vsprintf(buf, string, list);
-	PrintString((ushort)x, (ushort)y, 6, buf, 0);
+	PrintString(x, y, 6, buf, 0);
 }
 
 void WinProcMsg()
@@ -233,10 +234,8 @@ void WinProcessCommands(long cmd)
 		SuspendThread((HANDLE)MainThread.handle);
 		Log(5, "Game Thread Suspended");
 
-		FreeD3DLights();
 		DXToggleFullScreen();
 		HWInitialise();
-		CreateD3DLights();
 		S_InitD3DMatrix();
 		SetD3DViewMatrix();
 		ResumeThread((HANDLE)MainThread.handle);
@@ -250,7 +249,7 @@ void WinProcessCommands(long cmd)
 		}
 		else
 		{
-			SetCursor(LoadCursor(App.hInstance, MAKEINTRESOURCE(104)));
+			SetCursor(LoadCursor(0, IDC_ARROW));
 			ShowCursor(1);
 		}
 	}
@@ -312,8 +311,6 @@ void WinProcessCommands(long cmd)
 
 		if (odm != App.DXInfo.nDisplayMode)
 		{
-			FreeD3DLights();
-
 			if (!DXChangeVideoMode())
 			{
 				App.DXInfo.nDisplayMode = odm;
@@ -321,7 +318,6 @@ void WinProcessCommands(long cmd)
 			}
 
 			HWInitialise();
-			CreateD3DLights();
 			InitWindow(0, 0, App.dx.dwRenderWidth, App.dx.dwRenderHeight, 20, 20480, 80, App.dx.dwRenderWidth, App.dx.dwRenderHeight);
 			InitFont();
 			S_InitD3DMatrix();
@@ -438,10 +434,59 @@ void ClearSurfaces()
 	S_DumpScreen();
 }
 
+bool WinRegisterWindow(HINSTANCE hinstance)
+{
+	App.hInstance = hinstance;
+	App.WindowClass.hIcon = 0;
+	App.WindowClass.lpszMenuName = 0;
+	App.WindowClass.lpszClassName = "MainGameWindow";
+	App.WindowClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+	App.WindowClass.hInstance = hinstance;
+	App.WindowClass.style = CS_VREDRAW | CS_HREDRAW;
+	App.WindowClass.lpfnWndProc = WinMainWndProc;
+	App.WindowClass.cbClsExtra = 0;
+	App.WindowClass.cbWndExtra = 0;
+	App.WindowClass.hCursor = LoadCursor(0, IDC_ARROW);
+
+	if (!RegisterClass(&App.WindowClass))
+		return 0;
+
+	return 1;
+}
+
+bool WinCreateWindow()
+{
+	App.hWnd = CreateWindowEx(WS_EX_APPWINDOW, "MainGameWindow", "Tomb Raider - The Last Revelation", WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		0, 0, App.hInstance, 0);
+
+	if (!App.hWnd)
+		return 0;
+
+	return 1;
+}
+
+void WinSetStyle(bool fullscreen, ulong& set)
+{
+	ulong style;
+
+	style = GetWindowLong(App.hWnd, GWL_STYLE);
+
+	if (fullscreen)
+		style = (style & ~WS_OVERLAPPEDWINDOW) | WS_POPUP;
+	else
+		style = (style & ~WS_POPUP) | WS_OVERLAPPEDWINDOW;
+
+	style &= ~(WS_THICKFRAME | WS_MAXIMIZEBOX | WS_SYSMENU);
+	SetWindowLong(App.hWnd, GWL_STYLE, style);
+
+	if (set)
+		set = style;
+}
+
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
 {
 	DXDISPLAYMODE* dm;
-	RECT r;
 	HWND desktop;
 	HDC hdc;
 	DEVMODE devmode;
@@ -458,38 +503,21 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
 	LoadGameflow();
 	WinProcessCommandLine(lpCmdLine);
-	App.hInstance = hInstance;
-	App.WindowClass.hIcon = 0;
-	App.WindowClass.lpszMenuName = 0;
-	App.WindowClass.lpszClassName = "MainGameWindow";
-	App.WindowClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	App.WindowClass.hInstance = hInstance;
-	App.WindowClass.style = CS_VREDRAW | CS_HREDRAW;
-	App.WindowClass.lpfnWndProc = WinMainWndProc;
-	App.WindowClass.cbClsExtra = 0;
-	App.WindowClass.cbWndExtra = 0;
-	App.WindowClass.hCursor = LoadCursor(App.hInstance, MAKEINTRESOURCE(104));
 
-	if (!RegisterClass(&App.WindowClass))
+	if (!WinRegisterWindow(hInstance))
 	{
 		Log(1, "Unable To Register Window Class");
 		return 0;
 	}
 
-	r.left = 0;
-	r.top = 0;
-	r.right = 640;
-	r.bottom = 480;
-	AdjustWindowRect(&r, WINDOW_STYLE, 0);
-	App.hWnd = CreateWindowEx(WS_EX_APPWINDOW, "MainGameWindow", "Tomb Raider - The Last Revelation", WINDOW_STYLE,
-		CW_USEDEFAULT, CW_USEDEFAULT, r.right - r.left, r.bottom - r.top, 0, 0, hInstance, 0);
-
-	if (!App.hWnd)
+	if (!WinCreateWindow())
 	{
 		Log(1, "Unable To Create Window");
 		return 0;
 	}
 
+	ShowWindow(App.hWnd, SW_HIDE);
+	UpdateWindow(App.hWnd);
 	DXGetInfo(&App.DXInfo, App.hWnd);
 
 	if (start_setup || !LoadSettings())
@@ -524,7 +552,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	App.fmv = 0;
 	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
 
-	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WINDOW_STYLE))
+	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WS_OVERLAPPEDWINDOW))
 	{
 		MessageBox(0, SCRIPT_TEXT(TXT_Failed_To_Setup_DirectX), "Tomb Raider IV", 0);
 		return 0;
@@ -532,12 +560,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
-	if (G_dxptr->Flags & 1)	//remove the border in fullscreen
-	{
-		SetWindowLongPtr(App.hWnd, GWL_STYLE, WS_POPUP);
-		SetWindowPos(App.hWnd, 0, App.dx.rScreen.left, App.dx.rScreen.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-	}
-
+	WinSetStyle(G_dxptr->Flags & 1, G_dxptr->WindowStyle);
 	UpdateWindow(App.hWnd);
 	ShowWindow(App.hWnd, nShowCmd);
 
@@ -548,7 +571,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	}
 
 	DXInitKeyboard(App.hWnd, App.hInstance);
-	App.hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(101));
+	App.hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDR_ACCELERATOR));
 
 	if (!App.SoundDisabled)
 	{

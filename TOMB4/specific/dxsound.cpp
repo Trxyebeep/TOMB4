@@ -40,7 +40,7 @@ static XAUDIO2FX_REVERB_I3DL2_PARAMETERS reverb_preset[4] =
 };
 static XAUDIO2FX_REVERB_PARAMETERS reverb_type[4];
 
-static long current_reverb;
+static long current_reverb = -1;
 
 bool DXChangeOutputFormat(long nSamplesPerSec, bool force)
 {
@@ -394,7 +394,10 @@ void S_SoundSetPitch(long num, long pitch)
 
 void S_SetReverbType(long reverb)
 {
-	if (!tomb4.reverb)
+	if (App.SoundDisabled)
+		return;
+
+	if (tomb4.reverb == 1)
 		reverb = 0;
 
 	if (current_reverb != reverb)
@@ -421,6 +424,9 @@ void S_SetReverbType(long reverb)
 
 void DXDSClose()
 {
+	if (App.SoundDisabled)
+		return;
+
 	for (int i = 0; i < 32; i++)
 	{
 		if (XA_Voices[i])

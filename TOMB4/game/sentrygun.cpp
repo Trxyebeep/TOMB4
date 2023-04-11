@@ -52,8 +52,8 @@ void TriggerAutogunFlamethrower(ITEM_INFO* item)
 		vel.z = -4;
 		GetJointAbsPosition(item, &vel, 7);
 		v = (GetRandomControl() & 0x3F) + 192;
-		sptr->Xvel = short(v * (vel.x - pos.x)) / 10;
-		sptr->Yvel = short(v * (vel.y - pos.y)) / 10;
+		sptr->Xvel = short(v * (vel.x - pos.x) / 10);
+		sptr->Yvel = short(v * (vel.y - pos.y) / 10);
 		sptr->Zvel = short(v * (vel.z - pos.z) / 10);
 
 		sptr->Friction = 85;
@@ -111,6 +111,7 @@ void AutogunControl(short item_number)
 		ExplodingDeath2(item_number, -1, 257);
 		DisableBaddieAI(item_number);
 		KillItem(item_number);
+		item->status = ITEM_DEACTIVATED;
 		item->flags |= IFL_INVISIBLE;
 		untrigger_item_in_room(item->room_number, SMOKE_EMITTER_BLACK);
 		TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos - 768, item->pos.z_pos, 3, -2, 0, item->room_number);

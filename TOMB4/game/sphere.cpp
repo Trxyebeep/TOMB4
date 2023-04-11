@@ -190,6 +190,7 @@ void GetJointAbsPosition(ITEM_INFO* item, PHD_VECTOR* pos, long joint)
 	OBJECT_INFO* obj;
 	float* mMx;
 	float* mIMx;
+	long* iMx;
 	long* bone;
 	short* frm[2];
 	short* extra_rotation;
@@ -199,6 +200,7 @@ void GetJointAbsPosition(ITEM_INFO* item, PHD_VECTOR* pos, long joint)
 
 	mMx = mMXPtr;
 	mIMx = mIMptr;
+	iMx = phd_mxptr;
 	obj = &objects[item->object_number];
 	frac = GetFrames(item, frm, &rate);
 
@@ -294,4 +296,5 @@ void GetJointAbsPosition(ITEM_INFO* item, PHD_VECTOR* pos, long joint)
 	pos->z = item->pos.z_pos + (long)mMXPtr[M23];
 	mMXPtr = mMx;
 	mIMptr = mIMx;
+	phd_mxptr = iMx;
 }

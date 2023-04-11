@@ -59,13 +59,15 @@ void S_DrawFootPrints()
 {
 	FOOTPRINT* print;
 	SPRITESTRUCT* sprite;
-	D3DTLVERTEX v[3];
+	D3DTLVERTEX* v;
 	PHD_VECTOR pos[3];
 	TEXTURESTRUCT tex;
 	float u1, v1, u2, v2;
-	long x, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, col, opt;
+	long x, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, col;
 	short room_number;
 	
+	v = MyVertexBuffer;
+
 	for (int i = 0; i < 32; i++)
 	{
 		print = &FootPrint[i];
@@ -140,10 +142,7 @@ void S_DrawFootPrints()
 			tex.v2 = v1;	//top right
 			tex.u3 = u1;
 			tex.v3 = v2;	//bottom left
-			opt = nPolyType;
-			nPolyType = 6;	//stops footprints messing up in fog :)
 			AddTriSorted(v, 0, 1, 2, &tex, 1);
-			nPolyType = opt;
 		}
 	}
 }

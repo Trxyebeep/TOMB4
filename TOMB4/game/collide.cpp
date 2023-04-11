@@ -540,7 +540,6 @@ long CollideStaticObjects(COLL_INFO* coll, long x, long y, long z, short room_nu
 void UpdateLaraRoom(ITEM_INFO* item, long height)
 {
 	FLOOR_INFO* floor;
-	static MAP_STRUCT Map[255];
 	long x, y, z;
 	short room_number;
 
@@ -553,15 +552,6 @@ void UpdateLaraRoom(ITEM_INFO* item, long height)
 
 	if (item->room_number != room_number)
 		ItemNewRoom(lara.item_number, room_number);
-
-	for (int i = 0; i < 255; i++)
-	{
-		if (Map[i].room_number == lara_item->room_number)
-		{
-			Map[i].visited = 1;
-			break;
-		}
-	}
 }
 
 void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)

@@ -252,6 +252,7 @@
     <ClInclude Include="TOMB4\specific\clipping.h" />
     <ClInclude Include="TOMB4\specific\cmdline.h" />
     <ClInclude Include="TOMB4\specific\d3dmatrix.h" />
+    <ClInclude Include="TOMB4\specific\drawbars.h" />
     <ClInclude Include="TOMB4\specific\drawroom.h" />
     <ClInclude Include="TOMB4\specific\dxshell.h" />
     <ClInclude Include="TOMB4\specific\dxsound.h" />
@@ -363,6 +364,7 @@
     <ClCompile Include="TOMB4\specific\clipping.cpp" />
     <ClCompile Include="TOMB4\specific\cmdline.cpp" />
     <ClCompile Include="TOMB4\specific\d3dmatrix.cpp" />
+    <ClCompile Include="TOMB4\specific\drawbars.cpp" />
     <ClCompile Include="TOMB4\specific\drawroom.cpp" />
     <ClCompile Include="TOMB4\specific\dxshell.cpp" />
     <ClCompile Include="TOMB4\specific\dxsound.cpp" />

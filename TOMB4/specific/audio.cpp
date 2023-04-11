@@ -60,7 +60,7 @@ const char* TrackFileNames[112] =
 	"085_intro.wav",
 	"071_ominous_part_i.wav",
 	"095_phildoor.wav",
-	"061_in_the_pyramid_part_i",
+	"061_in_the_pyramid_part_i.wav",
 	"050_underwater_find_part_i.wav",
 	"058_gods_part_i.wav",
 	"005_voncroy6_lara2.wav",
