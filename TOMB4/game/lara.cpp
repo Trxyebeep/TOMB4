@@ -2126,7 +2126,9 @@ void lara_col_back(ITEM_INFO* item, COLL_INFO* coll)
 	if (TestLaraSlide(item, coll))
 		return;
 
-	if (coll->mid_floor != NO_HEIGHT)
+	if (lara.water_status == LW_WADE && coll->mid_floor >= 50)
+		item->pos.y_pos += 50;
+	else if (coll->mid_floor != NO_HEIGHT)
 		item->pos.y_pos += coll->mid_floor;
 }
 
@@ -2220,7 +2222,9 @@ void lara_col_stepright(ITEM_INFO* item, COLL_INFO* coll)
 	if (TestLaraSlide(item, coll))
 		return;
 
-	if (coll->mid_floor != NO_HEIGHT)
+	if (lara.water_status == LW_WADE && coll->mid_floor >= 50)
+		item->pos.y_pos += 50;
+	else if (coll->mid_floor != NO_HEIGHT)
 		item->pos.y_pos += coll->mid_floor;
 }
 
