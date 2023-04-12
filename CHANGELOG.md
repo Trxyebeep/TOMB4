@@ -7,6 +7,7 @@
 - Fix the random fires on screen bug.
 - Fix Ahmet/Scale save crashes in Temple of Horus.
 - Fix Lara snapping when moving off a ledge while wading.
+- Fix floordata issues with triangular geometry, no collision tiles, and more generic situations.
 
 ### tomb4 bug fixes
 
