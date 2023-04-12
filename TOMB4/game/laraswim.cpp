@@ -350,7 +350,7 @@ long GetWaterDepth(long x, long y, long z, short room_number)
 
 			if (!(r->flags & ROOM_UNDERWATER))
 			{
-				h = floor->ceiling << 8;
+				h = GetMinimumCeiling(floor, x, z);
 				floor = GetFloor(x, y, z, &room_number);
 				return GetHeight(floor, x, y, z) - h;
 			}
@@ -368,7 +368,7 @@ long GetWaterDepth(long x, long y, long z, short room_number)
 
 			if (r->flags & ROOM_UNDERWATER)
 			{
-				h = floor->floor << 8;
+				h = GetMaximumFloor(floor, x, z);
 				floor = GetFloor(x, y, z, &room_number);
 				return GetHeight(floor, x, y, z) - h;
 			}

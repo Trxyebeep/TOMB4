@@ -35,6 +35,8 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 void AnimateItem(ITEM_INFO* item);
 long RayBoxIntersect(PHD_VECTOR* min, PHD_VECTOR* max, PHD_VECTOR* mid, PHD_VECTOR* dir, PHD_VECTOR* Coord);
 long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS* ItemPos, PHD_VECTOR* Coord, short item_number);
+long GetMaximumFloor(FLOOR_INFO* floor, long x, long z);
+long GetMinimumCeiling(FLOOR_INFO* floor, long x, long z);
 
 extern ITEM_INFO* items;
 extern ANIM_STRUCT* anims;
