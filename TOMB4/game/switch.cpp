@@ -37,8 +37,8 @@ static short UnderwaterSwitchBounds2[12] = { -256, 256, -1280, -512, 0, 512, -14
 static short PulleyBounds[12] = { -256, 256, 0, 0, -512, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short TurnSwitchBoundsA[12] = { 512, 896, 0, 0, -512, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short TurnSwitchBoundsC[12] = { 512, 896, 0, 0, 0, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
-static short RailSwitchBounds[12] = { -256, 256, 0, 0, -768, -512, -1820, 1820, -5460, 5460, -1820, 1820 };
-static short RailSwitchBounds2[12] = { -256, 256, 0, 0, 512, 768, -1820, 1820, -5460, 5460, -1820, 1820 };
+static short RailSwitchBounds[12] = { -256, 256, 0, 0, -768, -224, -1820, 1820, -5460, 5460, -1820, 1820 };
+static short RailSwitchBounds2[12] = { -256, 256, 0, 0, 224, 768, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short JumpSwitchBounds[12] = { -128, 128, -256, 256, 384, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short CrowbarBounds[12] = { -256, 256, 0, 0, -512, -256, -1820, 1820, -5460, 5460, -1820, 1820 };
 static short CrowbarBounds2[12] = { -256, 256, 0, 0, 256, 512, -1820, 1820, -5460, 5460, -1820, 1820 };
@@ -669,9 +669,7 @@ void RailSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		}
 	}
 
-	if (!flag)
-		ObjectCollision(item_number, l, coll);
-	else
+	if (flag)
 	{
 		l->anim_number = ANIM_RAILSWITCH;
 		l->frame_number = anims[ANIM_RAILSWITCH].frame_base;
@@ -686,7 +684,11 @@ void RailSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		item->status = ITEM_ACTIVE;
 		AddActiveItem(item_number);
 		AnimateItem(item);
+		return;
 	}
+
+	if (!lara.IsMoving)
+		ObjectCollision(item_number, l, coll);
 }
 
 void JumpSwitchCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
