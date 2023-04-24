@@ -18,6 +18,7 @@
 - Fix first voncroy cut camera.
 - Fix AI (VonCroy, Guide, etc.) interaction position.
 - Fix water surface waves.
+- Fix monoscreen corruption.
 
 ### new tomb4 features
 

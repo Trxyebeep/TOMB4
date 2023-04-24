@@ -34,7 +34,7 @@ long SFXVolume = 80;
 long ControlMethod;
 char MonoScreenOn;
 
-static MONOSCREEN_STRUCT MonoScreen[5];
+static MONOSCREEN_STRUCT MonoScreen;
 static SAVEFILE_INFO SaveGames[15];
 
 void DoOptions()
@@ -766,21 +766,14 @@ void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, long tU, l
 
 void S_DisplayMonoScreen()
 {
-	long x[4];
-	long y[4];
 	ulong col;
-
-	x[0] = phd_winxmin;
-	y[0] = phd_winymin;
-	x[1] = phd_winxmin + phd_winwidth;
-	y[1] = phd_winymin + phd_winheight;
 
 	if (tomb4.inv_bg_mode == 1 || tomb4.inv_bg_mode == 3)
 		col = 0xFFFFFFFF;
 	else
 		col = 0xFFFFFF80;
 
-	S_DrawTile(x[0], y[0], x[1] - x[0], y[1] - y[0], MonoScreen[0].tex, 0, 0, 256, 256, col, col, col, col);
+	S_DrawTile(0, 0, phd_winxmax, phd_winymax, MonoScreen.tex, 0, 0, 256, 256, col, col, col, col);
 }
 
 void CreateMonoScreen()
@@ -791,18 +784,18 @@ void CreateMonoScreen()
 
 void FreeMonoScreen()
 {
-	if (MonoScreen[0].surface)
+	if (MonoScreen.surface)
 	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen[0].surface, MonoScreen[0].surface->Release());
-		MonoScreen[0].surface = 0;
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Surface", MonoScreen.surface, MonoScreen.surface->Release());
+		MonoScreen.surface = 0;
 	}
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Surface");
 
-	if (MonoScreen[0].tex)
+	if (MonoScreen.tex)
 	{
-		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen[0].tex, MonoScreen[0].tex->Release());
-		MonoScreen[0].tex = 0;
+		Log(4, "Released %s @ %x - RefCnt = %d", "Mono Screen Texture", MonoScreen.tex, MonoScreen.tex->Release());
+		MonoScreen.tex = 0;
 	}
 	else
 		Log(1, "%s Attempt To Release NULL Ptr", "Mono Screen Texture");
@@ -945,11 +938,11 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 	tSurf.dwSize = sizeof(DDSURFACEDESCX);
 	surface->Lock(0, &tSurf, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
 	pSrc = (ushort*)tSurf.lpSurface;
-	MonoScreen[0].surface = CreateTexturePage(tSurf.dwWidth, tSurf.dwHeight, 0, NULL, RGBM_Mono, -1);
+	MonoScreen.surface = CreateTexturePage(tSurf.dwWidth, tSurf.dwHeight, 0, 0, RGBM_Mono, -1);
 
 	memset(&uSurf, 0, sizeof(uSurf));
 	uSurf.dwSize = sizeof(DDSURFACEDESCX);
-	MonoScreen[0].surface->Lock(0, &uSurf, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
+	MonoScreen.surface->Lock(0, &uSurf, DDLOCK_WAIT | DDLOCK_NOSYSLOCK, 0);
 	pTexture = (ushort*)uSurf.lpSurface;
 
 	r.left = 0;
@@ -958,8 +951,8 @@ void ConvertSurfaceToTextures(LPDIRECTDRAWSURFACEX surface)
 	r.bottom = tSurf.dwHeight;
 	CustomBlt(&uSurf, 0, 0, &tSurf, &r);
 
-	MonoScreen[0].surface->Unlock(0);
-	DXAttempt(MonoScreen[0].surface->QueryInterface(TEXGUID, (void**)&MonoScreen[0].tex));
+	MonoScreen.surface->Unlock(0);
+	DXAttempt(MonoScreen.surface->QueryInterface(TEXGUID, (void**)&MonoScreen.tex));
 	surface->Unlock(0);
 }
 
