@@ -24,6 +24,7 @@
 
 - Improve how the hair interacts with water.
 - Improve Rail Switch interaction.
+- Add option to scale bars.
 
 ## [2.1.0](https://github.com/Trxyebeep/TOMB4/tree/V2.1.0) (Mar. 3 2023)
 

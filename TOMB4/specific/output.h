@@ -22,6 +22,7 @@ long S_DumpScreen();
 void S_OutputPolyList();
 void StashSkinVertices(long node);
 void SkinVerticesToScratch(long node);
+long GetRenderScale(long unit);
 long GetFixedScale(long unit);
 
 extern long GlobalAlpha;
