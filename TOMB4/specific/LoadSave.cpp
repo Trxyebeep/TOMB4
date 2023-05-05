@@ -461,7 +461,11 @@ void DisplayStatsUCunt()
 	sprintf(buf, "%d", savegame.Game.HealthUsed);
 	PrintString(phd_centerx + (phd_centerx >> 2), y + 6 * font_height, 6, buf, 0);
 
+#ifdef TIMES_LEVEL
+	sprintf(buf, "%d / 2", savegame.Game.Secrets);
+#else
 	sprintf(buf, "%d / 70", savegame.Game.Secrets);
+#endif
 	PrintString(phd_centerx + (phd_centerx >> 2), y + 7 * font_height, 6, buf, 0);
 }
 

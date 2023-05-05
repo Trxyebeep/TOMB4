@@ -1587,6 +1587,10 @@ void do_boot_screen(long language)
 			_LoadBitmap(App.dx.lpBackBuffer, "japan.bmp");
 			break;
 	}
+
+#ifdef TIMES_LEVEL
+	Sleep(2000);
+#endif
 }
 
 void S_AnimateTextures(long n)
