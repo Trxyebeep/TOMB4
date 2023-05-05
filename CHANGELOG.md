@@ -1,6 +1,6 @@
 # tomb4 changelog
 
-## Unreleased:
+## [2.2.0](https://github.com/Trxyebeep/TOMB4/tree/V2.2.0) (May. 5 2023)
 
 ### Original bug fixes
 
