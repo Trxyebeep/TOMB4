@@ -159,7 +159,9 @@ void DoGameflow()
 	uchar* gf;
 	uchar n;
 
+#ifndef TIMES_LEVEL
 	PlayFmvNow(0);
+#endif
 	do_boot_screen(Gameflow->Language);
 	num_fmvs = 0;
 	fmv_to_play[0] = 0;
@@ -172,8 +174,10 @@ void DoGameflow()
 		switch (n = *gf++)
 		{
 		case CMD_FMV:
+#ifndef TIMES_LEVEL
 			fmv_to_play[num_fmvs] = gf[0];
 			num_fmvs++;
+#endif
 			gf++;
 			break;
 
@@ -535,9 +539,11 @@ void DoLevel(uchar Name, uchar Audio)
 		if (DEL_playingamefmv)
 		{
 			DEL_playingamefmv = 0;
+#ifndef TIMES_LEVEL
 			S_CDStop();
 			PlayFmvNow(7);
 			DelsHandyTeleportLara(54179, -8192, 50899, -32703);
+#endif
 		}
 
 		if (gfLevelComplete)
@@ -572,6 +578,7 @@ void DoLevel(uchar Name, uchar Audio)
 	S_SoundStopAllSamples();
 	S_CDStop();
 
+#ifndef TIMES_LEVEL
 	if (gfStatus == 3)
 	{
 		if (fmv_to_play[0] & 0x80)
@@ -593,6 +600,7 @@ void DoLevel(uchar Name, uchar Audio)
 	num_fmvs = 0;
 	fmv_to_play[0] = 0;
 	fmv_to_play[1] = 0;
+#endif
 	lara.examine1 = 0;
 	lara.examine2 = 0;
 	lara.examine3 = 0;

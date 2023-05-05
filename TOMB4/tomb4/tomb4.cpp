@@ -104,6 +104,10 @@ void init_tomb4_stuff()
 		sprintf(buf, "distance_fog");
 		tomb4.distance_fog = 12;						//default is 12
 		REG_WriteLong(buf, tomb4.distance_fog);
+
+		sprintf(buf, "UIScale");
+		tomb4.GUI_Scale = 1.0F;							//default is 1.0F
+		REG_WriteFloat(buf, tomb4.GUI_Scale);
 	}
 	else	//Key already exists, settings already written, read them. also falls back to default if any of them missing
 	{
@@ -172,6 +176,9 @@ void init_tomb4_stuff()
 
 		sprintf(buf, "distance_fog");
 		REG_ReadLong(buf, tomb4.distance_fog, 12);
+
+		sprintf(buf, "UIScale");
+		REG_ReadFloat(buf, tomb4.GUI_Scale, 1.0F);
 	}
 
 	CloseRegistry();
@@ -248,6 +255,9 @@ void save_new_tomb4_settings()
 
 	sprintf(buf, "distance_fog");
 	REG_WriteLong(buf, tomb4.distance_fog);
+
+	sprintf(buf, "UIScale");
+	REG_WriteFloat(buf, tomb4.GUI_Scale);
 
 	CloseRegistry();
 }

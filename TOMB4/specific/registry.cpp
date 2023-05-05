@@ -48,6 +48,32 @@ void REG_WriteBool(char* SubKeyName, bool value)
 	RegSetValueEx(phkResult, SubKeyName, 0, REG_DWORD, (CONST BYTE*) & Lvalue, sizeof(ulong));
 }
 
+void REG_WriteString(char* SubKeyName, char* string, long length)
+{
+	long checkLength;
+
+	if (string)
+	{
+		if (length < 0)
+			checkLength = strlen(string);
+		else
+			checkLength = length;
+
+		RegSetValueEx(phkResult, SubKeyName, 0, REG_SZ, (CONST BYTE*)string, checkLength + 1);
+	}
+	else
+		RegDeleteValue(phkResult, SubKeyName);
+}
+
+void REG_WriteFloat(char* SubKeyName, float value)
+{
+	long length;
+	char buf[64];
+
+	length = sprintf(buf, "%.5f", value);
+	REG_WriteString(SubKeyName, buf, length);
+}
+
 bool REG_ReadLong(char* SubKeyName, ulong& value, ulong defaultValue)
 {
 	ulong type;
@@ -78,6 +104,51 @@ bool REG_ReadBool(char* SubKeyName, bool& value, bool defaultValue)
 	}
 
 	REG_WriteBool(SubKeyName, defaultValue);
+	value = defaultValue;
+	return 0;
+}
+
+bool REG_ReadString(char* SubKeyName, char* value, long length, char* defaultValue)
+{
+	ulong type;
+	ulong cbData;
+	long len;
+
+	cbData = length;
+
+	if (RegQueryValueEx(phkResult, SubKeyName, 0, &type, (LPBYTE)value, (LPDWORD)&cbData) == ERROR_SUCCESS && type == REG_SZ)
+		return 1;
+
+	if (defaultValue)
+	{
+		REG_WriteString(SubKeyName, defaultValue, -1);
+		len = strlen(defaultValue) + 1;
+
+		if (len > length)
+		{
+			len = length - 1;
+			value[len] = 0;
+		}
+
+		memcpy(value, defaultValue, len);
+	}
+	else
+		RegDeleteValue(phkResult, SubKeyName);
+
+	return 0;
+}
+
+bool REG_ReadFloat(char* SubKeyName, float& value, float defaultValue)
+{
+	char buf[64];
+
+	if (REG_ReadString(SubKeyName, buf, sizeof(buf), 0))
+	{
+		value = (float)atof(buf);
+		return 1;
+	}
+
+	REG_WriteFloat(SubKeyName, defaultValue);
 	value = defaultValue;
 	return 0;
 }
@@ -260,7 +331,6 @@ bool SaveSetup(HWND hDlg)
 	REG_WriteBool((char*)"NoFMV", SendMessage(GetDlgItem(hDlg, 1030), BM_GETCHECK, 0, 0));
 	REG_WriteBool((char*)"Setup", 1);
 
-	CloseRegistry();
 	CloseRegistry();
 	return 1;
 }

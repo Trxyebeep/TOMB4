@@ -1587,6 +1587,10 @@ void do_boot_screen(long language)
 			_LoadBitmap(App.dx.lpBackBuffer, "japan.bmp");
 			break;
 	}
+
+#ifdef TIMES_LEVEL
+	Sleep(2000);
+#endif
 }
 
 void S_AnimateTextures(long n)
@@ -1824,7 +1828,18 @@ void SkinVerticesToScratch(long node)
 	}
 }
 
-long GetFixedScale(long unit)
+long GetRenderScale(long unit)	//User selected scale
+{
+	long w, h, x, y;
+
+	w = long(640.0F /  tomb4.GUI_Scale);
+	h = long(480.0F / tomb4.GUI_Scale);
+	x = (phd_winwidth > w) ? MulDiv(phd_winwidth, unit, w) : unit;
+	y = (phd_winheight > h) ? MulDiv(phd_winheight, unit, h) : unit;
+	return x < y ? x : y;
+}
+
+long GetFixedScale(long unit)	//Fixed scale
 {
 	long w, h, x, y;
 

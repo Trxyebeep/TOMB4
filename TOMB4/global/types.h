@@ -2302,5 +2302,6 @@ struct tomb4_options	//keep this at the bottom of the file, please
 	bool static_lighting;
 	ulong reverb;				//1-> off, 2-> Lara room, 3->camera room
 	ulong distance_fog;			//value in blocks
+	float GUI_Scale;
 };
 #pragma pack(pop)

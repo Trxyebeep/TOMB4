@@ -1,6 +1,6 @@
 # tomb4 changelog
 
-## Unreleased:
+## [2.2.0](https://github.com/Trxyebeep/TOMB4/tree/V2.2.0) (May. 5 2023)
 
 ### Original bug fixes
 
@@ -18,10 +18,14 @@
 - Fix first voncroy cut camera.
 - Fix AI (VonCroy, Guide, etc.) interaction position.
 - Fix water surface waves.
+- Fix monoscreen corruption.
 
 ### new tomb4 features
 
 - Improve how the hair interacts with water.
+- Improve Rail Switch interaction.
+- Add option to scale bars.
+- Add times level support.
 
 ## [2.1.0](https://github.com/Trxyebeep/TOMB4/tree/V2.1.0) (Mar. 3 2023)
 

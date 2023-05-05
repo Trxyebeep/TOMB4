@@ -179,6 +179,11 @@ enum gf_strings	//auto generated from the script compiler
 	TXT_Khufus_Queens_Pyramids,
 	TXT_Inside_The_Great_Pyramid,
 	TXT_Temple_Of_Horus,
+#ifdef TIMES_LEVEL
+	TXT_DUMMY1,
+	TXT_DUMMY2,
+	TXT_DUMMY3,
+#endif
 	TXT_Unlimited_s,
 	TXT_USE,
 	TXT_CHOOSE_AMMO,

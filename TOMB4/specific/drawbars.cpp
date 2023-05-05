@@ -109,7 +109,7 @@ static void DrawColoredRect(float x0, float y0, float x1, float y1, float z, ulo
 	AddQuadSorted(v, 0, 1, 2, 3, tex, 0);
 }
 
-static void S_DrawGouraudBar(long x, long y, long width, long height, long pos, GouraudBarColourSet* colour)
+static void S_DrawGouraudBar(long x, long y, long width, long height, long pos, GouraudBarColourSet* colour, bool scaled)
 {
 	TEXTURESTRUCT tex;
 	float bar, max, h, x0, y0, x1, y1;
@@ -192,14 +192,18 @@ static void S_DrawGouraudBar(long x, long y, long width, long height, long pos, 
 	y0 = (float)y;
 	x1 = float(x + width);
 	y1 = y + (h * 6);
-	p = GetFixedScale(1);
+
+	if (scaled)
+		p = GetRenderScale(1);
+	else
+		p = GetFixedScale(1);
 
 	DrawColoredRect(x0 - p, y0, x1 + p, y1, f_mznear + 1, 0, 0, 0, 0, &tex);
 	DrawColoredRect(x0 - (2 * p), y0 - p, x1 + (2 * p), y1 + p, f_mznear + 2, 0xFF508282, 0xFFA0A0A0, 0xFF508282, 0xFFA0A0A0, &tex);
 	DrawColoredRect(x0 - (3 * p), y0 + p, x1 + (3 * p), y1 - p, f_mznear + 3, 0xFF284141, 0xFF505050, 0xFF284141, 0xFF505050, &tex);
 }
 
-static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long clr1, long clr2)
+static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long clr1, long clr2, bool scaled)
 {
 	TEXTURESTRUCT tex;
 	float r1, g1, b1, r2, g2, b2, r, g, b, mul;
@@ -213,7 +217,11 @@ static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long c
 	tex.drawtype = 0;
 	tex.tpage = 0;
 
-	p = GetFixedScale(1);
+	if (scaled)
+		p = GetRenderScale(1);
+	else
+		p = GetFixedScale(1);
+
 	y2 = y + height;
 	bar = width * pos / 100;
 
@@ -248,7 +256,7 @@ static void S_DoTR5Bar(long x, long y, long width, long height, long pos, long c
 	DrawColoredRect(float(x - p), float(y - p), float(x + width + p), float(y2 + height + p), f_mznear + 2, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, &tex);
 }
 
-static void DoBar(long x, long y, long width, long height, long pos, long c1, long c2)
+static void DoBar(long x, long y, long width, long height, long pos, long c1, long c2, bool scaled)
 {
 	TEXTURESTRUCT tex;
 	long p, xw, y2, bar;
@@ -261,7 +269,11 @@ static void DoBar(long x, long y, long width, long height, long pos, long c1, lo
 	tex.drawtype = 0;
 	tex.tpage = 0;
 
-	p = GetFixedScale(1);
+	if (scaled)
+		p = GetRenderScale(1);
+	else
+		p = GetFixedScale(1);
+
 	xw = x + width;
 	y2 = y + height;
 	bar = width * pos / 100;
@@ -283,11 +295,11 @@ static void S_DrawHealthBar2(long pos)
 	y = GetFixedScale(100);
 
 	if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, w, h, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
+		S_DrawGouraudBar(x, y, w, h, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet, 0);
 	else if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0x00A000);
+		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0x00A000, 0);
 	else
-		DoBar(x, y, w, h, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000);
+		DoBar(x, y, w, h, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000, 0);
 }
 
 static void S_DrawEnemyBar2(long pos)
@@ -300,11 +312,11 @@ static void S_DrawEnemyBar2(long pos)
 	y = GetFixedScale(117);
 
 	if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, w, h, pos, &enemyBarColourSet);
+		S_DrawGouraudBar(x, y, w, h, pos, &enemyBarColourSet, 0);
 	else if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, 0xA0A000);
+		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, 0xA0A000, 0);
 	else
-		DoBar(x, y, w, h, pos, 0xFF000000, 0xFFFFA000);
+		DoBar(x, y, w, h, pos, 0xFF000000, 0xFFFFA000, 0);
 }
 
 void S_DrawHealthBar(long pos)
@@ -320,27 +332,27 @@ void S_DrawHealthBar(long pos)
 		return;
 	}
 
-	w = GetFixedScale(150);
-	h = GetFixedScale(6);
+	w = GetRenderScale(150);
+	h = GetRenderScale(6);
 
 	if (tomb4.bars_pos == 1 || tomb4.bars_pos == 2)//original or improved
 	{
-		x = GetFixedScale(8);
-		y = GetFixedScale(8);
+		x = GetRenderScale(8);
+		y = GetRenderScale(8);
 	}
 	else
 	{
-		x = GetFixedScale(36);
+		x = GetRenderScale(36);
 		x = phd_winwidth - w - x;
-		y = GetFixedScale(18);
+		y = GetRenderScale(18);
 	}
 
 	if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0x00A000);
+		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, lara.poisoned ? 0xA0A000 : 0x00A000, 1);
 	else if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, w, h, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet);
+		S_DrawGouraudBar(x, y, w, h, pos, lara.poisoned ? &poisonBarColourSet : &healthBarColourSet, 1);
 	else
-		DoBar(x, y, w, h, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000);
+		DoBar(x, y, w, h, pos, 0xFF000000, lara.poisoned ? 0xFFFFFF00 : 0xFFFF0000, 1);
 }
 
 void S_DrawAirBar(long pos)
@@ -350,32 +362,32 @@ void S_DrawAirBar(long pos)
 	if (!gfCurrentLevel)
 		return;
 
-	w = GetFixedScale(150);
-	h = GetFixedScale(6);
+	w = GetRenderScale(150);
+	h = GetRenderScale(6);
 
 	if (tomb4.bars_pos == 1)//original
 	{
-		x = phd_winwidth - w - GetFixedScale(8);
-		y = GetFixedScale(25);
+		x = phd_winwidth - w - GetRenderScale(8);
+		y = GetRenderScale(25);
 	}
 	else if (tomb4.bars_pos == 2)//improved
 	{
-		x = phd_winwidth - w - GetFixedScale(8);
-		y = GetFixedScale(8);
+		x = phd_winwidth - w - GetRenderScale(8);
+		y = GetRenderScale(8);
 	}
 	else
 	{
-		x = GetFixedScale(36);
+		x = GetRenderScale(36);
 		x = phd_winwidth - w - x;
-		y = GetFixedScale(43);
+		y = GetRenderScale(43);
 	}
 
 	if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, w, h, pos, 0x0000A0, 0x0050A0);
+		S_DoTR5Bar(x, y, w, h, pos, 0x0000A0, 0x0050A0, 1);
 	else if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, w, h, pos, &airBarColourSet);
+		S_DrawGouraudBar(x, y, w, h, pos, &airBarColourSet, 1);
 	else
-		DoBar(x, y, w, h, pos, 0xFF000000, 0xFF0000FF);
+		DoBar(x, y, w, h, pos, 0xFF000000, 0xFF0000FF, 1);
 }
 
 void S_DrawDashBar(long pos)
@@ -385,32 +397,32 @@ void S_DrawDashBar(long pos)
 	if (!gfCurrentLevel)
 		return;
 
-	w = GetFixedScale(150);
-	h = GetFixedScale(6);
+	w = GetRenderScale(150);
+	h = GetRenderScale(6);
 
 	if (tomb4.bars_pos == 1)//original
 	{
-		x = phd_winwidth - w - GetFixedScale(8);
-		y = GetFixedScale(8);
+		x = phd_winwidth - w - GetRenderScale(8);
+		y = GetRenderScale(8);
 	}
 	else if (tomb4.bars_pos == 2)//improved
 	{
-		x = phd_winwidth - w - GetFixedScale(8);
-		y = GetFixedScale(25);
+		x = phd_winwidth - w - GetRenderScale(8);
+		y = GetRenderScale(25);
 	}
 	else
 	{
-		x = GetFixedScale(36);
+		x = GetRenderScale(36);
 		x = phd_winwidth - w - x;
-		y = GetFixedScale(68);
+		y = GetRenderScale(68);
 	}
 
 	if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, w, h, pos, 0xA0A000, 0x00A000);
+		S_DoTR5Bar(x, y, w, h, pos, 0xA0A000, 0x00A000, 1);
 	else if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, w, h, pos, &dashBarColourSet);
+		S_DrawGouraudBar(x, y, w, h, pos, &dashBarColourSet, 1);
 	else
-		DoBar(x, y, w, h, pos, 0xFF000000, 0xFF00FF00);
+		DoBar(x, y, w, h, pos, 0xFF000000, 0xFF00FF00, 1);
 }
 
 void S_DrawEnemyBar(long pos)
@@ -423,27 +435,27 @@ void S_DrawEnemyBar(long pos)
 		return;
 	}
 
-	w = GetFixedScale(150);
-	h = GetFixedScale(6);
+	w = GetRenderScale(150);
+	h = GetRenderScale(6);
 
 	if (tomb4.bars_pos == 1 || tomb4.bars_pos == 2)//original or improved
 	{
-		x = GetFixedScale(8);
-		y = GetFixedScale(25);
+		x = GetRenderScale(8);
+		y = GetRenderScale(25);
 	}
 	else
 	{
-		x = GetFixedScale(36);
+		x = GetRenderScale(36);
 		x = phd_winwidth - w - x;
-		y = GetFixedScale(93);
+		y = GetRenderScale(93);
 	}
 
 	if (tomb4.bar_mode == 3)
-		S_DrawGouraudBar(x, y, w, h, pos, &enemyBarColourSet);
+		S_DrawGouraudBar(x, y, w, h, pos, &enemyBarColourSet, 1);
 	else if (tomb4.bar_mode == 2)
-		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, 0xA0A000);
+		S_DoTR5Bar(x, y, w, h, pos, 0xA00000, 0xA0A000, 1);
 	else
-		DoBar(x, y, w, h, pos, 0xFF000000, 0xFFFFA000);
+		DoBar(x, y, w, h, pos, 0xFF000000, 0xFFFFA000, 1);
 }
 
 void DoSlider(long x, long y, long width, long height, long pos, long c1, long c2, long c3)
@@ -518,11 +530,11 @@ void S_LoadBar()
 			y = phd_winheight - h - GetFixedScale(20);
 
 			if (tomb4.bar_mode == 3)
-				S_DrawGouraudBar(x, y, w, h, (long)loadbar_pos, &loadBarColourSet);
+				S_DrawGouraudBar(x, y, w, h, (long)loadbar_pos, &loadBarColourSet, 0);
 			else if (tomb4.bar_mode == 2)
-				S_DoTR5Bar(x, y, w, h, (long)loadbar_pos, 0x0000A0, 0x0000F0);
+				S_DoTR5Bar(x, y, w, h, (long)loadbar_pos, 0x0000A0, 0x0000F0, 0);
 			else
-				DoBar(x, y, w, h, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
+				DoBar(x, y, w, h, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80, 0);
 		}
 		else
 		{
@@ -532,11 +544,11 @@ void S_LoadBar()
 			y = phd_winheight - h - GetFixedScale(20);
 
 			if (tomb4.bar_mode == 3)
-				S_DrawGouraudBar(x, y, w, h, (long)loadbar_pos, &loadBarColourSet);
+				S_DrawGouraudBar(x, y, w, h, (long)loadbar_pos, &loadBarColourSet, 0);
 			else if (tomb4.bar_mode == 2)
-				S_DoTR5Bar(x, y, w, h, (long)loadbar_pos, 0xFF7F007F, 0xFF007F7F);
+				S_DoTR5Bar(x, y, w, h, (long)loadbar_pos, 0xFF7F007F, 0xFF007F7F, 0);
 			else
-				DoBar(x, y, w, h, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80);
+				DoBar(x, y, w, h, (long)loadbar_pos, 0xFF000000, 0xFF9F1F80, 0);
 		}
 
 		SortPolyList(SortCount, SortList);
