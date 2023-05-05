@@ -932,8 +932,10 @@ void DoTitle(uchar Name, uchar Audio)
 	bUseSpotCam = 0;
 	bDisableLaraControl = 0;
 
+#ifndef TIMES_LEVEL
 	if (gfLevelComplete == 1 && gfStatus != 2)
 		PlayFmvNow(12);
+#endif
 
 	if (gfStatus != 4)
 		RenderLoadPic(0);

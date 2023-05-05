@@ -1,5 +1,18 @@
 # tomb4 changelog
 
+## Unreleased
+
+### Original bug fixes
+
+
+### tomb4 bug fixes
+
+- Fix volume bars drawing on certain GPUs.
+- Fix FMV message with the Times level.
+
+### new tomb4 features
+
+
 ## [2.2.0](https://github.com/Trxyebeep/TOMB4/tree/V2.2.0) (May. 5 2023)
 
 ### Original bug fixes

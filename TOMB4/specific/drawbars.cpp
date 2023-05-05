@@ -491,15 +491,15 @@ void DoSlider(long x, long y, long width, long height, long pos, long c1, long c
 	tex.v3 = V + 0.01F;
 	tex.u4 = 0;
 	tex.v4 = V + 0.01F;
-	DrawColoredRect(sx, sy, sx + w, sy + h, f_mznear, c1, c1, c2, c2, &tex);
-	DrawColoredRect(sx, sy + h, sx + w, sy + (h * 2), f_mznear, c2, c2, c1, c1, &tex);
+	DrawColoredRect(sx, sy, sx + w, sy + h, f_mznear + 2, c1, c1, c2, c2, &tex);
+	DrawColoredRect(sx, sy + h, sx + w, sy + (h * 2), f_mznear + 2, c2, c2, c1, c1, &tex);
 
 	tex.tpage = 0;
-	DrawColoredRect(sx - 1, sy - 1, sx + w + 1, sy + (h * 2) + 1, f_mznear + 2, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, &tex);
+	DrawColoredRect(sx - 1, sy - 1, sx + w + 1, sy + (h * 2) + 1, f_mznear + 4, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, &tex);
 
 	w = pos * w / 100;
 	tex.drawtype = 2;
-	DrawColoredRect(sx, sy, sx + w + 1, sy + (h * 2), f_mznear - 1, c3, c3, c3, c3, &tex);
+	DrawColoredRect(sx, sy, sx + w + 1, sy + (h * 2), f_mznear + 1, c3, c3, c3, c3, &tex);
 }
 
 void S_InitLoadBar(long maxpos)
