@@ -475,7 +475,7 @@ void DoSlider(long x, long y, long width, long height, long pos, long c1, long c
 	clipflags[2] = 0;
 	clipflags[3] = 0;
 
-	sx = (float)GetFixedScale(x);
+	sx = (float)x * (float)phd_winxmax / 640.0F;
 	sy = (float)y;
 	w = (float)GetFixedScale(width);
 	h = (float)GetFixedScale(height >> 1);

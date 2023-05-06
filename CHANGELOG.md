@@ -8,6 +8,7 @@
 ### tomb4 bug fixes
 
 - Fix volume bars drawing on certain GPUs.
+- Fix volume bars screen position.
 - Fix FMV message with the Times level.
 
 ### new tomb4 features
