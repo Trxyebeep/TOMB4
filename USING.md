@@ -21,6 +21,14 @@
 4. Unzip the archive and copy over the contents to you TR4 folder, overwrite when prompted.
 5. Enjoy!
 
+### The Times Exclusive level support:
+*The Times Exclusive level support has been added since V2.2.0*
+
+Download the archive provided in the releases section, it contains a playable package that contains everything you need to play the level,
+including a modified tomb4 executable made specifically for this level.
+
+**Do NOT use the modified executable with the base game, and do NOT use the base game's executable with the Times level.**
+
 ------------------------
 
 ## New options menu:

@@ -1,5 +1,14 @@
 # tomb4 changelog
 
+## [2.2.1](https://github.com/Trxyebeep/TOMB4/tree/V2.2.1) (May. 6 2023)
+
+### tomb4 bug fixes
+
+- Fix volume bars drawing on certain GPUs.
+- Fix volume bars screen position.
+- Fix FMV message with the Times level.
+
+
 ## [2.2.0](https://github.com/Trxyebeep/TOMB4/tree/V2.2.0) (May. 5 2023)
 
 ### Original bug fixes
@@ -26,6 +35,7 @@
 - Improve Rail Switch interaction.
 - Add option to scale bars.
 - Add times level support.
+
 
 ## [2.1.0](https://github.com/Trxyebeep/TOMB4/tree/V2.1.0) (Mar. 3 2023)
 

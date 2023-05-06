@@ -1060,7 +1060,7 @@ void S_InitialisePolyList()
 	else
 		col = 0;
 	
-	if (App.dx.Flags & 0x80)
+	if (App.dx.Flags & DXF_HWR)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &rect, D3DCLEAR_TARGET, col, 1.0F, 0));
 
 	_BeginScene();
@@ -1490,11 +1490,11 @@ HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACEX surf, HBITMAP hbm, long x, long y, lon
 	l = 0;
 	t = 0;
 
-	if (!(App.dx.Flags & 0x80))
+	if (!(App.dx.Flags & DXF_HWR))
 	{
 		surf = App.dx.lpPrimaryBuffer;
 
-		if (App.dx.Flags & 2)
+		if (App.dx.Flags & DXF_WINDOWED)
 		{
 			l = App.dx.rScreen.left;
 			t = App.dx.rScreen.top;
