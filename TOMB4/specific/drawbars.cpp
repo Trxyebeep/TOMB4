@@ -512,7 +512,7 @@ void S_LoadBar()
 {
 	long x, y, w, h;
 
-	if (gfCurrentLevel || App.dx.Flags & 0x80)
+	if (gfCurrentLevel || App.dx.Flags & DXF_HWR)
 	{
 		_BeginScene();
 		InitBuckets();

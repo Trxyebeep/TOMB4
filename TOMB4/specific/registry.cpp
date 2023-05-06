@@ -167,7 +167,7 @@ bool LoadSettings()
 	{
 		App.TextureSize = 256;
 		App.BumpMapSize = 256;
-		App.StartFlags = 32;
+		App.StartFlags = DXF_FPUSETUP;
 
 		REG_ReadLong((char*)"DD", (ulong&)App.DXInfo.nDD, 0);
 		REG_ReadLong((char*)"D3D", (ulong&)App.DXInfo.nD3D, 0);
@@ -193,14 +193,14 @@ bool LoadSettings()
 		REG_ReadBool((char*)"HardWare", val, 0);
 
 		if (val)
-			App.StartFlags |= 0x90;
+			App.StartFlags |= DXF_ZBUFFER | DXF_HWR;
 
 		REG_ReadBool((char*)"Window", val, 0);
 
 		if (val)
-			App.StartFlags |= 2;
+			App.StartFlags |= DXF_WINDOWED;
 		else
-			App.StartFlags |= 1;
+			App.StartFlags |= DXF_FULLSCREEN;
 	}
 
 	CloseRegistry();
@@ -306,7 +306,7 @@ void SaveSettings()
 
 	OpenRegistry("System");
 	REG_WriteLong((char*)"VMode", App.DXInfo.nDisplayMode);
-	REG_WriteBool((char*)"Window", (App.dx.Flags & 2) != 0);
+	REG_WriteBool((char*)"Window", (App.dx.Flags & DXF_WINDOWED) != 0);
 	CloseRegistry();
 }
 

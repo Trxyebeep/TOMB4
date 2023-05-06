@@ -242,7 +242,7 @@ void WinProcessCommands(long cmd)
 		App.dx.WaitAtBeginScene = 0;
 		Log(5, "Game Thread Resumed");
 
-		if (App.dx.Flags & 1)
+		if (App.dx.Flags & DXF_FULLSCREEN)
 		{
 			SetCursor(0);
 			ShowCursor(0);
@@ -423,12 +423,12 @@ void ClearSurfaces()
 	r.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
 	r.x2 = App.dx.rViewport.left + App.dx.rViewport.right;
 
-	if (App.dx.Flags & 0x80)
+	if (App.dx.Flags & DXF_HWR)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
 
 	S_DumpScreen();
 
-	if (App.dx.Flags & 0x80)
+	if (App.dx.Flags & DXF_HWR)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
 
 	S_DumpScreen();
@@ -562,11 +562,11 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
-	WinSetStyle(G_dxptr->Flags & 1, G_dxptr->WindowStyle);
+	WinSetStyle(G_dxptr->Flags & DXF_FULLSCREEN, G_dxptr->WindowStyle);
 	UpdateWindow(App.hWnd);
 	ShowWindow(App.hWnd, nShowCmd);
 
-	if (App.dx.Flags & 1)
+	if (App.dx.Flags & DXF_FULLSCREEN)
 	{
 		SetCursor(0);
 		ShowCursor(0);

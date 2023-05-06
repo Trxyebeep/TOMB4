@@ -57,6 +57,17 @@ typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned long ulong;
 
+enum DX_FLAGS
+{
+	DXF_NONE = 0x0,
+	DXF_FULLSCREEN = 0x1,
+	DXF_WINDOWED = 0x2,
+	DXF_ZBUFFER = 0x10,
+	DXF_FPUSETUP = 0x20,
+	DXF_NOFREE = 0x40,
+	DXF_HWR = 0x80
+};
+
 enum carried_weapon_flags
 {
 	W_NONE =		0x0,

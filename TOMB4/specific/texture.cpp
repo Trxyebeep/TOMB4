@@ -32,7 +32,7 @@ LPDIRECTDRAWSURFACEX CreateTexturePage(long w, long h, long MipMapCount, long* p
 	desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
 	desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE;
 
-	if (App.dx.Flags & 0x80)
+	if (App.dx.Flags & DXF_HWR)
 		desc.ddsCaps.dwCaps2 = DDSCAPS2_TEXTUREMANAGE;
 	else
 		desc.ddsCaps.dwCaps |= DDSCAPS_SYSTEMMEMORY;
