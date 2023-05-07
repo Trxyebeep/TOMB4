@@ -14,15 +14,16 @@
 #include "deltapak.h"
 #include "savegame.h"
 #include "gameflow.h"
+#include "../specific/output.h"
 #include "../tomb4/tomb4.h"
 
 DISPLAYPU pickups[8];
-short PickupX;
+long PickupX;
 short CurrentPickup;
 
 long health_bar_timer = 0;
 
-static short PickupY;
+static long FullPickupX;
 static short PickupVel;
 
 long FlashIt()
@@ -178,8 +179,8 @@ void InitialisePickUpDisplay()
 	for (int i = 0; i < 8; i++)
 		pickups[i].life = -1;
 
-	PickupY = 128;
-	PickupX = 128;
+	PickupX = GetFixedScale(128);
+	FullPickupX = PickupX;
 	PickupVel = 0;
 	CurrentPickup = 0;
 }
@@ -200,13 +201,12 @@ void DrawPickups()
 	}
 	else if (!pu->life)
 	{
-		if (PickupX < 128)
+		if (PickupX < FullPickupX)
 		{
-			if (PickupVel < 16)
-			{
+			if (PickupVel < FullPickupX >> 3)
 				PickupVel++;
-				PickupX += PickupVel;
-			}
+
+			PickupX += PickupVel;
 		}
 		else
 		{

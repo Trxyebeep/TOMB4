@@ -1,5 +1,18 @@
 # tomb4 changelog
 
+## Unreleased:
+
+### Original bug fixes
+
+
+### tomb4 bug fixes
+
+- Fix pickup display.
+
+### new tomb4 features
+
+
+
 ## [2.2.1](https://github.com/Trxyebeep/TOMB4/tree/V2.2.1) (May. 6 2023)
 
 ### tomb4 bug fixes
