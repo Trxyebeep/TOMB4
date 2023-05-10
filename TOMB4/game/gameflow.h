@@ -180,9 +180,9 @@ enum gf_strings	//auto generated from the script compiler
 	TXT_Inside_The_Great_Pyramid,
 	TXT_Temple_Of_Horus,
 #ifdef TIMES_LEVEL
-	TXT_DUMMY1,
-	TXT_DUMMY2,
-	TXT_DUMMY3,
+	TXT_The_Times_Office,
+	TXT_The_Times_Exclusive,
+	TXT_The_Gold_Mask,
 #endif
 	TXT_Unlimited_s,
 	TXT_USE,
