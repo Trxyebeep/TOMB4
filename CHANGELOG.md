@@ -10,6 +10,7 @@
 - Fix pickup display.
 - Fix monoscreen edges.
 - Fix transparency for static lit meshes.
+- Fix bird blade not damaging Lara.
 
 ### new tomb4 features
 
