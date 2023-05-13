@@ -8,6 +8,7 @@
 ### tomb4 bug fixes
 
 - Fix pickup display.
+- Fix monoscreen edges.
 
 ### new tomb4 features
 
