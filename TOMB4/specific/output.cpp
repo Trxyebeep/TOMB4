@@ -430,7 +430,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		if (cG > 255) cG = 255; else if (cG < 0) cG = 0;
 		if (cB > 255) cB = 255; else if (cB < 0) cB = 0;
 
-		MyVertexBuffer[i].color = RGBA(cR, cG, cB, 0xFF);
+		MyVertexBuffer[i].color = GlobalAlpha | RGBONLY(cR, cG, cB);
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 

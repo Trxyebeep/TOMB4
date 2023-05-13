@@ -9,6 +9,7 @@
 
 - Fix pickup display.
 - Fix monoscreen edges.
+- Fix transparency for static lit meshes.
 
 ### new tomb4 features
 
