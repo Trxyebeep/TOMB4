@@ -11,6 +11,8 @@
 - Fix monoscreen edges.
 - Fix transparency for static lit meshes.
 - Fix bird blade not damaging Lara.
+- Fix gaps between water and dry rooms.
+- Fix underwater tint.
 
 ### new tomb4 features
 
