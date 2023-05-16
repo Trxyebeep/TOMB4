@@ -13,6 +13,7 @@
 - Fix bird blade not damaging Lara.
 - Fix gaps between water and dry rooms.
 - Fix underwater tint.
+- Fix baddy's health overflow if he gets a medipack. (Fixes his enemy bar)
 
 ### new tomb4 features
 
