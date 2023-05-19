@@ -236,11 +236,14 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].sy = vPos.y;
 		MyVertexBuffer[i].sz = vPos.z;
 
-		if (!(room[current_item->room_number].flags & ROOM_UNDERWATER) && camera.underwater)
+		if (current_item)
 		{
-			cR = (cR * water_color_R) >> 8;
-			cG = (cG * water_color_G) >> 8;
-			cB = (cB * water_color_B) >> 8;
+			if (!(room[current_item->room_number].flags & ROOM_UNDERWATER) && camera.underwater)
+			{
+				cR = (cR * water_color_R) >> 8;
+				cG = (cG * water_color_G) >> 8;
+				cB = (cB * water_color_B) >> 8;
+			}
 		}
 
 		if (sR > 255) sR = 255; else if (sR < 0) sR = 0;
@@ -1287,6 +1290,7 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 	clip_bottom = f_bottom;
 	clip_left = f_left;
 	clip_right = f_right;
+	current_item = 0;
 	ProcessObjectMeshVertices(mesh);
 	quad = mesh->gt4;
 
