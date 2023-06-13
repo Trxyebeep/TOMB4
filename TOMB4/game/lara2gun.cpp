@@ -397,6 +397,11 @@ void AnimatePistols(long weapon_type)
 
 				anil = p->RecoilAnim;
 			}
+			else if (uzi_left)
+			{
+				SoundEffect(winfo->sample_num + 1, &lara_item->pos, SFX_DEFAULT);
+				uzi_left = 0;
+			}
 		}
 		else if (lara.left_arm.frame_number >= p->RecoilAnim)
 		{
