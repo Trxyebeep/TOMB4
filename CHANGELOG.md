@@ -1,5 +1,11 @@
 # tomb4 changelog
 
+## Unreleased
+
+### tomb4 bug fixes
+
+- Fix left hand uzi stop sound
+
 ## [2.2.1](https://github.com/Trxyebeep/TOMB4/tree/V2.2.1) (May. 6 2023)
 
 ### tomb4 bug fixes
