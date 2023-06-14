@@ -840,6 +840,7 @@ void ControlBirdBlade(short item_number)
 	short frame;
 
 	item = &items[item_number];
+	item->item_flags[3] = 100;
 
 	if (TriggerActive(item))
 	{

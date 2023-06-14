@@ -1,10 +1,23 @@
 # tomb4 changelog
 
-## Unreleased
+## Unreleased:
+
+### Original bug fixes
+
 
 ### tomb4 bug fixes
 
 - Fix left hand uzi stop sound
+- Fix pickup display.
+- Fix monoscreen edges.
+- Fix transparency for static lit meshes.
+- Fix bird blade not damaging Lara.
+- Fix gaps between water and dry rooms.
+- Fix underwater tint.
+- Fix baddy's health overflow if he gets a medipack. (Fixes his enemy bar)
+
+### new tomb4 features
+
 
 ## [2.2.1](https://github.com/Trxyebeep/TOMB4/tree/V2.2.1) (May. 6 2023)
 

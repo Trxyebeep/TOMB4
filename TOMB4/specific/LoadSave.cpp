@@ -703,16 +703,15 @@ long S_LoadSave(long load_or_save, long mono, long inv_active)
 	return ret;
 }
 
-void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, long tU, long tV, long tW, long tH, long c0, long c1, long c2, long c3)
+static void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, long c0, long c1, long c2, long c3)
 {
 	D3DTLBUMPVERTEX v[4];
-	D3DTLBUMPVERTEX tri[3];
 	float u1, v1, u2, v2;
 
-	u1 = float(tU * (1.0F / 256.0F));
-	v1 = float(tV * (1.0F / 256.0F));
-	u2 = float((tW + tU) * (1.0F / 256.0F));
-	v2 = float((tH + tV) * (1.0F / 256.0F));
+	u1 = 0;
+	v1 = 0;
+	u2 = 1.0F;
+	v2 = 1.0F;
 
 	v[0].sx = (float)x;
 	v[0].sy = (float)y;
@@ -754,11 +753,7 @@ void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, long tU, l
 	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFG_POINT);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 0);
 	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, t));
-	tri[0] = v[0];
-	tri[1] = v[2];
-	tri[2] = v[3];
-	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, v, 3, D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS);
-	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, tri, 3, D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS);
+	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, FVF, v, 4, D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 1);
 
 	if (App.Filtering)
@@ -777,13 +772,17 @@ void S_DisplayMonoScreen()
 	else
 		col = 0xFFFFFF80;
 
-	S_DrawTile(0, 0, phd_winxmax, phd_winymax, MonoScreen.tex, 0, 0, 256, 256, col, col, col, col);
+	S_DrawTile(0, 0, phd_winwidth, phd_winheight, MonoScreen.tex, col, col, col, col);
 }
 
 void CreateMonoScreen()
 {
 	MonoScreenOn = 1;
-	ConvertSurfaceToTextures(App.dx.lpBackBuffer);
+
+	if (App.dx.Flags & DXF_WINDOWED)
+		ConvertSurfaceToTextures(App.dx.lpBackBuffer);
+	else
+		ConvertSurfaceToTextures(App.dx.lpPrimaryBuffer);
 }
 
 void FreeMonoScreen()
