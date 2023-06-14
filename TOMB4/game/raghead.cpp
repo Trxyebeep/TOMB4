@@ -766,7 +766,12 @@ void RagheadControl(short item_number)
 				}
 
 				if (raghead->enemy->object_number == SMALLMEDI_ITEM)
+				{
 					item->hit_points += objects[item->object_number].hit_points >> 1;
+
+					if (item->hit_points > objects[item->object_number].hit_points)
+						item->hit_points = objects[item->object_number].hit_points;
+				}
 				else
 					item->item_flags[2] += 24;
 

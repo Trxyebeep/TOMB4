@@ -137,7 +137,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 			vPos.x = vPos.x * zv + f_centerx;
 			vPos.y = vPos.y * zv + f_centery;
 
-			if (i > r->nWaterVerts && camera.underwater)
+			if (i >= r->nWaterVerts && camera.underwater)
 			{
 				vPos.x += vert_wibble_table[((wibble + (long)vPos.y) >> 3) & 0x1F];
 				vPos.y += vert_wibble_table[((wibble + (long)vPos.x) >> 3) & 0x1F];
@@ -161,7 +161,7 @@ void ProcessRoomVertices(ROOM_INFO* r)
 		MyVertexBuffer[i].sy = vPos.y;
 		MyVertexBuffer[i].sz = vPos.z;
 
-		if (i > r->nShoreVerts && camera.underwater)
+		if (i >= r->nShoreVerts && camera.underwater)
 		{
 			cR = CLRR(r->prelightwater[i]);
 			cG = CLRG(r->prelightwater[i]);

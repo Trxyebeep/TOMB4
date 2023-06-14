@@ -236,6 +236,16 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].sy = vPos.y;
 		MyVertexBuffer[i].sz = vPos.z;
 
+		if (current_item)
+		{
+			if (!(room[current_item->room_number].flags & ROOM_UNDERWATER) && camera.underwater)
+			{
+				cR = (cR * water_color_R) >> 8;
+				cG = (cG * water_color_G) >> 8;
+				cB = (cB * water_color_B) >> 8;
+			}
+		}
+
 		if (sR > 255) sR = 255; else if (sR < 0) sR = 0;
 		if (sG > 255) sG = 255; else if (sG < 0) sG = 0;
 		if (sB > 255) sB = 255; else if (sB < 0) sB = 0;
@@ -243,7 +253,7 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		if (cG > 255) cG = 255; else if (cG < 0) cG = 0;
 		if (cB > 255) cB = 255; else if (cB < 0) cB = 0;
 
-		MyVertexBuffer[i].color = RGBA(cR, cG, cB, CLRA(GlobalAlpha));
+		MyVertexBuffer[i].color = GlobalAlpha | RGBONLY(cR, cG, cB);
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
@@ -430,7 +440,7 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		if (cG > 255) cG = 255; else if (cG < 0) cG = 0;
 		if (cB > 255) cB = 255; else if (cB < 0) cB = 0;
 
-		MyVertexBuffer[i].color = RGBA(cR, cG, cB, 0xFF);
+		MyVertexBuffer[i].color = GlobalAlpha | RGBONLY(cR, cG, cB);
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
@@ -1280,6 +1290,7 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 	clip_bottom = f_bottom;
 	clip_left = f_left;
 	clip_right = f_right;
+	current_item = 0;
 	ProcessObjectMeshVertices(mesh);
 	quad = mesh->gt4;
 
