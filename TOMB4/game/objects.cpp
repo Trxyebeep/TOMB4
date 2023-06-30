@@ -758,14 +758,17 @@ void SmashObjectControl(short item_number)
 	if (item->flags & IFL_INVISIBLE)
 		return;
 
-	if (lara.vehicle != NO_ITEM && ItemNearLara(&item->pos, 512))
-		SmashObject(item_number);
+	if (lara.vehicle != NO_ITEM)
+	{
+		if (ItemNearLara(&item->pos, 512))
+			SmashObject(item_number);
+	}
 	else if (item->touch_bits)
 	{
 		item->touch_bits = 0;
 		speed = (lara_item->speed * phd_cos(lara_item->pos.y_rot - item->pos.y_rot)) >> W2V_SHIFT;
 
-		if (speed >= 50)
+		if (abs(speed) >= 50)
 			SmashObject(item_number);
 	}
 }
