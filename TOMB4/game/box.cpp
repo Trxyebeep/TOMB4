@@ -1321,26 +1321,27 @@ void CreatureFloat(short item_number)
 	item = &items[item_number];
 	item->hit_points = -16384;
 	item->pos.x_rot = 0;
-	water_level = GetWaterHeight(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number);
 
-	if (item->pos.y_pos > water_level)
-		item->pos.y_pos -= 32;
-
-	if (item->pos.y_pos < water_level)
-		item->pos.y_pos = water_level;
+	int ypos = item->pos.y_pos - 16; // NOTE: Avoid the item position to be below the water so 'item->pos.y_pos <= water_level' won't trigger !
+	water_level = GetWaterHeight(item->pos.x_pos, ypos, item->pos.z_pos, item->room_number);
+	if (ypos > water_level)
+		ypos -= 16;
+	if (ypos < water_level)
+		ypos = water_level;
 
 	AnimateItem(item);
 	room_number = item->room_number;
-	item->floor = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number),
-		item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-
+	item->floor = GetHeight(GetFloor(item->pos.x_pos, ypos, item->pos.z_pos, &room_number), item->pos.x_pos, ypos, item->pos.z_pos);
 	if (item->room_number != room_number)
 		ItemNewRoom(item_number, room_number);
 
-	if (item->pos.y_pos <= water_level && item->frame_number == anims[item->anim_number].frame_base)
+	item->pos.y_pos = ypos;
+	// NOTE: Changed 'item->frame_number == anims[item->anim_number].frame_base' to 'item->frame_number >= anims[item->anim_number].frame_end - 1' since
+	// death animation don't have only 1 frame (also '>= end-1' to avoid problem).
+	if (item->pos.y_pos <= water_level && item->frame_number >= anims[item->anim_number].frame_end - 1)
 	{
 		item->status = ITEM_DEACTIVATED;
-		item->collidable = 0;
+		item->collidable = FALSE;
 		item->pos.y_pos = water_level;
 		DisableBaddieAI(item_number);
 		RemoveActiveItem(item_number);

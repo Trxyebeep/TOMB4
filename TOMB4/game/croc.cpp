@@ -84,8 +84,6 @@ void CrocControl(short item_number)
 
 	if (item->hit_points <= 0)
 	{
-		item->hit_points = 0;
-
 		if (item->current_anim_state != 7 && item->current_anim_state != 10)
 		{
 			if (room[item->room_number].flags & ROOM_UNDERWATER)
@@ -94,7 +92,6 @@ void CrocControl(short item_number)
 				item->frame_number = anims[item->anim_number].frame_base;
 				item->current_anim_state = 10;
 				item->goal_anim_state = 10;
-				item->hit_points = -16384;
 			}
 			else
 			{
@@ -106,7 +103,10 @@ void CrocControl(short item_number)
 		}
 
 		if (room[item->room_number].flags & ROOM_UNDERWATER)
+		{
 			CreatureFloat(item_number);
+			return;
+		}
 	}
 	else
 	{
