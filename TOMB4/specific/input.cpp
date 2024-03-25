@@ -358,11 +358,23 @@ long S_UpdateInput()
 	if (Key(1))
 		linput |= IN_BACK;
 
-	if (Key(2))
-		linput |= IN_LEFT;
+	if (Key(2)) {
+		if (tomb4.mirrorMode) {
+			linput |= IN_RIGHT;
+		}
+		else {
+			linput |= IN_LEFT;
+		}		
+	}		
 
-	if (Key(3))
-		linput |= IN_RIGHT;
+	if (Key(3)) {
+		if (tomb4.mirrorMode) {
+			linput |= IN_LEFT;
+		}
+		else {
+			linput |= IN_RIGHT;
+		}		
+	}		
 
 	if (Key(4))
 		linput |= IN_DUCK;

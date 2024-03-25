@@ -226,7 +226,6 @@ long ControlPhase(long nframes, long demo_mode)
 	{
 		GlobalCounter++;
 		UpdateSky();
-		RPC_Update();
 
 		if (S_UpdateInput() == IN_ALL)
 			return 0;

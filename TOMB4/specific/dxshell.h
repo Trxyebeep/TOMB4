@@ -30,6 +30,8 @@ long DXToggleFullScreen();
 HRESULT __stdcall DXEnumDirect3D(LPGUID lpGuid, LPSTR lpDeviceDescription, LPSTR lpDeviceName, LPD3DDEVICEDESC lpHWDesc, LPD3DDEVICEDESC lpHELDesc, LPVOID lpContext);
 const char* DXGetErrorString(HRESULT hr);
 void DXInitKeyboard(HWND hwnd, HINSTANCE hinstance);
+void BltBackBuffer();
+_DDBLTFX& GetDDBLTFX();
 
 extern DXPTR* G_dxptr;
 extern DXINFO* G_dxinfo;

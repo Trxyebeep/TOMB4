@@ -6,8 +6,8 @@
 #include "../specific/input.h"
 #include "../specific/3dmath.h"
 
-#define PAGE0_NUM	14
-#define PAGE1_NUM	9
+#define PAGE0_NUM	12
+#define PAGE1_NUM	12
 #define YPOS	textY + y++ * font_height
 #define CHECK_SEL(c)	selection & (1 << s++) ? 1 : c
 
@@ -114,8 +114,6 @@ bool Page0(long& num, long textY, ulong selection)
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Cutscene skipper", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Cheats", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Loading text", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "mono screen style", 0);
-	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "loadbar style", 0);
 
 	y = 2;
 	s = 0;
@@ -154,12 +152,6 @@ bool Page0(long& num, long textY, ulong selection)
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	strcpy(buffer, tomb4.loadingtxt ? "on" : "off");
-	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
-
-	strcpy(buffer, tomb4.inv_bg_mode == 1 ? "original" : tomb4.inv_bg_mode == 2 ? "TR5" : "clear");
-	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
-
-	strcpy(buffer, tomb4.tr5_loadbar ? "TR5" : "TR4");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	switch (selection)
@@ -341,42 +333,6 @@ bool Page0(long& num, long textY, ulong selection)
 
 		break;
 
-	case 1 << 12:
-
-		if (dbinput & IN_RIGHT)
-		{
-			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.inv_bg_mode++;
-
-			if (tomb4.inv_bg_mode > 3)
-				tomb4.inv_bg_mode = 1;
-
-			changed = 1;
-		}
-
-		if (dbinput & IN_LEFT)
-		{
-			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.inv_bg_mode--;
-
-			if (tomb4.inv_bg_mode < 1)
-				tomb4.inv_bg_mode = 3;
-
-			changed = 1;
-		}
-
-		break;
-
-	case 1 << 13:
-
-		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
-		{
-			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.tr5_loadbar = !tomb4.tr5_loadbar;
-			changed = 1;
-		}
-
-		break;
 	}
 
 	return changed;
@@ -394,6 +350,9 @@ bool Page1(long& num, long textY, ulong selection)
 	s = 0;
 
 	PrintString(phd_centerx, 2 * font_height, 6, "New tomb4 options", FF_CENTER);
+
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "mono screen style", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "loadbar style", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "look transparency", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "ammo counter", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "ammotype hotkeys", 0);
@@ -403,9 +362,16 @@ bool Page1(long& num, long textY, ulong selection)
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Reverb", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "distance fog", 0);
 	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Bars scale", 0);
+	PrintString(phd_centerx >> 2, YPOS, CHECK_SEL(2), "Mirror mode", 0);
 
 	y = 2;
 	s = 0;
+
+	strcpy(buffer, tomb4.inv_bg_mode == 1 ? "original" : tomb4.inv_bg_mode == 2 ? "TR5" : "clear");
+	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
+
+	strcpy(buffer, tomb4.tr5_loadbar ? "TR5" : "TR4");
+	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
 	strcpy(buffer, tomb4.look_transparency ? "on" : "off");
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
@@ -434,14 +400,32 @@ bool Page1(long& num, long textY, ulong selection)
 	sprintf(buffer, "%.1f", tomb4.GUI_Scale);
 	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
 
+	strcpy(buffer, tomb4.mirrorMode ? "on" : "off");
+	PrintString(phd_centerx + (phd_centerx >> 1), YPOS, CHECK_SEL(6), buffer, 0);
+
 	switch (selection)
 	{
 	case 1 << 0:
 
-		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		if (dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.look_transparency = !tomb4.look_transparency;
+			tomb4.inv_bg_mode++;
+
+			if (tomb4.inv_bg_mode > 3)
+				tomb4.inv_bg_mode = 1;
+
+			changed = 1;
+		}
+
+		if (dbinput & IN_LEFT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.inv_bg_mode--;
+
+			if (tomb4.inv_bg_mode < 1)
+				tomb4.inv_bg_mode = 3;
+
 			changed = 1;
 		}
 
@@ -452,7 +436,7 @@ bool Page1(long& num, long textY, ulong selection)
 		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.ammo_counter = !tomb4.ammo_counter;
+			tomb4.tr5_loadbar = !tomb4.tr5_loadbar;
 			changed = 1;
 		}
 
@@ -463,7 +447,7 @@ bool Page1(long& num, long textY, ulong selection)
 		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.ammotype_hotkeys = !tomb4.ammotype_hotkeys;
+			tomb4.look_transparency = !tomb4.look_transparency;
 			changed = 1;
 		}
 
@@ -474,7 +458,7 @@ bool Page1(long& num, long textY, ulong selection)
 		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.combat_cam_tilt = !tomb4.combat_cam_tilt;
+			tomb4.ammo_counter = !tomb4.ammo_counter;
 			changed = 1;
 		}
 
@@ -485,7 +469,7 @@ bool Page1(long& num, long textY, ulong selection)
 		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.hpbar_inv = !tomb4.hpbar_inv;
+			tomb4.ammotype_hotkeys = !tomb4.ammotype_hotkeys;
 			changed = 1;
 		}
 
@@ -496,13 +480,35 @@ bool Page1(long& num, long textY, ulong selection)
 		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
 		{
 			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
-			tomb4.static_lighting = !tomb4.static_lighting;
+			tomb4.combat_cam_tilt = !tomb4.combat_cam_tilt;
 			changed = 1;
 		}
 
 		break;
 
 	case 1 << 6:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.hpbar_inv = !tomb4.hpbar_inv;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 7:
+
+		if (dbinput & IN_LEFT || dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.static_lighting = !tomb4.static_lighting;
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 8:
 
 		if (dbinput & IN_LEFT)
 		{
@@ -528,7 +534,7 @@ bool Page1(long& num, long textY, ulong selection)
 
 		break;
 
-	case 1 << 7:
+	case 1 << 9:
 
 		if (dbinput & IN_RIGHT)
 		{
@@ -554,7 +560,7 @@ bool Page1(long& num, long textY, ulong selection)
 
 		break;
 
-	case 1 << 8:
+	case 1 << 10:
 
 		if (dbinput & IN_RIGHT)
 		{
@@ -575,6 +581,17 @@ bool Page1(long& num, long textY, ulong selection)
 			if (tomb4.GUI_Scale < 1.0F)
 				tomb4.GUI_Scale = 1.0F;
 
+			changed = 1;
+		}
+
+		break;
+
+	case 1 << 11:
+
+		if (dbinput & IN_RIGHT)
+		{
+			SoundEffect(SFX_MENU_SELECT, 0, SFX_ALWAYS);
+			tomb4.mirrorMode = !tomb4.mirrorMode;
 			changed = 1;
 		}
 

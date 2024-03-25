@@ -2,6 +2,9 @@
 #include "dxshell.h"
 #include "function_stubs.h"
 #include "winmain.h"
+#include "../global/types.h"
+
+extern tomb4_options tomb4;
 
 long DDSCL_FLAGS[11] =	// for DXSetCooperativeLevel logging
 {
@@ -535,9 +538,28 @@ HRESULT DXShowFrame()
 		return 0;
 
 	if (G_dxptr->Flags & DXF_WINDOWED)
-		return DXAttempt(G_dxptr->lpPrimaryBuffer->Blt(&G_dxptr->rScreen, G_dxptr->lpBackBuffer, &G_dxptr->rViewport, DDBLT_WAIT, 0));
-	else
+		return DXAttempt(G_dxptr->lpPrimaryBuffer->Blt(&G_dxptr->rScreen, G_dxptr->lpBackBuffer, &G_dxptr->rViewport, DDBLT_DDFX | DDBLT_WAIT, &GetDDBLTFX()));
+	else {
+		if (tomb4.mirrorMode) {
+			DXAttempt(G_dxptr->lpBackBuffer->Blt(NULL, G_dxptr->lpBackBuffer, NULL, DDBLT_DDFX | DDBLT_WAIT, &GetDDBLTFX()));
+		}
 		return DXAttempt(G_dxptr->lpPrimaryBuffer->Flip(0, DDFLIP_WAIT));
+	}
+		
+}
+
+static _DDBLTFX& GetDDBLTFX() {
+	static _DDBLTFX ddbltfx;
+	ZeroMemory(&ddbltfx, sizeof(ddbltfx));
+	ddbltfx.dwSize = sizeof(ddbltfx);
+	ddbltfx.dwDDFX = tomb4.mirrorMode ? DDBLTFX_MIRRORLEFTRIGHT : 0;
+	return ddbltfx;
+}
+
+void BltBackBuffer() {
+	if (tomb4.mirrorMode) {
+		DXAttempt(G_dxptr->lpBackBuffer->Blt(NULL, G_dxptr->lpBackBuffer, NULL, DDBLT_DDFX | DDBLT_WAIT, &GetDDBLTFX()));
+	}
 }
 
 void DXMove(long x, long y)

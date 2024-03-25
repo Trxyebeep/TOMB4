@@ -13,6 +13,7 @@
 #include "polyinsert.h"
 #include "../tomb4/tomb4.h"
 #include "texture.h"
+#include "dxshell.h"
 
 static float loadbar_pos;
 static long loadbar_maxpos;
@@ -514,6 +515,8 @@ void S_LoadBar()
 
 	if (gfCurrentLevel || App.dx.Flags & DXF_HWR)
 	{
+		if (App.dx.Flags & DXF_FULLSCREEN)
+			BltBackBuffer();
 		_BeginScene();
 		InitBuckets();
 		InitialiseSortList();

@@ -271,8 +271,6 @@
     <ClInclude Include="TOMB4\specific\texture.h" />
     <ClInclude Include="TOMB4\specific\time.h" />
     <ClInclude Include="TOMB4\specific\winmain.h" />
-    <ClInclude Include="TOMB4\tomb4\libs\discordRPC\discord_register.h" />
-    <ClInclude Include="TOMB4\tomb4\libs\discordRPC\discord_rpc.h" />
     <ClInclude Include="TOMB4\tomb4\libs\zlib\zlib.h" />
     <ClInclude Include="TOMB4\tomb4\pch.h" />
     <ClInclude Include="TOMB4\tomb4\tomb4.h" />
@@ -418,14 +416,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tomb4.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="TOMB4\tomb4\libs\discordRPC\discord-rpc.lib">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </Library>
-    <Library Include="TOMB4\tomb4\libs\discordRPC\discord-rpcd.lib">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </Library>
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon.ico" />
